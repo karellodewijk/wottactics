@@ -1,0 +1,98 @@
+body {
+	background: #EEEEEE;
+	padding-top:5px;
+	padding-left:5px;
+}
+
+#big_button_frame {
+	text-align:center;
+}
+
+.navbar-default {
+	background: #BBBBBB;
+}
+
+.edit_window {
+	display:inline-block;
+}
+
+.side_bar {
+	padding-top: 0px;
+	background: #DADADA;
+	display:inline-block;
+	vertical-align:top;
+	width: auto;
+}
+
+.left_column {
+	display:inline-block;
+	vertical-align:top;
+	width: auto;
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-top: 0px;
+}
+
+.right_column {
+	display:inline-block;
+	vertical-align:top;
+	width: auto;
+	padding-left: 30px;
+	padding-right: 30px;
+	padding-top: 0px;
+}
+
+.tank_select {
+	border: 2px solid transparent;
+	outline: 0;
+	background-color: transparent;
+}
+
+.tank_select:hover {
+	border: 2px solid red;
+}
+
+.tank_select.selected {
+	border: 2px solid red;
+}
+
+.btn.active, .btn:active {
+    background-color: #FFFFFFS;
+}
+
+.slider_text_input {
+	width: 30px;
+	height: 30px;
+}
+
+#ex1Slider .slider-selection {
+	background: #EBEBEB;
+}
+
+#ex1Slider .slider-track-high {
+	background: #EAEAEA;
+}
+
+#ex1Slider {
+	width:100px;
+}
+
+#icon_label {
+	width:180px;
+}
+
+#text_tool_text {
+	width:180px;
+}
+
+.my_sliders {
+	width:100px;
+}
+
+option {
+	border: solid 2px red;
+}
+
+small {
+	font-size: 14px;
+}

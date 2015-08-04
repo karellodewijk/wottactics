@@ -1,0 +1,328 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-select.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script src="bootstrap/js/bootstrap-select.min.js"></script>
+	<script src="colorpicker/jquery.simplecolorpicker.js"></script>
+	<link rel="stylesheet" href="colorpicker/jquery.simplecolorpicker.css">
+	<script type="text/javascript" src="node_modules/pixi.js/bin/pixi.js"></script>
+	<script type="text/javascript" src="extra/TransparencyHitArea.js"></script>
+	<script type="text/javascript" src="cwplanner.js"></script>
+	<script type="application/xml" src="maps/maps.xml"></script>
+	<link rel="stylesheet" href="style.css" />
+	<script type="text/javascript" src="bootstrap/js/bootstrap-slider.min.js"></script>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-slider.min.css">	
+	<title>WOT Tactics</title>
+</head>
+<body role="document">
+
+	<div class="edit_window"></div>
+	
+	<div class="side_bar jumbotron">
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand">WOT Tactics</a>
+				</div>
+				<div class="navbar-form navbar-right dropdown">
+					<div class="dropdown">
+						<button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="login_dropdown">
+							<span id="sign_in_text">Sign in</span> <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" id="login_dropdown_select" aria-labelledby="login_dropdown">
+							<li><a id="http://eu.wargaming.net/id/" href="javascript:void(0)">Wargaming EU</a></li>
+							<li><a id="http://ru.wargaming.net/id/" href="javascript:void(0)">Wargaming RU</a></li>
+							<li><a id="http://asia.wargaming.net/id/" href="javascript:void(0)">Wargaming SEA</a></li>
+							<li><a id="http://na.wargaming.net/id/" href="javascript:void(0)">Wargaming NA</a></li>
+							<li><a id="http://kr.wargaming.net/id/" href="javascript:void(0)">Wargaming KOR</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</nav>
+		<div class="left_column">	
+			<h4>Map</h4>
+			<p>
+				<div class="dropdown">
+					<select class="selectpicker" id="map_select">
+					<option value=""></option>
+					<option value="maps/abbey.jpg">Abbey</option>
+					<option value="maps/airfield.jpg">Airfield</option>
+					<option value="maps/arctic_region.jpg">Arctic Region</option>
+					<option value="maps/cliffs.jpg">Cliffs</option>
+					<option value="maps/dragon_ridge.jpg">Dragon Ridge</option>
+					<option value="maps/el_halluf.jpg">El Halluf</option>
+					<option value="maps/el_halluf_encounter.jpg">El Halluf (Encounter)</option>
+					<option value="maps/ensk.jpg">Ensk</option>
+					<option value="maps/ensk_encounter.jpg">Ensk (Encounter)</option>
+					<option value="maps/erlenberg.jpg">Erlenberg</option>
+					<option value="maps/erlenberg_assault.jpg">Erlenberg (Assault)</option>
+					<option value="maps/erlenberg_encounter.jpg">Erlenberg (Encounter)</option>
+					<option value="maps/fiery_salient.jpg">Fiery Salient</option>
+					<option value="maps/fiery_salient_encounter.jpg">Fiery Salient (Encounter)</option>
+					<option value="maps/fishermans_bay.jpg">Fisherman's Bay</option>
+					<option value="maps/hidden_village.jpg">Hidden Village</option>
+					<option value="maps/fjords.jpg">Fjords</option>
+					<option value="maps/highway.jpg">Highway</option>
+					<option value="maps/himmelsdorf.jpg">Himmelsdorf</option>
+					<option value="maps/himmelsdorf_encounter.jpg">Himmelsdorf (Encounter)</option>
+					<option value="maps/karelia.jpg">Karelia</option>
+					<option value="maps/karelia_assault.jpg">Karelia (Assault)</option>
+					<option value="maps/komarin.jpg">Komarin</option>
+					<option value="maps/krarkov.jpg">Krarkov</option>
+					<option value="maps/lakeville.jpg">Lakeville</option>
+					<option value="maps/lakeville_encounter.jpg">Lakeville (Encounter)</option>
+					<option value="maps/live_oaks.jpg">Live Oaks</option>
+					<option value="maps/malinovka.jpg">Malinovka</option>
+					<option value="maps/malinovka_assault.jpg">Malinovka (Assault)</option>
+					<option value="maps/malinovka_encounter.jpg">Malinovka (Encounter)</option>
+					<option value="maps/mines.jpg">Mines</option>
+					<option value="maps/mines_encounter.jpg">Mines (Encounter)</option>
+					<option value="maps/mountain_pass.jpg">Mountain pass</option>
+					<option value="maps/murovanka.jpg">Murovanka</option>
+					<option value="maps/murovanka_encounter.jpg">Murovanka (Encounter)</option>
+					<option value="maps/northwest.jpg">Northwest</option>
+					<option value="maps/pearl_river.jpg">Pearl River</option>
+					<option value="maps/phrokorovka.jpg">Phrokorovka</option>
+					<option value="maps/phrokorovka_encounter.jpg">Phrokorovka (Encounter)</option>
+					<option value="maps/province.jpg">Province</option>
+					<option value="maps/redshire.jpg">Redshire</option>
+					<option value="maps/redshire_encounter.jpg">Redshire (Encounter)</option>
+					<option value="maps/ruinberg.jpg">Ruinberg</option>
+					<option value="maps/ruinberg_on_fire.jpg">Ruinberg on fire</option>
+					<option value="maps/ruinberg_on_fire_encounter.jpg">Ruinberg on fire (Encounter)</option>
+					<option value="maps/sacred_valley.jpg">Sacred Valley</option>
+					<option value="maps/sacred_valley_encounter.jpg">Sacred Valley (Encounter)</option>
+					<option value="maps/sand_river.jpg">Sand River</option>
+					<option value="maps/sand_river_assault.jpg">Sand River (Assault)</option>
+					<option value="maps/sand_river_encounter.jpg">Sand River (Encounter)</option>
+					<option value="maps/serene_coast.jpg">Serene Coast</option>
+					<option value="maps/severogorsk.jpg">Severogorsk</option>
+					<option value="maps/severogorsk_assault.jpg">Severogorsk (Assault)</option>
+					<option value="maps/siegfried_line.jpg">Siegfried Line</option>
+					<option value="maps/siegfried_line_assault.jpg">Siegfried Line (Assault)</option>
+					<option value="maps/siegfried_line_encounter.jpg">Siegfried Line (Encounter)</option>
+					<option value="maps/south_coast.jpg">South Coast</option>
+					<option value="maps/stalingrad.jpg">Stalingrad</option>
+					<option value="maps/steppes.jpg">Steppes</option>
+					<option value="maps/steppes_encounter.jpg">Steppes (Encounter)</option>
+					<option value="maps/swamp.jpg">Swamp</option>
+					<option value="maps/tundra.jpg">Tundra</option>
+					<option value="maps/tundra_assault.jpg">Tundra (Assault)</option>
+					<option value="maps/tundra_encounter.jpg">Tundra (Encounter)</option>
+					<option value="maps/westfield.jpg">Westfield</option>
+					<option value="maps/westfield_assault.jpg">Westfield (Assault)</option>
+					<option value="maps/widepark.jpg">Widepark</option>
+					<option value="maps/windstorm.jpg">Windstorm</option>
+					<option value="maps/windstorm_assault.jpg">Windstorm (Assault)</option>
+					<option value="maps/winter_himmelsdorf.jpg">Winter Himmelsdorf</option>
+					<option value="maps/winter_himmelsdorf_assault.jpg">Winter Himmelsdorf (Assault)</option>
+					<option value="maps/winter_himmelsdorf_encounter.jpg">Winter Himmelsdorf (Encounter)</option>
+					</select>
+				</div>
+			</p>
+
+			<hr>
+
+			<h4>Tools</h4>
+			<p>
+				<div class="btn-group " id="contexts">
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="ping">
+					<img src="icons/circle_icon.png" />
+				</button>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="icon">
+					<img src="icons/tank_icon.png" />
+				</button>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="draw">
+					<img src="icons/pencil.png" />
+				</button>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="text">
+					<img src="icons/text_icon.png" />
+				</button>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="line">
+					<img src="icons/line_icon.png" />
+				</button>
+				<br/>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="remove">
+					<img src="icons/bin.png" />
+				</button>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="move">
+					<img src="icons/move.png" />
+				</button>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="select">
+					<img src="icons/select.png" />
+				</button>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="undo">
+					<img src="icons/undo.png" />
+				</button>
+				<button type="button" class="btn btn-default" aria-label="Left Align" id="redo">
+					<img src="icons/redo.png" />
+				</button>
+				</div>
+			</p>
+			<hr>
+			
+			<div id='icon_context'>
+			
+			<p>			
+			<h4>Icon options (<span id="icon_counter">0</span>)</h4>
+			</p>
+			
+			<p>	
+			<small>Label:</small> <input type="text" id="icon_label"/>
+			</p>
+			
+			<p>
+				<button id="arty" class="tank_select">
+					<img src="icons/arty.png"><span>0</span>
+				</button>
+				<button id="heavy" class="tank_select">
+					<img src="icons/heavy.png"><span>0</span>
+				</button>
+				<button id="light" class="tank_select">
+					<img src="icons/light.png"><span>0</span>
+				</button>
+				<br \>
+				<button id="medium" class="tank_select">
+					<img src="icons/medium.png"><span>0</span>
+				</button>
+				<button id="td" class="tank_select">
+					<img src="icons/td.png"><span>0</span>
+				</button>
+			</p>
+			
+			<p>
+				<select name="colorpicker" id="icon_colorpicker">
+					<option value="#ff0000">Red</option>
+					<option value="#00ff00">Green</option>
+					<option value="#0000ff">Blue</option>
+					<option value="#ffff00">Yellow</option>
+					<option value="#ffffff">White</option>
+				</select>
+			</p>
+						
+			</div>
+
+			<div id='draw_context'>			
+			<p>
+			<h4>Draw options</h4>
+			</p>
+			<p>
+				<select name="colorpicker" id="draw_colorpicker">
+					<option value="#ff0000">Red</option>
+					<option value="#00ff00">Green</option>
+					<option value="#0000ff">Blue</option>
+					<option value="#ffff00">Yellow</option>
+					<option value="#ffffff">White</option>
+				</select>
+				<br />
+				<small>Thickness</small>
+				<input id="draw_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="4"/>
+				&nbsp;<input id="draw_thickness_text" class="slider_text_input" type="text"/>
+			</p>
+			</div>
+ 
+			<div id='ping_context'>			
+			<p>
+			<h4>Ping options</h4>
+			</p>
+			<p>
+				<select name="colorpicker" id="ping_colorpicker">
+					<option value="#ff0000">Red</option>
+					<option value="#00ff00">Green</option>
+					<option value="#0000ff">Blue</option>
+					<option value="#ffff00">Yellow</option>
+					<option value="#ffffff">White</option>
+				</select>
+			</p>
+			</div>			
+
+			<div id='remove_context'>			
+			<p>
+			<h4>Remove options</h4>
+			</p>
+			<p>
+				<div class="btn-group" role="group">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_all">
+						<img src="icons/clear.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_draw">
+						<img src="icons/clear_draw.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_icons">
+						<img src="icons/clear_icon.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_lines">
+						<img src="icons/clear_line.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_text">
+						<img src="icons/clear_text.png" />
+					</button>
+					<br />
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_selected">
+						<img src="icons/clear_selected.png" />
+					</button>
+					
+				</div>
+			</p>
+			</div>
+
+			<div id='text_context'>			
+			<p>
+			<h4>Text options</h4>
+			</p>
+			<p>	
+			<small>Text:</small> <input type="text" id="text_tool_text"/>
+			</p>
+			</div>
+
+			<div id='line_context'>			
+			<p>
+			<h4>Line options</h4>
+			</p>
+			<p>
+				<select name="colorpicker" id="line_colorpicker">
+					<option value="#ff0000">Red</option>
+					<option value="#00ff00">Green</option>
+					<option value="#0000ff">Blue</option>
+					<option value="#ffff00">Yellow</option>
+					<option value="#ffffff">White</option>
+				</select>
+				<br/>
+				<small>Thickness:</small>
+				<input id="line_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="4"/>
+				&nbsp;<input id="line_thickness_text" class="slider_text_input" type="text"/>
+				<p>
+				<div class="btn-group" role="group" id="line_type">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="full_line">
+						<img src="icons/line_icon.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="dotted_line">
+						<img src="icons/dotted_line.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="arrow">
+						<img src="icons/arrow.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="dotted_arrow">
+						<img src="icons/dotted_arrow.png" />
+					</button>
+				</div>
+				</p>
+			</p>
+			</div>
+			
+		</div>
+		<div class="right_column">
+			<h4>User list (<span id="user_count"></span>)</h4>
+			<p>
+			<ul class="list-group" id="userlist"></ul>
+			</p>
+		</div>
+	</div>
+</body>
+
