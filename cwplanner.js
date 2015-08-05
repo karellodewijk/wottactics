@@ -705,7 +705,7 @@ function create_drawing(drawing) {
 
 	sprite.texture.baseTexture.source.src = drawing.uid;
 	make_draggable(drawing.container);
-	drawing.container.hitArea = new PIXI.TransparencyHitArea.create(sprite, true);
+	drawing.container.hitArea = new PIXI.TransparencyHitArea.create(sprite, false);
 
 	objectContainer.addChild(drawing.container);
 	drawing.container.entity = drawing;
@@ -771,7 +771,7 @@ function remove_user(user) {
 	$("#user_count").text(Object.keys(userlist).length.toString());
 }
 
-$.getScript("http://"+location.hostname+"/socket.io/socket.io.js", function() {
+$.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function() {
 	socket = io.connect('http://'+location.hostname+':8000');
 
 	$(document).ready(function() {
