@@ -209,7 +209,6 @@ PIXI.CanvasTransparencyHitArea.prototype.initTextureData = function() {
 PIXI.CanvasTransparencyHitArea.prototype.createTextureData = function (texture) {
     var textureSource = texture.baseTexture.source;
     var renderer = PIXI.CanvasTransparencyHitArea.cachedRenderer;
-	console.log(renderer)
     var canvas = renderer.view;
     canvas.width = textureSource.width;
     canvas.height = textureSource.height;

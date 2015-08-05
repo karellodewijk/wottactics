@@ -166,10 +166,33 @@ function onDragEnd() {
 }
 
 function move_entity(entity, delta_x, delta_y) {
-	entity.container.x += delta_x;
-	entity.container.y += delta_y;
-	entity.x += delta_x/stage.width;
-	entity.y += delta_y/stage.height;	
+	var box = entity.container;
+	if (entity.container.x+delta_x < 0) {
+		entity.container.x = 0;
+		entity.x = 0;
+		entity.container.y += delta_y;
+		entity.y += delta_y/stage.height;
+	} else if (entity.container.y+delta_y < 0) {
+		entity.container.y = 0;
+		entity.y = 0;
+		entity.container.x += delta_x;	
+		entity.x += delta_x/stage.width;		
+	} else if (entity.container.x + entity.container.width + delta_x > size) {
+		entity.container.x = size - entity.container.width;
+		entity.x = (size - entity.container.width)/size;
+		entity.container.y += delta_y;
+		entity.y += delta_y/stage.height;
+	} else if (entity.container.y + entity.container.height + delta_y > size) {
+		entity.container.y = size - entity.container.height;
+		entity.y = (size - entity.container.height)/size;
+		entity.container.x += delta_x;
+		entity.x += delta_x/stage.width;
+	} else {
+		entity.container.x += delta_x;
+		entity.container.y += delta_y;
+		entity.x += delta_x/stage.width;
+		entity.y += delta_y/stage.height;
+	}
 }
 
 function onDragMove() {
@@ -512,7 +535,6 @@ function create_icon(icon) {
 	
 	sprite.width = stage.width/35;
 	sprite.height = stage.height/35;
-	sprite.anchor.set(0.5);
 		
 	if (icon.label != "") {
 		var size = ""+(stage.width/30)+"px Snippet";
@@ -776,6 +798,11 @@ function chat(message) {
 	$("#chat_box").scrollTop($("#chat_box")[0].scrollHeight);
 }
 
+function isIE(userAgent) {
+  userAgent = userAgent || navigator.userAgent;
+  return userAgent.indexOf("MSIE ") > -1 || userAgent.indexOf("Trident/") > -1;
+}
+
 $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function() {
 	socket = io.connect('http://'+location.hostname+':8000');
 
@@ -891,7 +918,11 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		var openid_exists = location.search.split('openid.assoc_handle=')[1];
 		if (openid_exists) {
 			socket.emit("login_complete", window.location.href);
-			window.history.replaceState("", "", location.origin+location.pathname+"?room="+room); //rewrite url to make pretty
+			if (!isIE()) {
+				window.history.replaceState("", "", location.origin+location.pathname+"?room="+room); //rewrite url to make pretty
+			} else {
+				window.location = window.location.pathname+"?room="+room;
+			}
 		}
 			
 		
