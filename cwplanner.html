@@ -144,13 +144,13 @@
 						<option value="http://karellodewijk.github.io/maps/winter_ruinberg_attac_defence.jpg">Winter Ruinberg (Attack/Defence)</option>
 						</select>
 					</div>
-				</p>
 
 				<hr>
 
 				<h4>Tools</h4>
 				<p>
-					<div class="btn-group " id="contexts">
+					<div id="contexts">
+					<div class="btn-group" id="contexts">
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="ping" data-toggle="tooltip" title="Ping map">
 						<img src="http://karellodewijk.github.io/icons/circle_icon.png" />
 					</button>
@@ -163,10 +163,12 @@
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="text" data-toggle="tooltip" title="Add Text">
 						<img src="http://karellodewijk.github.io/icons/text_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="line"data-toggle="tooltip" title="Draw line (hold left mouse)">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="line" data-toggle="tooltip" title="Draw line (hold left mouse)">
 						<img src="http://karellodewijk.github.io/icons/line_icon.png" />
 					</button>
-					<br/>
+					</div>
+					<br />
+					<div class="btn-group" id="contexts">
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="remove" data-toggle="tooltip" title="Delete (click map)/Delete menu">
 						<img src="http://karellodewijk.github.io/icons/bin.png" />
 					</button>
@@ -183,18 +185,16 @@
 						<img src="http://karellodewijk.github.io/icons/redo.png" />
 					</button>
 					</div>
-				</p>
+					</div>
 				<hr>
 				
 				<div id='icon_context'>
 				
 				<p>			
 				<h4>Icon options (<span id="icon_counter">0</span>)</h4>
-				</p>
 				
 				<p>	
 				<small>Label:</small> <input type="text" id="icon_label"/>
-				</p>
 				
 				<p>
 					<button id="arty" class="tank_select" data-toggle="tooltip" title="arty">
@@ -213,7 +213,7 @@
 					<button id="td" class="tank_select" data-toggle="tooltip" title="td">
 						<img src="http://karellodewijk.github.io/icons/td.png"><span>0</span>
 					</button>
-				</p>
+				
 				
 				<p>
 					<select name="colorpicker" id="icon_colorpicker">
@@ -223,14 +223,14 @@
 						<option value="#ffff00">Yellow</option>
 						<option value="#ffffff">White</option>
 					</select>
-				</p>
+				
 							
 				</div>
 
 				<div id='draw_context'>			
 				<p>
 				<h4>Draw options</h4>
-				</p>
+				
 				<p>
 					<select name="colorpicker" id="draw_colorpicker">
 						<option value="#ff0000">Red</option>
@@ -243,13 +243,13 @@
 					<small>Thickness</small>
 					<input id="draw_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="4"/>
 					&nbsp;<input id="draw_thickness_text" class="slider_text_input" type="text"/>
-				</p>
+				
 				</div>
 	 
 				<div id='ping_context'>			
 				<p>
 				<h4>Ping options</h4>
-				</p>
+				
 				<p>
 					<select name="colorpicker" id="ping_colorpicker">
 						<option value="#ff0000">Red</option>
@@ -258,13 +258,13 @@
 						<option value="#ffff00">Yellow</option>
 						<option value="#ffffff">White</option>
 					</select>
-				</p>
+				
 				</div>			
 
 				<div id='remove_context'>			
 				<p>
 				<h4>Remove options</h4>
-				</p>
+				
 				<p>
 					<div class="btn-group" role="group">
 						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_all" data-toggle="tooltip" title="Clear all">
@@ -288,22 +288,22 @@
 						</button>
 						
 					</div>
-				</p>
+				
 				</div>
 
 				<div id='text_context'>			
 				<p>
 				<h4>Text options</h4>
-				</p>
+				
 				<p>	
 				<small>Text:</small> <input type="text" id="text_tool_text"/>
-				</p>
+				
 				</div>
 
 				<div id='line_context'>			
 				<p>
 				<h4>Line options</h4>
-				</p>
+				
 				<p>
 					<select name="colorpicker" id="line_colorpicker">
 						<option value="#ff0000">Red</option>
@@ -331,8 +331,8 @@
 							<img src="http://karellodewijk.github.io/icons/dotted_arrow.png" />
 						</button>
 					</div>
-					</p>
-				</p>
+					
+				
 				</div>
 				
 			</div>
@@ -340,7 +340,7 @@
 				<h4>User list (<span id="user_count"></span>)</h4>
 				<p>
 				<ul class="list-group" id="userlist"></ul>
-				</p>
+				
 			</div>
 		</div>
 		<div class="bottom">
