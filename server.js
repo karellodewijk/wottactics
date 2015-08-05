@@ -26,7 +26,8 @@ function newUid() {
 	// attaching express app to HTTP server
 	var http = require('http');
 	var server = http.createServer(app);
-	server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8080, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
+	server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000);
+	//server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
 	
 	// creating new socket.io app
 	var ios = require('socket.io-express-session');	
@@ -129,11 +130,13 @@ function newUid() {
 			for (i = 1; i < socket.rooms.length; i++) { //first room is clients own little private room so we start at 1
 				var room = socket.rooms[i];
 
-				if (room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count == 1) {
-					socket.broadcast.to(room).emit('remove_user', socket.handshake.sessionStore[socket.handshake.sessionID].user.id);
-					delete room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id];
-				} else {
-					room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count--;
+				if (room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id]) {
+					if (room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count == 1) {
+						socket.broadcast.to(room).emit('remove_user', socket.handshake.sessionStore[socket.handshake.sessionID].user.id);
+						delete room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id];
+					} else {
+						room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count--;
+					}
 				}
 
 				if (Object.keys(io.sockets.adapter.rooms[room]).length == 1) {	//we're the last one in the room and we're leaving
@@ -170,6 +173,10 @@ function newUid() {
 			socket.broadcast.to(room).emit('remove', uid);
 		});
 
+		socket.on('chat', function(room, message) {
+			socket.broadcast.to(room).emit('chat', message);
+		});
+		
 		socket.on('update_user', function(room, user) {
 			room_data[room].userlist[user.id] = user;
 			if (user.role) {

@@ -17,8 +17,8 @@ $(document).ready(function() {
 	$("#quote").text(quotes[Math.floor(Math.random() * quotes.length)]);
 });
 
-$.getScript("http://"+location.hostname+":8080/socket.io/socket.io.js", function() {
-	var socket = io.connect('http://'+location.hostname+':8080');
+$.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function() {
+	var socket = io.connect('http://'+location.hostname+':8000');
 
 	$('#new_room').click(function(){ 
 		socket.emit('request_room');

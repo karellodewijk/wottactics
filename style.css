@@ -8,6 +8,20 @@ body {
 	text-align:center;
 }
 
+.bottom {
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+#chat_box {
+	width:400px;
+    height: 100px;
+}
+
+#chat_input {
+	width:400px;
+}
+
 .navbar-default {
 	background: #BBBBBB;
 }

@@ -209,14 +209,16 @@ PIXI.CanvasTransparencyHitArea.prototype.initTextureData = function() {
 PIXI.CanvasTransparencyHitArea.prototype.createTextureData = function (texture) {
     var textureSource = texture.baseTexture.source;
     var renderer = PIXI.CanvasTransparencyHitArea.cachedRenderer;
+	console.log(renderer)
     var canvas = renderer.view;
     canvas.width = textureSource.width;
     canvas.height = textureSource.height;
 
     var ctx = renderer.context;
 
-    ctx.clearRect(0, 0, textureSource.width, textureSource.height);
-    ctx.drawImage(textureSource, 0, 0);
+	ctx.clearRect(0, 0, textureSource.width, textureSource.height);
+	ctx.drawImage(textureSource, 0, 0);
+	
     var pixelData = ctx.getImageData(0, 0, textureSource.width, textureSource.height).data;
 	
     return pixelData;
@@ -380,8 +382,13 @@ PIXI.WebGLTransparencyHitArea.prototype.createTextureData = function (texture) {
 
     // read out the framebuffer
     var textureData = new Uint8Array(textureSource.width * textureSource.height * 4);
-    gl.readPixels(0, 0, textureSource.width, textureSource.height, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
-
+	
+	try {
+		gl.readPixels(0, 0, textureSource.width, textureSource.height, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
+	} catch(err) {
+		console.log(error);
+	}
+    
     // unbind the framebuffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 

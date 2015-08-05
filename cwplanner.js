@@ -771,6 +771,11 @@ function remove_user(user) {
 	$("#user_count").text(Object.keys(userlist).length.toString());
 }
 
+function chat(message) {
+	$("#chat_box").append(message);
+	$("#chat_box").scrollTop($("#chat_box")[0].scrollHeight);
+}
+
 $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function() {
 	socket = io.connect('http://'+location.hostname+':8000');
 
@@ -801,7 +806,17 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		$('select[id="line_colorpicker"]').simplecolorpicker().on('change', function() {
 			line_color = $('select[id="line_colorpicker"]').val();
 		});
-		
+
+		$("#chat_input").keyup(function (e) {
+			if (e.keyCode == 13) {
+				var message = my_user.name + ": " + $("#chat_input").val() + "\n";
+				socket.emit("chat", room, message);
+				chat(message);
+				$("#chat_input").val("");
+			}
+		});
+
+		//tool select
 		$('#contexts').on('click', 'button', function (e) {
 			if ( $(this).attr('id') == "undo") {
 				var entity = undo_list.pop();
@@ -987,6 +1002,10 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 
 	socket.on('ping', function(x, y, color) {
 		ping(x,y,color);
+	});
+
+	socket.on('chat', function(message) {
+		chat(message);
 	});
 	
 	socket.on('identify', function(user) {
