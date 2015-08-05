@@ -26,8 +26,7 @@ function newUid() {
 	// attaching express app to HTTP server
 	var http = require('http');
 	var server = http.createServer(app);
-	//server.listen(process.env.OPENSHIFT_NODEJS_PORT || 2000, process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
-	server.listen(process.env.OPENSHIFT_NODEJS_PORT || 2000);
+	server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8080, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
 	
 	// creating new socket.io app
 	var ios = require('socket.io-express-session');	

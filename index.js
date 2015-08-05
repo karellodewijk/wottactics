@@ -8,8 +8,17 @@ function update_my_user() {
 	}
 }
 
-$.getScript("http://"+location.hostname+":2000/socket.io/socket.io.js", function() {
-	var socket = io.connect('http://'+location.hostname+':2000');
+quotes = [
+	'"If you know the enemy and know yourself, you need not fear the result of a hundred battles." ― Sun Tzu, The Art of War',
+	'"Invincibility lies in the defence; the possibility of victory in the attack.§"'
+];
+
+$(document).ready(function() {
+	$("#quote").text(quotes[Math.floor(Math.random() * quotes.length)]);
+});
+
+$.getScript("http://"+location.hostname+":8080/socket.io/socket.io.js", function() {
+	var socket = io.connect('http://'+location.hostname+':8080');
 
 	$('#new_room').click(function(){ 
 		socket.emit('request_room');

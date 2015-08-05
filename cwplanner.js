@@ -89,7 +89,7 @@ function set_background(new_background) {
 		remove(background.uid);
 	}
 	background = new_background;
-	background_sprite.texture = PIXI.Texture.fromImage('http://'+location.host+'/'+background.path);
+	background_sprite.texture = PIXI.Texture.fromImage(background.path);
 	history[background.uid] = background;
 	$("#map_select").val(background.path).change();	
 	renderer.render(stage);
@@ -749,9 +749,9 @@ function remove_user(user) {
 	$("#user_count").text(Object.keys(userlist).length.toString());
 }
 
-//console.log("http://"+location.hostname+":2000/socket.io/socket.io.js");
-$.getScript("http://"+location.hostname+":2000/socket.io/socket.io.js", function() {
-	socket = io.connect('http://'+location.hostname+':2000');
+//console.log("http://"+location.hostname+":8080/socket.io/socket.io.js");
+$.getScript("http://"+location.hostname+":8080/socket.io/socket.io.js", function() {
+	socket = io.connect('http://'+location.hostname+':8080');
 
 	$(document).ready(function() {
 		room = location.search.split('room=')[1].split("&")[0];
