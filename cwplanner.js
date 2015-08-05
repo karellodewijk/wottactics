@@ -210,8 +210,8 @@ function ping(x, y, color) {
 	sprite.filters = [colorFilter];
 
 	sprite.anchor.set(0.5);
-	sprite.scale.x = 0.2;
-	sprite.scale.y = 0.2;
+	sprite.scale.x = stage.width/3000;
+	sprite.scale.y = stage.width/3000;
 	sprite.alpha = 1;
 	sprite.x = x*stage.width;
 	sprite.y = y*stage.height;
@@ -251,6 +251,7 @@ function deselect_all() {
 	selected_entities = [];
 }
 
+var last_ping_time;
 function on_left_click(event) {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	if (active_context == 'draw_context') {	
@@ -277,6 +278,10 @@ function on_left_click(event) {
 	} else if (active_context == 'ping_context') {
 		ping(mouse_location.x/stage.width, mouse_location.y/stage.height, ping_color);
 		socket.emit("ping", room, mouse_location.x/stage.width, mouse_location.y/stage.height, ping_color);
+		last_ping_time = new Date();
+		this.mousemove = on_ping_move;
+		this.mouseup = on_ping_end;
+		this.mouseupoutside = on_ping_end;
 	} else if (active_context == "select_context") {
 		this.mouseup = on_select_end;
 		this.mouseupoutside = on_select_end;
@@ -287,6 +292,23 @@ function on_left_click(event) {
 		this.mouseup = on_text_end;
 		this.mouseupoutside = on_text_end;
 	}
+}
+
+function on_ping_move() {
+	var time = new Date();
+	var timeDiff = time - last_ping_time;
+	if (timeDiff > 200) {
+		var mouse_location = renderer.plugins.interaction.mouse.global;
+		ping(mouse_location.x/stage.width, mouse_location.y/stage.height, ping_color);
+		socket.emit("ping", room, mouse_location.x/stage.width, mouse_location.y/stage.height, ping_color);
+		last_ping_time = time;
+	}
+}
+
+function on_ping_end() {
+	this.mouseup = undefined;
+	this.mouseupoutside = undefined;
+	this.mousemove = undefined;
 }
 
 function on_select_move() {
@@ -749,9 +771,8 @@ function remove_user(user) {
 	$("#user_count").text(Object.keys(userlist).length.toString());
 }
 
-//console.log("http://"+location.hostname+":8080/socket.io/socket.io.js");
-$.getScript("http://"+location.hostname+":8080/socket.io/socket.io.js", function() {
-	socket = io.connect('http://'+location.hostname+':8080');
+$.getScript("http://"+location.hostname+"/socket.io/socket.io.js", function() {
+	socket = io.connect('http://'+location.hostname+':8000');
 
 	$(document).ready(function() {
 		room = location.search.split('room=')[1].split("&")[0];
