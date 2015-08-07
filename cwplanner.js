@@ -221,6 +221,15 @@ function remove(uid) {
 		counter = $("#icon_context").find("span").first();
 		counter.text((parseInt(counter.text())-1).toString());
 	}
+	
+	//if an item is removed, remove them from selected_entities
+	var i = selected_entities.length
+	while (i--) {
+		if (selected_entities[i].uid == uid) {
+			selected_entities.splice(i, 1);
+		}
+	}
+	console.log(selected_entities)
 	delete history[uid];	
 	renderer.render(stage);
 }
@@ -753,7 +762,7 @@ function add_user(user) {
 		node.text(user.name);
 		node.attr('id', user.id);
 	} else {	
-		var node = "<button class='list-group-item' data-toggle='button' id='" + user.id + "'>" + user.name + "</button>";
+		var node = "<button class='btn' data-toggle='button' id='" + user.id + "'>" + user.name + "</button>";
 		$('button', node).attr('id', user.id);  // set the attribute 
 		$("#userlist").append(node);
 	}
@@ -867,8 +876,9 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 				}
 				return;
 			}			
-			$(this).addClass('active');
-			$(this).siblings().removeClass('active');			
+			$('#contexts').find("button").removeClass('active');
+			$(this).addClass('active');			
+			var new_context = $(this).attr('id')+"_context";	
 			var new_context = $(this).attr('id')+"_context";
 			if (active_context == new_context) { return; } 			
 			$('#'+active_context).hide();
@@ -919,9 +929,7 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		if (openid_exists) {
 			socket.emit("login_complete", window.location.href);
 			if (!isIE()) {
-				window.history.replaceState("", "", location.origin+location.pathname+"?room="+room); //rewrite url to make pretty
-			} else {
-				window.location = window.location.pathname+"?room="+room;
+				window.history.replaceState("", "", location.pathname+"?room="+room); //rewrite url to make pretty
 			}
 		}
 			

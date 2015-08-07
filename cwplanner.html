@@ -69,6 +69,7 @@
 						<option value="http://karellodewijk.github.io/maps/fiery_salient.jpg">Fiery Salient</option>
 						<option value="http://karellodewijk.github.io/maps/fiery_salient_encounter.jpg">Fiery Salient (Encounter)</option>
 						<option value="http://karellodewijk.github.io/maps/fishermans_bay.jpg">Fisherman's Bay</option>
+						<option value="http://karellodewijk.github.io/maps/ghost_town.jpg">Ghost Town</option>
 						<option value="http://karellodewijk.github.io/maps/ghost_town_attack_defence.jpg">Ghost Town (Attack/Defence)</option>
 						<option value="http://karellodewijk.github.io/maps/hidden_village.jpg">Hidden Village</option>
 						<option value="http://karellodewijk.github.io/maps/fjords.jpg">Fjords</option>
@@ -150,7 +151,7 @@
 				<h4>Tools</h4>
 				<p>
 					<div id="contexts">
-					<div class="btn-group" id="contexts">
+					<div class="btn-group">
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="ping" data-toggle="tooltip" title="Ping map">
 						<img src="http://karellodewijk.github.io/icons/circle_icon.png" />
 					</button>
@@ -168,7 +169,7 @@
 					</button>
 					</div>
 					<br />
-					<div class="btn-group" id="contexts">
+					<div class="btn-group">
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="remove" data-toggle="tooltip" title="Delete (click map)/Delete menu">
 						<img src="http://karellodewijk.github.io/icons/bin.png" />
 					</button>
@@ -241,7 +242,7 @@
 					</select>
 					<br />
 					<small>Thickness</small>
-					<input id="draw_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="4"/>
+					<input id="draw_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="3"/>
 					&nbsp;<input id="draw_thickness_text" class="slider_text_input" type="text"/>
 				
 				</div>
@@ -314,7 +315,7 @@
 					</select>
 					<br/>
 					<small>Thickness:</small>
-					<input id="line_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="4"/>
+					<input id="line_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="3"/>
 					&nbsp;<input id="line_thickness_text" class="slider_text_input" type="text"/>
 					<p>
 					<div class="btn-group" role="group" id="line_type">
@@ -339,8 +340,7 @@
 			<div class="right_column">
 				<h4>User list (<span id="user_count"></span>)</h4>
 				<p>
-				<ul class="list-group" id="userlist"></ul>
-				
+				<div class="btn-group-vertical btn-group-xs" role="group" aria-label="..." id="userlist"></div>
 			</div>
 		</div>
 		<div class="bottom">

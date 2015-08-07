@@ -153,15 +153,19 @@ function newUid() {
 		}
 		
 		socket.on('create_entity', function(room, entity) {
-			room_data[room].history[entity.uid] = entity;
-			socket.broadcast.to(room).emit('create_entity', entity);
+			if (room_data[room]) {
+				room_data[room].history[entity.uid] = entity;
+				socket.broadcast.to(room).emit('create_entity', entity);
+			}
 		});
 		
 		socket.on('drag', function(room, uid, x, y) {
-			room_data[room].history[uid].x = x;
-			room_data[room].history[uid].y = y;
-			//console.log("receiving drag");
-			socket.broadcast.to(room).emit('drag', uid, x, y);
+			if (room_data[room] && room_data[room].history[uid]) {
+				room_data[room].history[uid].x = x;
+				room_data[room].history[uid].y = y;
+				//console.log("receiving drag");
+				socket.broadcast.to(room).emit('drag', uid, x, y);
+			}
 		});
 
 		socket.on('ping', function(room, x, y, color) {
@@ -169,8 +173,10 @@ function newUid() {
 		});
 
 		socket.on('remove', function(room, uid) {
-			delete room_data[room].history[uid];
-			socket.broadcast.to(room).emit('remove', uid);
+			if (room_data[room] && room_data[room].history[uid]) {
+				delete room_data[room].history[uid];
+				socket.broadcast.to(room).emit('remove', uid);
+			}
 		});
 
 		socket.on('chat', function(room, message) {
@@ -178,13 +184,15 @@ function newUid() {
 		});
 		
 		socket.on('update_user', function(room, user) {
-			room_data[room].userlist[user.id] = user;
-			if (user.role) {
-				socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room] = user.role;
-			} else if (socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room]) {
-				delete socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room];
+			if (room_data[room] && room_data[room].userlist) {
+				room_data[room].userlist[user.id] = user;
+				if (user.role) {
+					socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room] = user.role;
+				} else if (socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room]) {
+					delete socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room];
+				}
+				socket.broadcast.to(room).emit('add_user', user);
 			}
-			socket.broadcast.to(room).emit('add_user', user);
 		});
 		
 	});
