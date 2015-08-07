@@ -15,7 +15,8 @@ function newUid() {
 	// initializing express-session middleware
 	var Session = require('express-session'),
     SessionStore = require('session-file-store')(Session);
-	var session = Session({ secret: 'pass', resave: true, saveUninitialized: true });
+	var one_month = (30 * 86400 * 1000);
+	var session = Session({ secret: 'pass', resave: true, saveUninitialized: true, cookie: { expires: new Date(Date.now() + one_month) }} ); 
 
 	// creating new express app
 	var express = require('express');
@@ -130,7 +131,7 @@ function newUid() {
 			for (i = 1; i < socket.rooms.length; i++) { //first room is clients own little private room so we start at 1
 				var room = socket.rooms[i];
 
-				if (room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id]) {
+				if (room_data[room] && room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id]) {
 					if (room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count == 1) {
 						socket.broadcast.to(room).emit('remove_user', socket.handshake.sessionStore[socket.handshake.sessionID].user.id);
 						delete room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id];
@@ -186,6 +187,7 @@ function newUid() {
 		socket.on('update_user', function(room, user) {
 			if (room_data[room] && room_data[room].userlist) {
 				room_data[room].userlist[user.id] = user;
+				socket.handshake.sessionStore[id_session_map[user.id]].user = user;
 				if (user.role) {
 					socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room] = user.role;
 				} else if (socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room]) {

@@ -76,6 +76,7 @@ function createColorFilterRgb(R, G, B) {
 		0, 0, B, 0, 0,
 		0, 0, 0, 1, 0
 	]
+	console.log(filter.matrix)
 	return filter;
 }
 
@@ -756,15 +757,44 @@ function create_entity(entity) {
 	}
 }
 
+function update_username(name) {
+	if (name != "" && name != my_user.name) {
+		my_user.name = name;
+		socket.emit("update_user", room, my_user);
+	}
+	input_node = $("#"+my_user.id).find("input");
+	input_node.attr('placeholder',my_user.name);
+	input_node.val("");
+}
+
+
 function add_user(user) {
 	if (user.id in userlist) {
 		var node = $("#"+user.id);
-		node.text(user.name);
-		node.attr('id', user.id);
+		if (user.id == my_user.id) {
+			node.find('input').attr('placeholder', user.name);
+		} else {
+			node.text(user.name);
+		}
 	} else {	
-		var node = "<button class='btn' data-toggle='button' id='" + user.id + "'>" + user.name + "</button>";
-		$('button', node).attr('id', user.id);  // set the attribute 
-		$("#userlist").append(node);
+		if (user.id == my_user.id) {
+			var node = "<div class='btn' style='text-align:left;' id='" + user.id + "'><input type='text' placeholder='"+ user.name + "'></div>";
+			$("#userlist").prepend(node);
+			input_node = $("#userlist").find("input");
+			input_node.on('blur', function() {
+				update_username(this.value); //update username when field loses focus
+			});
+			input_node.onkeypress = function(e) {
+				if (!e) e = window.event;
+					var keyCode = e.keyCode || e.which;
+					if (keyCode == '13') { //update username when enter is pressed
+						update_username(this.value);
+					}
+			}
+		} else { 
+			var node = "<button class='btn' style='text-align:left;' id='" + user.id + "'>" + user.name + "</button>";
+			$("#userlist").append(node);
+		}
 	}
 	userlist[user.id] = user;
 	if (user.role) {
@@ -774,7 +804,7 @@ function add_user(user) {
 			$("#"+user.id).css('background-color','yellow');
 		}
 	} else {
-		$("#"+user.id).css('background-color','');
+		$("#"+user.id).css('background-color','#EEEEEE');
 	}
 	if (user.id == my_user.id) {
 		my_user = user;
@@ -789,6 +819,7 @@ function update_my_user() {
 		$("#login_dropdown").addClass("btn-success");
 		$("#sign_in_text").text("Hi " + my_user.name);
 	}
+	console.log(my_user)
 	if (!my_user.role) {
 		$('.left_column').hide();
 	} else {
@@ -906,6 +937,7 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 				$(this).css('background-color','');
 			}
 			socket.emit("update_user", room, userlist[id]);
+			return false;
 		});	
 		
 		$('#clear_all').click(function() {
@@ -1048,6 +1080,8 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 	});
 	
 	socket.on('identify', function(user) {
+		console.log("identify")
+		console.log(user)
 		my_user = user;
 		update_my_user();
 	});

@@ -8,6 +8,10 @@ body {
 	text-align:center;
 }
 
+button {
+   text-align: left;
+}
+
 .bottom {
 	padding-top: 30px;
 	padding-left: 30px;
