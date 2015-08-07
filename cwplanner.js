@@ -16,6 +16,7 @@ var icon_color = '#ff0000';
 var draw_color = '#ff0000';
 var ping_color = '#ff0000';
 var line_color = '#ff0000';
+var text_color = '#ffffff';
 var socket;
 var room;
 var background;
@@ -76,7 +77,6 @@ function createColorFilterRgb(R, G, B) {
 		0, 0, B, 0, 0,
 		0, 0, 0, 1, 0
 	]
-	console.log(filter.matrix)
 	return filter;
 }
 
@@ -230,7 +230,6 @@ function remove(uid) {
 			selected_entities.splice(i, 1);
 		}
 	}
-	console.log(selected_entities)
 	delete history[uid];	
 	renderer.render(stage);
 }
@@ -454,7 +453,7 @@ function on_text_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
 	var x = mouse_location.x/stage.width;
 	var y = mouse_location.y/stage.height;
-	var text = {uid:newUid(), type: 'text', x:x, y:y, color:icon_color, text:$('#text_tool_text').val()};
+	var text = {uid:newUid(), type: 'text', x:x, y:y, color:text_color, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
 	socket.emit('create_entity', room, text);
 	undo_list.push(text);
 	create_text(text);
@@ -511,19 +510,16 @@ objectContainer.interactive = true;
 objectContainer.on('mousedown', on_left_click)
 
 function create_text(text_entity) {
-	var size = ""+(stage.width/30)+"px Snippet";
-	var text = new PIXI.Text(text_entity.text, {font: size, fill: "white", align: "center"});	
+	var size = ""+text_entity.font_size*(stage.width/800)+"px " + text_entity.font;
+	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 0.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
 	text.x = text_entity.x * stage.width;
 	text.y = text_entity.y * stage.height;
-	text.hitArea = new PIXI.Rectangle(text.x, text.y, text.width, text.height);
 	
-	text_entity.container = new PIXI.Container();
-	text_entity.container.addChild(text);
-	text_entity.container.hitArea = new PIXI.Rectangle(text.x, text.y, text.width, text.height);
+	text_entity.container = text;
+	text.entity = text_entity;
 	
 	make_draggable(text_entity.container);	
 	objectContainer.addChild(text_entity.container);
-	text_entity.container.entity = text_entity;
 	renderer.render(stage);
 	
 	history[text_entity.uid] = text_entity;
@@ -548,8 +544,8 @@ function create_icon(icon) {
 		
 	if (icon.label != "") {
 		var size = ""+(stage.width/30)+"px Snippet";
-		var text = new PIXI.Text(icon.label, {font: size, fill: "white", align: "center"});		
-		text.x -= text.width/2;
+		var text = new PIXI.Text(icon.label, {font: size, fill: "white", align: "center", strokeThickness: 0.5, stroke: "black", dropShadow:true, dropShadowDistance:2});		
+		text.x -= text.width/2 - sprite.width/2;
 		text.y -= stage.height/22;
 		icon['container'].addChild(text);
 	}
@@ -819,7 +815,6 @@ function update_my_user() {
 		$("#login_dropdown").addClass("btn-success");
 		$("#sign_in_text").text("Hi " + my_user.name);
 	}
-	console.log(my_user)
 	if (!my_user.role) {
 		$('.left_column').hide();
 	} else {
@@ -872,6 +867,9 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		});
 		$('select[id="line_colorpicker"]').simplecolorpicker().on('change', function() {
 			line_color = $('select[id="line_colorpicker"]').val();
+		});
+		$('select[id="text_colorpicker"]').simplecolorpicker().on('change', function() {
+			text_color = $('select[id="text_colorpicker"]').val();
 		});
 
 		$("#chat_input").keyup(function (e) {
@@ -996,13 +994,6 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		});
 		
 		//sliders
-		var draw_thickness_slider = $("#draw_thickness").slider();
-		$("#draw_thickness_text").val(draw_thickness_slider.attr('value'));
-		draw_thickness = draw_thickness_slider.attr('value');
-		draw_thickness_slider.on("slide", function(slideEvt) {
-			$("#draw_thickness_text").val(slideEvt.value);
-			draw_thickness = slideEvt.value;
-		});
 		$("#line_thickness_text").change(function () {
 			var new_thickness = parseFloat(this.value); 
 			if (isNaN(new_thickness)) {
@@ -1019,6 +1010,14 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 			$("#line_thickness_text").val(slideEvt.value);
 			line_thickness = slideEvt.value;
 		});
+		
+		var draw_thickness_slider = $("#draw_thickness").slider();
+		$("#draw_thickness_text").val(draw_thickness_slider.attr('value'));
+		draw_thickness = draw_thickness_slider.attr('value');
+		draw_thickness_slider.on("slide", function(slideEvt) {
+			$("#draw_thickness_text").val(slideEvt.value);
+			draw_thickness = slideEvt.value;
+		});
 		$("#draw_thickness_text").change(function () {
 			var new_thickness = parseFloat(this.value); 
 			if (isNaN(new_thickness)) {
@@ -1026,6 +1025,23 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 			} else {
 				draw_thickness = new_thickness;
 				draw_thickness_slider.slider('setValue', draw_thickness)
+			}
+		});
+		
+		var font_size_slider = $("#font_size_slider").slider();
+		$("#font_size_text").val(font_size_slider.attr('value'));
+		font_size = font_size_slider.attr('value');
+		font_size_slider.on("slide", function(slideEvt) {
+			$("#font_size_text").val(slideEvt.value);
+			font_size = slideEvt.value;
+		});
+		$("#font_size_text").change(function () {
+			var new_font_size = parseFloat(this.value); 
+			if (isNaN(new_font_size)) {
+				this.value = font_size;
+			} else {
+				font_size = new_font_size;
+				font_size_slider.slider('setValue', font_size)
 			}
 		});
 		
@@ -1080,8 +1096,6 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 	});
 	
 	socket.on('identify', function(user) {
-		console.log("identify")
-		console.log(user)
 		my_user = user;
 		update_my_user();
 	});
