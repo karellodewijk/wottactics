@@ -59,34 +59,6 @@ window.onresize = function() {
 	renderer.render(stage);
 };
 
-function hex2rgb(hex) {
-    if (hex.lastIndexOf('#') > -1) {
-        hex = hex.replace(/#/, '0x');
-    } else {
-        hex = '0x' + hex;
-    }
-    var r = hex >> 16;
-    var g = (hex & 0x00FF00) >> 8;
-    var b = hex & 0x0000FF;
-    return [r/255, g/255, b/255];
-};
-
-function createColorFilterRgb(R, G, B) {
-	var filter = new PIXI.filters.ColorMatrixFilter();
-	filter.matrix = [
-		R, 0, 0, 0, 0,
-		0, G, 0, 0, 0,
-		0, 0, B, 0, 0,
-		0, 0, 0, 1, 0
-	]
-	return filter;
-}
-
-function createColorFilterHex(hex) {
-	var rgb = hex2rgb(hex);
-	return createColorFilterRgb(rgb[0], rgb[1], rgb[2]);
-}
-
 function set_background(new_background) {
 	if (background) {
 		remove(background.uid);
@@ -240,8 +212,7 @@ function ping(x, y, color) {
 	var texture = PIXI.Texture.fromImage('http://'+location.host+'/icons/circle.png');
 	var sprite = new PIXI.Sprite(texture);
 
-	var colorFilter = createColorFilterHex(color);
-	sprite.filters = [colorFilter];
+	sprite.tint = color.replace(/#/, '0x');
 
 	sprite.anchor.set(0.5);
 	sprite.scale.x = stage.width/3000;
@@ -331,7 +302,7 @@ function on_left_click(event) {
 function on_ping_move() {
 	var time = new Date();
 	var timeDiff = time - last_ping_time;
-	if (timeDiff > 200) {
+	if (timeDiff > 120) {
 		var mouse_location = renderer.plugins.interaction.mouse.global;
 		ping(mouse_location.x/stage.width, mouse_location.y/stage.height, ping_color);
 		socket.emit("ping", room, mouse_location.x/stage.width, mouse_location.y/stage.height, ping_color);
@@ -533,10 +504,9 @@ function create_icon(icon) {
 	counter.text((parseInt(counter.text())+1).toString());
 	counter = $("#icon_counter");
 	counter.text((parseInt(counter.text())+1).toString());
-	var colorFilter = createColorFilterHex(icon.color);
 	var texture = PIXI.Texture.fromImage('http://'+location.host+'/icons/'+ icon.tank +'.png');
 	var sprite = new PIXI.Sprite(texture);
-	sprite.filters = [colorFilter];
+	sprite.tint = icon.color.replace(/#/, '0x');
 	sprite.anchor.x = 0.5;
 	sprite.anchor.y = 0.5;
 	
