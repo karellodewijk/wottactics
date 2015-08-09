@@ -12,6 +12,14 @@ button {
    text-align: left;
 }
 
+.popover-medium {
+	padding:0px !important; 
+}
+
+.select_tactic_button {
+	min-height:37px;
+}
+
 .bottom {
 	padding-top: 30px;
 	padding-left: 30px;

@@ -27,9 +27,27 @@ function newUid() {
 	// attaching express app to HTTP server
 	var http = require('http');
 	var server = http.createServer(app);
-	server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000);
-	//server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
 	
+	//load mongodb
+	var connection_string;
+	if (process.env.OPENSHIFT_NODEJS_PORT) {
+		server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
+		connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ":" +
+		process.env.OPENSHIFT_MONGODB_DB_PASSWORD + "@" +
+		process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
+		process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
+		process.env.OPENSHIFT_APP_NAME;
+	} else {
+		server.listen(8000);
+		connection_string = '127.0.0.1:27017/wottactics';
+	}
+
+	var MongoClient = require('mongodb').MongoClient; var db;
+	MongoClient.connect('mongodb://'+connection_string, function(err, mongodb) {
+	  if(err) throw err;
+	  db = mongodb;
+	});
+
 	// creating new socket.io app
 	var ios = require('socket.io-express-session');	
 	io = require('socket.io').listen(server);
@@ -44,7 +62,7 @@ function newUid() {
 		false, // Use stateless verification
 		false, // Strict mode
 		[]); // List of extensions to enable and include
-	
+
 	
 	io.sockets.on('connection', function(socket) { 
 		if (!socket.handshake.sessionStore[socket.handshake.sessionID]) {
@@ -61,10 +79,32 @@ function newUid() {
 		
 		socket.emit("identify", socket.handshake.sessionStore[socket.handshake.sessionID].user);
 		
-		socket.on('request_room', function() {
+		socket.on('request_room', function(name) {
 			var room_uid = newUid();
 			var link = "cwplanner.html?room="+room_uid;
-			socket.emit("approve_room", link);
+			if (name) {
+				var identity = socket.handshake.sessionStore[socket.handshake.sessionID].user.identity;
+				if (identity) {
+					var collection = db.collection(identity);
+					var tactics = collection.findOne({name:name}, function(err, result) {
+						if (!err) { 
+							room_data[room_uid] = {};
+							room_data[room_uid].history = result.history;
+							room_data[room_uid].userlist = {};
+							room_data[room_uid].locked = true;
+							room_data[room_uid].name = name;
+							socket.emit("approve_room", link);
+							setTimeout( function() { //just in case nobody joins it
+								if (!io.sockets.adapter.rooms[room_uid]) {	
+									delete room_data[room_uid];
+								}
+							}, 60000);
+						}
+					});
+				}
+			} else {
+				socket.emit("approve_room", link);
+			}
 		});
 
 		socket.on('login', function(identifier, url) {
@@ -99,16 +139,16 @@ function newUid() {
 				room_data[room] = {};
 				room_data[room].history = {};
 				room_data[room].userlist = {};
-				new_room = true;
+				room_data[room].locked = true;
 			}
-			
+
 			if (room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id]) {
 				//a user is already connected to this room in probably another tab, just increase a counter
 				room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count++;
  			} else {
 				room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id] = socket.handshake.sessionStore[socket.handshake.sessionID].user;
 				room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count = 1;
-				if (new_room) {
+				if (!io.sockets.adapter.rooms[room] || Object.keys(io.sockets.adapter.rooms[room]).length == 0) { //no users
 					//we should make the first client the owner
 					room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].role = "owner";
 					socket.handshake.sessionStore[socket.handshake.sessionID].user.rooms[room] = "owner";
@@ -164,7 +204,6 @@ function newUid() {
 			if (room_data[room] && room_data[room].history[uid]) {
 				room_data[room].history[uid].x = x;
 				room_data[room].history[uid].y = y;
-				//console.log("receiving drag");
 				socket.broadcast.to(room).emit('drag', uid, x, y);
 			}
 		});
@@ -194,6 +233,46 @@ function newUid() {
 					delete socket.handshake.sessionStore[id_session_map[user.id]].user.rooms[room];
 				}
 				socket.broadcast.to(room).emit('add_user', user);
+			}
+		});
+
+		socket.on('lock_room', function(room, is_locked) {
+			if (room_data[room]) {
+				room_data[room].locked = is_locked;
+				socket.broadcast.to(room).emit('lock_room', is_locked);
+			}
+		});
+
+		socket.on('store', function(room, name) {
+			user = socket.handshake.sessionStore[socket.handshake.sessionID].user;
+			if (room_data[room] && user.identity) { //room exists, user is logged in
+				var collection = db.collection(user.identity);
+				room_data[room].name = name;
+				collection.update({name:name}, {name:name, history:room_data[room].history, date:Date.now()}, {upsert: true});
+			}
+		});
+		
+		socket.on('request_tactics', function() {
+			var identity = socket.handshake.sessionStore[socket.handshake.sessionID].user.identity;
+			if (identity) {
+				var collection = db.collection(identity);
+				var name_list = []
+				var tactics = collection.find({}, {"sort" : [['date', 'desc']], name:1, date:1});
+				tactics.each(function (err, tactic) {			
+					if (tactic) {
+						name_list.push([tactic.name, tactic.date]);
+					} else {
+						socket.emit("list_tactics", name_list);
+					}
+				})
+			}
+		});
+
+		socket.on('delete_tactic', function(name) {
+			var identity = socket.handshake.sessionStore[socket.handshake.sessionID].user.identity;
+			if (identity) {
+				var collection = db.collection(identity);
+				var tactics = collection.remove({name:name});
 			}
 		});
 		

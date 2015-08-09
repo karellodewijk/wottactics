@@ -25,6 +25,8 @@ var line_thickness;
 var my_user;
 var undo_list = [];
 var redo_list = [];
+var is_room_locked;
+var tactic_name = "";
 
 var shifted; //need to know if the shift key is pressed
 $(document).on('keyup keydown', function(e) {
@@ -290,7 +292,7 @@ function on_left_click(event) {
 		this.mouseup = on_draw_end;
 		this.mouseupoutside = on_draw_end;
 		this.mousemove = on_draw_move;
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_location.x/stage.width, y:mouse_location.y/stage.height, color:parseInt('0x'+draw_color.substring(1)), thickness:parseFloat(draw_thickness), path:[]};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_location.x/stage.width, y:mouse_location.y/stage.height, scale:1,color:parseInt('0x'+draw_color.substring(1)), alpha:1, thickness:parseFloat(draw_thickness), path:[]};
 		graphics = new PIXI.Graphics();
 		graphics.lineStyle(new_drawing.thickness * (stage.width/500), parseInt('0x'+draw_color.substring(1)), 1);
 		graphics.moveTo(mouse_location.x, mouse_location.y);
@@ -299,7 +301,7 @@ function on_left_click(event) {
 		this.mouseup = on_line_end;
 		this.mouseupoutside = on_line_end;
 		this.mousemove = on_line_move;
-		new_drawing = {uid : newUid(), type: 'line', x:mouse_location.x/stage.width, y:mouse_location.y/stage.height, color:parseInt('0x'+line_color.substring(1)), thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
+		new_drawing = {uid : newUid(), type: 'line', x:mouse_location.x/stage.width, y:mouse_location.y/stage.height,  scale:1, color:parseInt('0x'+line_color.substring(1)), alpha:1, thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
 		graphics = new PIXI.Graphics();
 		graphics.lineStyle(new_drawing.thickness * (stage.width/500), parseInt('0x'+line_color.substring(1)), 1);
 		graphics.moveTo(mouse_location.x, mouse_location.y);
@@ -441,7 +443,7 @@ function on_icon_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	var x = mouse_location.x/stage.width;
 	var y = mouse_location.y/stage.height;
-	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, color:icon_color, label:$('#icon_label').val()}
+	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:1, color:icon_color, alpha:1, label:$('#icon_label').val()}
 	socket.emit('create_entity', room, icon);
 	undo_list.push(icon);
 	create_icon(icon);
@@ -453,7 +455,7 @@ function on_text_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
 	var x = mouse_location.x/stage.width;
 	var y = mouse_location.y/stage.height;
-	var text = {uid:newUid(), type: 'text', x:x, y:y, color:text_color, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
+	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
 	socket.emit('create_entity', room, text);
 	undo_list.push(text);
 	create_text(text);
@@ -517,6 +519,7 @@ function create_text(text_entity) {
 	
 	text_entity.container = text;
 	text.entity = text_entity;
+	text_entity.container.alpha = text_entity.alpha;
 	
 	make_draggable(text_entity.container);	
 	objectContainer.addChild(text_entity.container);
@@ -534,25 +537,29 @@ function create_icon(icon) {
 	var texture = PIXI.Texture.fromImage('http://'+location.host+'/icons/'+ icon.tank +'.png');
 	var sprite = new PIXI.Sprite(texture);
 	sprite.filters = [colorFilter];
+	sprite.anchor.x = 0.5;
+	sprite.anchor.y = 0.5;
 	
-	icon['container'] = new PIXI.Container();
-	icon['container'].x = stage.width*icon.x;
-	icon['container'].y = stage.height*icon.y;
+	icon.container = new PIXI.Container();
+	icon.container.x = stage.width*icon.x;
+	icon.container.y = stage.height*icon.y;
 	
 	sprite.width = stage.width/35;
 	sprite.height = stage.height/35;
 		
 	if (icon.label != "") {
 		var size = ""+(stage.width/30)+"px Snippet";
-		var text = new PIXI.Text(icon.label, {font: size, fill: "white", align: "center", strokeThickness: 0.5, stroke: "black", dropShadow:true, dropShadowDistance:2});		
+		var text = new PIXI.Text(icon.label, {font: size, fill: "white", align: "center", strokeThickness: 0.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
 		text.x -= text.width/2 - sprite.width/2;
 		text.y -= stage.height/22;
 		icon['container'].addChild(text);
 	}
 
-	icon['container'].addChild(sprite);
-	icon['container'].pivot = sprite.position;
-	icon['container'].entity = icon; 
+	icon.container.addChild(sprite);
+	icon.container.pivot = sprite.position;
+	icon.container.entity = icon; 
+	icon.container.entity
+	icon.container.alpha = icon.alpha;
 	
 	make_draggable(icon['container']);	
 
@@ -730,6 +737,7 @@ function create_drawing(drawing) {
 	sprite.x = box.x;
 	sprite.y = box.y;
 	drawing.container = sprite;
+	drawing.container.alpha = drawing.alpha;
 
 	sprite.texture.baseTexture.source.src = drawing.uid;
 	make_draggable(drawing.container);
@@ -762,7 +770,6 @@ function update_username(name) {
 	input_node.attr('placeholder',my_user.name);
 	input_node.val("");
 }
-
 
 function add_user(user) {
 	if (user.id in userlist) {
@@ -814,11 +821,44 @@ function update_my_user() {
 		$("#login_dropdown").removeClass("btn-warning");
 		$("#login_dropdown").addClass("btn-success");
 		$("#sign_in_text").text("Hi " + my_user.name);
-	}
+	}	
 	if (!my_user.role) {
 		$('.left_column').hide();
 	} else {
 		$('.left_column').show();
+	}
+	if (my_user.identity) { //logged in
+		$("#save_as").show();
+		if (tactic_name && tactic_name != "") {
+			$("#save").show();
+		}
+	} else {
+		$("#save_as").hide();
+		$("#save").hide();
+	}
+	update_lock();
+}
+
+function update_lock() {
+	var node = $('#lock').find('img');
+	var path = node.attr('src').substring(0, node.attr('src').lastIndexOf("/"));
+	
+	if (is_room_locked) {
+		node.attr('src', path + "/lock.png");
+	} else {
+		node.attr('src', path + "/unlock.png");
+	}
+	
+	if (is_room_locked && !my_user.role) {
+		$('.left_column').hide();
+	} else {
+		$('.left_column').show();
+	}
+	
+	if (my_user.role == "owner") {
+		$('#lock').show();
+	} else {
+		$('#lock').hide();
 	}
 }
 
@@ -842,6 +882,35 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 	socket = io.connect('http://'+location.hostname+':8000');
 
 	$(document).ready(function() {
+			
+		$('[data-toggle="popover"]').popover({
+			container: 'body',
+			html: 'true',
+			template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+			content: function() {
+				return $('#popover-content');
+			}
+		});
+
+		$(document).on('click', '#store_tactic', function(){
+			var name = $(document).find('#tactic_name')[0].value;
+			$('#save_as').popover('hide');
+			if (name == "") {
+				alert("Empty name");
+			} else {
+				tactic_name = name;
+				socket.emit("store", room, name);
+				$("#save").show();
+				alert("Tactic stored as: " + name);
+			}
+		});	
+
+		$('#save').click(function() { 
+			if (tactic_name && tactic_name != "") {
+				socket.emit("store", room, tactic_name);
+			}
+		});
+	  
 		room = location.search.split('room=')[1].split("&")[0];
 		socket.emit('join_room', room);
 		
@@ -850,6 +919,8 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		$('#remove_context').hide();
 		$('#text_context').hide();
 		$('#line_context').hide();
+		$("#save_as").hide();
+		$("#save").hide();
 		$('#ping').addClass('active');
 		$('#arty').addClass('selected');
 		$('#full_line').addClass('active');
@@ -879,6 +950,18 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 				chat(message);
 				$("#chat_input").val("");
 			}
+		});
+		
+		$('#lock').click(function () {
+			var node = $(this).find('img');
+			var file = node.attr('src').substring(node.attr('src').lastIndexOf("/")+1);
+			if (file == "lock.png") {
+				is_room_locked = false;				
+			} else {
+				is_room_locked = true;
+			}
+			update_lock();
+			socket.emit("lock_room", room, is_room_locked);
 		});
 
 		//tool select
@@ -1066,13 +1149,18 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 	});
 	
 	socket.on('room_data', function(room_data, my_id) {
+		is_room_locked = room_data.locked;
 		my_user_id = my_id;
+		if (room_data.name) {
+			tactic_name = room_data.name;
+		}
 		for (var user in room_data.userlist) {
 			add_user(room_data.userlist[user]);
 		}
 		for (var key in room_data.history) {
 			create_entity(room_data.history[key]);
 		}
+		update_my_user();
 	});
 
 	socket.on('create_entity', function(entity) {
@@ -1114,6 +1202,11 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 
 	socket.on('update_user', function(user) {
 		update_user(user);
+	});
+
+	socket.on('lock_room', function(is_locked) {
+		is_room_locked = is_locked;
+		update_lock();
 	});
 	
 });

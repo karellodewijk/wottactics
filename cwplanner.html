@@ -29,6 +29,19 @@
 				<div class="navbar-header">
 					<a class="navbar-brand">WOT Tactics</a>
 				</div>
+				<div class="navbar-form navbar-left dropdown">
+				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="Store your tactic">
+					<img src="http://karellodewijk.github.io/icons/save.png">
+				</a>
+				<a id="save_as" href="javascript:void(0)" class="btn btn-default" data-placement="bottom"
+				data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default btn-xs'>Store</button>">
+					<img data-toggle="tooltip" title="Store your tactic" src="http://karellodewijk.github.io/icons/save_as.png">
+				</a>
+
+				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="Locks/unlocks edit mode for all users">
+					<img src="http://karellodewijk.github.io/icons/lock.png">
+				</button>
+				</div>
 				<div class="navbar-form navbar-right dropdown">
 					<div class="dropdown">
 						<button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="login_dropdown">
