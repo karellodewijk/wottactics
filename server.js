@@ -87,7 +87,7 @@ function newUid() {
 				if (identity) {
 					var collection = db.collection(identity);
 					var tactics = collection.findOne({name:name}, function(err, result) {
-						if (!err) { 
+						if (!err && result) { 
 							room_data[room_uid] = {};
 							room_data[room_uid].history = result.history;
 							room_data[room_uid].userlist = {};

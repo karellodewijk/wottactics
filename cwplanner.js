@@ -613,7 +613,7 @@ function draw_arrow(graphic, a, b) {
 	size = Math.sqrt(x_2*x_2 + y_2*y_2);
 	x_2 = x_2/size;
 	y_2 = y_2/size;	
-	var scale = (stage.width/20);
+	var scale = (stage.width/35);
 	graphic.moveTo(b[0], b[1]);	
 	graphic.lineTo(b[0] + x_1 * scale, b[1] + y_1 * scale);
 	graphic.moveTo(b[0], b[1]);
