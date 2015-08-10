@@ -27,18 +27,23 @@ var undo_list = [];
 var redo_list = [];
 var is_room_locked;
 var tactic_name = "";
+var graphics;
+var new_drawing;
+var select_origin;
+var selected_entities = [];
+var label_font_size = 30;
 
 var shifted; //need to know if the shift key is pressed
 $(document).on('keyup keydown', function(e) {
 	shifted = e.shiftKey;
-	if (!shifted && active_context == "line_context") {
-		on_draw_end();
+	if (!shifted && active_context == "line_context" && new_drawing) {
+		on_line_end();
 	}
 });
 
 var border = 30;
 var size = Math.min(window.innerHeight, window.innerWidth) - border;
-var renderer = PIXI.autoDetectRenderer(size, size,{backgroundColor : 0xBBBBBB});
+var renderer = new PIXI.autoDetectRenderer(size, size,{backgroundColor : 0xBBBBBB});
 var useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
 // create the root of the scene graph
@@ -244,11 +249,6 @@ function fade(sprite, steps, alpha) {
 	}, 50);	
 }
 
-var graphics;
-var new_drawing;
-var select_origin;
-var selected_entities = [];
-
 function deselect_all() {
 	for (entity in selected_entities) {
 		selected_entities[entity].container.filters = undefined;
@@ -269,14 +269,16 @@ function on_left_click(event) {
 		graphics.moveTo(mouse_location.x, mouse_location.y);
 		objectContainer.addChild(graphics);
 	} else if (active_context == 'line_context') {
-		this.mouseup = on_line_end;
-		this.mouseupoutside = on_line_end;
-		this.mousemove = on_line_move;
-		new_drawing = {uid : newUid(), type: 'line', x:mouse_location.x/stage.width, y:mouse_location.y/stage.height,  scale:1, color:parseInt('0x'+line_color.substring(1)), alpha:1, thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
-		graphics = new PIXI.Graphics();
-		graphics.lineStyle(new_drawing.thickness * (stage.width/500), parseInt('0x'+line_color.substring(1)), 1);
-		graphics.moveTo(mouse_location.x, mouse_location.y);
-		objectContainer.addChild(graphics);
+		if (!new_drawing) {
+			this.mouseup = on_line_end;
+			this.mouseupoutside = on_line_end;
+			this.mousemove = on_line_move;
+			new_drawing = {uid : newUid(), type: 'line', x:mouse_location.x/stage.width, y:mouse_location.y/stage.height,  scale:1, color:parseInt('0x'+line_color.substring(1)), alpha:1, thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
+			graphics = new PIXI.Graphics();
+			graphics.lineStyle(new_drawing.thickness * (stage.width/500), parseInt('0x'+line_color.substring(1)), 1);
+			graphics.moveTo(mouse_location.x, mouse_location.y);
+			objectContainer.addChild(graphics);
+		}
 	} else if (active_context == 'icon_context') {
 		this.mouseup = on_icon_end;
 		this.mouseupoutside = on_icon_end;
@@ -414,7 +416,7 @@ function on_icon_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	var x = mouse_location.x/stage.width;
 	var y = mouse_location.y/stage.height;
-	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:1, color:icon_color, alpha:1, label:$('#icon_label').val()}
+	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:1, color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Arial"}
 	socket.emit('create_entity', room, icon);
 	undo_list.push(icon);
 	create_icon(icon);
@@ -433,12 +435,12 @@ function on_text_end() {
 }
 
 function on_line_end() {
-	this.mouseup = undefined;
-	this.mouseupoutside = undefined;
-	this.mousemove = undefined;
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
 	new_drawing.path.push([mouse_location.x/stage.width - new_drawing.x, mouse_location.y/stage.height - new_drawing.y]);			
 	if (!shifted) {
+		objectContainer.mouseup = undefined;
+		objectContainer.mouseupoutside = undefined;
+		objectContainer.mousemove = undefined;
 		//checks against an edge case where you haven't moved since the last registered point
 		//2 identical points at the end really screws up the math
 		if (new_drawing.path.length > 1 
@@ -455,7 +457,8 @@ function on_line_end() {
 		graphics = null;
 	} else {
 		var graphic = new PIXI.Graphics();
-		graphic.lineStyle(new_drawing.thickness * (stage.width/500), new_drawing.color, 1);
+		//graphic.lineStyle(new_drawing.thickness * (stage.width/500), new_drawing.color, 1);
+		graphic.lineStyle(new_drawing.thickness * (stage.width/500), parseInt('0x'+line_color.substring(1)), 1);
 		
 		var a;
 		if (new_drawing.path.length == 1) {
@@ -475,7 +478,7 @@ function on_line_end() {
 		}
 
 		graphics.addChild(graphic);
-		renderer.render(stage);				
+		renderer.render(stage);
 	}
 }
 
@@ -484,7 +487,7 @@ objectContainer.on('mousedown', on_left_click)
 
 function create_text(text_entity) {
 	var size = ""+text_entity.font_size*(stage.width/800)+"px " + text_entity.font;
-	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 0.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
+	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
 	text.x = text_entity.x * stage.width;
 	text.y = text_entity.y * stage.height;
 	
@@ -518,10 +521,9 @@ function create_icon(icon) {
 	sprite.height = stage.height/35;
 		
 	if (icon.label != "") {
-		var size = ""+(stage.width/30)+"px Snippet";
-		var text = new PIXI.Text(icon.label, {font: size, fill: "white", align: "center", strokeThickness: 0.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
-		text.x -= text.width/2 - sprite.width/2;
-		text.y -= stage.height/22;
+		var size = ""+icon.label_font_size*(stage.width/1000)+"px " + icon.label_font;
+		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1, stroke: "black", dropShadow:true, dropShadowDistance:1});		
+		text.x -= text.width/2;
 		icon['container'].addChild(text);
 	}
 
@@ -565,6 +567,7 @@ function draw_dotted_line(graphic, x0, y0, x1, y1) {
 		graphic.moveTo(x0 + i*x_diff, y0 + i*y_diff);
 	}
 	graphic.lineTo(x0 + size*x_diff, y0 + size*y_diff);
+	graphic.moveTo(x0 + size*x_diff, y0 + size*y_diff);
 }
 
 function draw_arrow(graphic, a, b) {
@@ -699,6 +702,8 @@ function create_drawing(drawing) {
 			     (drawing.y + drawing.path[drawing.path.length-1][1]) * stage.height];
 		draw_arrow(graphic, a, b);
 	}
+	
+	graphic.graphicsData[0].shape.closed = false;
 	
 	var texture = graphic.generateTexture();
 	var sprite = new PIXI.Sprite(texture);
@@ -846,6 +851,25 @@ function chat(message) {
 function isIE(userAgent) {
   userAgent = userAgent || navigator.userAgent;
   return userAgent.indexOf("MSIE ") > -1 || userAgent.indexOf("Trident/") > -1;
+}
+
+function initialize_slider(slider_id, slider_text_id, variable_name) {
+	var slider = $("#"+ slider_id).slider();
+	$("#"+slider_text_id).val(slider.attr('value'));
+	window[variable_name] = slider.attr('value');
+	slider.on("slide", function(slideEvt) {
+		$("#"+slider_text_id).val(slideEvt.value);
+		window[variable_name] = slideEvt.value;
+	});
+	$("#"+slider_text_id).change(function () {
+		var new_value = parseFloat(this.value); 
+		if (isNaN(new_value)) {
+			this.value = window[variable_name]; //restore old value
+		} else {
+			window[variable_name] = new_font_size;
+			slider.slider('setValue', window[variable_name])
+		}
+	});
 }
 
 $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function() {
@@ -1046,57 +1070,11 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 			selected_entities = [];
 		});
 		
-		//sliders
-		$("#line_thickness_text").change(function () {
-			var new_thickness = parseFloat(this.value); 
-			if (isNaN(new_thickness)) {
-				this.value = draw_thickness;
-			} else {
-				line_thickness = new_thickness;
-				line_thickness_slider.slider('setValue', line_thickness)
-			}
-		});
-		var line_thickness_slider = $("#line_thickness").slider();
-		$("#line_thickness_text").val(line_thickness_slider.attr('value'));
-		line_thickness = line_thickness_slider.attr('value');
-		line_thickness_slider.on("slide", function(slideEvt) {
-			$("#line_thickness_text").val(slideEvt.value);
-			line_thickness = slideEvt.value;
-		});
-		
-		var draw_thickness_slider = $("#draw_thickness").slider();
-		$("#draw_thickness_text").val(draw_thickness_slider.attr('value'));
-		draw_thickness = draw_thickness_slider.attr('value');
-		draw_thickness_slider.on("slide", function(slideEvt) {
-			$("#draw_thickness_text").val(slideEvt.value);
-			draw_thickness = slideEvt.value;
-		});
-		$("#draw_thickness_text").change(function () {
-			var new_thickness = parseFloat(this.value); 
-			if (isNaN(new_thickness)) {
-				this.value = draw_thickness;
-			} else {
-				draw_thickness = new_thickness;
-				draw_thickness_slider.slider('setValue', draw_thickness)
-			}
-		});
-		
-		var font_size_slider = $("#font_size_slider").slider();
-		$("#font_size_text").val(font_size_slider.attr('value'));
-		font_size = font_size_slider.attr('value');
-		font_size_slider.on("slide", function(slideEvt) {
-			$("#font_size_text").val(slideEvt.value);
-			font_size = slideEvt.value;
-		});
-		$("#font_size_text").change(function () {
-			var new_font_size = parseFloat(this.value); 
-			if (isNaN(new_font_size)) {
-				this.value = font_size;
-			} else {
-				font_size = new_font_size;
-				font_size_slider.slider('setValue', font_size)
-			}
-		});
+		initialize_slider("line_thickness", "line_thickness_text", "line_thickness");
+		initialize_slider("line_thickness", "line_thickness_text", "line_thickness");
+		initialize_slider("draw_thickness", "draw_thickness_text", "draw_thickness");
+		initialize_slider("font_size", "font_size_text", "font_size");
+		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		
 		//tank icon select
 		$('.tank_select').click(function() {

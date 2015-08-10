@@ -194,7 +194,7 @@ function newUid() {
 		}
 		
 		socket.on('create_entity', function(room, entity) {
-			if (room_data[room]) {
+			if (room_data[room] && entity) {
 				room_data[room].history[entity.uid] = entity;
 				socket.broadcast.to(room).emit('create_entity', entity);
 			}
