@@ -490,8 +490,8 @@ objectContainer.interactive = true;
 objectContainer.on('mousedown', on_left_click)
 
 function create_text(text_entity) {
-	var size = ""+text_entity.font_size*(stage.width/800)+"px " + text_entity.font;
-	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 2, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
+	var size = "bold "+text_entity.font_size*(stage.width/800)+"px " + text_entity.font;
+	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
 	text.x = text_entity.x * stage.width;
 	text.y = text_entity.y * stage.height;
 	
@@ -525,8 +525,8 @@ function create_icon(icon) {
 	sprite.height = stage.height/35;
 		
 	if (icon.label != "") {
-		var size = ""+icon.label_font_size*(stage.width/1000)+"px " + icon.label_font;
-		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 2, stroke: "black", dropShadow:true, dropShadowDistance:1});		
+		var size = "bold "+icon.label_font_size*(stage.width/800)+"px " + icon.label_font;
+		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
 		text.x -= text.width/2;
 		text.y += (1/3)*sprite.width/2;
 		icon['container'].addChild(text);
@@ -961,6 +961,28 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 				socket.emit("chat", room, message);
 				chat(message);
 				$("#chat_input").val("");
+			}
+		});
+
+		$('#export').click(function () {
+			renderer.render(stage);	
+			var data = renderer.view.toDataURL("image/jpeg", 0.6);			
+			if (isIE()) {
+				var win=window.open();
+				win.document.write("<img src='" + data + "'/>");
+			} else {			
+				var link = document.createElement("a");
+				link.setAttribute("target","_blank");
+				if(Blob !== undefined) {
+					var blob = new Blob([data], {type: "image/jpeg"});
+					link.setAttribute("href", data);
+				} else {
+					link.setAttribute("href", data);
+				}
+				link.setAttribute("download", "map.jpg");
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
 			}
 		});
 		
