@@ -32,6 +32,7 @@ var new_drawing;
 var select_origin;
 var selected_entities = [];
 var label_font_size = 30;
+var last_ping_time;
 
 var shifted; //need to know if the shift key is pressed
 $(document).on('keyup keydown', function(e) {
@@ -41,6 +42,7 @@ $(document).on('keyup keydown', function(e) {
 	}
 });
 
+//start pixi renderer
 var border = 30;
 var size = Math.min(window.innerHeight, window.innerWidth) - border;
 var renderer = new PIXI.autoDetectRenderer(size, size,{backgroundColor : 0xBBBBBB});
@@ -51,12 +53,13 @@ var stage = new PIXI.Container();
 var objectContainer = new PIXI.Container();
 stage.addChild(objectContainer);
 
+//initialize background
 var background_sprite = new PIXI.Sprite();
 background_sprite.height = renderer.height;
 background_sprite.width = renderer.width;
 objectContainer.addChild(background_sprite);
 
-//automatically resize
+//resize the render window
 window.onresize = function() { 
 	size = Math.min(window.innerHeight, window.innerWidth) - border;
 	renderer.view.style.width = size + "px";
@@ -145,6 +148,7 @@ function onDragEnd() {
 	renderer.render(stage);
 }
 
+//move an entity but keep it within the bounds
 function move_entity(entity, delta_x, delta_y) {
 	var box = entity.container;
 	if (entity.container.x+delta_x < 0) {
@@ -256,7 +260,7 @@ function deselect_all() {
 	selected_entities = [];
 }
 
-var last_ping_time;
+//function fires when mouse is left clicked on the map and it isn't a drag
 function on_left_click(event) {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	if (active_context == 'draw_context') {	
@@ -362,30 +366,6 @@ function on_select_end() {
 	renderer.render(stage);
 }
 
-function on_line_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
-	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(new_drawing.thickness * (stage.width/500), new_drawing.color, 0.5);
-	var a;
-	if (new_drawing.path.length == 0) {
-		a = [new_drawing.x * stage.width, new_drawing.y * stage.height];
-	} else {
-		a = [(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x) * stage.width,
-			 (new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y) * stage.height];
-	}
-	b = [mouse_location.x, mouse_location.y];
-	graphic.moveTo(a[0], a[1]);		
-	graphic.lineTo(b[0], b[1]);
-
-	if (new_drawing.is_arrow) {
-		draw_arrow(graphic, a, b);
-	}
-
-	graphics.addChild(graphic);
-	renderer.render(stage);
-	graphics.removeChild(graphic);	
-}
-
 function on_draw_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	if (active_context == 'draw_context') {
@@ -432,6 +412,30 @@ function on_text_end() {
 	socket.emit('create_entity', room, text);
 	undo_list.push(text);
 	create_text(text);
+}
+
+function on_line_move() {
+	var mouse_location = renderer.plugins.interaction.mouse.global;
+	var graphic = new PIXI.Graphics();
+	graphic.lineStyle(new_drawing.thickness * (stage.width/500), new_drawing.color, 0.5);
+	var a;
+	if (new_drawing.path.length == 0) {
+		a = [new_drawing.x * stage.width, new_drawing.y * stage.height];
+	} else {
+		a = [(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x) * stage.width,
+			 (new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y) * stage.height];
+	}
+	b = [mouse_location.x, mouse_location.y];
+	graphic.moveTo(a[0], a[1]);		
+	graphic.lineTo(b[0], b[1]);
+
+	if (new_drawing.is_arrow) {
+		draw_arrow(graphic, a, b);
+	}
+
+	graphics.addChild(graphic);
+	renderer.render(stage);
+	graphics.removeChild(graphic);	
 }
 
 function on_line_end() {
@@ -487,7 +491,7 @@ objectContainer.on('mousedown', on_left_click)
 
 function create_text(text_entity) {
 	var size = ""+text_entity.font_size*(stage.width/800)+"px " + text_entity.font;
-	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
+	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 2, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
 	text.x = text_entity.x * stage.width;
 	text.y = text_entity.y * stage.height;
 	
@@ -522,8 +526,9 @@ function create_icon(icon) {
 		
 	if (icon.label != "") {
 		var size = ""+icon.label_font_size*(stage.width/1000)+"px " + icon.label_font;
-		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1, stroke: "black", dropShadow:true, dropShadowDistance:1});		
+		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 2, stroke: "black", dropShadow:true, dropShadowDistance:1});		
 		text.x -= text.width/2;
+		text.y += (1/3)*sprite.width/2;
 		icon['container'].addChild(text);
 	}
 
@@ -651,8 +656,8 @@ function computeControlPoints(K)
 function free_draw(graph, drawing) {
 	graph.endFill();
 	
-	var path_x = []; //[100,200,300,400];
-	var path_y = []; //[200,100,100,200];
+	var path_x = [];
+	var path_y = [];
 	
 	for (i = 0; i < drawing.path.length; i++) {
 		path_x.push((drawing.x + drawing.path[i][0])*stage.width);
@@ -791,6 +796,8 @@ function add_user(user) {
 	$("#user_count").text(Object.keys(userlist).length.toString());
 }
 
+//function should be called when anything about you as a user changes, it will update the interface
+//accordingly
 function update_my_user() {
 	if (my_user.identity) {
 		$("#login_dropdown").removeClass("btn-warning");
@@ -872,11 +879,33 @@ function initialize_slider(slider_id, slider_text_id, variable_name) {
 	});
 }
 
+//clear entities of a certain type from the map
+function clear(type) {
+	for (key in history) {
+		if (history[key] && history[key].type == type) {
+			remove(key);
+			socket.emit('remove', room, key);
+		}
+	} 			
+}
+
+//connect socket.io socket
 $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function() {
 	socket = io.connect('http://'+location.hostname+':8000');
 
 	$(document).ready(function() {
-			
+
+		$('#draw_context').hide();
+		$('#icon_context').hide();
+		$('#remove_context').hide();
+		$('#text_context').hide();
+		$('#line_context').hide();
+		$("#save_as").hide();
+		$("#save").hide();
+		$('#ping').addClass('active');
+		$('#arty').addClass('selected');
+		$('#full_line').addClass('active');
+	
 		$('[data-toggle="popover"]').popover({
 			container: 'body',
 			html: 'true',
@@ -907,17 +936,6 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 	  
 		room = location.search.split('room=')[1].split("&")[0];
 		socket.emit('join_room', room);
-		
-		$('#draw_context').hide();
-		$('#icon_context').hide();
-		$('#remove_context').hide();
-		$('#text_context').hide();
-		$('#line_context').hide();
-		$("#save_as").hide();
-		$("#save").hide();
-		$('#ping').addClass('active');
-		$('#arty').addClass('selected');
-		$('#full_line').addClass('active');
 		
 		
 		//color selections
@@ -1039,16 +1057,6 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 				window.history.replaceState("", "", location.pathname+"?room="+room); //rewrite url to make pretty
 			}
 		}
-			
-		
-		function clear(type) {
-			for (key in history) {
-				if (history[key] && history[key].type == type) {
-					remove(key);
-					socket.emit('remove', room, key);
-				}
-			} 			
-		}
 		
 		$('#clear_draw').click(function() {
 			clear("drawing");
@@ -1095,6 +1103,8 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 			} 
 		}
 	});
+	
+	//network data responses
 	
 	socket.on('room_data', function(room_data, my_id) {
 		is_room_locked = room_data.locked;
