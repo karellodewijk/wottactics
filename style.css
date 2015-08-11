@@ -89,7 +89,11 @@ button {
 
 .slider_text_input {
 	width: 30px;
-	height: 30px;
+	height: 25px;
+}
+
+h5 {
+	font-size:16px;
 }
 
 #ex1Slider .slider-selection {
