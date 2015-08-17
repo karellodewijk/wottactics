@@ -13,21 +13,25 @@ var active_context = 'ping_context';
 var history = {};
 var userlist = {};
 var selected_icon = 'arty';
-var icon_color = '#ff0000';
-var draw_color = '#ff0000';
-var ping_color = '#ff0000';
-var line_color = '#ff0000';
-var text_color = '#ffffff';
-var rectangle_outline_color = '#ff0000';
-var rectangle_fill_color = '#ff0000';
-var circle_outline_color = '#ff0000';
-var circle_fill_color = '#ff0000';
-var polygon_outline_color = '#ff0000';
-var polygon_fill_color = '#ff0000';
+var icon_color = 0xff0000;
+var draw_color = 0xff0000;
+var ping_color = 0xff0000;
+var line_color = 0xff0000;
+var curve_color = 0xff0000;
+var text_color = 0xffffff;
+var rectangle_outline_color = 0xff0000;
+var rectangle_fill_color = 0xff0000;
+var circle_outline_color = 0xff0000;
+var circle_fill_color = 0xff0000;
+var polygon_outline_color = 0xff0000;
+var polygon_fill_color = 0xff0000;
+var area_outline_color = 0xff0000;
+var area_fill_color = 0xff0000;
 var socket;
 var room;
 var background;
 var draw_thickness;
+var curve_thickness;
 var line_thickness;
 var rectangle_outline_thickness;
 var rectangle_outline_opacity;
@@ -38,6 +42,9 @@ var circle_fill_opacity;
 var polygon_outline_thickness;
 var polygon_outline_opacity;
 var polygon_fill_opacity;
+var area_outline_thickness;
+var area_outline_opacity;
+var area_fill_opacity;
 var my_user;
 var undo_list = [];
 var redo_list = [];
@@ -222,7 +229,7 @@ function ping(x, y, color) {
 	var texture = PIXI.Texture.fromImage('http://'+location.host+'/icons/circle.png');
 	var sprite = new PIXI.Sprite(texture);
 
-	sprite.tint = color.replace(/#/, '0x');
+	sprite.tint = color;
 	sprite.anchor.set(0.5);
 	sprite.scale.x = size_x/3000;
 	sprite.scale.y = size_x/3000;
@@ -267,9 +274,9 @@ function on_left_click(event) {
 		this.mouseup = on_draw_end;
 		this.mouseupoutside = on_draw_end;
 		this.mousemove = on_draw_move;
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_location.x/size_x, y:mouse_location.y/size_y, scale:1,color:parseInt('0x'+draw_color.substring(1)), alpha:1, thickness:parseFloat(draw_thickness), path:[]};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_location.x/size_x, y:mouse_location.y/size_y, scale:1,color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), path:[]};
 		graphics = new PIXI.Graphics();
-		graphics.lineStyle(new_drawing.thickness * (size_x/500), parseInt('0x'+draw_color.substring(1)), 1);
+		graphics.lineStyle(new_drawing.thickness * (size_x/500), draw_color, 1);
 		graphics.moveTo(mouse_location.x, mouse_location.y);
 		objectContainer.addChild(graphics);
 	} else if (active_context == 'line_context') {
@@ -277,11 +284,44 @@ function on_left_click(event) {
 			this.mouseup = on_line_end;
 			this.mouseupoutside = on_line_end;
 			this.mousemove = on_line_move;
-			new_drawing = {uid : newUid(), type: 'line', x:mouse_location.x/size_x, y:mouse_location.y/size_y,  scale:1, color:parseInt('0x'+line_color.substring(1)), alpha:1, thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
+			new_drawing = {uid : newUid(), type: 'line', x:mouse_location.x/size_x, y:mouse_location.y/size_y,  scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
 			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.thickness * (size_x/500), parseInt('0x'+line_color.substring(1)), 1);
+			graphics.lineStyle(new_drawing.thickness * (size_x/500), line_color, 1);
 			graphics.moveTo(mouse_location.x, mouse_location.y);
 			objectContainer.addChild(graphics);
+		}
+	} else if (active_context == 'polygon_context') {
+		if (!new_drawing) {
+			this.mouseup = on_polygon_end;
+			this.mouseupoutside = on_polygon_end;
+			this.mousemove = on_polygon_move;
+			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_location.x/size_x, y:mouse_location.y/size_y,scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[]};
+			graphics = new PIXI.Graphics();
+			graphics.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, new_drawing.outline_opacity);
+			graphics.moveTo(mouse_location.x, mouse_location.y);
+			graphics.drawShape(new PIXI.Circle(mouse_location.x, mouse_location.y, min_polygon_end_distance*size_x));
+			objectContainer.addChild(graphics);
+			renderer.render(stage);
+		}
+	} else if (active_context == 'curve_context') {
+		if (!new_drawing) {
+			this.mouseup = on_curve_end;
+			this.mouseupoutside = on_curve_end;
+			this.mousemove = on_curve_move;
+			new_drawing = {uid : newUid(), type: 'drawing', x:mouse_location.x/size_x, y:mouse_location.y/size_y,  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:false, is_dotted:false};
+		}
+	} else if (active_context == 'area_context') {
+		if (!new_drawing) {
+			this.mouseup = on_area_end;
+			this.mouseupoutside = on_area_end;
+			this.mousemove = on_area_move;
+			new_drawing = {uid : newUid(), type: 'area', x:mouse_location.x/size_x, y:mouse_location.y/size_y,scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[]};
+			graphics = new PIXI.Graphics();
+			graphics.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, new_drawing.outline_opacity);
+			graphics.moveTo(mouse_location.x, mouse_location.y);
+			graphics.drawShape(new PIXI.Circle(mouse_location.x, mouse_location.y, min_polygon_end_distance*size_x));
+			objectContainer.addChild(graphics);
+			renderer.render(stage);
 		}
 	} else if (active_context == 'icon_context') {
 		this.mouseup = on_icon_end;
@@ -312,25 +352,116 @@ function on_left_click(event) {
 		this.mouseupoutside = on_circle_end;
 		this.mousemove = on_circle_move;
 		left_click_origin = [mouse_location.x, mouse_location.y];
-	} else if (active_context == 'polygon_context') {
-		if (!new_drawing) {
-			this.mouseup = on_polygon_end;
-			this.mouseupoutside = on_polygon_end;
-			this.mousemove = on_polygon_move;
-			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_location.x/size_x, y:mouse_location.y/size_y,  scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color: polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[]};
-			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.outline_thickness * (size_x/500), parseInt('0x'+new_drawing.outline_color.substring(1)), new_drawing.outline_opacity);
-			graphics.moveTo(mouse_location.x, mouse_location.y);
-			graphics.drawShape(new PIXI.Circle(mouse_location.x, mouse_location.y, min_polygon_end_distance*size_x));
-			objectContainer.addChild(graphics);
-		}
+	} 
+}
+
+function on_area_move() {
+	var mouse_location = renderer.plugins.interaction.mouse.global;	
+	var x = mouse_location.x/size_x;
+	var y = mouse_location.y/size_y;
+	x = Math.max(0, x);
+	y = Math.max(0, y);
+	x = Math.min(1, x);
+	y = Math.min(1, y);
+	new_x = x - new_drawing.x;
+	new_y = y - new_drawing.y;
+	new_drawing.path.push([new_x, new_y]);
+	graphic = new PIXI.Graphics();
+	graphic.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, 1);	
+	free_draw(graphic, new_drawing);
+	objectContainer.addChild(graphic);
+	renderer.render(stage);
+	objectContainer.removeChild(graphic);
+	new_drawing.path.pop();
+}
+
+function on_area_end() {
+	var mouse_location = renderer.plugins.interaction.mouse.global;	
+	var x = mouse_location.x/size_x;
+	var y = mouse_location.y/size_y;
+	x = Math.max(0, x);
+	y = Math.max(0, y);
+	x = Math.min(1, x);
+	y = Math.min(1, y);	
+	new_x = x - new_drawing.x;
+	new_y = y - new_drawing.y;
+	
+	var squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
+	if (squared_distance_to_start < (min_polygon_end_distance*min_polygon_end_distance)) {
+		this.mousemove = undefined;
+		this.mouseup = undefined;
+		this.mouseupoutside = undefined;
+		new_drawing.path.push([0, 0]);
+		create_area(new_drawing);
+		snap_and_emit_entity(new_drawing);
+		undo_list.push(new_drawing);	
+		objectContainer.removeChild(graphics);
+		renderer.render(stage);
+		graphics = null;
+		new_drawing = null;
+	} else {
+		new_drawing.path.push([new_x, new_y]);
+	}
+}
+
+function on_curve_move() {
+	var mouse_location = renderer.plugins.interaction.mouse.global;	
+	var x = mouse_location.x/size_x;
+	var y = mouse_location.y/size_y;
+	x = Math.max(0, x);
+	y = Math.max(0, y);
+	x = Math.min(1, x);
+	y = Math.min(1, y);
+	new_x = x - new_drawing.x;
+	new_y = y - new_drawing.y;
+	new_drawing.path.push([new_x, new_y]);
+	graphic = new PIXI.Graphics();
+	graphic.lineStyle(new_drawing.thickness * (size_x/500), new_drawing.color, 1);	
+	free_draw(graphic, new_drawing);
+	objectContainer.addChild(graphic);
+	renderer.render(stage);
+	objectContainer.removeChild(graphic);
+	new_drawing.path.pop();
+}
+
+function on_curve_end() {
+	var mouse_location = renderer.plugins.interaction.mouse.global;	
+	var x = mouse_location.x/size_x;
+	var y = mouse_location.y/size_y;
+	x = Math.max(0, x);
+	y = Math.max(0, y);
+	x = Math.min(1, x);
+	y = Math.min(1, y);
+	new_x = x - new_drawing.x;
+	new_y = y - new_drawing.y;
+	
+	var last_x, last_y;
+	if (new_drawing.path.length > 0) {
+		last_x = new_drawing.path[new_drawing.path.length-1][0];
+		last_y = new_drawing.path[new_drawing.path.length-1][1];
+	} else {
+		last_x = 0;
+		last_y = 0;
+	}
+	
+	var squared_distance_to_last = (new_x - last_x) * (new_x - last_x) + (new_y - last_y) * (new_y - last_y);
+	
+	if (squared_distance_to_last < (min_polygon_end_distance*min_polygon_end_distance)) {
+		this.mouseup = undefined;
+		this.mouseupoutside = undefined;
+		this.mousemove = undefined;	
+		create_drawing(new_drawing);
+		snap_and_emit_entity(new_drawing);
+		new_drawing = null;
+	} else {
+		new_drawing.path.push([new_x, new_y]);
 	}
 }
 
 function on_polygon_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(new_drawing.outline_thickness * (size_x/500), parseInt('0x'+new_drawing.outline_color.substring(1)), 0.5);
+	graphic.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, 0.5);
 	var a;
 	if (new_drawing.path.length == 0) {
 		a = [new_drawing.x * size_x, new_drawing.y * size_y];
@@ -370,8 +501,7 @@ function on_polygon_end() {
 	} else {
 		new_drawing.path.push([x - new_drawing.x, y - new_drawing.y]);
 		var graphic = new PIXI.Graphics();
-		//graphic.lineStyle(new_drawing.thickness * (size_x/500), new_drawing.color, 1);
-		graphic.lineStyle(new_drawing.outline_thickness * (size_x/500), parseInt('0x'+new_drawing.outline_color.substring(1)), 1);
+		graphic.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, 1);
 		
 		var a;
 		if (new_drawing.path.length == 1) {
@@ -397,8 +527,8 @@ function on_polygon_end() {
 
 function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opacity, fill_color, shape) {
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(outline_thickness, '0x'+outline_color.substring(1), outline_opacity);
-	graphic.beginFill('0x'+fill_color.substring(1), fill_opacity);
+	graphic.lineStyle(outline_thickness, outline_color, outline_opacity);
+	graphic.beginFill(fill_color, fill_opacity);
 	graphic.drawShape(shape);
 	graphic.endFill();
 	return graphic;
@@ -439,7 +569,7 @@ function on_circle_end() {
 	this.mouseupoutside = undefined;
 	this.mousemove = undefined;
 	
-	var new_shape = {uid:newUid(), type:'circle', x:center_x/size_x, y:center_y/size_y, radius:radius/size_x, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color: circle_fill_color, alpha:1};	
+	var new_shape = {uid:newUid(), type:'circle', x:center_x/size_x, y:center_y/size_y, radius:radius/size_x, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1};	
 
 	create_circle(new_shape);
 	snap_and_emit_entity(new_shape);
@@ -474,7 +604,7 @@ function on_rectangle_end() {
 	this.mouseup = undefined;
 	this.mouseupoutside = undefined;
 	this.mousemove = undefined;
-	var new_shape = {uid:newUid(), type:'rectangle', x:left_x/size_x, y:left_y/size_y, width:(right_x - left_x)/size_x, height:(right_y - left_y)/size_y, outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color: rectangle_fill_color, alpha:1};
+	var new_shape = {uid:newUid(), type:'rectangle', x:left_x/size_x, y:left_y/size_y, width:(right_x - left_x)/size_x, height:(right_y - left_y)/size_y, outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1};
 	create_rectangle(new_shape);
 	snap_and_emit_entity(new_shape);
 	undo_list.push(new_shape);
@@ -651,8 +781,7 @@ function on_line_end() {
 		graphics = null;
 	} else {
 		var graphic = new PIXI.Graphics();
-		//graphic.lineStyle(new_drawing.thickness * (size_x/500), new_drawing.color, 1);
-		graphic.lineStyle(new_drawing.thickness * (size_x/500), parseInt('0x'+line_color.substring(1)), 1);
+		graphic.lineStyle(new_drawing.thickness * (size_x/500), line_color, 1);
 		
 		var a;
 		if (new_drawing.path.length == 1) {
@@ -703,7 +832,7 @@ function create_icon(icon) {
 	counter.text((parseInt(counter.text())+1).toString());
 	var texture = PIXI.Texture.fromImage('http://'+location.host+'/icons/'+ icon.tank +'.png');
 	var sprite = new PIXI.Sprite(texture);
-	sprite.tint = icon.color.replace(/#/, '0x');
+	sprite.tint = icon.color;
 	
 	icon.container = new PIXI.Container();
 
@@ -716,8 +845,8 @@ function create_icon(icon) {
 	if (icon.label != "") {
 		var size = "bold "+icon.label_font_size*(size_x/800)+"px " + icon.label_font;
 		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
-		text.x -= text.width/2;
-		text.y += (1/3)*sprite.width/2;
+		text.x += sprite.width/2 - text.width/2;
+		text.y += 1.2 * sprite.height/2;
 		icon['container'].addChild(text);
 	}
 
@@ -842,23 +971,41 @@ function computeControlPoints(K)
 	return {p1:p1, p2:p2};
 }
 
-function free_draw(graph, drawing) {
-	graph.endFill();
-	
-	var path_x = [];
-	var path_y = [];
-	
-	for (i = 0; i < drawing.path.length; i++) {
-		path_x.push((drawing.x + drawing.path[i][0])*size_x);
-		path_y.push((drawing.y + drawing.path[i][1])*size_y);
-	}
+function free_draw(graph, drawing, smooth_out) {
+	if (drawing.path.length == 1) {
+		graph.moveTo(drawing.x * size_x, drawing.y * size_y);
+		graph.lineTo((drawing.x + drawing.path[0][0]) * size_x, 
+		             (drawing.y + drawing.path[0][1]) * size_y);
+	} else {
+		var path_x = [drawing.x * size_x];
+		var path_y = [drawing.y * size_y];
+		
+		for (i = 0; i < drawing.path.length; i++) {
+			path_x.push((drawing.x + drawing.path[i][0])*size_x);
+			path_y.push((drawing.y + drawing.path[i][1])*size_y);
+		}
+		
+		if (smooth_out) {
+			for (var i = 0; i < Math.min(drawing.path.length, 4); i++) {
+				path_x.push((drawing.x + drawing.path[i][0])*size_x);
+				path_y.push((drawing.y + drawing.path[i][1])*size_y);
+			}
+		}
 
-	var cx = computeControlPoints(path_x);
-	var cy = computeControlPoints(path_y);
-	
-	graph.moveTo(path_x[0], path_y[0]);
-	for (i = 0; i < path_x.length-1; i++) {
-		graph.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
+		var cx = computeControlPoints(path_x);
+		var cy = computeControlPoints(path_y);
+		
+		if (smooth_out) {
+			for (var i = 0; i < Math.min(drawing.path.length, 4); i++) {
+				path_x.pop();
+				path_y.pop();
+			}
+		}
+		
+		graph.moveTo(path_x[0], path_y[0]);
+		for (i = 0; i < path_x.length-1; i++) {
+			graph.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
+		}
 	}
 	graph.graphicsData[0].shape.closed = false;
 }
@@ -868,6 +1015,16 @@ function create_drawing(drawing) {
 	graphic.lineStyle(drawing.thickness * (size_x/500), drawing.color, 1);
 	free_draw(graphic, drawing);		
 	graphic.graphicsData[0].shape.closed = false;
+	init_graphic(drawing, graphic);
+}
+
+function create_area(drawing, smooth_point) {
+	graphic = new PIXI.Graphics();
+	graphic.lineStyle(drawing.outline_thickness * (size_x/500), drawing.outline_color, 1);
+	graphic.beginFill(drawing.fill_color, drawing.fill_opacity);
+	free_draw(graphic, drawing, true);
+	graphic.graphicsData[0].shape.closed = true;
+	graphic.endFill();
 	init_graphic(drawing, graphic);
 }
 
@@ -955,7 +1112,7 @@ function create_entity(entity) {
 		set_background(entity);
 	} else if (entity.type == 'icon') {
 		create_icon(entity);
-	} else if (entity.type == 'drawing') {
+	} else if (entity.type == 'drawing') { //also used for curved line
 		create_drawing(entity);
 	} else if (entity.type == 'line') {
 		create_line(entity);
@@ -967,6 +1124,8 @@ function create_entity(entity) {
 		create_circle(entity);
 	} else if (entity.type == 'polygon') {
 		create_polygon(entity);
+	} else if (entity.type == 'area') {
+		create_area(entity);
 	}
 }
 
@@ -1132,6 +1291,8 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		$('#rectangle_context').hide();
 		$('#circle_context').hide();
 		$('#polygon_context').hide();
+		$('#curve_context').hide();
+		$('#area_context').hide();
 		$("#save_as").hide();
 		$("#save").hide();
 		$('#ping').addClass('active');
@@ -1171,49 +1332,61 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		
 		
 		//color selections
-		icon_color = $('select[id="icon_colorpicker"]').val();
+		curve_color = parseInt('0x'+$('select[id="curve_colorpicker"]').val().substring(1));
+		$('select[id="curve_colorpicker"]').simplecolorpicker().on('change', function() {
+			curve_color = parseInt('0x'+$('select[id="curve_colorpicker"]').val().substring(1));
+		});
+		icon_color = parseInt('0x'+$('select[id="icon_colorpicker"]').val().substring(1));
 		$('select[id="icon_colorpicker"]').simplecolorpicker().on('change', function() {
-			icon_color = $('select[id="icon_colorpicker"]').val();
+			icon_color = parseInt('0x'+$('select[id="icon_colorpicker"]').val().substring(1));
 		});
-		draw_color = $('select[id="draw_colorpicker"]').val();
+		draw_color = parseInt('0x'+$('select[id="draw_colorpicker"]').val().substring(1));
 		$('select[id="draw_colorpicker"]').simplecolorpicker().on('change', function() {
-			draw_color = $('select[id="draw_colorpicker"]').val();
+			draw_color = parseInt('0x'+$('select[id="draw_colorpicker"]').val().substring(1));
 		});
-		ping_color = $('select[id="ping_colorpicker"]').val();
+		ping_color = parseInt('0x'+$('select[id="ping_colorpicker"]').val().substring(1));
 		$('select[id="ping_colorpicker"]').simplecolorpicker().on('change', function() {
-			ping_color = $('select[id="ping_colorpicker"]').val();
+			ping_color = parseInt('0x'+$('select[id="ping_colorpicker"]').val().substring(1));
 		});
-		line_color = $('select[id="line_colorpicker"]').val();
+		line_color = parseInt('0x'+$('select[id="line_colorpicker"]').val().substring(1));
 		$('select[id="line_colorpicker"]').simplecolorpicker().on('change', function() {
-			line_color = $('select[id="line_colorpicker"]').val();
+			line_color = parseInt('0x'+$('select[id="line_colorpicker"]').val().substring(1));
 		});
-		text_color = $('select[id="text_colorpicker"]').val();
+		text_color = parseInt('0x'+$('select[id="text_colorpicker"]').val().substring(1));
 		$('select[id="text_colorpicker"]').simplecolorpicker().on('change', function() {
-			text_color = $('select[id="text_colorpicker"]').val();
+			text_color = parseInt('0x'+$('select[id="text_colorpicker"]').val().substring(1));
 		});
-		rectangle_outline_color = $('select[id="rectangle_outline_colorpicker"]').val();
+		rectangle_outline_color = parseInt('0x'+$('select[id="rectangle_outline_colorpicker"]').val().substring(1));
 		$('select[id="rectangle_outline_colorpicker"]').simplecolorpicker().on('change', function() {
-			rectangle_outline_color = $('select[id="rectangle_outline_colorpicker"]').val();
+			rectangle_outline_color = parseInt('0x'+$('select[id="rectangle_outline_colorpicker"]').val().substring(1));
 		});
-		rectangle_fill_color = $('select[id="rectangle_fill_colorpicker"]').val();
+		rectangle_fill_color = parseInt('0x'+$('select[id="rectangle_fill_colorpicker"]').val().substring(1));
 		$('select[id="rectangle_fill_colorpicker"]').simplecolorpicker().on('change', function() {
-			rectangle_fill_color = $('select[id="rectangle_fill_colorpicker"]').val();
+			rectangle_fill_color = parseInt('0x'+$('select[id="rectangle_fill_colorpicker"]').val().substring(1));
 		});
-		circle_outline_color = $('select[id="circle_outline_colorpicker"]').val();
+		circle_outline_color = parseInt('0x'+$('select[id="circle_outline_colorpicker"]').val().substring(1));
 		$('select[id="circle_outline_colorpicker"]').simplecolorpicker().on('change', function() {
-			circle_outline_color = $('select[id="circle_outline_colorpicker"]').val();
+			circle_outline_color = parseInt('0x'+$('select[id="circle_outline_colorpicker"]').val().substring(1));
 		});
-		circle_fill_color = $('select[id="circle_fill_colorpicker"]').val();
+		circle_fill_color = parseInt('0x'+$('select[id="circle_fill_colorpicker"]').val().substring(1));
 		$('select[id="circle_fill_colorpicker"]').simplecolorpicker().on('change', function() {
-			circle_fill_color = $('select[id="circle_fill_colorpicker"]').val();
+			circle_fill_color = parseInt('0x'+$('select[id="circle_fill_colorpicker"]').val().substring(1));
 		});
-		polygon_outline_color = $('select[id="polygon_outline_colorpicker"]').val();
+		polygon_outline_color = parseInt('0x'+$('select[id="polygon_outline_colorpicker"]').val().substring(1));
 		$('select[id="polygon_outline_colorpicker"]').simplecolorpicker().on('change', function() {
-			polygon_outline_color = $('select[id="polygon_outline_colorpicker"]').val();
+			polygon_outline_color = parseInt('0x'+$('select[id="polygon_outline_colorpicker"]').val().substring(1));
 		});
-		polygon_fill_color = $('select[id="polygon_fill_colorpicker"]').val();
+		polygon_fill_color = parseInt('0x'+$('select[id="polygon_fill_colorpicker"]').val().substring(1));
 		$('select[id="polygon_fill_colorpicker"]').simplecolorpicker().on('change', function() {
-			polygon_fill_color = $('select[id="polygon_fill_colorpicker"]').val();
+			polygon_fill_color = parseInt('0x'+$('select[id="polygon_fill_colorpicker"]').val().substring(1));
+		});
+		area_outline_color = parseInt('0x'+$('select[id="area_outline_colorpicker"]').val().substring(1));
+		$('select[id="area_outline_colorpicker"]').simplecolorpicker().on('change', function() {
+			area_outline_color = parseInt('0x'+$('select[id="area_outline_colorpicker"]').val().substring(1));
+		});
+		area_fill_color = parseInt('0x'+$('select[id="area_fill_colorpicker"]').val().substring(1));
+		$('select[id="area_fill_colorpicker"]').simplecolorpicker().on('change', function() {
+			area_fill_color = parseInt('0x'+$('select[id="area_fill_colorpicker"]').val().substring(1));
 		});
 		
 		//initialize sliders
@@ -1227,8 +1400,12 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		initialize_slider("polygon_outline_thickness", "polygon_outline_thickness_text", "polygon_outline_thickness");
 		initialize_slider("polygon_outline_opacity", "polygon_outline_opacity_text", "polygon_outline_opacity");
 		initialize_slider("polygon_fill_opacity", "polygon_fill_opacity_text", "polygon_fill_opacity");
+		initialize_slider("area_outline_thickness", "area_outline_thickness_text", "area_outline_thickness");
+		initialize_slider("area_outline_opacity", "area_outline_opacity_text", "area_outline_opacity");
+		initialize_slider("area_fill_opacity", "area_fill_opacity_text", "area_fill_opacity");
 		initialize_slider("line_thickness", "line_thickness_text", "line_thickness");
 		initialize_slider("draw_thickness", "draw_thickness_text", "draw_thickness");
+		initialize_slider("curve_thickness", "curve_thickness_text", "curve_thickness");
 		initialize_slider("font_size", "font_size_text", "font_size");
 		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		
@@ -1462,4 +1639,4 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 	
 });
 
-setTimeout(function(){ renderer.render(stage); }, 500);
+setTimeout(function(){ renderer.render(stage); }, 1000);

@@ -186,6 +186,9 @@
 					</div>
 					<br />
 					<div class="btn-group">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="curve" data-toggle="tooltip" title="Draw curve (double click to end)">
+						<img src="http://karellodewijk.github.io/icons/curve.png" />
+					</button>
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="Draw rectangle">
 						<img src="http://karellodewijk.github.io/icons/rectangle.png" />
 					</button>
@@ -194,6 +197,9 @@
 					</button>
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="polygon" data-toggle="tooltip" title="Draw polygon">
 						<img src="http://karellodewijk.github.io/icons/polygon.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="area" data-toggle="tooltip" title="Draw area">
+						<img src="http://karellodewijk.github.io/icons/area.png" />
 					</button>
 					</div>
 					<br />
@@ -276,6 +282,25 @@
 					<small>Thickness</small>
 					<input id="draw_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="3"/>
 					&nbsp;<input id="draw_thickness_text" class="slider_text_input" type="text"/>
+				
+				</div>
+
+				<div id='curve_context'>			
+				<p>
+				<h4>Curve options</h4>
+				
+				<p>
+					<select name="colorpicker" id="curve_colorpicker">
+						<option value="#ff0000">Red</option>
+						<option value="#00ff00">Green</option>
+						<option value="#0000ff">Blue</option>
+						<option value="#ffff00">Yellow</option>
+						<option value="#ffffff">White</option>
+					</select>
+					<br />
+					<small>Thickness</small>
+					<input id="curve_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+					&nbsp;<input id="curve_thickness_text" class="slider_text_input" type="text"/>
 				
 				</div>
 				
@@ -463,6 +488,69 @@
 							</div>
 							<div class="col-sm-3">
 								<input id="polygon_fill_opacity_text" class="slider_text_input" type="text"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id='area_context'>			
+				<p>
+				<h4>Area options</h4>
+				
+				<p>
+					<h5>Outline:</h5>
+					<select name="colorpicker" id="area_outline_colorpicker">
+						<option value="#ff0000">Red</option>
+						<option value="#00ff00">Green</option>
+						<option value="#0000ff">Blue</option>
+						<option value="#ffff00">Yellow</option>
+						<option value="#ffffff">White</option>
+						<option value="#000000">Black</option>
+					</select>
+					<div class="container" style="max-width: 250px; padding:0px;">
+						<div class="row">
+							<div class="col-sm-3">
+								<small>Thickness</small>
+							</div>	
+							<div class="col-sm-5">
+								<input id="area_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+							</div>	
+							<div class="col-sm-3"><input id="area_outline_thickness_text" class="slider_text_input" type="text"/>
+							</div>	
+						</div>	
+						<div class="row">
+							<div class="col-sm-3">
+								<small>Opacity</small>
+							</div>	
+							<div class="col-sm-5">
+								<input id="area_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
+							</div>	
+							<div class="col-sm-3">
+								<input id="area_outline_opacity_text" class="slider_text_input" type="text"/>
+							</div>
+						</div>	
+					</div>
+									
+					<h5>Fill:</h5>		
+					<select name="colorpicker" id="area_fill_colorpicker">
+						<option value="#ff0000">Red</option>
+						<option value="#00ff00">Green</option>
+						<option value="#0000ff">Blue</option>
+						<option value="#ffff00">Yellow</option>
+						<option value="#ffffff">White</option>
+						<option value="#000000">Black</option>
+					</select>
+					
+					<div class="container" style="max-width: 250px; padding:0px;">
+						<div class="row">
+							<div class="col-sm-3">
+								<small>Opacity</small>
+							</div>
+							<div class="col-sm-5">
+								<input id="area_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+							</div>
+							<div class="col-sm-3">
+								<input id="area_fill_opacity_text" class="slider_text_input" type="text"/>
 							</div>
 						</div>
 					</div>
