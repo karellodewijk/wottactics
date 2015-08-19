@@ -8,6 +8,8 @@ function newUid() {
     }).toUpperCase();
 }
 
+//var image_host = 'http://'+location.host+'/icons/'; //enable for local image hosting
+var image_host = "http://karellodewijk.github.io/icons/";
 var min_polygon_end_distance = 0.01; //in ratio to width of map
 var active_context = 'ping_context';
 var history = {};
@@ -54,15 +56,35 @@ var graphics;
 var new_drawing;
 var left_click_origin;
 var selected_entities = [];
+var previously_selected_entities = [];
 var label_font_size = 30;
 var last_ping_time;
 var icon_scale = 1/35;
 
+//keyboard shortcuts
 var shifted; //need to know if the shift key is pressed
 $(document).on('keyup keydown', function(e) {
 	shifted = e.shiftKey;
 	if (!shifted && active_context == "line_context" && new_drawing) {
 		on_line_end();
+	}
+	
+	if (document.activeElement.localName != "input") {	
+		if (e.type == "keyup") {
+			if (e.ctrlKey) {
+				if (e.key == 'z') {
+					undo();
+				} else if (e.key=='y') {
+					redo();
+				} else if (e.key=='s') {
+					if (my_user.identity && tactic_name && tactic_name != "" && socket) {
+						socket.emit("store", room, tactic_name);
+					}
+				}
+			} else if (e.key == "Delete") {
+				clear_selected();
+			}
+		}
 	}
 });
 
@@ -112,18 +134,16 @@ function set_background(new_background) {
 var context_before_drag;
 var last_mouse_location;
 var move_selected;
-function onDragStart(event) {
+function on_drag_start(event) {
 	if (active_context != 'drag_context') {
 		context_before_drag = active_context;
 	}
 	active_context = "drag_context";
-	this.event = event;
-	this.alpha = 0.5;
 	last_mouse_location = [renderer.plugins.interaction.mouse.global.x, renderer.plugins.interaction.mouse.global.y];
 	renderer.render(stage);
-	this.mousemove = onDragMove;
-	this.mouseup = onDragEnd;
-	this.mouseupoutside = onDragEnd;
+	this.mousemove = on_drag_move;
+	this.mouseup = on_drag_end;
+	this.mouseupoutside = on_drag_end;
 
 	move_selected = false;
 	if (selected_entities.length > 0) {
@@ -136,8 +156,14 @@ function onDragStart(event) {
 		if (move_selected) {
 			for (var i in selected_entities) {
 				selected_entities[i].container.alpha = 0.5;
+				selected_entities[i].origin_x = selected_entities[i].x;
+				selected_entities[i].origin_y = selected_entities[i].y;
 			}
 		}
+	} else {
+		this.alpha = 0.5;
+		this.origin_x = this.entity.x;
+		this.origin_y = this.entity.y;
 	}
 }
 
@@ -149,19 +175,28 @@ function draw_rectangle(rectangle) {
 	renderer.render(stage);	
 }
 
-function onDragEnd() {
+function on_drag_end() {
 	if (context_before_drag == 'remove_context') {
 		remove(this.entity.uid);
+		undo_list.push(["remove", [this.entity]]);
 		socket.emit('remove', room, this.entity.uid);
 	} else {
-		this.dragging = false;
-		this.event = undefined;
 		if (move_selected) {
+			var origin_entity_map = [];
 			for (var i in selected_entities) {
 				selected_entities[i].container.alpha = 1;
+				var origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
+				origin_entity_map.push([origin, selected_entities[i]]);
+				delete selected_entities[i].origin_x;
+				delete selected_entities[i].origin_y;
 				socket.emit("drag", room, selected_entities[i].uid, selected_entities[i].x, selected_entities[i].y);
 			}
+			undo_list.push(["drag", origin_entity_map]);
 		} else {
+			var origin = [this.origin_x, this.origin_y];
+			delete this.origin_x;
+			delete this.origin_y;
+			undo_list.push(["drag", [[origin, this.entity]]])
 			socket.emit("drag", room, this.entity.uid, this.entity.x, this.entity.y);
 			this.alpha = 1;
 		}
@@ -187,7 +222,7 @@ function move_entity(entity, delta_x, delta_y) {
 	entity.container.y = new_y;
 }
 
-function onDragMove() {
+function on_drag_move() {
 	//move by deltamouse
 	var mouse_location = [renderer.plugins.interaction.mouse.global.x, renderer.plugins.interaction.mouse.global.y];
 	var delta_x = (mouse_location[0] - last_mouse_location[0]);
@@ -207,6 +242,7 @@ function onDragMove() {
 
 function remove(uid) {
 	objectContainer.removeChild(history[uid].container);
+	delete history[uid].container;
 	if (history[uid].type == "icon") {
 		var counter = $('#'+history[uid].tank).find("span");
 		counter.text((parseInt(counter.text())-1).toString());		
@@ -226,7 +262,7 @@ function remove(uid) {
 }
 
 function ping(x, y, color) {
-	var texture = PIXI.Texture.fromImage('http://'+location.host+'/icons/circle.png');
+	var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
 	var sprite = new PIXI.Sprite(texture);
 
 	sprite.tint = color;
@@ -258,13 +294,6 @@ function fade(sprite, steps, alpha) {
 		renderer.render(stage);	
 		fade(sprite, steps-1, alpha-0.01);		
 	}, 50);	
-}
-
-function deselect_all() {
-	for (entity in selected_entities) {
-		selected_entities[entity].container.filters = undefined;
-	}
-	selected_entities = [];
 }
 
 //function fires when mouse is left clicked on the map and it isn't a drag
@@ -308,7 +337,7 @@ function on_left_click(event) {
 			this.mouseup = on_curve_end;
 			this.mouseupoutside = on_curve_end;
 			this.mousemove = on_curve_move;
-			new_drawing = {uid : newUid(), type: 'drawing', x:mouse_location.x/size_x, y:mouse_location.y/size_y,  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:false, is_dotted:false};
+			new_drawing = {uid : newUid(), type: 'curve', x:mouse_location.x/size_x, y:mouse_location.y/size_y,  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:false, is_dotted:false};
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
@@ -394,7 +423,7 @@ function on_area_end() {
 		new_drawing.path.push([0, 0]);
 		create_area(new_drawing);
 		snap_and_emit_entity(new_drawing);
-		undo_list.push(new_drawing);	
+		undo_list.push(["add", new_drawing]);	
 		objectContainer.removeChild(graphics);
 		renderer.render(stage);
 		graphics = null;
@@ -495,7 +524,7 @@ function on_polygon_end() {
 		objectContainer.removeChild(graphics);
 		create_polygon(new_drawing);
 		snap_and_emit_entity(new_drawing);
-		undo_list.push(new_drawing);
+		undo_list.push(["add", new_drawing]);
 		new_drawing = null;
 		graphics = null;
 	} else {
@@ -573,7 +602,7 @@ function on_circle_end() {
 
 	create_circle(new_shape);
 	snap_and_emit_entity(new_shape);
-	undo_list.push(new_shape);
+	undo_list.push(["add", new_shape]);
 	
 }
 
@@ -607,7 +636,7 @@ function on_rectangle_end() {
 	var new_shape = {uid:newUid(), type:'rectangle', x:left_x/size_x, y:left_y/size_y, width:(right_x - left_x)/size_x, height:(right_y - left_y)/size_y, outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1};
 	create_rectangle(new_shape);
 	snap_and_emit_entity(new_shape);
-	undo_list.push(new_shape);
+	undo_list.push(["add", new_shape]);
 }
 
 function on_ping_move() {
@@ -644,8 +673,28 @@ function on_select_end() {
 	this.mouseup = undefined;
 	this.mouseupoutside = undefined;
 	this.mousemove = undefined;
+
+	var mouse_location = renderer.plugins.interaction.mouse.global;	
+	x_min = Math.min(mouse_location.x, left_click_origin[0]);
+	y_min = Math.min(mouse_location.y, left_click_origin[1]);
+	x_max = Math.max(mouse_location.x, left_click_origin[0]);
+	y_max = Math.max(mouse_location.y, left_click_origin[1]);
 	
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+	for (key in history) {
+		if (history.hasOwnProperty(key) && history[key].container) {
+			var box = history[key].container.getBounds();
+			if (box.x > x_min && box.y > y_min && box.x + box.width < x_max && box.y + box.height < y_max) {
+				selected_entities.push(history[key]);
+			}
+		}
+	}
+	
+	select_entities();
+	undo_list.push(["select", selected_entities, previously_selected_entities]);
+	renderer.render(stage);
+}
+
+function select_entities() {
 	var filter = new PIXI.filters.ColorMatrixFilter();
 	filter.matrix = [
 		1, 0, 0, 0, 0,
@@ -654,21 +703,17 @@ function on_select_end() {
 		0, 0, 0, 0.5, 0
 	]
 	
-	x_min = Math.min(mouse_location.x, left_click_origin[0]);
-	y_min = Math.min(mouse_location.y, left_click_origin[1]);
-	x_max = Math.max(mouse_location.x, left_click_origin[0]);
-	y_max = Math.max(mouse_location.y, left_click_origin[1]);
-	
-	for (key in history) {
-		if (history[key] && history[key].container) {
-			var box = history[key].container.getBounds();
-			if (box.x > x_min && box.y > y_min && box.x + box.width < x_max && box.y + box.height < y_max) {
-				history[key].container.filters = [filter];
-				selected_entities.push(history[key]);
-			}
-		}
-	}	
-	renderer.render(stage);
+	for (var i in selected_entities) {
+		history[selected_entities[i].uid].container.filters = [filter];
+	}
+}
+
+function deselect_all() {
+	previously_selected_entities = selected_entities;
+	for (entity in selected_entities) {
+		selected_entities[entity].container.filters = undefined;
+	}
+	selected_entities = [];
 }
 
 function on_draw_move() {
@@ -688,7 +733,7 @@ function on_draw_end() {
 	this.mousemove = undefined;
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	objectContainer.removeChild(graphics);
-	undo_list.push(new_drawing);
+	undo_list.push(["add", new_drawing]);
 	create_drawing(new_drawing);
 	snap_and_emit_entity(new_drawing);
 	new_drawing = null;
@@ -712,7 +757,7 @@ function on_icon_end() {
 	var x = mouse_location.x/size_x - (icon_scale/2);
 	var y = mouse_location.y/size_y - (icon_scale/2);
 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:1, color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Arial"}
-	undo_list.push(icon);
+	undo_list.push(["add", icon]);
 	create_icon(icon);
 	snap_and_emit_entity(icon);
 }
@@ -724,7 +769,7 @@ function on_text_end() {
 	var x = mouse_location.x/size_x;
 	var y = mouse_location.y/size_y;
 	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
-	undo_list.push(text);
+	undo_list.push("add", text);
 	create_text(text);
 	snap_and_emit_entity(text);
 }
@@ -773,7 +818,7 @@ function on_line_end() {
 			&& new_drawing.path[new_drawing.path.length-1][1] == new_drawing.path[new_drawing.path.length-2][1]) {
 				new_drawing.path.pop();
 		}
-		undo_list.push(new_drawing);
+		undo_list.push(["add", new_drawing]);
 		objectContainer.removeChild(graphics);
 		create_line(new_drawing);
 		snap_and_emit_entity(new_drawing);
@@ -830,7 +875,7 @@ function create_icon(icon) {
 	counter.text((parseInt(counter.text())+1).toString());
 	counter = $("#icon_counter");
 	counter.text((parseInt(counter.text())+1).toString());
-	var texture = PIXI.Texture.fromImage('http://'+location.host+'/icons/'+ icon.tank +'.png');
+	var texture = PIXI.Texture.fromImage(image_host + icon.tank +'.png');
 	var sprite = new PIXI.Sprite(texture);
 	sprite.tint = icon.color;
 	
@@ -871,7 +916,7 @@ function create_icon(icon) {
 function make_draggable(root) {
 	root.interactive = true;
     root.buttonMode = true;
-	root.mousedown = onDragStart;
+	root.mousedown = on_drag_start;
 }
 
 function draw_dotted_line(graphic, x0, y0, x1, y1) {
@@ -1112,7 +1157,9 @@ function create_entity(entity) {
 		set_background(entity);
 	} else if (entity.type == 'icon') {
 		create_icon(entity);
-	} else if (entity.type == 'drawing') { //also used for curved line
+	} else if (entity.type == 'drawing') {
+		create_drawing(entity);
+	} else if (entity.type == 'curve') {
 		create_drawing(entity);
 	} else if (entity.type == 'line') {
 		create_line(entity);
@@ -1269,12 +1316,135 @@ function initialize_slider(slider_id, slider_text_id, variable_name) {
 
 //clear entities of a certain type from the map
 function clear(type) {
+	var cleared_entities = [];
 	for (key in history) {
-		if (history[key] && history[key].type == type) {
+		if (history.hasOwnProperty(key) && (history[key].type == type || !type)) {
+			var entity = history[key];
 			remove(key);
+			cleared_entities.push(entity)
 			socket.emit('remove', room, key);
 		}
-	} 			
+	}
+	undo_list.push(["remove", cleared_entities]);
+}
+
+function undo() {
+	var action = undo_list.pop();
+	if (action) {
+		if (action[0] == "add") {
+			if (action[1].uid) {
+				remove(action[1].uid);
+				delete action[1].container;
+				socket.emit('remove', room, action[1].uid);
+				redo_list.push(action);
+			}
+		} else if (action[0] == "drag") {
+			for (var i in action[1]) {
+				var x = action[1][i][0][0];
+				var y = action[1][i][0][1];
+				var uid = action[1][i][1].uid;
+				if (history[uid]) { //still exists
+					action[1][i][0][0] = history[uid].x;
+					action[1][i][0][1] = history[uid].y;
+					history[uid].container.x += (x-history[uid].x)*size_x;
+					history[uid].container.y += (y-history[uid].y)*size_y;
+					history[uid].x = x;
+					history[uid].y = y;
+					renderer.render(stage);
+					socket.emit('drag', room, uid, x, y);
+				}
+			}
+			redo_list.push(action);
+		} else if (action[0] == "remove") {
+			for (var i in action[1]) {
+				var entity = action[1][i];
+				delete entity.container;
+				socket.emit('create_entity', room, entity);
+				create_entity(entity);
+			}
+			redo_list.push(action);
+		} else if (action[0] == "select") {
+			var new_selected_entities = [];
+			for (var i in action[2]) {
+				var entity = action[2][i];
+				if (history.hasOwnProperty(entity.uid)) {
+					new_selected_entities.push(entity);
+				}
+			}
+			deselect_all();
+			selected_entities = new_selected_entities;
+			select_entities();
+			redo_list.push(action);
+			renderer.render(stage);
+		}
+	}
+}
+
+function redo() {
+	var action = redo_list.pop();
+	if (action) {
+		if (action[0] == "add") {
+			if (action[1].uid) {
+				undo_list.push(action);
+				socket.emit('create_entity', room, action[1]);
+				create_entity(action[1]);
+			}
+		} else if (action[0] == "drag") {
+			for (var i in action[1]) {
+				var x = action[1][i][0][0];
+				var y = action[1][i][0][1];
+				var uid = action[1][i][1].uid;
+				if (history[uid]) { //still exists
+					action[1][i][0][0] = history[uid].x;
+					action[1][i][0][1] = history[uid].y;
+					history[uid].container.x += (x-history[uid].x)*size_x;
+					history[uid].container.y += (y-history[uid].y)*size_y;
+					history[uid].x = x;
+					history[uid].y = y;
+					renderer.render(stage);
+					socket.emit('drag', room, uid, x, y);
+				}
+			}
+			undo_list.push(action);
+		} else if (action[0] == "remove") {
+			for (var i in action[1]) {
+				var entity = action[1][i];
+				if (history.hasOwnProperty(entity.uid)) {
+					remove(entity.uid);
+					delete entity.container;
+					socket.emit('remove', room, entity.uid);
+				}
+			}
+			undo_list.push(action);
+		} else if (action[0] == "select") {
+			var new_selected_entities = [];
+			for (var i in action[1]) {
+				var entity = action[1][i];
+				if (history.hasOwnProperty(entity.uid)) {
+					new_selected_entities.push(entity);
+				}
+			}
+			
+			deselect_all();
+			selected_entities = new_selected_entities;
+			select_entities();
+			undo_list.push(action);
+			renderer.render(stage);
+		}
+	}	
+}
+
+function clear_selected() {
+	var clone = selected_entities.slice(0);
+	var cleared_entities = [];
+	for (i in clone) {
+		var entity = clone[i];
+		remove(clone[i].uid);
+		cleared_entities.push(entity)
+		socket.emit('remove', room, entity.uid);
+	}
+	selected_entities = [];
+	undo_list.push(["remove", cleared_entities]);
 }
 
 //connect socket.io socket
@@ -1282,7 +1452,6 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 	socket = io.connect('http://'+location.hostname+':8000');
 
 	$(document).ready(function() {
-
 		$('#draw_context').hide();
 		$('#icon_context').hide();
 		$('#remove_context').hide();
@@ -1455,25 +1624,10 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		//tool select
 		$('#contexts').on('click', 'button', function (e) {
 			if ( $(this).attr('id') == "undo") {
-				var entity = undo_list.pop();
-				if (entity) {
-					if (entity.uid) {
-						remove(entity.uid);
-						delete entity.container;
-						socket.emit('remove', room, entity.uid);
-						redo_list.push(entity);
-					}
-				}
+				undo();
 				return;
 			} else if ( $(this).attr('id') == "redo") {
-				var entity = redo_list.pop();
-				if (entity) {
-					if (entity.uid) {
-						undo_list.push(entity);
-						socket.emit('create_entity', room, entity);
-						create_entity(entity);
-					}
-				}
+				redo();
 				return;
 			}			
 			$('#contexts').find("button").removeClass('active');
@@ -1510,12 +1664,7 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		});	
 		
 		$('#clear_all').click(function() {
-			for (key in history) {
-				if (history[key] && history[key].type != "background") {
-					remove(key);
-					socket.emit('remove', room, key);
-				}
-			} 
+			clear();
 		});
 		
 		$('#login_dropdown_select').on('click', 'a', function () {
@@ -1546,12 +1695,23 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		$('#clear_text').click(function() {
 			clear("text");
 		});
+		$('#clear_curve').click(function() {
+			clear("curve");
+		});
+		$('#clear_rectangle').click(function() {
+			clear("rectangle");
+		});
+		$('#clear_circle').click(function() {
+			clear("circle");
+		});
+		$('#clear_polygon').click(function() {
+			clear("polygon");
+		});
+		$('#clear_area').click(function() {
+			clear("area");
+		});
 		$('#clear_selected').click(function() {
-			var clone = selected_entities.slice(0);
-			for (i in clone) {
-				remove(clone[i].uid);
-				socket.emit('remove', room, clone[i].uid);
-			}
+			clear_selected();
 		});
 		
 		//tank icon select

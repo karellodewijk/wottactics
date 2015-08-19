@@ -3,6 +3,6 @@
 TODO:
 
 - Transparency
-- Maybe some drawing options, squares/circles
 - Fix undo/redo
+- Scaling/transparancy options ?
 - Wows ?
