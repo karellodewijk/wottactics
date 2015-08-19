@@ -59,7 +59,9 @@ var selected_entities = [];
 var previously_selected_entities = [];
 var label_font_size = 30;
 var last_ping_time;
-var icon_scale = 1/35;
+var icon_scale = 0.025;
+var thickness_scale = 0.003;
+var font_scale = 0.002;
 
 //keyboard shortcuts
 var shifted; //need to know if the shift key is pressed
@@ -108,14 +110,52 @@ background_sprite.width = renderer.width;
 objectContainer.addChild(background_sprite);
 
 //resize the render window
-window.onresize = function() { 
+window.onresize = function() {
+	var last_size_x = size_x;
+	var last_size_y = size_y;
 	size = Math.min(window.innerHeight, window.innerWidth) - border;
 	size_x = size;
 	size_y = size;
-	renderer.view.style.width = size + "px";
-	renderer.view.style.height = size + "px";
+	objectContainer.scale.x *= size_x/last_size_x;
+	objectContainer.scale.y *= size_y/last_size_y;	
+	renderer.resize(size_x, size_y)
 	renderer.render(stage);
 };
+
+function x_rel(x) {
+	return x*objectContainer.scale.x/size_x;
+}
+
+function x_abs(x) {
+	return x*size_x/objectContainer.scale.x;
+}
+
+function y_rel(y) {
+	return y*objectContainer.scale.y/size_y;
+}
+
+function y_abs(y) {
+	return y*size_y/objectContainer.scale.y;
+}
+
+function mouse_x_abs(x) {
+	return x / objectContainer.scale.x;
+}
+
+function mouse_y_abs(y) {
+	return y / objectContainer.scale.y;
+}
+
+function mouse_x_rel(x) {
+	return x / size_x;
+}
+
+function mouse_y_rel(y) {
+	return y / size_y;
+}
+
+
+
 
 function set_background(new_background) {
 	if (background) {
@@ -139,7 +179,7 @@ function on_drag_start(event) {
 		context_before_drag = active_context;
 	}
 	active_context = "drag_context";
-	last_mouse_location = [renderer.plugins.interaction.mouse.global.x, renderer.plugins.interaction.mouse.global.y];
+	last_mouse_location = [mouse_x_abs(renderer.plugins.interaction.mouse.global.x), mouse_y_abs(renderer.plugins.interaction.mouse.global.y)];
 	renderer.render(stage);
 	this.mousemove = on_drag_move;
 	this.mouseup = on_drag_end;
@@ -210,24 +250,29 @@ function on_drag_end() {
 
 //move an entity but keep it within the bounds
 function move_entity(entity, delta_x, delta_y) {
-	var new_x = entity.container.x + delta_x;
-	var new_y = entity.container.y + delta_y;
+	var new_x = entity.container.x + x_abs(delta_x);
+	var new_y = entity.container.y + y_abs(delta_y);
+	
 	new_x = Math.max(new_x, 0);
 	new_y = Math.max(new_y, 0);
-	new_x = Math.min(new_x, size - entity.container.width);
-	new_y = Math.min(new_y, size - entity.container.height);
-	entity.x += (new_x-entity.container.x)/size_x;
-	entity.y += (new_y-entity.container.y)/size_y;
+	new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.width)));
+	new_y = Math.min(new_y, y_abs(1 - y_rel(entity.container.height)));
+
+	//move by relative positioning cause x on the container is the left upper corner of the bounding box
+	//and for the entity this is mostly the start point
+	entity.x += x_rel(new_x - entity.container.x);
+	entity.y += y_rel(new_y - entity.container.y);
+	
 	entity.container.x = new_x;
 	entity.container.y = new_y;
+
 }
 
 function on_drag_move() {
 	//move by deltamouse
-	var mouse_location = [renderer.plugins.interaction.mouse.global.x, renderer.plugins.interaction.mouse.global.y];
-	var delta_x = (mouse_location[0] - last_mouse_location[0]);
-	var delta_y = (mouse_location[1] - last_mouse_location[1]);
-	
+	var mouse_location = renderer.plugins.interaction.mouse.global;
+	var delta_x = x_rel(mouse_x_abs(mouse_location.x) - last_mouse_location[0]);
+	var delta_y = y_rel(mouse_y_abs(mouse_location.y) - last_mouse_location[1]);
 	if (move_selected) {
 		for (var i in selected_entities) {
 			move_entity(selected_entities[i], delta_x, delta_y);
@@ -236,7 +281,7 @@ function on_drag_move() {
 		move_entity(this.entity, delta_x, delta_y);
 	}
 
-	last_mouse_location = mouse_location;
+	last_mouse_location = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 	renderer.render(stage);
 }
 
@@ -267,11 +312,11 @@ function ping(x, y, color) {
 
 	sprite.tint = color;
 	sprite.anchor.set(0.5);
-	sprite.scale.x = size_x/3000;
-	sprite.scale.y = size_x/3000;
+	sprite.width = x_abs(0.075);
+	sprite.height = x_abs(0.075);
 	sprite.alpha = 1;
-	sprite.x = x*size_x;
-	sprite.y = y*size_y;
+	sprite.x = x_abs(x);
+	sprite.y = y_abs(y);
 	
 	objectContainer.addChild(sprite);
 	sprite.texture.on('update', function() {	
@@ -303,20 +348,20 @@ function on_left_click(event) {
 		this.mouseup = on_draw_end;
 		this.mouseupoutside = on_draw_end;
 		this.mousemove = on_draw_move;
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_location.x/size_x, y:mouse_location.y/size_y, scale:1,color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), path:[]};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), path:[]};
 		graphics = new PIXI.Graphics();
-		graphics.lineStyle(new_drawing.thickness * (size_x/500), draw_color, 1);
-		graphics.moveTo(mouse_location.x, mouse_location.y);
+		graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), draw_color, 1);
+		graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
 		objectContainer.addChild(graphics);
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
 			this.mouseup = on_line_end;
 			this.mouseupoutside = on_line_end;
 			this.mousemove = on_line_move;
-			new_drawing = {uid : newUid(), type: 'line', x:mouse_location.x/size_x, y:mouse_location.y/size_y,  scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
+			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
 			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.thickness * (size_x/500), line_color, 1);
-			graphics.moveTo(mouse_location.x, mouse_location.y);
+			graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), line_color, 1);
+			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
 			objectContainer.addChild(graphics);
 		}
 	} else if (active_context == 'polygon_context') {
@@ -324,11 +369,11 @@ function on_left_click(event) {
 			this.mouseup = on_polygon_end;
 			this.mouseupoutside = on_polygon_end;
 			this.mousemove = on_polygon_move;
-			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_location.x/size_x, y:mouse_location.y/size_y,scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[]};
+			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[]};
 			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, new_drawing.outline_opacity);
-			graphics.moveTo(mouse_location.x, mouse_location.y);
-			graphics.drawShape(new PIXI.Circle(mouse_location.x, mouse_location.y, min_polygon_end_distance*size_x));
+			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
+			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
+			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(min_polygon_end_distance)));
 			objectContainer.addChild(graphics);
 			renderer.render(stage);
 		}
@@ -337,18 +382,18 @@ function on_left_click(event) {
 			this.mouseup = on_curve_end;
 			this.mouseupoutside = on_curve_end;
 			this.mousemove = on_curve_move;
-			new_drawing = {uid : newUid(), type: 'curve', x:mouse_location.x/size_x, y:mouse_location.y/size_y,  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:false, is_dotted:false};
+			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:false, is_dotted:false};
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
 			this.mouseup = on_area_end;
 			this.mouseupoutside = on_area_end;
 			this.mousemove = on_area_move;
-			new_drawing = {uid : newUid(), type: 'area', x:mouse_location.x/size_x, y:mouse_location.y/size_y,scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[]};
+			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[]};
 			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, new_drawing.outline_opacity);
-			graphics.moveTo(mouse_location.x, mouse_location.y);
-			graphics.drawShape(new PIXI.Circle(mouse_location.x, mouse_location.y, min_polygon_end_distance*size_x));
+			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
+			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
+			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(min_polygon_end_distance)));
 			objectContainer.addChild(graphics);
 			renderer.render(stage);
 		}
@@ -356,8 +401,8 @@ function on_left_click(event) {
 		this.mouseup = on_icon_end;
 		this.mouseupoutside = on_icon_end;
 	} else if (active_context == 'ping_context') {
-		ping(mouse_location.x/size_x, mouse_location.y/size_y, ping_color);
-		socket.emit("ping", room, mouse_location.x/size_x, mouse_location.y/size_y, ping_color);
+		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
+		socket.emit("ping", room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = new Date();
 		this.mousemove = on_ping_move;
 		this.mouseup = on_ping_end;
@@ -366,7 +411,7 @@ function on_left_click(event) {
 		this.mouseup = on_select_end;
 		this.mouseupoutside = on_select_end;
 		this.mousemove = on_select_move;
-		left_click_origin = [mouse_location.x, mouse_location.y];
+		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 		deselect_all();
 	} else if (active_context == 'text_context') {
 		this.mouseup = on_text_end;
@@ -375,19 +420,19 @@ function on_left_click(event) {
 		this.mouseup = on_rectangle_end;
 		this.mouseupoutside = on_rectangle_end;
 		this.mousemove = on_rectangle_move;
-		left_click_origin = [mouse_location.x, mouse_location.y];
+		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 	} else if (active_context == 'circle_context') {
 		this.mouseup = on_circle_end;
 		this.mouseupoutside = on_circle_end;
 		this.mousemove = on_circle_move;
-		left_click_origin = [mouse_location.x, mouse_location.y];
+		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 	} 
 }
 
 function on_area_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	var x = mouse_location.x/size_x;
-	var y = mouse_location.y/size_y;
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -396,7 +441,7 @@ function on_area_move() {
 	new_y = y - new_drawing.y;
 	new_drawing.path.push([new_x, new_y]);
 	graphic = new PIXI.Graphics();
-	graphic.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, 1);	
+	graphic.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, 1);	
 	free_draw(graphic, new_drawing);
 	objectContainer.addChild(graphic);
 	renderer.render(stage);
@@ -406,8 +451,8 @@ function on_area_move() {
 
 function on_area_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	var x = mouse_location.x/size_x;
-	var y = mouse_location.y/size_y;
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -435,8 +480,8 @@ function on_area_end() {
 
 function on_curve_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	var x = mouse_location.x/size_x;
-	var y = mouse_location.y/size_y;
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -445,7 +490,7 @@ function on_curve_move() {
 	new_y = y - new_drawing.y;
 	new_drawing.path.push([new_x, new_y]);
 	graphic = new PIXI.Graphics();
-	graphic.lineStyle(new_drawing.thickness * (size_x/500), new_drawing.color, 1);	
+	graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 1);	
 	free_draw(graphic, new_drawing);
 	objectContainer.addChild(graphic);
 	renderer.render(stage);
@@ -455,8 +500,8 @@ function on_curve_move() {
 
 function on_curve_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	var x = mouse_location.x/size_x;
-	var y = mouse_location.y/size_y;
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -490,15 +535,15 @@ function on_curve_end() {
 function on_polygon_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, 0.5);
+	graphic.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, 0.5);
 	var a;
 	if (new_drawing.path.length == 0) {
-		a = [new_drawing.x * size_x, new_drawing.y * size_y];
+		a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
 	} else {
-		a = [(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x) * size_x,
-			 (new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y) * size_y];
+		a = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
+			 y_abs(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
 	}
-	b = [mouse_location.x, mouse_location.y];
+	b = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 	graphic.moveTo(a[0], a[1]);		
 	graphic.lineTo(b[0], b[1]);
 
@@ -509,8 +554,8 @@ function on_polygon_move() {
 
 function on_polygon_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	var x = mouse_location.x/size_x;
-	var y = mouse_location.y/size_y;
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -530,17 +575,17 @@ function on_polygon_end() {
 	} else {
 		new_drawing.path.push([x - new_drawing.x, y - new_drawing.y]);
 		var graphic = new PIXI.Graphics();
-		graphic.lineStyle(new_drawing.outline_thickness * (size_x/500), new_drawing.outline_color, 1);
+		graphic.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, 1);
 		
 		var a;
 		if (new_drawing.path.length == 1) {
-			a = [new_drawing.x * size_x, new_drawing.y * size_y];
+			a = [x_abs(new_drawing.x), x_abs(new_drawing.y)];
 		} else {
-			a = [(new_drawing.path[new_drawing.path.length - 2][0] + new_drawing.x) * size_x, 
-				 (new_drawing.path[new_drawing.path.length - 2][1] + new_drawing.y) * size_y];
+			a = [x_abs(new_drawing.path[new_drawing.path.length - 2][0] + new_drawing.x), 
+				 y_abs(new_drawing.path[new_drawing.path.length - 2][1] + new_drawing.y)];
 		}
-		var b = [(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x) * size_x, 
-				 (new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y) * size_y];
+		var b = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x), 
+				 y_abs(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
 
 		graphic.moveTo(a[0], a[1]);	
 		if (!new_drawing.is_dotted) {				 
@@ -556,7 +601,7 @@ function on_polygon_end() {
 
 function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opacity, fill_color, shape) {
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(outline_thickness, outline_color, outline_opacity);
+	graphic.lineStyle(outline_thickness * x_abs(thickness_scale), outline_color, outline_opacity);
 	graphic.beginFill(fill_color, fill_opacity);
 	graphic.drawShape(shape);
 	graphic.endFill();
@@ -566,10 +611,9 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 function on_circle_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	
-	var center_x = (left_click_origin[0] + mouse_location.x) / 2;
-	var center_y = (left_click_origin[1] + mouse_location.y) / 2;
-	var radius = Math.sqrt((left_click_origin[0] - mouse_location.x) * (left_click_origin[0] - mouse_location.x)
-						  +(left_click_origin[1] - mouse_location.y) * (left_click_origin[1] - mouse_location.y))
+	var center_x = (left_click_origin[0] + mouse_x_abs(mouse_location.x)) / 2;
+	var center_y = (left_click_origin[1] + mouse_y_abs(mouse_location.y)) / 2;
+	var radius = Math.sqrt((left_click_origin[0] - mouse_x_abs(mouse_location.x)) * (left_click_origin[0] - mouse_x_abs(mouse_location.x))+(left_click_origin[1] - mouse_y_abs(mouse_location.y)) * (left_click_origin[1] - mouse_y_abs(mouse_location.y)));
 	radius /= 2;
 	
 	var graphic = draw_shape(circle_outline_thickness,
@@ -588,17 +632,16 @@ function on_circle_move() {
 function on_circle_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	
-	var center_x = (left_click_origin[0] + mouse_location.x) / 2;
-	var center_y = (left_click_origin[1] + mouse_location.y) / 2;
-	var radius = Math.sqrt((left_click_origin[0] - mouse_location.x) * (left_click_origin[0] - mouse_location.x)
-						  +(left_click_origin[1] - mouse_location.y) * (left_click_origin[1] - mouse_location.y))
+	var center_x = (left_click_origin[0] + mouse_x_abs(mouse_location.x)) / 2;
+	var center_y = (left_click_origin[1] + mouse_y_abs(mouse_location.y)) / 2;
+	var radius = Math.sqrt((left_click_origin[0] - mouse_x_abs(mouse_location.x)) * (left_click_origin[0] - mouse_x_abs(mouse_location.x))+(left_click_origin[1] - mouse_y_abs(mouse_location.y)) * (left_click_origin[1] - mouse_y_abs(mouse_location.y)));
 	radius /= 2;
 	
 	this.mouseup = undefined;
 	this.mouseupoutside = undefined;
 	this.mousemove = undefined;
 	
-	var new_shape = {uid:newUid(), type:'circle', x:center_x/size_x, y:center_y/size_y, radius:radius/size_x, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1};	
+	var new_shape = {uid:newUid(), type:'circle', x:x_rel(center_x), y:y_rel(center_y), radius:x_rel(radius), outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1};	
 
 	create_circle(new_shape);
 	snap_and_emit_entity(new_shape);
@@ -608,10 +651,10 @@ function on_circle_end() {
 
 function on_rectangle_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
-	var left_x = Math.min(left_click_origin[0], mouse_location.x);
-	var left_y = Math.min(left_click_origin[1], mouse_location.y);
-	var right_x = Math.max(left_click_origin[0], mouse_location.x);
-	var right_y = Math.max(left_click_origin[1], mouse_location.y);
+	var left_x = Math.min(left_click_origin[0], mouse_x_abs(mouse_location.x));
+	var left_y = Math.min(left_click_origin[1], mouse_y_abs(mouse_location.y));
+	var right_x = Math.max(left_click_origin[0], mouse_x_abs(mouse_location.x));
+	var right_y = Math.max(left_click_origin[1], mouse_y_abs(mouse_location.y));
 	var graphic = draw_shape(rectangle_outline_thickness,
 							 rectangle_outline_opacity,
 							 rectangle_outline_color,
@@ -626,14 +669,14 @@ function on_rectangle_move() {
 
 function on_rectangle_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
-	var left_x = Math.min(left_click_origin[0], mouse_location.x);
-	var left_y = Math.min(left_click_origin[1], mouse_location.y);
-	var right_x = Math.max(left_click_origin[0], mouse_location.x);
-	var right_y = Math.max(left_click_origin[1], mouse_location.y);
+	var left_x = Math.min(left_click_origin[0], mouse_x_abs(mouse_location.x));
+	var left_y = Math.min(left_click_origin[1], mouse_y_abs(mouse_location.y));
+	var right_x = Math.max(left_click_origin[0], mouse_x_abs(mouse_location.x));
+	var right_y = Math.max(left_click_origin[1], mouse_y_abs(mouse_location.y));
 	this.mouseup = undefined;
 	this.mouseupoutside = undefined;
 	this.mousemove = undefined;
-	var new_shape = {uid:newUid(), type:'rectangle', x:left_x/size_x, y:left_y/size_y, width:(right_x - left_x)/size_x, height:(right_y - left_y)/size_y, outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1};
+	var new_shape = {uid:newUid(), type:'rectangle', x:x_rel(left_x), y:y_rel(left_y), width:x_rel(right_x - left_x), height:y_rel(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1};
 	create_rectangle(new_shape);
 	snap_and_emit_entity(new_shape);
 	undo_list.push(["add", new_shape]);
@@ -644,8 +687,8 @@ function on_ping_move() {
 	var timeDiff = time - last_ping_time;
 	if (timeDiff > 120) {
 		var mouse_location = renderer.plugins.interaction.mouse.global;
-		ping(mouse_location.x/size_x, mouse_location.y/size_y, ping_color);
-		socket.emit("ping", room, mouse_location.x/size_x, mouse_location.y/size_y, ping_color);
+		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
+		socket.emit("ping", room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = time;
 	}
 }
@@ -662,7 +705,7 @@ function on_select_move() {
 	var graphic = new PIXI.Graphics();
 	graphic.lineStyle(2, 0xBBBBBB, 1);
 	graphic.beginFill(0xBBBBBB, 0.25);
-	graphic.drawRect(left_click_origin[0], left_click_origin[1], mouse_location.x-left_click_origin[0], mouse_location.y-left_click_origin[1]);
+	graphic.drawRect(left_click_origin[0], left_click_origin[1], mouse_x_abs(mouse_location.x)-left_click_origin[0], mouse_y_abs(mouse_location.y)-left_click_origin[1]);
 	graphic.endFill();
 	objectContainer.addChild(graphic);
 	renderer.render(stage);
@@ -719,10 +762,10 @@ function deselect_all() {
 function on_draw_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	if (active_context == 'draw_context') {
-		new_drawing.path.push([mouse_location.x/size_x - new_drawing.x, mouse_location.y/size_y - new_drawing.y]);
-		graphics.lineTo(mouse_location.x, mouse_location.y);
+		new_drawing.path.push([mouse_x_rel(mouse_location.x) - new_drawing.x, mouse_y_rel(mouse_location.y) - new_drawing.y]);
+		graphics.lineTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
 		renderer.render(stage);
-		graphics.moveTo(mouse_location.x, mouse_location.y);
+		graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
 	}
 }
 
@@ -754,8 +797,10 @@ function on_icon_end() {
 	this.mouseup = undefined;
 	this.mouseupoutside = undefined;
 	var mouse_location = renderer.plugins.interaction.mouse.global;
-	var x = mouse_location.x/size_x - (icon_scale/2);
-	var y = mouse_location.y/size_y - (icon_scale/2);
+
+	var x = mouse_x_rel(mouse_location.x) - (icon_scale/2);
+	var y = mouse_y_rel(mouse_location.y) - (icon_scale/2);
+	
 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:1, color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Arial"}
 	undo_list.push(["add", icon]);
 	create_icon(icon);
@@ -766,8 +811,8 @@ function on_text_end() {
 	this.mouseup = undefined;
 	this.mouseupoutside = undefined;
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	var x = mouse_location.x/size_x;
-	var y = mouse_location.y/size_y;
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
 	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
 	undo_list.push("add", text);
 	create_text(text);
@@ -777,15 +822,15 @@ function on_text_end() {
 function on_line_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(new_drawing.thickness * (size_x/500), new_drawing.color, 0.5);
+	graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 0.5);
 	var a;
 	if (new_drawing.path.length == 0) {
-		a = [new_drawing.x * size_x, new_drawing.y * size_y];
+		a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
 	} else {
-		a = [(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x) * size_x,
-			 (new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y) * size_y];
+		a = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
+			 y_abs(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
 	}
-	b = [mouse_location.x, mouse_location.y];
+	b = [mouse_x_abs(mouse_location.x), mouse_x_abs(mouse_location.y)];
 	graphic.moveTo(a[0], a[1]);		
 	graphic.lineTo(b[0], b[1]);
 
@@ -800,8 +845,8 @@ function on_line_move() {
 
 function on_line_end() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	var x = mouse_location.x/size_x;
-	var y = mouse_location.y/size_y;
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -826,17 +871,17 @@ function on_line_end() {
 		graphics = null;
 	} else {
 		var graphic = new PIXI.Graphics();
-		graphic.lineStyle(new_drawing.thickness * (size_x/500), line_color, 1);
+		graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), line_color, 1);
 		
 		var a;
 		if (new_drawing.path.length == 1) {
-			a = [new_drawing.x * size_x, new_drawing.y * size_y];
+			a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
 		} else {
-			a = [(new_drawing.path[new_drawing.path.length - 2][0] + new_drawing.x) * size_x, 
-				 (new_drawing.path[new_drawing.path.length - 2][1] + new_drawing.y) * size_y];
+			a = [x_abs(new_drawing.path[new_drawing.path.length - 2][0] + new_drawing.x), 
+				 y_abs(new_drawing.path[new_drawing.path.length - 2][1] + new_drawing.y)];
 		}
-		var b = [(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x) * size_x, 
-				 (new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y) * size_y];
+		var b = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x), 
+				 y_abs(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
 
 		graphic.moveTo(a[0], a[1]);	
 		if (!new_drawing.is_dotted) {				 
@@ -854,10 +899,10 @@ objectContainer.interactive = true;
 objectContainer.on('mousedown', on_left_click)
 
 function create_text(text_entity) {
-	var size = "bold "+text_entity.font_size*(size_x/800)+"px " + text_entity.font;
+	var size = "bold "+text_entity.font_size*x_abs(font_scale)+"px " + text_entity.font;
 	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
-	text.x = text_entity.x * size_x;
-	text.y = text_entity.y * size_y;
+	text.x = x_abs(text_entity.x);
+	text.y = y_abs(text_entity.y);
 	
 	text_entity.container = text;
 	text.entity = text_entity;
@@ -878,17 +923,16 @@ function create_icon(icon) {
 	var texture = PIXI.Texture.fromImage(image_host + icon.tank +'.png');
 	var sprite = new PIXI.Sprite(texture);
 	sprite.tint = icon.color;
+	sprite.width = x_abs(icon_scale);
+	sprite.height = x_abs(icon_scale);
 	
 	icon.container = new PIXI.Container();
 
-	sprite.width = size_x * icon_scale;
-	sprite.height = size_y * icon_scale;
-
-	icon.container.x = size_x*icon.x;
-	icon.container.y = size_y*icon.y;
+	icon.container.x = x_abs(icon.x);
+	icon.container.y = y_abs(icon.y);
 	
 	if (icon.label != "") {
-		var size = "bold "+icon.label_font_size*(size_x/800)+"px " + icon.label_font;
+		var size = "bold "+icon.label_font_size*x_abs(font_scale)+"px " + icon.label_font;
 		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
 		text.x += sprite.width/2 - text.width/2;
 		text.y += 1.2 * sprite.height/2;
@@ -925,7 +969,7 @@ function draw_dotted_line(graphic, x0, y0, x1, y1) {
 	var size = Math.sqrt(x_diff*x_diff+y_diff*y_diff);
 	x_diff /= size;
 	y_diff /= size;
-	var increment = (size_x/60);
+	var increment = x_abs(0.02);
 	for (var i = increment; i < size; i+=increment) {
 		graphic.lineTo(x0 + i*x_diff, y0 + i*y_diff);
 		i+=increment;
@@ -954,7 +998,7 @@ function draw_arrow(graphic, a, b) {
 	size = Math.sqrt(x_2*x_2 + y_2*y_2);
 	x_2 = x_2/size;
 	y_2 = y_2/size;	
-	var scale = (size_x/35);
+	var scale = x_abs(1.0/35);
 	graphic.moveTo(b[0], b[1]);	
 	graphic.lineTo(b[0] + x_1 * scale, b[1] + y_1 * scale);
 	graphic.moveTo(b[0], b[1]);
@@ -1018,22 +1062,22 @@ function computeControlPoints(K)
 
 function free_draw(graph, drawing, smooth_out) {
 	if (drawing.path.length == 1) {
-		graph.moveTo(drawing.x * size_x, drawing.y * size_y);
-		graph.lineTo((drawing.x + drawing.path[0][0]) * size_x, 
-		             (drawing.y + drawing.path[0][1]) * size_y);
+		graph.moveTo(x_abs(drawing.x), y_abs(drawing.y));
+		graph.lineTo(x_abs(drawing.x + drawing.path[0][0]), 
+		             y_abs(drawing.y + drawing.path[0][1]));
 	} else {
-		var path_x = [drawing.x * size_x];
-		var path_y = [drawing.y * size_y];
+		var path_x = [x_abs(drawing.x)];
+		var path_y = [y_abs(drawing.y)];
 		
 		for (i = 0; i < drawing.path.length; i++) {
-			path_x.push((drawing.x + drawing.path[i][0])*size_x);
-			path_y.push((drawing.y + drawing.path[i][1])*size_y);
+			path_x.push(x_abs(drawing.x + drawing.path[i][0]));
+			path_y.push(y_abs(drawing.y + drawing.path[i][1]));
 		}
 		
 		if (smooth_out) {
 			for (var i = 0; i < Math.min(drawing.path.length, 4); i++) {
-				path_x.push((drawing.x + drawing.path[i][0])*size_x);
-				path_y.push((drawing.y + drawing.path[i][1])*size_y);
+				path_x.push(x_abs(drawing.x + drawing.path[i][0]));
+				path_y.push(y_abs(drawing.y + drawing.path[i][1]));
 			}
 		}
 
@@ -1057,7 +1101,7 @@ function free_draw(graph, drawing, smooth_out) {
 
 function create_drawing(drawing) {
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.thickness * (size_x/500), drawing.color, 1);
+	graphic.lineStyle(drawing.thickness * x_abs(thickness_scale), drawing.color, 1);
 	free_draw(graphic, drawing);		
 	graphic.graphicsData[0].shape.closed = false;
 	init_graphic(drawing, graphic);
@@ -1065,7 +1109,7 @@ function create_drawing(drawing) {
 
 function create_area(drawing, smooth_point) {
 	graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.outline_thickness * (size_x/500), drawing.outline_color, 1);
+	graphic.lineStyle(drawing.outline_thickness * x_abs(thickness_scale), drawing.outline_color, 1);
 	graphic.beginFill(drawing.fill_color, drawing.fill_opacity);
 	free_draw(graphic, drawing, true);
 	graphic.graphicsData[0].shape.closed = true;
@@ -1074,22 +1118,22 @@ function create_area(drawing, smooth_point) {
 }
 
 function create_rectangle(drawing) {
-	var rect = new PIXI.Rectangle(drawing.x*size_x, drawing.y*size_y, drawing.width*size_x, drawing.height*size_y);
+	var rect = new PIXI.Rectangle(x_abs(drawing.x), y_abs(drawing.y), x_abs(drawing.width), y_abs(drawing.height));
 	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, rect);
 	init_graphic(drawing, graphic);	
 }
 
 function create_circle(drawing) {
-	var circle = new PIXI.Circle(drawing.x*size_x, drawing.y*size_y, drawing.radius*size_x);
+	var circle = new PIXI.Circle(x_abs(drawing.x), y_abs(drawing.y), x_abs(drawing.radius));
 	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, circle);
 	init_graphic(drawing, graphic);	
 }
 
 function create_polygon(drawing) {
-	var path = [drawing.x*size_x, drawing.y*size_y];
+	var path = [x_abs(drawing.x), y_abs(drawing.y)];
 	for (var i in drawing.path) {
-		path.push((drawing.path[i][0]+drawing.x)*size_x);
-		path.push((drawing.path[i][1]+drawing.y)*size_y);
+		path.push(x_abs(drawing.path[i][0]+drawing.x));
+		path.push(y_abs(drawing.path[i][1]+drawing.y));
 	}
 	var polygon = new PIXI.Polygon(path);
 	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, polygon);
@@ -1098,12 +1142,12 @@ function create_polygon(drawing) {
 
 function create_line(drawing) {
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.thickness * (size_x/500), drawing.color, 1);
-	var last_x = drawing.x*size_x, last_y = drawing.y*size_y;
+	graphic.lineStyle(drawing.thickness * x_abs(thickness_scale), drawing.color, 1);
+	var last_x = x_abs(drawing.x), last_y = y_abs(drawing.y);
 	graphic.moveTo(last_x, last_y);
 	for (i = 0; i < drawing.path.length; i++) {
-		var x_i = (drawing.x + drawing.path[i][0])*size_x;
-		var y_i = (drawing.y + drawing.path[i][1])*size_y;
+		var x_i = x_abs(drawing.x + drawing.path[i][0]);
+		var y_i = y_abs(drawing.y + drawing.path[i][1]);
 		if (!drawing.is_dotted) {
 			graphic.lineTo(x_i, y_i);
 		} else {
@@ -1116,13 +1160,13 @@ function create_line(drawing) {
 	if (drawing.is_arrow) {
 		var a;
 		if (drawing.path.length == 1) {
-			a = [drawing.x * size_x, drawing.y * size_y];
+			a = [x_abs(drawing.x), y_abs(drawing.y)];
 		} else {
-			a = [(drawing.x + drawing.path[drawing.path.length-2][0]) * size_x, 
-			     (drawing.y + drawing.path[drawing.path.length-2][1]) * size_y];
+			a = [x_abs(drawing.x + drawing.path[drawing.path.length-2][0]), 
+			     y_abs(drawing.y + drawing.path[drawing.path.length-2][1])];
 		}
-		var b = [(drawing.x + drawing.path[drawing.path.length-1][0]) * size_x, 
-			     (drawing.y + drawing.path[drawing.path.length-1][1]) * size_y];
+		var b = [x_abs(drawing.x + drawing.path[drawing.path.length-1][0]), 
+			     y_abs(drawing.y + drawing.path[drawing.path.length-1][1])];
 		draw_arrow(graphic, a, b);
 	}
 	
@@ -1346,8 +1390,8 @@ function undo() {
 				if (history[uid]) { //still exists
 					action[1][i][0][0] = history[uid].x;
 					action[1][i][0][1] = history[uid].y;
-					history[uid].container.x += (x-history[uid].x)*size_x;
-					history[uid].container.y += (y-history[uid].y)*size_y;
+					history[uid].container.x += x_abs(x-history[uid].x);
+					history[uid].container.y += y_abs(y-history[uid].y);
 					history[uid].x = x;
 					history[uid].y = y;
 					renderer.render(stage);
@@ -1397,8 +1441,8 @@ function redo() {
 				if (history[uid]) { //still exists
 					action[1][i][0][0] = history[uid].x;
 					action[1][i][0][1] = history[uid].y;
-					history[uid].container.x += (x-history[uid].x)*size_x;
-					history[uid].container.y += (y-history[uid].y)*size_y;
+					history[uid].container.x += x_abs(x-history[uid].x);
+					history[uid].container.y += y_abs(y-history[uid].y);
 					history[uid].x = x;
 					history[uid].y = y;
 					renderer.render(stage);
@@ -1756,8 +1800,8 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 	});
 	
 	socket.on('drag', function(uid, x, y) {
-		history[uid].container.x += (x-history[uid].x)*size_x;
-		history[uid].container.y += (y-history[uid].y)*size_y;
+		history[uid].container.x += x_abs(x-history[uid].x);
+		history[uid].container.y += y_abs(y-history[uid].y);
 		history[uid].x = x;
 		history[uid].y = y;
 		renderer.render(stage);
