@@ -60,7 +60,7 @@ var previously_selected_entities = [];
 var label_font_size = 30;
 var last_ping_time;
 var icon_scale = 0.025;
-var thickness_scale = 0.003;
+var thickness_scale = 0.0015;
 var font_scale = 0.002;
 
 //keyboard shortcuts
@@ -1074,21 +1074,27 @@ function free_draw(graph, drawing, smooth_out) {
 			path_y.push(y_abs(drawing.y + drawing.path[i][1]));
 		}
 		
+		//smooth out basically means push some of the end points at the beginning 
+		//and some of beginning points at the end before we calculate the control points
+		var slice_size;
 		if (smooth_out) {
-			for (var i = 0; i < Math.min(drawing.path.length, 4); i++) {
-				path_x.push(x_abs(drawing.x + drawing.path[i][0]));
-				path_y.push(y_abs(drawing.y + drawing.path[i][1]));
-			}
+			slice_size = Math.min(4, path_x.length-1)
+			path_x = path_x.slice(path_x.length-slice_size-1, path_x.length-1).concat(path_x.concat(path_x.slice(1, slice_size+1)))
+			path_y = path_y.slice(path_y.length-slice_size-1, path_y.length-1).concat(path_y.concat(path_y.slice(1, slice_size+1)))
 		}
 
 		var cx = computeControlPoints(path_x);
 		var cy = computeControlPoints(path_y);
 		
 		if (smooth_out) {
-			for (var i = 0; i < Math.min(drawing.path.length, 4); i++) {
-				path_x.pop();
-				path_y.pop();
-			}
+			var left = slice_size;
+			var right = path_x.length-slice_size;
+			path_x = path_x.slice(left, right)
+			path_y = path_y.slice(left, right)
+			cx.p1 = cx.p1.slice(left, right)
+			cx.p2 = cx.p2.slice(left, right)
+			cy.p1 = cy.p1.slice(left, right)
+			cy.p2 = cy.p2.slice(left, right)
 		}
 		
 		graph.moveTo(path_x[0], path_y[0]);
