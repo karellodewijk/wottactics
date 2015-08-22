@@ -540,6 +540,7 @@ function on_curve_end() {
 		this.mousemove = undefined;	
 		create_drawing(new_drawing);
 		snap_and_emit_entity(new_drawing);
+		undo_list.push(["add", new_drawing]);
 		new_drawing = null;
 	} else {
 		new_drawing.path.push([new_x, new_y]);
