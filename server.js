@@ -81,7 +81,7 @@ function newUid() {
 		
 		socket.on('request_room', function(name) {
 			var room_uid = newUid();
-			var link = "cwplanner.html?room="+room_uid;
+			var link = room_uid;
 			if (name) {
 				var identity = socket.handshake.sessionStore[socket.handshake.sessionID].user.identity;
 				if (identity) {

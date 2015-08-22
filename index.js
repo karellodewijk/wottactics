@@ -52,8 +52,14 @@ $.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function
 		}
 	});
 	
-	socket.on('approve_room', function(link) {	
-		location.href = link;	
+	socket.on('approve_room', function(uid) {	
+		console
+		if (location.pathname.indexOf("wows") != -1) {
+			console.log("going to")
+			location.href = "wowsplanner.html?room="+uid;	
+		} else {
+			location.href = "cwplanner.html?room="+uid;	
+		}
 	});
 
 	$('#login_dropdown_select').on('click', 'a', function () {
