@@ -34,17 +34,15 @@ quotes = [
 	'“The whole secret lies in confusing the enemy, so that he cannot fathom our real intent.” ― Sun Tzu, The Art of War '
 ];
 
-$(document).ready(function() {
-	$("#quote").text(quotes[Math.floor(Math.random() * quotes.length)]);
-});
-
 function add_tactic(name, timestamp) {
 	date = new Date(timestamp);	
 	var node = '<li class="list-group-item row" id="' + name + '"><h5 class="col-sm-7">'+ name +'</h5><h5 class="col-sm-3">'+ date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() +'</h5><span class="col-md-1"><a class="btn btn-danger select_tactic_button" href="javascript:void(0);" id="' + name + '" role="button"><img src="http://karellodewijk.github.io/icons/bin.png" /></a></span><a class="btn btn-primary select_tactic_button col-md-1" href="javascript:void(0);" id="' + name + '" role="button" style="">Launch&raquo;</a></li>';
 	$('#tactic_list').append(node);
 }
 
-$.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function() {
+$(document).ready(function() {
+	$("#quote").text(quotes[Math.floor(Math.random() * quotes.length)]);
+	
 	var socket = io.connect('http://'+location.hostname+':8000');
 	
 	$('#new_room').click(function(){ 

@@ -221,14 +221,6 @@ function on_drag_start(event) {
 	}
 }
 
-function draw_rectangle(rectangle) {
-	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(4, '#FFFFFF', 1);
-	graphic.drawShape(rectangle);
-	objectContainer.addChild(graphic);
-	renderer.render(stage);	
-}
-
 function on_drag_end() {
 	if (context_before_drag == 'remove_context') {
 		remove(this.entity.uid);
@@ -1363,6 +1355,13 @@ function isIE(userAgent) {
   return userAgent.indexOf("MSIE ") > -1 || userAgent.indexOf("Trident/") > -1;
 }
 
+function initialize_color_picker(slider_id, variable_name) {
+	window[variable_name] = parseInt('0x'+$('select[id="'+ slider_id + '"]').val().substring(1));
+	$('select[id="'+ slider_id + '"]').simplecolorpicker().on('change', function() {
+		window[variable_name] = parseInt('0x'+$('select[id="'+ slider_id + '"]').val().substring(1));
+	});
+}
+
 function initialize_slider(slider_id, slider_text_id, variable_name) {
 	var slider = $("#"+ slider_id).slider({tooltip:'hide'});
 	$("#"+slider_text_id).val(slider.attr('value'));
@@ -1517,360 +1516,314 @@ function clear_selected() {
 
 //connect socket.io socket
 loader.once('complete', function () {
-	$.getScript("http://"+location.hostname+":8000/socket.io/socket.io.js", function() {
-		socket = io.connect('http://'+location.hostname+':8000');-
-		$(document).ready(function() {
-			$('#draw_context').hide();
-			$('#icon_context').hide();
-			$('#remove_context').hide();
-			$('#text_context').hide();
-			$('#line_context').hide();
-			$('#rectangle_context').hide();
-			$('#circle_context').hide();
-			$('#polygon_context').hide();
-			$('#curve_context').hide();
-			$('#area_context').hide();
-			$("#save_as").hide();
-			$("#save").hide();
-			$('#ping').addClass('active');
-			$('#full_line').addClass('active');
-			
-			var first_icon = $("#icon_context").find("button:first");
-			first_icon.addClass('selected');
-			selected_icon = first_icon.attr("id");
+	socket = io.connect('http://'+location.hostname+':8000');
+	$(document).ready(function() {
+		$('#draw_context').hide();
+		$('#icon_context').hide();
+		$('#remove_context').hide();
+		$('#text_context').hide();
+		$('#line_context').hide();
+		$('#rectangle_context').hide();
+		$('#circle_context').hide();
+		$('#polygon_context').hide();
+		$('#curve_context').hide();
+		$('#area_context').hide();
+		$("#save_as").hide();
+		$("#save").hide();
+		$('#ping').addClass('active');
+		$('#full_line').addClass('active');
 		
-			$('[data-toggle="popover"]').popover({
-				container: 'body',
-				html: 'true',
-				template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-				content: function() {
-					return $('#popover-content');
-				}
-			});
+		var first_icon = $("#icon_context").find("button:first");
+		first_icon.addClass('selected');
+		selected_icon = first_icon.attr("id");
+	
+		$('[data-toggle="popover"]').popover({
+			container: 'body',
+			html: 'true',
+			template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+			content: function() {
+				return $('#popover-content');
+			}
+		});
 
-			$(document).on('click', '#store_tactic', function(){
-				var name = $(document).find('#tactic_name')[0].value;
-				$('#save_as').popover('hide');
-				if (name == "") {
-					alert("Empty name");
+		$(document).on('click', '#store_tactic', function(){
+			var name = $(document).find('#tactic_name')[0].value;
+			$('#save_as').popover('hide');
+			if (name == "") {
+				alert("Empty name");
+			} else {
+				tactic_name = name;
+				socket.emit("store", room, name);
+				$("#save").show();
+				alert("Tactic stored as: " + name);
+			}
+		});	
+
+		$('#save').click(function() { 
+			if (tactic_name && tactic_name != "") {
+				socket.emit("store", room, tactic_name);
+			}
+		});
+	  
+		room = location.search.split('room=')[1].split("&")[0];
+		socket.emit('join_room', room);
+		
+		
+		//color selections
+		initialize_color_picker("curve_colorpicker", "curve_color");
+		initialize_color_picker("icon_colorpicker", "icon_color");
+		initialize_color_picker("draw_colorpicker", "draw_color");
+		initialize_color_picker("ping_colorpicker", "ping_color");
+		initialize_color_picker("line_colorpicker", "line_color");
+		initialize_color_picker("text_colorpicker", "text_color");
+		initialize_color_picker("rectangle_outline_colorpicker", "rectangle_outline_color");
+		initialize_color_picker("rectangle_fill_colorpicker", "rectangle_fill_color");
+		initialize_color_picker("circle_outline_colorpicker", "circle_outline_color");
+		initialize_color_picker("circle_fill_colorpicker", "circle_fill_color");
+		initialize_color_picker("polygon_outline_colorpicker", "polygon_outline_color");
+		initialize_color_picker("polygon_fill_colorpicker", "polygon_fill_color");
+		initialize_color_picker("area_outline_colorpicker", "area_outline_color");
+		initialize_color_picker("area_fill_colorpicker", "area_fill_color");
+		
+		//initialize sliders
+		initialize_slider("rectangle_outline_thickness", "rectangle_outline_thickness_text", "rectangle_outline_thickness");
+		rectangle_outline_thickness = parseFloat($("#rectangle_outline_thickness").val());
+		initialize_slider("rectangle_outline_opacity", "rectangle_outline_opacity_text", "rectangle_outline_opacity");
+		initialize_slider("rectangle_fill_opacity", "rectangle_fill_opacity_text", "rectangle_fill_opacity");
+		initialize_slider("circle_outline_thickness", "circle_outline_thickness_text", "circle_outline_thickness");
+		initialize_slider("circle_outline_opacity", "circle_outline_opacity_text", "circle_outline_opacity");
+		initialize_slider("circle_fill_opacity", "circle_fill_opacity_text", "circle_fill_opacity");
+		initialize_slider("polygon_outline_thickness", "polygon_outline_thickness_text", "polygon_outline_thickness");
+		initialize_slider("polygon_outline_opacity", "polygon_outline_opacity_text", "polygon_outline_opacity");
+		initialize_slider("polygon_fill_opacity", "polygon_fill_opacity_text", "polygon_fill_opacity");
+		initialize_slider("area_outline_thickness", "area_outline_thickness_text", "area_outline_thickness");
+		initialize_slider("area_outline_opacity", "area_outline_opacity_text", "area_outline_opacity");
+		initialize_slider("area_fill_opacity", "area_fill_opacity_text", "area_fill_opacity");
+		initialize_slider("line_thickness", "line_thickness_text", "line_thickness");
+		initialize_slider("draw_thickness", "draw_thickness_text", "draw_thickness");
+		initialize_slider("curve_thickness", "curve_thickness_text", "curve_thickness");
+		initialize_slider("font_size", "font_size_text", "font_size");
+		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
+		initialize_slider("icon_size", "icon_size_text", "icon_size");
+		
+		$("#chat_input").keyup(function (e) {
+			if (e.keyCode == 13) {
+				var message = my_user.name + ": " + $("#chat_input").val() + "\n";
+				socket.emit("chat", room, message);
+				chat(message);
+				$("#chat_input").val("");
+			}
+		});
+
+		$('#export').click(function () {
+			renderer.render(stage);	
+			var data = renderer.view.toDataURL("image/jpeg", 0.6);			
+			if (isIE()) {
+				var win=window.open();
+				win.document.write("<img src='" + data + "'/>");
+			} else {			
+				var link = document.createElement("a");
+				link.setAttribute("target","_blank");
+				if(Blob !== undefined) {
+					var blob = new Blob([data], {type: "image/jpeg"});
+					link.setAttribute("href", data);
 				} else {
-					tactic_name = name;
-					socket.emit("store", room, name);
-					$("#save").show();
-					alert("Tactic stored as: " + name);
+					link.setAttribute("href", data);
 				}
-			});	
-
-			$('#save').click(function() { 
-				if (tactic_name && tactic_name != "") {
-					socket.emit("store", room, tactic_name);
-				}
-			});
-		  
-			room = location.search.split('room=')[1].split("&")[0];
-			socket.emit('join_room', room);
-			
-			
-			//color selections
-			curve_color = parseInt('0x'+$('select[id="curve_colorpicker"]').val().substring(1));
-			$('select[id="curve_colorpicker"]').simplecolorpicker().on('change', function() {
-				curve_color = parseInt('0x'+$('select[id="curve_colorpicker"]').val().substring(1));
-			});
-			icon_color = parseInt('0x'+$('select[id="icon_colorpicker"]').val().substring(1));
-			$('select[id="icon_colorpicker"]').simplecolorpicker().on('change', function() {
-				icon_color = parseInt('0x'+$('select[id="icon_colorpicker"]').val().substring(1));
-			});
-			draw_color = parseInt('0x'+$('select[id="draw_colorpicker"]').val().substring(1));
-			$('select[id="draw_colorpicker"]').simplecolorpicker().on('change', function() {
-				draw_color = parseInt('0x'+$('select[id="draw_colorpicker"]').val().substring(1));
-			});
-			ping_color = parseInt('0x'+$('select[id="ping_colorpicker"]').val().substring(1));
-			$('select[id="ping_colorpicker"]').simplecolorpicker().on('change', function() {
-				ping_color = parseInt('0x'+$('select[id="ping_colorpicker"]').val().substring(1));
-			});
-			line_color = parseInt('0x'+$('select[id="line_colorpicker"]').val().substring(1));
-			$('select[id="line_colorpicker"]').simplecolorpicker().on('change', function() {
-				line_color = parseInt('0x'+$('select[id="line_colorpicker"]').val().substring(1));
-			});
-			text_color = parseInt('0x'+$('select[id="text_colorpicker"]').val().substring(1));
-			$('select[id="text_colorpicker"]').simplecolorpicker().on('change', function() {
-				text_color = parseInt('0x'+$('select[id="text_colorpicker"]').val().substring(1));
-			});
-			rectangle_outline_color = parseInt('0x'+$('select[id="rectangle_outline_colorpicker"]').val().substring(1));
-			$('select[id="rectangle_outline_colorpicker"]').simplecolorpicker().on('change', function() {
-				rectangle_outline_color = parseInt('0x'+$('select[id="rectangle_outline_colorpicker"]').val().substring(1));
-			});
-			rectangle_fill_color = parseInt('0x'+$('select[id="rectangle_fill_colorpicker"]').val().substring(1));
-			$('select[id="rectangle_fill_colorpicker"]').simplecolorpicker().on('change', function() {
-				rectangle_fill_color = parseInt('0x'+$('select[id="rectangle_fill_colorpicker"]').val().substring(1));
-			});
-			circle_outline_color = parseInt('0x'+$('select[id="circle_outline_colorpicker"]').val().substring(1));
-			$('select[id="circle_outline_colorpicker"]').simplecolorpicker().on('change', function() {
-				circle_outline_color = parseInt('0x'+$('select[id="circle_outline_colorpicker"]').val().substring(1));
-			});
-			circle_fill_color = parseInt('0x'+$('select[id="circle_fill_colorpicker"]').val().substring(1));
-			$('select[id="circle_fill_colorpicker"]').simplecolorpicker().on('change', function() {
-				circle_fill_color = parseInt('0x'+$('select[id="circle_fill_colorpicker"]').val().substring(1));
-			});
-			polygon_outline_color = parseInt('0x'+$('select[id="polygon_outline_colorpicker"]').val().substring(1));
-			$('select[id="polygon_outline_colorpicker"]').simplecolorpicker().on('change', function() {
-				polygon_outline_color = parseInt('0x'+$('select[id="polygon_outline_colorpicker"]').val().substring(1));
-			});
-			polygon_fill_color = parseInt('0x'+$('select[id="polygon_fill_colorpicker"]').val().substring(1));
-			$('select[id="polygon_fill_colorpicker"]').simplecolorpicker().on('change', function() {
-				polygon_fill_color = parseInt('0x'+$('select[id="polygon_fill_colorpicker"]').val().substring(1));
-			});
-			area_outline_color = parseInt('0x'+$('select[id="area_outline_colorpicker"]').val().substring(1));
-			$('select[id="area_outline_colorpicker"]').simplecolorpicker().on('change', function() {
-				area_outline_color = parseInt('0x'+$('select[id="area_outline_colorpicker"]').val().substring(1));
-			});
-			area_fill_color = parseInt('0x'+$('select[id="area_fill_colorpicker"]').val().substring(1));
-			$('select[id="area_fill_colorpicker"]').simplecolorpicker().on('change', function() {
-				area_fill_color = parseInt('0x'+$('select[id="area_fill_colorpicker"]').val().substring(1));
-			});
-			
-			//initialize sliders
-			initialize_slider("rectangle_outline_thickness", "rectangle_outline_thickness_text", "rectangle_outline_thickness");
-			rectangle_outline_thickness = parseFloat($("#rectangle_outline_thickness").val());
-			initialize_slider("rectangle_outline_opacity", "rectangle_outline_opacity_text", "rectangle_outline_opacity");
-			initialize_slider("rectangle_fill_opacity", "rectangle_fill_opacity_text", "rectangle_fill_opacity");
-			initialize_slider("circle_outline_thickness", "circle_outline_thickness_text", "circle_outline_thickness");
-			initialize_slider("circle_outline_opacity", "circle_outline_opacity_text", "circle_outline_opacity");
-			initialize_slider("circle_fill_opacity", "circle_fill_opacity_text", "circle_fill_opacity");
-			initialize_slider("polygon_outline_thickness", "polygon_outline_thickness_text", "polygon_outline_thickness");
-			initialize_slider("polygon_outline_opacity", "polygon_outline_opacity_text", "polygon_outline_opacity");
-			initialize_slider("polygon_fill_opacity", "polygon_fill_opacity_text", "polygon_fill_opacity");
-			initialize_slider("area_outline_thickness", "area_outline_thickness_text", "area_outline_thickness");
-			initialize_slider("area_outline_opacity", "area_outline_opacity_text", "area_outline_opacity");
-			initialize_slider("area_fill_opacity", "area_fill_opacity_text", "area_fill_opacity");
-			initialize_slider("line_thickness", "line_thickness_text", "line_thickness");
-			initialize_slider("draw_thickness", "draw_thickness_text", "draw_thickness");
-			initialize_slider("curve_thickness", "curve_thickness_text", "curve_thickness");
-			initialize_slider("font_size", "font_size_text", "font_size");
-			initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
-			initialize_slider("icon_size", "icon_size_text", "icon_size");
-			
-			$("#chat_input").keyup(function (e) {
-				if (e.keyCode == 13) {
-					var message = my_user.name + ": " + $("#chat_input").val() + "\n";
-					socket.emit("chat", room, message);
-					chat(message);
-					$("#chat_input").val("");
-				}
-			});
-
-			$('#export').click(function () {
-				renderer.render(stage);	
-				var data = renderer.view.toDataURL("image/jpeg", 0.6);			
-				if (isIE()) {
-					var win=window.open();
-					win.document.write("<img src='" + data + "'/>");
-				} else {			
-					var link = document.createElement("a");
-					link.setAttribute("target","_blank");
-					if(Blob !== undefined) {
-						var blob = new Blob([data], {type: "image/jpeg"});
-						link.setAttribute("href", data);
-					} else {
-						link.setAttribute("href", data);
-					}
-					link.setAttribute("download", "map.jpg");
-					document.body.appendChild(link);
-					link.click();
-					document.body.removeChild(link);
-				}
-			});
-			
-			$('#lock').click(function () {
-				var node = $(this).find('img');
-				var file = node.attr('src').substring(node.attr('src').lastIndexOf("/")+1);
-				if (file == "lock.png") {
-					is_room_locked = false;				
-				} else {
-					is_room_locked = true;
-				}
-				update_lock();
-				socket.emit("lock_room", room, is_room_locked);
-			});
-
-			//tool select
-			$('#contexts').on('click', 'button', function (e) {
-				if ( $(this).attr('id') == "undo") {
-					undo();
-					return;
-				} else if ( $(this).attr('id') == "redo") {
-					redo();
-					return;
-				}			
-				$('#contexts').find("button").removeClass('active');
-				$(this).addClass('active');			
-				var new_context = $(this).attr('id')+"_context";	
-				var new_context = $(this).attr('id')+"_context";
-				if (active_context == new_context) { return; } 			
-				$('#'+active_context).hide();
-				$('#'+new_context).show();
-				active_context = new_context;			
-			});	
-
-			$('#line_type').on('click', 'button', function (e) {
-				$(this).addClass('active');
-				$(this).siblings().removeClass('active');					
-			});	
-			
-			$('#userlist').on('click', 'button', function () {
-				var id = $(this).attr('id');
-				if (id == my_user.id) { return; } //you can't change your own permission level
-				if (my_user.role != "owner") { return; } //only the owner can change permission level
-				if (!userlist[id].role) { //permission toggle
-					userlist[id].role = "driver";
-					$(this).css('background-color','yellow');
-				} else if (userlist[id].role == "driver") {
-					userlist[id].role = "owner";
-					$(this).css('background-color','lime');
-				} else if (userlist[id].role == "owner"){
-					delete userlist[id].role;
-					$(this).css('background-color','');
-				}
-				socket.emit("update_user", room, userlist[id]);
-				return false;
-			});	
-			
-			$('#clear_all').click(function() {
-				clear();
-			});
-			
-			$('#login_dropdown_select').on('click', 'a', function () {
-				socket.emit("login", this.id, window.location.href);
-			});
-			
-			socket.on('openid_login', function(url) {
-				location.href = url;
-			});
-			
-			var openid_exists = location.search.split('openid.assoc_handle=')[1];
-			if (openid_exists) {
-				socket.emit("login_complete", window.location.href);
-				if (!isIE()) {
-					window.history.replaceState("", "", location.pathname+"?room="+room); //rewrite url to make pretty
-				}
-			}
-			
-			$('#clear_draw').click(function() {
-				clear("drawing");
-			});
-			$('#clear_icons').click(function() {
-				clear("icon");
-			});
-			$('#clear_lines').click(function() {
-				clear("line");
-			});
-			$('#clear_text').click(function() {
-				clear("text");
-			});
-			$('#clear_curve').click(function() {
-				clear("curve");
-			});
-			$('#clear_rectangle').click(function() {
-				clear("rectangle");
-			});
-			$('#clear_circle').click(function() {
-				clear("circle");
-			});
-			$('#clear_polygon').click(function() {
-				clear("polygon");
-			});
-			$('#clear_area').click(function() {
-				clear("area");
-			});
-			$('#clear_selected').click(function() {
-				clear_selected();
-			});
-			
-			//tank icon select
-			$('.tank_select').click(function() {
-				$('.selected').removeClass('selected'); // removes the previous selected class
-				$(this).addClass('selected'); // adds the class to the clicked image
-				selected_icon = $(this).attr('id');
-			});
-			
-			$(".edit_window").append(renderer.view);
-			var map_select_box = document.getElementById("map_select");
-			map_select_box.onchange = function() {
-				var path = map_select_box.options[map_select_box.selectedIndex].value;
-				if (!background || background.path != path) {
-					var uid = background ? background.uid : newUid();
-					new_background = {uid:uid, type:'background', path:path};
-					socket.emit('create_entity', room, new_background);
-					set_background(new_background);
-				} 
+				link.setAttribute("download", "map.jpg");
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
 			}
 		});
 		
-		//network data responses
-		
-		socket.on('room_data', function(room_data, my_id) {
-			is_room_locked = room_data.locked;
-			my_user_id = my_id;
-			if (room_data.name) {
-				tactic_name = room_data.name;
+		$('#lock').click(function () {
+			var node = $(this).find('img');
+			var file = node.attr('src').substring(node.attr('src').lastIndexOf("/")+1);
+			if (file == "lock.png") {
+				is_room_locked = false;				
+			} else {
+				is_room_locked = true;
 			}
-			for (var user in room_data.userlist) {
-				add_user(room_data.userlist[user]);
-			}
-			for (var key in room_data.history) {
-				create_entity(room_data.history[key]);
-			}
-			update_my_user();
-		});
-
-		socket.on('create_entity', function(entity) {
-			create_entity(entity);
-		});
-		
-		socket.on('drag', function(uid, x, y) {
-			history[uid].container.x += x_abs(x-history[uid].x);
-			history[uid].container.y += y_abs(y-history[uid].y);
-			history[uid].x = x;
-			history[uid].y = y;
-			renderer.render(stage);
-		});
-
-		socket.on('ping', function(x, y, color) {
-			ping(x,y,color);
-		});
-
-		socket.on('chat', function(message) {
-			chat(message);
-		});
-		
-		socket.on('identify', function(user) {
-			my_user = user;
-			update_my_user();
-		});
-
-		socket.on('remove', function(uid) {
-			remove(uid);
-		});
-
-		socket.on('add_user', function(user) {
-			add_user(user);
-		});
-
-		socket.on('remove_user', function(user) {
-			remove_user(user);
-		});
-
-		socket.on('update_user', function(user) {
-			update_user(user);
-		});
-
-		socket.on('lock_room', function(is_locked) {
-			is_room_locked = is_locked;
 			update_lock();
+			socket.emit("lock_room", room, is_room_locked);
+		});
+
+		//tool select
+		$('#contexts').on('click', 'button', function (e) {
+			if ( $(this).attr('id') == "undo") {
+				undo();
+				return;
+			} else if ( $(this).attr('id') == "redo") {
+				redo();
+				return;
+			}			
+			$('#contexts').find("button").removeClass('active');
+			$(this).addClass('active');			
+			var new_context = $(this).attr('id')+"_context";	
+			var new_context = $(this).attr('id')+"_context";
+			if (active_context == new_context) { return; } 			
+			$('#'+active_context).hide();
+			$('#'+new_context).show();
+			active_context = new_context;			
+		});	
+
+		$('#line_type').on('click', 'button', function (e) {
+			$(this).addClass('active');
+			$(this).siblings().removeClass('active');					
+		});	
+		
+		$('#userlist').on('click', 'button', function () {
+			var id = $(this).attr('id');
+			if (id == my_user.id) { return; } //you can't change your own permission level
+			if (my_user.role != "owner") { return; } //only the owner can change permission level
+			if (!userlist[id].role) { //permission toggle
+				userlist[id].role = "driver";
+				$(this).css('background-color','yellow');
+			} else if (userlist[id].role == "driver") {
+				userlist[id].role = "owner";
+				$(this).css('background-color','lime');
+			} else if (userlist[id].role == "owner"){
+				delete userlist[id].role;
+				$(this).css('background-color','');
+			}
+			socket.emit("update_user", room, userlist[id]);
+			return false;
+		});	
+		
+		$('#clear_all').click(function() {
+			clear();
 		});
 		
+		$('#login_dropdown_select').on('click', 'a', function () {
+			socket.emit("login", this.id, window.location.href);
+		});
+		
+		socket.on('openid_login', function(url) {
+			location.href = url;
+		});
+		
+		var openid_exists = location.search.split('openid.assoc_handle=')[1];
+		if (openid_exists) {
+			socket.emit("login_complete", window.location.href);
+			if (!isIE()) {
+				window.history.replaceState("", "", location.pathname+"?room="+room); //rewrite url to make pretty
+			}
+		}
+		
+		$('#clear_draw').click(function() {
+			clear("drawing");
+		});
+		$('#clear_icons').click(function() {
+			clear("icon");
+		});
+		$('#clear_lines').click(function() {
+			clear("line");
+		});
+		$('#clear_text').click(function() {
+			clear("text");
+		});
+		$('#clear_curve').click(function() {
+			clear("curve");
+		});
+		$('#clear_rectangle').click(function() {
+			clear("rectangle");
+		});
+		$('#clear_circle').click(function() {
+			clear("circle");
+		});
+		$('#clear_polygon').click(function() {
+			clear("polygon");
+		});
+		$('#clear_area').click(function() {
+			clear("area");
+		});
+		$('#clear_selected').click(function() {
+			clear_selected();
+		});
+		
+		//tank icon select
+		$('.tank_select').click(function() {
+			$('.selected').removeClass('selected'); // removes the previous selected class
+			$(this).addClass('selected'); // adds the class to the clicked image
+			selected_icon = $(this).attr('id');
+		});
+		
+		$(".edit_window").append(renderer.view);
+		var map_select_box = document.getElementById("map_select");
+		map_select_box.onchange = function() {
+			var path = map_select_box.options[map_select_box.selectedIndex].value;
+			if (!background || background.path != path) {
+				var uid = background ? background.uid : newUid();
+				new_background = {uid:uid, type:'background', path:path};
+				socket.emit('create_entity', room, new_background);
+				set_background(new_background);
+			} 
+		}
 	});
 	
+	//network data responses
+	
+	socket.on('room_data', function(room_data, my_id) {
+		is_room_locked = room_data.locked;
+		my_user_id = my_id;
+		if (room_data.name) {
+			tactic_name = room_data.name;
+		}
+		for (var user in room_data.userlist) {
+			add_user(room_data.userlist[user]);
+		}
+		for (var key in room_data.history) {
+			create_entity(room_data.history[key]);
+		}
+		update_my_user();
+	});
+
+	socket.on('create_entity', function(entity) {
+		create_entity(entity);
+	});
+	
+	socket.on('drag', function(uid, x, y) {
+		history[uid].container.x += x_abs(x-history[uid].x);
+		history[uid].container.y += y_abs(y-history[uid].y);
+		history[uid].x = x;
+		history[uid].y = y;
+		renderer.render(stage);
+	});
+
+	socket.on('ping', function(x, y, color) {
+		ping(x,y,color);
+	});
+
+	socket.on('chat', function(message) {
+		chat(message);
+	});
+	
+	socket.on('identify', function(user) {
+		my_user = user;
+		update_my_user();
+	});
+
+	socket.on('remove', function(uid) {
+		remove(uid);
+	});
+
+	socket.on('add_user', function(user) {
+		add_user(user);
+	});
+
+	socket.on('remove_user', function(user) {
+		remove_user(user);
+	});
+
+	socket.on('update_user', function(user) {
+		update_user(user);
+	});
+
+	socket.on('lock_room', function(is_locked) {
+		is_room_locked = is_locked;
+		update_lock();
+	});
 });
 
 setTimeout(function(){ renderer.render(stage); }, 1000);
