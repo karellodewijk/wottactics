@@ -212,6 +212,18 @@ function newUid() {
 			socket.broadcast.to(room).emit('ping', x, y, color);
 		});
 
+		socket.on('track', function(room, tracker) {
+			socket.broadcast.to(room).emit('track', tracker);
+		});
+		
+		socket.on('track_move', function(room, uid, delta_x, delta_y) {
+			socket.broadcast.to(room).emit('track_move', uid, delta_x, delta_y);
+		});
+		
+		socket.on('stop_track', function(room, uid) {
+			socket.broadcast.to(room).emit('stop_track', uid);
+		});
+		
 		socket.on('remove', function(room, uid) {
 			if (room_data[room] && room_data[room].history[uid]) {
 				delete room_data[room].history[uid];

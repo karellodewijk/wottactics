@@ -23,7 +23,11 @@ for (var i in assets) {
 }
 loader.load();
 
+var min_draw_point_distance = 0.01;
+var min_draw_point_distance_sq = min_draw_point_distance * min_draw_point_distance;
 var min_polygon_end_distance = 0.01; //in ratio to width of map
+var min_track_move_distance = 0.01;
+var min_track_move_distance_sq = min_track_move_distance * min_track_move_distance;
 var active_context = 'ping_context';
 var history = {};
 var userlist = {};
@@ -31,6 +35,7 @@ var selected_icon;
 var icon_color = 0xff0000;
 var draw_color = 0xff0000;
 var ping_color = 0xff0000;
+var track_color = 0xff0000;
 var line_color = 0xff0000;
 var curve_color = 0xff0000;
 var text_color = 0xffffff;
@@ -76,6 +81,11 @@ var last_ping_time;
 var icon_scale = 0.025;
 var thickness_scale = 0.0015;
 var font_scale = 0.002;
+var trackers = {};
+var my_tracker;
+var last_track_position;
+var tracker_width = 0.05;
+var tracker_height = 0.05;
 
 //keyboard shortcuts
 var shifted; //need to know if the shift key is pressed
@@ -183,6 +193,7 @@ function set_background(new_background) {
 	background_sprite.texture.on('update', function() {	
 		renderer.render(stage);
 	});
+	setTimeout(function(){ renderer.render(stage); }, 2000);
 }
 
 var context_before_drag;
@@ -312,24 +323,23 @@ function remove(uid) {
 	renderer.render(stage);
 }
 
-function ping(x, y, color) {
-	var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
-	var sprite = new PIXI.Sprite(texture);
+function move_tracker(uid, delta_x, delta_y) {
+	move_track_recursive(uid, delta_x * 0.1, delta_y * 0.1, 10);
+}
 
-	sprite.tint = color;
-	sprite.anchor.set(0.5);
-	sprite.width = x_abs(0.075);
-	sprite.height = x_abs(0.075);
-	sprite.alpha = 1;
-	sprite.x = x_abs(x);
-	sprite.y = y_abs(y);
-	
-	objectContainer.addChild(sprite);
-	sprite.texture.on('update', function() {	
-		renderer.render(stage);
-	});
-	
-	fade(sprite, 10, 0.5);
+function move_track_recursive(uid, step_x, step_y, count) {
+	if (count) {
+		setTimeout( function() {
+			if (trackers[uid]) {
+				trackers[uid].x += step_x;
+				trackers[uid].y += step_y;
+				trackers[uid].container.x += x_abs(step_x);
+				trackers[uid].container.y += y_abs(step_y);
+				renderer.render(stage);
+				move_track_recursive(uid, step_x, step_y, count-1);
+			}
+		}, 20);
+	}
 }
 
 function fade(sprite, steps, alpha) {
@@ -354,11 +364,7 @@ function on_left_click(event) {
 		this.mouseup = on_draw_end;
 		this.mouseupoutside = on_draw_end;
 		this.mousemove = on_draw_move;
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), path:[]};
-		graphics = new PIXI.Graphics();
-		graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), draw_color, 1);
-		graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-		objectContainer.addChild(graphics);
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), path:[[0, 0]]};
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
 			this.mouseup = on_line_end;
@@ -432,7 +438,81 @@ function on_left_click(event) {
 		this.mouseupoutside = on_circle_end;
 		this.mousemove = on_circle_move;
 		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
-	} 
+	} else if (active_context == 'track_context') {
+		if (my_tracker) {
+			this.mousemove = undefined;
+			socket.emit("stop_track", room, my_tracker.uid);
+			objectContainer.removeChild(my_tracker.container);
+			my_tracker = undefined;
+			renderer.render(stage);
+		} else {
+			this.mousemove = on_track_move;	
+			my_tracker = {uid:newUid(), color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
+			last_track_position = [my_tracker.x, my_tracker.y];
+			socket.emit("track", room, my_tracker);
+			create_tracker(my_tracker);
+			on_track_move();
+		}
+	}
+}
+
+function create_tracker(tracker) {
+	var texture = PIXI.Texture.fromImage(image_host + 'recticle.png');
+	tracker.container = new PIXI.Sprite(texture);	
+	tracker.container.tint = tracker.color;
+	tracker.container.anchor.set(0.5);
+	tracker.container.x = x_abs(tracker.x);
+	tracker.container.y = y_abs(tracker.y);
+	tracker.container.width = x_abs(tracker_width);
+	tracker.container.height = y_abs(tracker_height);
+	trackers[tracker.uid] = tracker;
+	objectContainer.addChild(trackers[tracker.uid].container);
+	renderer.render(stage);
+}
+
+function remove_tracker(uid) {
+	objectContainer.removeChild(trackers[uid].container);
+	renderer.render(stage);
+	delete trackers[uid];
+}
+
+function ping(x, y, color) {
+	var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
+	var sprite = new PIXI.Sprite(texture);
+
+	sprite.tint = color;
+	sprite.anchor.set(0.5);
+	sprite.width = x_abs(0.075);
+	sprite.height = x_abs(0.075);
+	sprite.alpha = 1;
+	sprite.x = x_abs(x);
+	sprite.y = y_abs(y);
+	
+	objectContainer.addChild(sprite);
+	sprite.texture.on('update', function() {	
+		renderer.render(stage);
+	});
+	
+	fade(sprite, 10, 0.5);
+}
+
+
+function on_track_move() {
+	var mouse_location = renderer.plugins.interaction.mouse.global;	
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
+	my_tracker.x = x;
+	my_tracker.y = y;
+	my_tracker.container.x = x_abs(x);
+	my_tracker.container.y = x_abs(y);
+	renderer.render(stage);
+	
+	var dist_sq = (last_track_position[0] - my_tracker.x) * (last_track_position[0] - my_tracker.x)
+			     +(last_track_position[1] - my_tracker.y) * (last_track_position[1] - my_tracker.y);
+	if (dist_sq > min_track_move_distance_sq) {
+		socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
+		last_track_position = [my_tracker.x, my_tracker.y];
+	}
 }
 
 function on_area_move() {
@@ -766,13 +846,70 @@ function deselect_all() {
 	selected_entities = [];
 }
 
+//man, am I not happy about this. Incrementally updating a Pixi.graphics between rendering it,
+//causes issues on firefox (TOO_MUCH_MALLOC), so ebery time you move I draw the last 30 interpollation 
+//points and every redraw_countdown interpolation points I redraw the whole history.
+var redraw_countdown = 20;
 function on_draw_move() {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
-	if (active_context == 'draw_context') {
-		new_drawing.path.push([mouse_x_rel(mouse_location.x) - new_drawing.x, mouse_y_rel(mouse_location.y) - new_drawing.y]);
-		graphics.lineTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-		renderer.render(stage);
-		graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
+	var a = new_drawing.path[new_drawing.path.length-1];
+	var b = [mouse_x_rel(mouse_location.x) - new_drawing.x, 
+	         mouse_y_rel(mouse_location.y) - new_drawing.y];
+	
+	var dist_sq = (a[0]-b[0])*(a[0]-b[0]) + (a[1]-b[1])*(a[1]-b[1]);
+	
+	new_drawing.path.push(b);
+	var path = new_drawing.path.slice(Math.max(new_drawing.path.length-30, 0));
+	
+	var path_x = [];
+	var path_y = [];
+	
+	for (i = 0; i < path.length; i++) {
+		path_x.push(x_abs(new_drawing.x + path[i][0]));
+		path_y.push(y_abs(new_drawing.y + path[i][1]));
+	}
+
+	var cx = computeControlPoints(path_x);
+	var cy = computeControlPoints(path_y);		
+
+	graphic = new PIXI.Graphics();
+	graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), draw_color, 1);
+	
+	if (path.length >= 30) {
+		graphic.moveTo(path_x[5], path_y[5])
+		for (var i = 5; i < path_x.length-1; i++) {
+			graphic.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
+		}
+	} else {
+		if (path_x.length == 2) {
+			graphic.moveTo(path_x[0], path_y[0]);
+			graphic.lineTo(path_x[1], path_y[1]);
+		} else {
+			graphic.moveTo(path_x[0], path_y[0])
+			for (var i = 0; i < path_x.length-1; i++) {
+				graphic.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
+			}
+		}
+	}
+	graphic.graphicsData[graphic.graphicsData.length-1].shape.closed = false;
+	
+	objectContainer.addChild(graphic);
+	renderer.render(stage);
+	objectContainer.removeChild(graphic);
+		
+	if (dist_sq < min_draw_point_distance_sq) {
+		new_drawing.path.pop();
+	} else {
+		redraw_countdown--;
+		if (redraw_countdown == 0) { //redraw ALL
+			redraw_countdown = 20;
+			objectContainer.removeChild(graphics);
+			graphics = new PIXI.Graphics();
+			graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), draw_color, 1);
+			free_draw(graphics, new_drawing);
+			objectContainer.addChild(graphics);
+			renderer.render(stage);	
+		}
 	}
 }
 
@@ -781,8 +918,10 @@ function on_draw_end() {
 	this.mouseup = undefined;
 	this.mouseupoutside = undefined;
 	this.mousemove = undefined;
-	var mouse_location = renderer.plugins.interaction.mouse.global;
 	objectContainer.removeChild(graphics);
+	renderer.render(stage);	
+	var mouse_location = renderer.plugins.interaction.mouse.global;
+	new_drawing.path.push([mouse_x_rel(mouse_location.x) - new_drawing.x, mouse_y_rel(mouse_location.y) - new_drawing.y]);
 	undo_list.push(["add", new_drawing]);
 	create_drawing(new_drawing);
 	snap_and_emit_entity(new_drawing);
@@ -1528,6 +1667,7 @@ loader.once('complete', function () {
 		$('#polygon_context').hide();
 		$('#curve_context').hide();
 		$('#area_context').hide();
+		$('#track_context').hide();
 		$("#save_as").hide();
 		$("#save").hide();
 		$('#ping').addClass('active');
@@ -1574,6 +1714,7 @@ loader.once('complete', function () {
 		initialize_color_picker("icon_colorpicker", "icon_color");
 		initialize_color_picker("draw_colorpicker", "draw_color");
 		initialize_color_picker("ping_colorpicker", "ping_color");
+		initialize_color_picker("track_colorpicker", "track_color");
 		initialize_color_picker("line_colorpicker", "line_color");
 		initialize_color_picker("text_colorpicker", "text_color");
 		initialize_color_picker("rectangle_outline_colorpicker", "rectangle_outline_color");
@@ -1824,6 +1965,21 @@ loader.once('complete', function () {
 		is_room_locked = is_locked;
 		update_lock();
 	});
+	
+	socket.on('track', function(tracker) {
+		if (!trackers[tracker.uid]) {
+			create_tracker(tracker);
+		}
+	});
+	
+	socket.on('track_move', function(uid, delta_x, delta_y) {
+		move_tracker(uid, delta_x, delta_y)
+	});
+
+	socket.on('stop_track', function(uid) {
+		remove_tracker(uid)
+	});
+	
 });
 
 setTimeout(function(){ renderer.render(stage); }, 1000);
