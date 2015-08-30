@@ -30,19 +30,22 @@
 					<a class="navbar-brand" href="/">WOT Tactics</a>
 				</div>
 				<div class="navbar-form navbar-left dropdown">
-				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="Store your tactic">
+				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="Save">
 					<img src="http://karellodewijk.github.io/icons/save.png">
 				</a>
 				<a id="save_as" href="javascript:void(0)" class="btn btn-default" data-placement="bottom"
 				data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default btn-xs'>Store</button>">
-					<img data-toggle="tooltip" title="Store your tactic" src="http://karellodewijk.github.io/icons/save_as.png">
+					<img data-toggle="tooltip" title="Save as" src="http://karellodewijk.github.io/icons/save_as.png">
 				</a>
 
-				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="Locks/unlocks edit mode for all users">
+				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="Locks/unlocks edit mode for users without additional permissions">
 					<img src="http://karellodewijk.github.io/icons/lock.png">
 				</button>
 				<button id="export" class="btn btn-default" data-toggle="tooltip" title="Save tactic as image">
 					<img src="http://karellodewijk.github.io/icons/export.png">
+				</button>
+				<button id="link" class="btn btn-default" data-toggle="tooltip" title="Copy link to clipboard, send it to friends or clan mates to invite them to this tactic">
+					<img src="http://karellodewijk.github.io/icons/link.png">
 				</button>
 				</div>
 				<div class="navbar-form navbar-right dropdown">
@@ -59,6 +62,7 @@
 						</ul>
 					</div>
 				</div>
+
 			</div>
 		</nav>
 		<div class="top">
@@ -723,5 +727,7 @@
 			<br />
 			<input id="chat_input" class="slider_text_input" type="text"/>
 		</div>
+		
+		
 	</div>
 </body>

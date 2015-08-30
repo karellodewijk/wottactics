@@ -1,8 +1,3 @@
 # wot tactics
 
-TODO:
-
-- Transparency
-- Fix undo/redo
-- Scaling/transparancy options ?
-- Wows ?
+Hi, just visit the page at www.wottactics.tk or www.wowstactics.tk for more info

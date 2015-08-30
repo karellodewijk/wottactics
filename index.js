@@ -8,7 +8,7 @@ function update_my_user() {
 	}
 }
 
-quotes = [
+var general_quotes = [
 	'“If you know the enemy and know yourself, you need not fear the result of a hundred battles.” ― Sun Tzu, The Art of War',
 	'“Invincibility lies in the defence; the possibility of victory in the attack.” ― Sun Tzu, The Art of War"',
 	'“Always forgive your enemies; nothing annoys them so much.” ― Oscar Wilde',
@@ -34,6 +34,15 @@ quotes = [
 	'“The whole secret lies in confusing the enemy, so that he cannot fathom our real intent.” ― Sun Tzu, The Art of War '
 ];
 
+var tank_quotes = ['“Time for some suprise butt sex, best kind of butt sex” ― The Mighty Jingles'];
+
+var ship_quotes = ['“There is no such thing as a friendly torpedo” ― The Mighty Jingles'];
+
+function isIE(userAgent) {
+  userAgent = userAgent || navigator.userAgent;
+  return userAgent.indexOf("MSIE ") > -1 || userAgent.indexOf("Trident/") > -1;
+}
+
 function add_tactic(name, timestamp) {
 	date = new Date(timestamp);	
 	var node = '<li class="list-group-item row" id="' + name + '"><h5 class="col-sm-7">'+ name +'</h5><h5 class="col-sm-3">'+ date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() +'</h5><span class="col-md-1"><a class="btn btn-danger select_tactic_button" href="javascript:void(0);" id="' + name + '" role="button"><img src="http://karellodewijk.github.io/icons/bin.png" /></a></span><a class="btn btn-primary select_tactic_button col-md-1" href="javascript:void(0);" id="' + name + '" role="button" style="">Launch&raquo;</a></li>';
@@ -41,6 +50,13 @@ function add_tactic(name, timestamp) {
 }
 
 $(document).ready(function() {
+	var quotes;
+	if ($("title").text() == "WOWS Tactics") {
+		quotes = general_quotes.concat(ship_quotes);
+	} else {
+		quotes = general_quotes.concat(tank_quotes);
+	}
+
 	$("#quote").text(quotes[Math.floor(Math.random() * quotes.length)]);
 	
 	var socket = io.connect('http://'+location.hostname+':8000');
@@ -90,7 +106,9 @@ $(document).ready(function() {
 	var openid_exists = location.search.split('openid.assoc_handle=')[1];
 	if (openid_exists) {
 		socket.emit("login_complete", window.location.href);
-		window.history.replaceState("", "", location.origin+location.pathname); //rewrite url to make pretty
+		if (!isIE()) {
+			window.history.replaceState("", "", location.origin+location.pathname); 
+		} //rewrite url to make pretty
 	}
 	
 });

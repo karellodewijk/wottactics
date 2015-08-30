@@ -1409,7 +1409,7 @@ function add_user(user) {
 					}
 			}
 		} else { 
-			var node = "<button class='btn' style='text-align:left;' id='" + user.id + "'>" + user.name + "</button>";
+			var node = "<button class='btn' style='text-align:left;' data-toggle='tooltip' title='Click to toggle this user&#39;s permission.' id='" + user.id + "'>" + user.name + "</button>";
 			$("#userlist").append(node);
 		}
 	}
@@ -1671,44 +1671,11 @@ loader.once('complete', function () {
 		$("#save_as").hide();
 		$("#save").hide();
 		$('#ping').addClass('active');
-		$('#full_line').addClass('active');
-		
+		$('#full_line').addClass('active');		
 		var first_icon = $("#icon_context").find("button:first");
 		first_icon.addClass('selected');
 		selected_icon = first_icon.attr("id");
-	
-		$('[data-toggle="popover"]').popover({
-			container: 'body',
-			html: 'true',
-			template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-			content: function() {
-				return $('#popover-content');
-			}
-		});
 
-		$(document).on('click', '#store_tactic', function(){
-			var name = $(document).find('#tactic_name')[0].value;
-			$('#save_as').popover('hide');
-			if (name == "") {
-				alert("Empty name");
-			} else {
-				tactic_name = name;
-				socket.emit("store", room, name);
-				$("#save").show();
-				alert("Tactic stored as: " + name);
-			}
-		});	
-
-		$('#save').click(function() { 
-			if (tactic_name && tactic_name != "") {
-				socket.emit("store", room, tactic_name);
-			}
-		});
-	  
-		room = location.search.split('room=')[1].split("&")[0];
-		socket.emit('join_room', room);
-		
-		
 		//color selections
 		initialize_color_picker("curve_colorpicker", "curve_color");
 		initialize_color_picker("icon_colorpicker", "icon_color");
@@ -1746,6 +1713,52 @@ loader.once('complete', function () {
 		initialize_slider("font_size", "font_size_text", "font_size");
 		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		initialize_slider("icon_size", "icon_size_text", "icon_size");
+
+		$('[data-toggle="popover"]').popover({
+			container: 'body',
+			html: 'true',
+			template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+			content: function() {
+				return $('#popover-content');
+			}
+		});
+		
+		room = location.search.split('room=')[1].split("&")[0];
+		socket.emit('join_room', room);
+		
+		$(document).on('click', '#store_tactic', function(){
+			var name = $(document).find('#tactic_name')[0].value;
+			$('#save_as').popover('hide');
+			if (name == "") {
+				alert("Empty name, tactic not stored");
+			} else {
+				tactic_name = name;
+				socket.emit("store", room, name);
+				$("#save").show();
+				alert("Tactic stored as: " + name);
+			}
+		});	
+
+		$('#save').click(function() { 
+			if (tactic_name && tactic_name != "") {
+				socket.emit("store", room, tactic_name);
+			}
+		});
+
+		$('#link').click(function() { 
+			var copySupported = document.queryCommandSupported('copy');
+			var textArea = document.createElement("textarea");
+			var link_text = "http://" + location.host + location.pathname+"?room="+room;
+			textArea.value = link_text;
+			document.body.appendChild(textArea);
+			textArea.select();
+			try {
+				document.execCommand('copy');
+			} catch (error) {
+				window.prompt("Copy to clipboard and share with friend: Ctrl+C, Enter", link_text);
+			}
+			document.body.removeChild(textArea);
+		});
 		
 		$("#chat_input").keyup(function (e) {
 			if (e.keyCode == 13) {
@@ -1758,7 +1771,7 @@ loader.once('complete', function () {
 
 		$('#export').click(function () {
 			renderer.render(stage);	
-			var data = renderer.view.toDataURL("image/jpeg", 0.6);			
+			var data = renderer.view.toDataURL("image/jpeg", 0.9);			
 			if (isIE()) {
 				var win=window.open();
 				win.document.write("<img src='" + data + "'/>");

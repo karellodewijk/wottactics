@@ -32,7 +32,7 @@ function newUid() {
 		// initializing express-session middleware
 		var Session = require('express-session');
 		var MongoStore = require('connect-mongo')(Session);
-		var session = Session({ secret: 'pass', resave: true, saveUninitialized: true, cookie: { expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: new MongoStore({ db: db, ttl:30 * 86400 }) }); 
+		var session = Session({ secret: 'pass', resave: true, saveUninitialized: true, cookie: { expires: new Date(Date.now() + 14 * 86400 * 1000) }, store: new MongoStore({db: db}), rolling: true });
 
 		// creating new express app
 		var express = require('express');

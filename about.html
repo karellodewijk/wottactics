@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.3.6.js"></script>
+	<script type="text/javascript" src="index.js"></script>
+	<link rel="stylesheet" href="style.css" />
+	<title>WOT Tactics</title>
+</head>
+<body>
+    <div class="jumbotron side_bar" style="width:100%">
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="/">WOT Tactics</a>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li><a href="getting_started.html" class="">Getting started</a></li>
+						<li><a href="about.html" class="">about</a></li>
+					</ul>
+					<div class="navbar-form navbar-right dropdown">
+						<div class="dropdown">
+							<button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="login_dropdown">
+								<span id="sign_in_text">Sign in</span> <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" id="login_dropdown_select" aria-labelledby="login_dropdown">
+								<li><a id="http://eu.wargaming.net/id/" href="javascript:void(0)">Wargaming EU</a></li>
+								<li><a id="http://ru.wargaming.net/id/" href="javascript:void(0)">Wargaming RU</a></li>
+								<li><a id="http://asia.wargaming.net/id/" href="javascript:void(0)">Wargaming SEA</a></li>
+								<li><a id="http://na.wargaming.net/id/" href="javascript:void(0)">Wargaming NA</a></li>
+								<li><a id="http://kr.wargaming.net/id/" href="javascript:void(0)">Wargaming KOR</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</nav>
+		<div style="padding:20px">
+		<p>
+		Hello and thank you for your interest in wottactic and wowstactic.
+
+		<h3>Suggestions</h3>
+		<p>
+		I'm always open to suggestions, critcism, banter or praise. Under contact info you'll find plenty of ways to get in touch. 
+		
+		<h3>Helping out</h3>
+		<p>
+		If you want to help out in some way, feel free to drop me a line. I'm especially looking for someone who could translate it into Russian as a big part of the wot/wows player base speaks Russian. I also have trouble finding/making some high quality maps for wows.
+		
+		<h3>The code</h3>
+		<p>
+		I just want to reach as many people as possible, so I've decided to make it open source under the MIT license, basically allowing you to use it in any way you see hit including but not limited to your own commercial or non-commercial projects.
+		
+		The source is available at
+		<a href='https://github.com/karellodewijk/wottactics'>https://github.com/karellodewijk/wottactics</a>
+
+		<h3>Adds and revenue</h3>
+		<p>
+		I might add a small unobtrusive advertisement or donate button to the main page at some point in the future if hosting cost becomes a concern. However, the actual tactic part of the website is and will remain free of charge and free of adds.
+		
+		<h3>Contact info:</h3>
+		
+		<p>
+		Want to get in touch:
+		
+		<p>
+		
+		<div class="row">
+			<div class="col-md-1">Name</div>
+			<div class="col-md-2">Kalith</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">e-mail</div>
+			<div class="col-md-2"><a href="mailto:pkalith@gmail.com">pkalith@gmail.com</a></div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">EU profile</div>
+			<div class="col-md-11"><a href='http://worldoftanks.eu/community/accounts/505943778-Kalith/'>http://worldoftanks.eu/community/accounts/505943778-Kalith/</a></div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">NA profile</div>
+			<div class="col-md-11"><a href='http://worldoftanks.com/community/accounts/1003817145-Kalid/'>http://worldoftanks.com/community/accounts/1003817145-Kalid/</a></div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">EU forum topic</div>
+			<div class="col-md-11"><a href='http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/</a></div>
+		</div>	
+		<div class="row">
+			<div class="col-md-1">NA forum topic</div>
+			<div class="col-md-11"><a href='http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/</a></div>
+		</div>			
+		
+		<p><p>
+		<h3>Special thanks:</h3>
+		<p>
+		GPS4ever and maroar, for all the testing and suggestions. Jingles, for spreading the word.
+	</div>
+	</div>
+</body>
