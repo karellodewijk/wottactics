@@ -1134,7 +1134,7 @@ function draw_dotted_line(graphic, x0, y0, x1, y1) {
 function draw_arrow(graphic, a, b) {
 	var x = (b[0] - a[0]);
 	var y = (b[1] - a[1]);
-	var angle = 2.6; //in radians, angle between forward facing vector and backward facing arrow head
+	var angle = 2.75; //in radians, angle between forward facing vector and backward facing arrow head
 	var cos_angle = Math.cos(angle);
 	var sin_angle = Math.sin(angle);
 	var x_1 = x * cos_angle - y * sin_angle;
