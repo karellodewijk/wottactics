@@ -8,15 +8,35 @@ function newUid() {
     }).toUpperCase();
 }
 
-//var image_host = 'http://'+location.host+'/icons/'; //enable for local image hosting
-var image_host = "http://karellodewijk.github.io/icons/";
+function is_chrome() {
+	return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+}
+function is_firefox() {
+	return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+}
+function is_safari() {
+	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
+}
+function is_ie() {
+	return navigator.userAgent.toLowerCase().indexOf('MSIE') > -1;
+}
 
+var image_host;
+if (is_safari()) {
+	var image_host = 'http://'+location.host+'/icons/'; //enable for local image hosting
+} else {
+	var image_host = "http://karellodewijk.github.io/icons/";
+}
+	
 var assets;
 if (location.pathname.indexOf("wows") != -1) { //wows
 	assets = [image_host+"bb.png", image_host+"cv.png", image_host+"ca.png", image_host+"dd.png"];
 } else {
 	assets = [image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"arty.png", image_host+"td.png"];
 }
+
+assets.push(image_host+"circle.png", image_host+"recticle.png");
+
 var loader = PIXI.loader; 
 for (var i in assets) {
 	loader.add(assets[i], assets[i]);
@@ -91,9 +111,6 @@ var tracker_height = 0.05;
 var shifted; //need to know if the shift key is pressed
 $(document).on('keyup keydown', function(e) {
 	shifted = e.shiftKey;
-	if (!shifted && active_context == "line_context" && new_drawing) {
-		on_line_end();
-	}
 	
 	if (document.activeElement.localName != "input") {	
 		if (e.type == "keyup") {
@@ -119,7 +136,9 @@ var border = 30;
 var size = Math.min(window.innerHeight, window.innerWidth) - border;
 var size_x = size;
 var size_y = size;
+
 var renderer = PIXI.autoDetectRenderer(size, size,{backgroundColor : 0xBBBBBB});
+
 var useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
 // create the root of the scene graph
@@ -163,23 +182,20 @@ function y_abs(y) {
 }
 
 function mouse_x_abs(x) {
-	return x / objectContainer.scale.x;
+	return x;
 }
 
 function mouse_y_abs(y) {
-	return y / objectContainer.scale.y;
+	return y;
 }
 
 function mouse_x_rel(x) {
-	return x / size_x;
+	return x * objectContainer.scale.x / size_x;
 }
 
 function mouse_y_rel(y) {
-	return y / size_y;
+	return y * objectContainer.scale.y / size_y;
 }
-
-
-
 
 function set_background(new_background) {
 	if (background) {
@@ -199,16 +215,23 @@ function set_background(new_background) {
 var context_before_drag;
 var last_mouse_location;
 var move_selected;
-function on_drag_start(event) {
+function on_drag_start(e) {
+	if (is_room_locked && !my_user.role) {
+		return;
+	}
 	if (active_context != 'drag_context') {
 		context_before_drag = active_context;
 	}
 	active_context = "drag_context";
-	last_mouse_location = [mouse_x_abs(renderer.plugins.interaction.mouse.global.x), mouse_y_abs(renderer.plugins.interaction.mouse.global.y)];
+	last_mouse_location = [mouse_x_abs(e.data.getLocalPosition(objectContainer).x), mouse_y_abs(e.data.getLocalPosition(objectContainer).y)];
 	renderer.render(stage);
-	this.mousemove = on_drag_move;
+	
 	this.mouseup = on_drag_end;
+	this.touchend = on_drag_end;
 	this.mouseupoutside = on_drag_end;
+	this.touchendoutside = on_drag_end;
+	this.mousemove = on_drag_move;
+	this.touchmove = on_drag_move;
 
 	move_selected = false;
 	if (selected_entities.length > 0) {
@@ -232,7 +255,7 @@ function on_drag_start(event) {
 	}
 }
 
-function on_drag_end() {
+function on_drag_end(e) {
 	if (context_before_drag == 'remove_context') {
 		remove(this.entity.uid);
 		undo_list.push(["remove", [this.entity]]);
@@ -258,9 +281,12 @@ function on_drag_end() {
 			this.alpha = 1;
 		}
 	}
-	this.mousemove = undefined;
 	this.mouseup = undefined;
+	this.touchend = undefined;
 	this.mouseupoutside = undefined;
+	this.touchendoutside = undefined;
+	this.mousemove = undefined;
+	this.touchmove = undefined;
 	active_context = context_before_drag;	
 	renderer.render(stage);
 }
@@ -285,9 +311,9 @@ function move_entity(entity, delta_x, delta_y) {
 
 }
 
-function on_drag_move() {
+function on_drag_move(e) {
 	//move by deltamouse
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	var delta_x = x_rel(mouse_x_abs(mouse_location.x) - last_mouse_location[0]);
 	var delta_y = y_rel(mouse_y_abs(mouse_location.y) - last_mouse_location[1]);
 	if (move_selected) {
@@ -303,8 +329,10 @@ function on_drag_move() {
 }
 
 function remove(uid) {
-	objectContainer.removeChild(history[uid].container);
-	delete history[uid].container;
+	if (history[uid] && history[uid].container) {
+		objectContainer.removeChild(history[uid].container);
+		delete history[uid].container;
+	}
 	if (history[uid].type == "icon") {
 		var counter = $('#'+history[uid].tank).find("span");
 		counter.text((parseInt(counter.text())-1).toString());		
@@ -357,19 +385,27 @@ function fade(sprite, steps, alpha) {
 	}, 50);	
 }
 
+function setup_mouse_events(on_move, on_release) {
+	objectContainer.mouseup = on_release;
+	objectContainer.touchend = on_release;
+	objectContainer.mouseupoutside = on_release;
+	objectContainer.touchendoutside = on_release;
+	objectContainer.mousemove = on_move;
+	objectContainer.touchmove = on_move;
+}
+
 //function fires when mouse is left clicked on the map and it isn't a drag
-function on_left_click(event) {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
-	if (active_context == 'draw_context') {	
-		this.mouseup = on_draw_end;
-		this.mouseupoutside = on_draw_end;
-		this.mousemove = on_draw_move;
+function on_left_click(e) {
+	if (is_room_locked && !my_user.role) {
+		return;
+	}
+	var mouse_location = e.data.getLocalPosition(objectContainer);
+	if (active_context == 'draw_context') {
+		setup_mouse_events(on_draw_move, on_draw_end);
 		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), path:[[0, 0]]};
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
-			this.mouseup = on_line_end;
-			this.mouseupoutside = on_line_end;
-			this.mousemove = on_line_move;
+			setup_mouse_events(on_line_move, on_line_end);
 			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), line_color, 1);
@@ -378,9 +414,7 @@ function on_left_click(event) {
 		}
 	} else if (active_context == 'polygon_context') {
 		if (!new_drawing) {
-			this.mouseup = on_polygon_end;
-			this.mouseupoutside = on_polygon_end;
-			this.mousemove = on_polygon_move;
+			setup_mouse_events(on_polygon_move, on_polygon_end);
 			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[]};
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
@@ -391,16 +425,12 @@ function on_left_click(event) {
 		}
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
-			this.mouseup = on_curve_end;
-			this.mouseupoutside = on_curve_end;
-			this.mousemove = on_curve_move;
+			setup_mouse_events(on_curve_move, on_curve_end);
 			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:false, is_dotted:false};
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
-			this.mouseup = on_area_end;
-			this.mouseupoutside = on_area_end;
-			this.mousemove = on_area_move;
+			setup_mouse_events(on_area_move, on_area_end);
 			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[]};
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
@@ -410,48 +440,38 @@ function on_left_click(event) {
 			renderer.render(stage);
 		}
 	} else if (active_context == 'icon_context') {
-		this.mouseup = on_icon_end;
-		this.mouseupoutside = on_icon_end;
+		setup_mouse_events(undefined, on_icon_end);
 	} else if (active_context == 'ping_context') {
 		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		socket.emit("ping", room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = new Date();
-		this.mousemove = on_ping_move;
-		this.mouseup = on_ping_end;
-		this.mouseupoutside = on_ping_end;
+		setup_mouse_events(on_ping_move, on_ping_end);
 	} else if (active_context == "select_context") {
-		this.mouseup = on_select_end;
-		this.mouseupoutside = on_select_end;
-		this.mousemove = on_select_move;
+		setup_mouse_events(on_select_move, on_select_end);
 		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 		deselect_all();
 	} else if (active_context == 'text_context') {
-		this.mouseup = on_text_end;
-		this.mouseupoutside = on_text_end;
+		setup_mouse_events(undefined, on_text_end);
 	} else if (active_context == 'rectangle_context') {
-		this.mouseup = on_rectangle_end;
-		this.mouseupoutside = on_rectangle_end;
-		this.mousemove = on_rectangle_move;
+		setup_mouse_events(on_rectangle_move, on_rectangle_end);
 		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 	} else if (active_context == 'circle_context') {
-		this.mouseup = on_circle_end;
-		this.mouseupoutside = on_circle_end;
-		this.mousemove = on_circle_move;
+		setup_mouse_events(on_circle_move, on_circle_end);
 		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 	} else if (active_context == 'track_context') {
 		if (my_tracker) {
-			this.mousemove = undefined;
+			setup_mouse_events(undefined, undefined);
 			socket.emit("stop_track", room, my_tracker.uid);
 			objectContainer.removeChild(my_tracker.container);
 			my_tracker = undefined;
 			renderer.render(stage);
 		} else {
-			this.mousemove = on_track_move;	
+			setup_mouse_events(on_track_move, undefined);
 			my_tracker = {uid:newUid(), color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
 			last_track_position = [my_tracker.x, my_tracker.y];
 			socket.emit("track", room, my_tracker);
 			create_tracker(my_tracker);
-			on_track_move();
+			on_track_move(e);
 		}
 	}
 }
@@ -497,8 +517,8 @@ function ping(x, y, color) {
 }
 
 
-function on_track_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
+function on_track_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	my_tracker.x = x;
@@ -515,8 +535,8 @@ function on_track_move() {
 	}
 }
 
-function on_area_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
+function on_area_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
@@ -535,8 +555,8 @@ function on_area_move() {
 	new_drawing.path.pop();
 }
 
-function on_area_end() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
+function on_area_end(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
@@ -548,9 +568,7 @@ function on_area_end() {
 	
 	var squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
 	if (squared_distance_to_start < (min_polygon_end_distance*min_polygon_end_distance)) {
-		this.mousemove = undefined;
-		this.mouseup = undefined;
-		this.mouseupoutside = undefined;
+		setup_mouse_events(undefined, undefined);
 		new_drawing.path.push([0, 0]);
 		create_area(new_drawing);
 		snap_and_emit_entity(new_drawing);
@@ -564,8 +582,8 @@ function on_area_end() {
 	}
 }
 
-function on_curve_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
+function on_curve_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
@@ -584,8 +602,8 @@ function on_curve_move() {
 	new_drawing.path.pop();
 }
 
-function on_curve_end() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
+function on_curve_end(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
@@ -607,9 +625,7 @@ function on_curve_end() {
 	var squared_distance_to_last = (new_x - last_x) * (new_x - last_x) + (new_y - last_y) * (new_y - last_y);
 	
 	if (squared_distance_to_last < (min_polygon_end_distance*min_polygon_end_distance)) {
-		this.mouseup = undefined;
-		this.mouseupoutside = undefined;
-		this.mousemove = undefined;	
+		setup_mouse_events(undefined, undefined);
 		create_drawing(new_drawing);
 		snap_and_emit_entity(new_drawing);
 		undo_list.push(["add", new_drawing]);
@@ -619,8 +635,8 @@ function on_curve_end() {
 	}
 }
 
-function on_polygon_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_polygon_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	var graphic = new PIXI.Graphics();
 	graphic.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, 0.5);
 	var a;
@@ -639,8 +655,8 @@ function on_polygon_move() {
 	graphics.removeChild(graphic);	
 }
 
-function on_polygon_end() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
+function on_polygon_end(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
@@ -650,9 +666,7 @@ function on_polygon_end() {
 
 	var squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
 	if (squared_distance_to_start < (min_polygon_end_distance*min_polygon_end_distance)) {
-		objectContainer.mouseup = undefined;
-		objectContainer.mouseupoutside = undefined;
-		objectContainer.mousemove = undefined;
+		setup_mouse_events(undefined, undefined);
 		objectContainer.removeChild(graphics);
 		create_polygon(new_drawing);
 		snap_and_emit_entity(new_drawing);
@@ -695,8 +709,8 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 	return graphic;
 }
 
-function on_circle_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_circle_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	
 	var center_x = (left_click_origin[0] + mouse_x_abs(mouse_location.x)) / 2;
 	var center_y = (left_click_origin[1] + mouse_y_abs(mouse_location.y)) / 2;
@@ -716,17 +730,15 @@ function on_circle_move() {
 	objectContainer.removeChild(graphic);
 }
 
-function on_circle_end() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_circle_end(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	
 	var center_x = (left_click_origin[0] + mouse_x_abs(mouse_location.x)) / 2;
 	var center_y = (left_click_origin[1] + mouse_y_abs(mouse_location.y)) / 2;
 	var radius = Math.sqrt((left_click_origin[0] - mouse_x_abs(mouse_location.x)) * (left_click_origin[0] - mouse_x_abs(mouse_location.x))+(left_click_origin[1] - mouse_y_abs(mouse_location.y)) * (left_click_origin[1] - mouse_y_abs(mouse_location.y)));
 	radius /= 2;
 	
-	this.mouseup = undefined;
-	this.mouseupoutside = undefined;
-	this.mousemove = undefined;
+	setup_mouse_events(undefined, undefined);
 	
 	var new_shape = {uid:newUid(), type:'circle', x:x_rel(center_x), y:y_rel(center_y), radius:x_rel(radius), outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1};	
 
@@ -736,8 +748,8 @@ function on_circle_end() {
 	
 }
 
-function on_rectangle_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_rectangle_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	var left_x = Math.min(left_click_origin[0], mouse_x_abs(mouse_location.x));
 	var left_y = Math.min(left_click_origin[1], mouse_y_abs(mouse_location.y));
 	var right_x = Math.max(left_click_origin[0], mouse_x_abs(mouse_location.x));
@@ -754,40 +766,36 @@ function on_rectangle_move() {
 	objectContainer.removeChild(graphic);
 }
 
-function on_rectangle_end() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_rectangle_end(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	var left_x = Math.min(left_click_origin[0], mouse_x_abs(mouse_location.x));
 	var left_y = Math.min(left_click_origin[1], mouse_y_abs(mouse_location.y));
 	var right_x = Math.max(left_click_origin[0], mouse_x_abs(mouse_location.x));
 	var right_y = Math.max(left_click_origin[1], mouse_y_abs(mouse_location.y));
-	this.mouseup = undefined;
-	this.mouseupoutside = undefined;
-	this.mousemove = undefined;
+	setup_mouse_events(undefined, undefined);
 	var new_shape = {uid:newUid(), type:'rectangle', x:x_rel(left_x), y:y_rel(left_y), width:x_rel(right_x - left_x), height:y_rel(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1};
 	create_rectangle(new_shape);
 	snap_and_emit_entity(new_shape);
 	undo_list.push(["add", new_shape]);
 }
 
-function on_ping_move() {
+function on_ping_move(e) {
 	var time = new Date();
 	var timeDiff = time - last_ping_time;
 	if (timeDiff > 120) {
-		var mouse_location = renderer.plugins.interaction.mouse.global;
+		var mouse_location = e.data.getLocalPosition(objectContainer);
 		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		socket.emit("ping", room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = time;
 	}
 }
 
-function on_ping_end() {
-	this.mouseup = undefined;
-	this.mouseupoutside = undefined;
-	this.mousemove = undefined;
+function on_ping_end(e) {
+	setup_mouse_events(undefined, undefined);
 }
 
-function on_select_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_select_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	// draw a rounded rectangle
 	var graphic = new PIXI.Graphics();
 	graphic.lineStyle(2, 0xBBBBBB, 1);
@@ -799,16 +807,14 @@ function on_select_move() {
 	objectContainer.removeChild(graphic);
 }
 
-function on_select_end() {
-	this.mouseup = undefined;
-	this.mouseupoutside = undefined;
-	this.mousemove = undefined;
+function on_select_end(e) {
+	setup_mouse_events(undefined, undefined);
 
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	x_min = Math.min(mouse_location.x, left_click_origin[0]);
-	y_min = Math.min(mouse_location.y, left_click_origin[1]);
-	x_max = Math.max(mouse_location.x, left_click_origin[0]);
-	y_max = Math.max(mouse_location.y, left_click_origin[1]);
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	x_min = Math.min(mouse_x_abs(mouse_location.x), left_click_origin[0]);
+	y_min = Math.min(mouse_y_abs(mouse_location.y), left_click_origin[1]);
+	x_max = Math.max(mouse_x_abs(mouse_location.x), left_click_origin[0]);
+	y_max = Math.max(mouse_y_abs(mouse_location.y), left_click_origin[1]);
 	
 	for (key in history) {
 		if (history.hasOwnProperty(key) && history[key].container) {
@@ -850,8 +856,8 @@ function deselect_all() {
 //causes issues on firefox (TOO_MUCH_MALLOC), so ebery time you move I draw the last 30 interpollation 
 //points and every redraw_countdown interpolation points I redraw the whole history.
 var redraw_countdown = 20;
-function on_draw_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_draw_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	var a = new_drawing.path[new_drawing.path.length-1];
 	var b = [mouse_x_rel(mouse_location.x) - new_drawing.x, 
 	         mouse_y_rel(mouse_location.y) - new_drawing.y];
@@ -914,13 +920,11 @@ function on_draw_move() {
 }
 
 
-function on_draw_end() {
-	this.mouseup = undefined;
-	this.mouseupoutside = undefined;
-	this.mousemove = undefined;
+function on_draw_end(e) {
+	setup_mouse_events(undefined, undefined);
 	objectContainer.removeChild(graphics);
 	renderer.render(stage);	
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	new_drawing.path.push([mouse_x_rel(mouse_location.x) - new_drawing.x, mouse_y_rel(mouse_location.y) - new_drawing.y]);
 	undo_list.push(["add", new_drawing]);
 	create_drawing(new_drawing);
@@ -939,10 +943,9 @@ function snap_and_emit_entity(entity) {
 	renderer.render(stage);
 }
 
-function on_icon_end() {
-	this.mouseup = undefined;
-	this.mouseupoutside = undefined;
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_icon_end(e) {
+	setup_mouse_events(undefined, undefined);
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 
 	var x = mouse_x_rel(mouse_location.x) - (icon_scale/2);
 	var y = mouse_y_rel(mouse_location.y) - (icon_scale/2);
@@ -953,20 +956,19 @@ function on_icon_end() {
 	snap_and_emit_entity(icon);
 }
 
-function on_text_end() {
-	this.mouseup = undefined;
-	this.mouseupoutside = undefined;
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
+function on_text_end(e) {
+	setup_mouse_events(undefined, undefined);
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
-	undo_list.push("add", text);
+	undo_list.push(["add", text]);
 	create_text(text);
 	snap_and_emit_entity(text);
 }
 
-function on_line_move() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
+function on_line_move(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);
 	var graphic = new PIXI.Graphics();
 	graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 0.5);
 	var a;
@@ -989,8 +991,8 @@ function on_line_move() {
 	graphics.removeChild(graphic);	
 }
 
-function on_line_end() {
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
+function on_line_end(e) {
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
@@ -999,9 +1001,7 @@ function on_line_end() {
 	y = Math.min(1, y);
 	new_drawing.path.push([x - new_drawing.x, y - new_drawing.y]);			
 	if (!shifted) {
-		objectContainer.mouseup = undefined;
-		objectContainer.mouseupoutside = undefined;
-		objectContainer.mousemove = undefined;
+		setup_mouse_events(undefined, undefined);
 		//checks against an edge case where you haven't moved since the last registered point
 		//2 identical points at the end really screws up the math
 		if (new_drawing.path.length > 1 
@@ -1042,7 +1042,8 @@ function on_line_end() {
 }
 
 objectContainer.interactive = true;
-objectContainer.on('mousedown', on_left_click)
+objectContainer.mousedown = on_left_click;
+objectContainer.touchstart = on_left_click;
 
 function create_text(text_entity) {
 	var size = "bold "+text_entity.font_size*x_abs(font_scale)+"px " + text_entity.font;
@@ -1110,6 +1111,7 @@ function make_draggable(root) {
 	root.interactive = true;
     root.buttonMode = true;
 	root.mousedown = on_drag_start;
+	root.touchstart = on_drag_start;
 }
 
 function draw_dotted_line(graphic, x0, y0, x1, y1) {
@@ -1342,10 +1344,11 @@ function init_graphic(drawing, graphic) {
 	drawing.container.alpha = drawing.alpha;
 
 	sprite.texture.baseTexture.source.src = drawing.uid;
-	make_draggable(drawing.container);
 	drawing.container.hitArea = new PIXI.TransparencyHitArea.create(sprite, false);
 
 	objectContainer.addChild(drawing.container);
+	make_draggable(drawing.container);
+
 	drawing.container.entity = drawing;
 	renderer.render(stage);	
 	history[drawing.uid] = drawing;
@@ -1395,6 +1398,7 @@ function add_user(user) {
 		}
 	} else {	
 		if (user.id == my_user.id) {
+			my_user = user;
 			var node = "<div class='btn' style='text-align:left;' id='" + user.id + "'><input type='text' placeholder='"+ user.name + "'></div>";
 			$("#userlist").prepend(node);
 			input_node = $("#userlist").find("input");
@@ -1408,6 +1412,7 @@ function add_user(user) {
 						update_username(this.value);
 					}
 			}
+
 		} else { 
 			var node = "<button class='btn' style='text-align:left;' data-toggle='tooltip' title='Click to toggle this user&#39;s permission.' id='" + user.id + "'>" + user.name + "</button>";
 			$("#userlist").append(node);
@@ -1438,11 +1443,6 @@ function update_my_user() {
 		$("#login_dropdown").addClass("btn-success");
 		$("#sign_in_text").text("Hi " + my_user.name);
 	}	
-	if (!my_user.role) {
-		$('.left_column').hide();
-	} else {
-		$('.left_column').show();
-	}
 	if (my_user.identity) { //logged in
 		$("#save_as").show();
 		if (tactic_name && tactic_name != "") {
@@ -1487,11 +1487,6 @@ function remove_user(user) {
 function chat(message) {
 	$("#chat_box").append(message);
 	$("#chat_box").scrollTop($("#chat_box")[0].scrollHeight);
-}
-
-function isIE(userAgent) {
-  userAgent = userAgent || navigator.userAgent;
-  return userAgent.indexOf("MSIE ") > -1 || userAgent.indexOf("Trident/") > -1;
 }
 
 function initialize_color_picker(slider_id, variable_name) {
@@ -1655,7 +1650,7 @@ function clear_selected() {
 
 //connect socket.io socket
 loader.once('complete', function () {
-	socket = io.connect('http://'+location.hostname+':8000');
+	socket = io.connect('http://'+location.hostname+':80');
 	$(document).ready(function() {
 		$('#draw_context').hide();
 		$('#icon_context').hide();
@@ -1751,12 +1746,8 @@ loader.once('complete', function () {
 			var link_text = "http://" + location.host + location.pathname+"?room="+room;
 			textArea.value = link_text;
 			document.body.appendChild(textArea);
-			textArea.select();
-			try {
-				document.execCommand('copy');
-			} catch (error) {
-				window.prompt("Copy to clipboard and share with friend: Ctrl+C, Enter", link_text);
-			}
+			//textArea.select();
+			window.prompt("Copy to clipboard and share with friends:", link_text);
 			document.body.removeChild(textArea);
 		});
 		
@@ -1772,7 +1763,7 @@ loader.once('complete', function () {
 		$('#export').click(function () {
 			renderer.render(stage);	
 			var data = renderer.view.toDataURL("image/jpeg", 0.9);			
-			if (isIE()) {
+			if (is_ie()) {
 				var win=window.open();
 				win.document.write("<img src='" + data + "'/>");
 			} else {			
@@ -1860,8 +1851,12 @@ loader.once('complete', function () {
 		var openid_exists = location.search.split('openid.assoc_handle=')[1];
 		if (openid_exists) {
 			socket.emit("login_complete", window.location.href);
-			if (!isIE()) {
-				window.history.replaceState("", "", location.pathname+"?room="+room); //rewrite url to make pretty
+			if (!is_ie()) {
+				try {
+					window.history.replaceState("", "", location.pathname+"?room="+room); //rewrite url to make pretty
+				} catch (e) {
+					console.log(e);
+				}
 			}
 		}
 		
@@ -1952,9 +1947,15 @@ loader.once('complete', function () {
 	socket.on('chat', function(message) {
 		chat(message);
 	});
+
 	
 	socket.on('identify', function(user) {
-		my_user = user;
+		if (!my_user) {
+			my_user = user;
+		} else {
+			my_user.identity = user.identity;
+			my_user.name = user.name;
+		}
 		update_my_user();
 	});
 

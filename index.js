@@ -59,7 +59,7 @@ $(document).ready(function() {
 
 	$("#quote").text(quotes[Math.floor(Math.random() * quotes.length)]);
 	
-	var socket = io.connect('http://'+location.hostname+':8000');
+	var socket = io.connect('http://'+location.hostname+':80');
 	
 	$('#new_room').click(function(){ 
 		socket.emit('request_room');

@@ -11,6 +11,11 @@ function newUid() {
     }).toUpperCase();
 }
 
+process.on('uncaughtException', function (err) {
+	console.error(err);
+	console.trace();
+});
+
 (function() {
 
 	var connection_string;
@@ -45,9 +50,9 @@ function newUid() {
 		var server = http.createServer(app);
 
 		if (process.env.OPENSHIFT_NODEJS_PORT) {	
-			server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
+			server.listen(process.env.OPENSHIFT_NODEJS_PORT || 80, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
 		} else {
-			server.listen(8000);
+			server.listen(80);
 		}
 
 		// creating new socket.io app
@@ -65,7 +70,6 @@ function newUid() {
 			false, // Strict mode
 			[]); // List of extensions to enable and include
 
-		
 		io.sockets.on('connection', function(socket) { 
 			if (!socket.handshake.sessionStore[socket.handshake.sessionID]) {
 				socket.handshake.sessionStore[socket.handshake.sessionID] = {};
@@ -80,7 +84,12 @@ function newUid() {
 			}
 			
 			socket.emit("identify", socket.handshake.sessionStore[socket.handshake.sessionID].user);
-			
+
+			socket.on('error', function (err) {
+				console.error(err);
+				console.trace();
+			});
+	
 			socket.on('request_room', function(name) {
 				var room_uid = newUid();
 				var link = room_uid;
@@ -111,8 +120,6 @@ function newUid() {
 
 			socket.on('login', function(identifier, url) {
 				// Resolve identifier, associate, and build authentication URL
-				//console.log("user trying to log in");
-				//console.log(identifier);
 				relyingParty.returnUrl = url;
 				relyingParty.authenticate(identifier, false, function(error, authUrl) {
 					socket.emit("openid_login", authUrl);
@@ -121,15 +128,20 @@ function newUid() {
 
 			socket.on('login_complete', function(url) {
 				// Resolve identifier, associate, and build authentication URL
-				//console.log("user trying to complete log in");
 				relyingParty.verifyAssertion(url, function(error, result) {
 					if (!error && result.authenticated) {
-						//console.log("login succeeded");
-						socket.handshake.sessionStore[socket.handshake.sessionID].user.identity = result.claimedIdentifier.split('/id/')[1].split("/")[0];
-						socket.handshake.sessionStore[socket.handshake.sessionID].user.name = socket.handshake.sessionStore[socket.handshake.sessionID].user.identity.split('-')[1];
-						if (socket.rooms.length > 1) {
-							io.to(socket.rooms[1]).emit('add_user', socket.handshake.sessionStore[socket.handshake.sessionID].user);
+						var user = socket.handshake.sessionStore[socket.handshake.sessionID].user;
+						user.identity = result.claimedIdentifier.split('/id/')[1].split("/")[0];
+						user.name = user.identity.split('-')[1];
+						var rooms = user.rooms;
+						for (key in user.rooms) {
+							if (user.rooms.hasOwnProperty(key) && room_data[key] && room_data[key].userlist[user.id]) {
+								user.role = room_data[key].userlist[user.id].role;
+								io.to(key).emit('add_user', user);
+							}
 						}
+						delete user.role;
+						
 						socket.emit("identify", socket.handshake.sessionStore[socket.handshake.sessionID].user);
 					}
 				});
@@ -144,27 +156,26 @@ function newUid() {
 					room_data[room].locked = true;
 				}
 
-				if (room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id]) {
+				var user = JSON.parse(JSON.stringify(socket.handshake.sessionStore[socket.handshake.sessionID].user));
+
+				if (room_data[room].userlist[user.id]) {
 					//a user is already connected to this room in probably another tab, just increase a counter
-					room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count++;
+					room_data[room].userlist[user.id].count++;
 				} else {
-					room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id] = socket.handshake.sessionStore[socket.handshake.sessionID].user;
-					room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].count = 1;
+					room_data[room].userlist[user.id] = user;
+					room_data[room].userlist[user.id].count = 1;
 					if (!io.sockets.adapter.rooms[room] || Object.keys(io.sockets.adapter.rooms[room]).length == 0) { //no users
 						//we should make the first client the owner
-						room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].role = "owner";
+						room_data[room].userlist[user.id].role = "owner";
 						socket.handshake.sessionStore[socket.handshake.sessionID].user.rooms[room] = "owner";
 					} else if (socket.handshake.sessionStore[socket.handshake.sessionID].user.rooms[room]) {
 						//if a user was previously connected to this room and had a role, restore that role
-						room_data[room].userlist[socket.handshake.sessionStore[socket.handshake.sessionID].user.id].role = socket.handshake.sessionStore[socket.handshake.sessionID].user.rooms[room];
+						room_data[room].userlist[user.id].role = socket.handshake.sessionStore[socket.handshake.sessionID].user.rooms[room];
 					}
-					socket.broadcast.to(room).emit('add_user', socket.handshake.sessionStore[socket.handshake.sessionID].user);			
+					socket.broadcast.to(room).emit('add_user', room_data[room].userlist[user.id]);			
 				}
 				
-
 				socket.join(room);
-
-				//console.log('client joined room: ' + room);
 				socket.emit('room_data', room_data[room]);
 			});
 
