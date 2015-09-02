@@ -5,12 +5,16 @@ body {
 	padding-right:5px;
 }
 
+.navbar {
+    margin-bottom: 0px;
+}
+
 #big_button_frame {
 	text-align:center;
 }
 
 button {
-   text-align: left;
+	text-align: left;
 }
 
 .popover-medium {
@@ -22,9 +26,9 @@ button {
 }
 
 .bottom {
-	padding-top: 30px;
-	padding-left: 30px;
-	padding-right: 30px;
+	padding-top: 15px;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
 #chat_box {
@@ -56,8 +60,8 @@ button {
 	display:inline-block;
 	vertical-align:top;
 	width: auto;
-	padding-left: 30px;
-	padding-right: 30px;
+	padding-left: 20px;
+	padding-right: 20px;
 	padding-top: 0px;
 }
 
@@ -65,13 +69,14 @@ button {
 	display:inline-block;
 	vertical-align:top;
 	width: auto;
-	padding-left: 30px;
-	padding-right: 30px;
+	padding-left: 20px;
+	padding-right: 20px;
 	padding-top: 0px;
 }
 
 .tank_select {
 	border: 2px solid transparent;
+	padding: 2px;
 	outline: 0;
 	background-color: transparent;
 }
@@ -95,6 +100,12 @@ button {
 
 h5 {
 	font-size:16px;
+}
+
+h4 {
+	padding-top:0px;
+	padding-bottom:0px;
+	font-size:15px;
 }
 
 #ex1Slider .slider-selection {

@@ -90,6 +90,8 @@ $(document).ready(function() {
 	socket.on('approve_room', function(uid) {	
 		if ($("title").text() == "WOWS Tactics") {
 			location.href = "wowsplanner.html?room="+uid;	
+		} else if ($("title").text() == "Blitz Tactics") {
+			location.href = "blitzplanner.html?room="+uid;	
 		} else {
 			location.href = "cwplanner.html?room="+uid;	
 		}

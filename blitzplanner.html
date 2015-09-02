@@ -17,34 +17,17 @@
 	<script type="text/javascript" src="cwplanner.js"></script>
 	<link rel="stylesheet" href="bootstrap/css/bootstrap-slider.min.css" />
 	<link rel="stylesheet" href="style.css" />
-	<title>WOWS Tactics</title>
+	<title>Blitz Tactics</title>
 </head>
 <body role="document">
+
 	<div class="edit_window"></div>
+	
 	<div class="side_bar jumbotron">
 		<nav class="navbar navbar-default">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="/">WOWS Tactics</a>
-				</div>
-				<div class="navbar-form navbar-left dropdown">
-				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="Save">
-					<img src="http://karellodewijk.github.io/icons/save.png">
-				</a>
-				<a id="save_as" href="javascript:void(0)" class="btn btn-default" data-placement="bottom"
-				data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default btn-xs'>Store</button>">
-					<img data-toggle="tooltip" title="Save as" src="http://karellodewijk.github.io/icons/save_as.png">
-				</a>
-
-				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="Locks/unlocks edit mode for users without additional permissions">
-					<img src="http://karellodewijk.github.io/icons/lock.png">
-				</button>
-				<button id="export" class="btn btn-default" data-toggle="tooltip" title="Save tactic as image">
-					<img src="http://karellodewijk.github.io/icons/export.png">
-				</button>
-				<button id="link" class="btn btn-default" data-toggle="tooltip" title="Copy link to clipboard, send it to friends or clan mates to invite them to this tactic">
-					<img src="http://karellodewijk.github.io/icons/link.png">
-				</button>
+					<a class="navbar-brand" href="/blitz.html">Blitz Tactics</a>
 				</div>
 				<div class="navbar-form navbar-right dropdown">
 					<div class="dropdown">
@@ -60,26 +43,30 @@
 						</ul>
 					</div>
 				</div>
-
 			</div>
 		</nav>
 		<div class="top">
 			<div class="left_column">	
+			
 				<h4>Map</h4>
 				<p>
 					<div class="dropdown">
 						<select class="selectpicker" id="map_select">
 						<option value=""></option>
-						<option value="http://karellodewijk.github.io/maps/wows/Bees_to_Honey.png">Bees to honey</option>
-						<option value="http://karellodewijk.github.io/maps/wows/Big_Race.png">Big Race</option>
-						<option value="http://karellodewijk.github.io/maps/wows/Fault_Line.jpg">Fault Line</option>
-						<option value="http://karellodewijk.github.io/maps/wows/Ice_Islands.jpg">Ice Islands</option>
-						<option value="http://karellodewijk.github.io/maps/wows/Islands.png">Islands</option>
-						<option value="http://karellodewijk.github.io/maps/wows/New_Dawn.png">New Dawn</option>
-						<option value="http://karellodewijk.github.io/maps/wows/North.png">North</option>
-						<option value="http://karellodewijk.github.io/maps/wows/Ocean.png">Ocean</option>
-						<option value="http://karellodewijk.github.io/maps/wows/Tutorial.png">Tutorial</option>
-						<option value="http://karellodewijk.github.io/maps/wows/Two_Brothers.jpg">Two brothers</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/01 - Black Goldville.jpg">Black Goldville</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/02 - Castilla.jpg">Castilla</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/03 - Copperfield.jpg">Copperfield</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/04 - Dead Rail.jpg">Dead Rail</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/05 - Desert Sands.jpg">Desert sands</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/06 - Falls Creek.jpg">Falls Creek</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/07 - Fort Despair.jpg">Fort Despair</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/08 - Lost Temple.jpg">Lost Temple</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/09 - Middleburg.jpg">Middleburg</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/10 - Mines.jpg">Mines</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/11 - Port Bay.jpg">Port Bay</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/12 - Oasis Palms.jpg">Oasis Palms</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/13 - Rockfield.jpg">Rockfield</option>
+						<option value="http://karellodewijk.github.io/maps/blitz/14 - Winter Malinovka.jpg">Winter Malinovka</option>
 
 						</select>
 					</div>
@@ -94,7 +81,7 @@
 						<img src="http://karellodewijk.github.io/icons/circle_icon.png" />
 					</button>
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="icon" data-toggle="tooltip" title="Add tank icon (click map)">
-						<img src="http://karellodewijk.github.io/icons/ship_icon.png" />
+						<img src="http://karellodewijk.github.io/icons/tank_icon.png" />
 					</button>
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="draw" data-toggle="tooltip" title="Free draw">
 						<img src="http://karellodewijk.github.io/icons/pencil.png" />
@@ -146,27 +133,30 @@
 				<hr>
 				
 				<div id='icon_context'>
-						
+				
+				<p>			
 				<h4>Icon options (<span id="icon_counter">0</span>)</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				
-				<p>	
-					<small>Label:</small> <input type="text" id="icon_label"/>				
-				<p>
-					<button id="bb" class="tank_select" data-toggle="tooltip" title="Battleship">
-						<img height="15" src="http://karellodewijk.github.io/icons/bb.png"><span>0</span>
+					<p>	
+					<small>Label:</small> <input type="text" id="icon_label"/>
+				
+					<p>
+					<button id="heavy" class="tank_select" data-toggle="tooltip" title="heavy">
+						<img src="http://karellodewijk.github.io/icons/heavy.png"><span>0</span>
 					</button>
-					<button id="ca" class="tank_select" data-toggle="tooltip" title="Cruiser">
-						<img height="15" src="http://karellodewijk.github.io/icons/ca.png"><span>0</span>
-					</button>
-					<button id="cv" class="tank_select" data-toggle="tooltip" title="Aircraft Carrier">
-						<img height="15" src="http://karellodewijk.github.io/icons/cv.png"><span>0</span>
+					<button id="light" class="tank_select" data-toggle="tooltip" title="light">
+						<img src="http://karellodewijk.github.io/icons/light.png"><span>0</span>
 					</button>
 					<br \>
-					<button id="dd" class="tank_select" data-toggle="tooltip" title="Destroyer">
-						<img height="15" src="http://karellodewijk.github.io/icons/dd.png"><span>0</span>
+					<button id="medium" class="tank_select" data-toggle="tooltip" title="medium">
+						<img src="http://karellodewijk.github.io/icons/medium.png"><span>0</span>
 					</button>
+					<button id="td" class="tank_select" data-toggle="tooltip" title="td">
+						<img src="http://karellodewijk.github.io/icons/td.png"><span>0</span>
+					</button>
+				
 				
 					<p>
 					<select name="colorpicker" id="icon_colorpicker">
@@ -182,7 +172,7 @@
 							<small>Label size</small>
 						</div>
 						<div class="col-sm-5">
-							<input id="label_font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="3" data-slider-max="99" data-slider-step="1" data-slider-value="10"/>
+							<input id="label_font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="3" data-slider-max="99" data-slider-step="1" data-slider-value="15"/>
 						</div>
 						<div class="col-sm-3">
 							&nbsp;<input id="label_font_size_text" class="slider_text_input" type="text"/>
@@ -193,7 +183,7 @@
 							<small>Icon size</small>
 						</div>
 						<div class="col-sm-5">
-							<input id="icon_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="50" data-slider-step="1" data-slider-value="15"/>
+							<input id="icon_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="50" data-slider-step="1" data-slider-value="35"/>
 						</div>
 						<div class="col-sm-3">
 							&nbsp;<input id="icon_size_text" class="slider_text_input" type="text"/>
@@ -201,9 +191,9 @@
 					</div>
 				</div>
 				</div>
-
-				<div id='draw_context'>			
 				
+				<div id='draw_context'>			
+				<p>
 				<h4>Draw options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -230,7 +220,7 @@
 				</div>
 
 				<div id='curve_context'>			
-				
+				<p>
 				<h4>Curve options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -257,7 +247,7 @@
 				</div>
 				
 				<div id='rectangle_context'>			
-				
+				<p>
 				<h4>Rectangle options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -320,7 +310,7 @@
 				</div>
 
 				<div id='circle_context'>			
-				
+				<p>
 				<h4>Circle options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -382,7 +372,7 @@
 				</div>
 
 				<div id='polygon_context'>			
-				
+				<p>
 				<h4>Polygon options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -444,7 +434,7 @@
 				</div>
 
 				<div id='area_context'>			
-				
+				<p>
 				<h4>Area options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -507,7 +497,7 @@
 				</div>
 				
 				<div id='ping_context'>			
-				
+				<p>
 				<h4>Ping options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -527,7 +517,7 @@
 
 				<h4>Track options</h4>
 				
-				<div class="container" style="max-width: 250px; padding:0px;">				
+				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
 					<select name="colorpicker" id="track_colorpicker">
 						<option value="#ff0000">Red</option>
@@ -541,7 +531,7 @@
 				</div>		
 				
 				<div id='remove_context'>			
-
+				<p>
 				<h4>Remove options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -594,6 +584,7 @@
 
 				<div id='text_context'>
 
+				
 				<h4>Text options</h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
@@ -615,7 +606,7 @@
 							<small>Size</small>
 						</div>
 						<div class="col-sm-5">
-							<input id="font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="99" data-slider-step="1" data-slider-value="10"/>
+							<input id="font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="99" data-slider-step="1" data-slider-value="20"/>
 						</div>
 						<div class="col-sm-3">
 							<input id="font_size_text" class="slider_text_input" type="text"/>
@@ -665,20 +656,48 @@
 						</button>
 					</div>
 				</div>
-				</div>				
-			</div>
-			<div class="right_column">
-				<h4>User list (<span id="user_count"></span>)</h4>
+				</div>	
+
+				<h4>Extra</h4>
 				<p>
-				<div class="btn-group-vertical btn-group-xs" role="group" id="userlist"></div>
+				
+				<div class="btn-group" role="group">
+				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="Save">
+					<img src="http://karellodewijk.github.io/icons/save.png">
+				</a>
+				<a id="save_as" href="javascript:void(0)" class="btn btn-default" data-placement="bottom"
+				data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default btn-xs'>Store</button>">
+					<img data-toggle="tooltip" title="Save as" src="http://karellodewijk.github.io/icons/save_as.png">
+				</a>
+
+				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="Locks/unlocks edit mode for users without additional permissions">
+					<img src="http://karellodewijk.github.io/icons/lock.png">
+				</button>
+				<button id="export" class="btn btn-default" data-toggle="tooltip" title="Save tactic as image">
+					<img src="http://karellodewijk.github.io/icons/export.png">
+				</button>
+				<button id="link" class="btn btn-default" data-toggle="tooltip" title="Copy link to clipboard, send it to friends or clan mates to invite them to this tactic">
+					<img src="http://karellodewijk.github.io/icons/link.png">
+				</button>
+				</div>
+				
 			</div>
+
 		</div>
+
+	</div>
+	<div class="side_bar jumbotron">
 		<div class="bottom">
 			<textarea readonly id="chat_box" rows="10" cols="60"></textarea>
 			<br />
 			<input id="chat_input" class="slider_text_input" type="text"/>
 		</div>
-		
-		
+	</div>
+	<div class="side_bar jumbotron">
+		<div class="right_column">
+			<h4>User list (<span id="user_count"></span>)</h4>
+			<p>
+			<div class="btn-group-vertical btn-group-xs" role="group" id="userlist"></div>
+		</div>
 	</div>
 </body>

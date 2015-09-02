@@ -48,9 +48,9 @@ process.on('uncaughtException', function (err) {
 		// attaching express app to HTTP server
 		var http = require('http');
 		var server = http.createServer(app);
-
+		
 		if (process.env.OPENSHIFT_NODEJS_PORT) {	
-			server.listen(process.env.OPENSHIFT_NODEJS_PORT || 80, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
+			server.listen(process.env.OPENSHIFT_NODEJS_PORT || 8000, process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
 		} else {
 			server.listen(80);
 		}

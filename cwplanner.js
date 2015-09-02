@@ -46,6 +46,7 @@ loader.load();
 var min_draw_point_distance = 0.01;
 var min_draw_point_distance_sq = min_draw_point_distance * min_draw_point_distance;
 var min_polygon_end_distance = 0.01; //in ratio to width of map
+var min_polygon_end_distance_touch = 0.025;
 var min_track_move_distance = 0.01;
 var min_track_move_distance_sq = min_track_move_distance * min_track_move_distance;
 var active_context = 'ping_context';
@@ -419,7 +420,8 @@ function on_left_click(e) {
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(min_polygon_end_distance)));
+			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			renderer.render(stage);
 		}
@@ -435,7 +437,8 @@ function on_left_click(e) {
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(min_polygon_end_distance)));
+			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			renderer.render(stage);
 		}
@@ -567,7 +570,10 @@ function on_area_end(e) {
 	new_y = y - new_drawing.y;
 	
 	var squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
-	if (squared_distance_to_start < (min_polygon_end_distance*min_polygon_end_distance)) {
+
+	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+	
+	if (squared_distance_to_start < (end_circle_radius*end_circle_radius)) {
 		setup_mouse_events(undefined, undefined);
 		new_drawing.path.push([0, 0]);
 		create_area(new_drawing);
@@ -665,7 +671,10 @@ function on_polygon_end(e) {
 	y = Math.min(1, y);
 
 	var squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
-	if (squared_distance_to_start < (min_polygon_end_distance*min_polygon_end_distance)) {
+	
+	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+	
+	if (squared_distance_to_start < (end_circle_radius*end_circle_radius)) {
 		setup_mouse_events(undefined, undefined);
 		objectContainer.removeChild(graphics);
 		create_polygon(new_drawing);
@@ -1080,14 +1089,13 @@ function create_icon(icon) {
 	icon.container.y = y_abs(icon.y);
 
 	icon.container.addChild(sprite);	
-	if (icon.label != "") {
+	if (icon.label && icon.label != "") {
 		var size = "bold "+icon.label_font_size*x_abs(font_scale)+"px " + icon.label_font;
 		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
 		text.x += sprite.width/2 - text.width/2;
 		text.y += sprite.height;
 		icon['container'].addChild(text);
 	}
-
 
 	icon.container.pivot = sprite.position;
 	icon.container.entity = icon; 
