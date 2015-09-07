@@ -71,10 +71,10 @@ app.use(function(err, req, res, next) {
 });
 
 // not pretty but oh so handy to not crash the server
-process.on('uncaughtException', function (err) {
-	console.error(err);
-	console.trace();
-});
+// process.on('uncaughtException', function (err) {
+	// console.error(err);
+	// console.trace();
+// });
 
 function clean_up_room(room) {
 	setTimeout( function() { //just in case nobody joins
@@ -167,7 +167,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		},
 		function(req, identifier, done) {
 			var user = {};
-			if (req.session.passport && req.session.passport.user) {
+			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 				user.id = req.session.passport.user.id;
 			} else {
 				user.id = newUid();		
@@ -177,6 +177,27 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			done(null, user);
 		}
 	));
+	
+	var StrategyGoogle = require('passport-google-openidconnect').Strategy;
+	passport.use(new StrategyGoogle({
+		clientID:'544895630420-h9bbrnn1ndmf005on55qapanrqdidt5e.apps.googleusercontent.com',
+		clientSecret: '8jTj6l34XcZ8y_pU2cqwANjw',
+		callbackURL: 'http://localhost/auth/google/callback',
+		passReqToCallback:true
+	  },
+	  function(req, iss, sub, profile, accessToken, refreshToken, done) {
+		var user = {};
+		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+			user.id = req.session.passport.user.id;
+		} else {
+			user.id = newUid();
+		}
+		user.identity = profile.id;
+		user.name = profile.displayName;
+		done(null, user);
+	  }
+	));	
+
 
 	passport.serializeUser(function(user, done) {
 		done(null, user);
@@ -190,10 +211,21 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	io.use(function(socket, next) {
 	  session(socket.handshake, {}, next);
 	});
-
+	
 	// setup routes
 	var router = express.Router();
+
 	router.get('/', function(req, res, next) {
+		if (req.hostname.indexOf('awtactics') != -1) {
+			req.session.game = "aw";
+		} else if (req.hostname.indexOf('wowstactics') != -1) {
+			req.session.game = "wows";
+		} else {
+			req.session.game = "wot";
+		}
+		res.redirect('/'+req.session.game+'.html');
+	});
+	router.get('/wot.html', function(req, res, next) {
 	  req.session.game = 'wot';
 	  res.render('index', { game: req.session.game, 
 							user: req.session.passport.user });
@@ -274,21 +306,30 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		return;
 	});
 	
-	//authentication routes
-	router.post('/auth/openid', function(req, res, next) {
+	function save_return(req, res, next) {
 		req.session.return_to = req.headers.referer;
 		next();
-	}, passport.authenticate('openid'));
-	router.get('/auth/openid/return', passport.authenticate('openid'), function(req, res, next) {
+	}
+	function redirect_return(req, res, next) {
 		res.redirect(req.session.return_to);
-		delete req.session.return_to;		
-	});
+		delete req.session.return_to;
+		return;
+	}
+	
+	//openid
+	router.post('/auth/openid', save_return, passport.authenticate('openid'));
+	router.get('/auth/openid/return', passport.authenticate('openid'), redirect_return);	
+	
+	//google
+	router.post('/auth/google', save_return, passport.authenticate('google-openidconnect'));
+	router.get('/auth/google/callback', passport.authenticate('google-openidconnect'), redirect_return);
+	
+	//add router to app
 	app.use('/', router); 
 	
 	// catch 404 and forward to error handler
 	app.use(function(req, res, next) {
-		var err = new Error('Not Found');
-		console.log(req.url)
+		var err = new Error('Not Found: "' + req.path + '"');
 		err.status = 404;
 		next(err);
 	});
@@ -431,14 +472,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				var collection = db.collection(user.identity);
 				room_data[room].name = name;
 				collection.update({name:name}, {name:name, history:room_data[room].history, date:Date.now(), game:room_data[room].game}, {upsert: true});
-			}
-		});
-
-		socket.on('delete_tactic', function(name) {
-			var identity = socket.handshake.session.passport.user.identity;
-			if (identity) {
-				var collection = db.collection(identity);
-				var tactics = collection.remove({name:name});
 			}
 		});
 	});

@@ -1,0 +1,5 @@
+db.getCollectionNames().forEach(function(collname) {
+	if (collname != 'sessions' && collname != 'system.indexes') {
+		db[collname].update({game:null}, {$set:{game:'wot'}}, {multi:true});
+	}
+});

@@ -1748,6 +1748,7 @@ loader.once('complete', function () {
 		});
 		
 		room = location.search.split('room=')[1].split("&")[0];
+		console.log(room)
 		socket.emit('join_room', room, game);
 		
 		$(document).on('click', '#store_tactic', function(){
