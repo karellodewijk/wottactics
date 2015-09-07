@@ -35,17 +35,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 var io = require('socket.io')();
 app.io = io;
 
-//initialize openid
-var openid = require('openid');
-var url = require('url');
-var querystring = require('querystring');
-var relyingParty = new openid.RelyingParty(
-	'', // Verification URL (yours)
-	null, // Realm (optional, specifies realm for OpenID authentication)
-	false, // Use stateless verification
-	false, // Strict mode
-	[]); // List of extensions to enable and include
-
 // error handlers
 
 // development error handler
