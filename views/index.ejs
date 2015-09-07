@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<% include common_headers.ejs %>
+	<script type="text/javascript" src="/javascripts/index.js"></script>
+</head>
+<body style="text-align:center">
+    <div class="jumbotron side_bar" style='width:100%;'>
+		<% include navbar.ejs %>
+
+		<div class="container" id="big_button_frame">
+			<h1>
+				<% if (game == 'wot') { %>
+					World of Tanks Tactics
+				<% } else if (game == 'wows') { %>
+					World of Warships Tactics
+				<% } else if (game == 'blitz') { %>
+					World of Tanks Blitz Tactics
+				<% } else if (game == 'aw') { %>
+					Armored Warfare Tactics
+				<% } %>	
+			</h1>
+			<p><span id="quote"></span></p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button">Create new room &raquo;</a></p>
+		</div>
+	
+	</div>
+
+	<div class="container" style="text-align:left; width:100%">
+		<ul class="list-group" id="tactic_list" style="vertical-align: middle"></ul>	
+	</div>
+	
+</body>

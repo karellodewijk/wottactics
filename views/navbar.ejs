@@ -1,0 +1,59 @@
+<nav class="navbar navbar-default container-fluid">
+	<div class="navbar-header">
+		<a class="navbar-brand" 
+			<% if (game == 'wot') { %>
+				href="/">WOT Tactics
+			<% } else if (game == 'wows') { %>
+				href="/wows.html">WOWS Tactics
+			<% } else if (game == 'blitz') { %>
+				href="/blitz.html">Blitz Tactics
+			<% } else if (game == 'aw') { %>
+				href="/aw.html">AW Tactics
+			<% } %>
+		</a>
+	</div>
+	<ul class="nav navbar-nav navbar-left container-fluid">
+		<li><a href="stored_tactics.html" class="">Stored tactics</a></li>
+		<li><a href="getting_started.html" class="">Getting started</a></li>
+		<li><a href="about.html" class="">About</a></li>
+	</ul>
+	<ul class="nav navbar-nav navbar-right container-fluid">
+		<li class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+			  Other Games<span class="caret"></span>
+			</a>
+			<ul class="dropdown-menu">
+				<li><a href="http://www.wottactic.tk">World of Tanks</a></li>
+				<li><a href="http://www.wottactic.tk/wows.html">World of Warships</a></li>
+				<li><a href="http://www.wottactic.tk/blitz.html">World of Tanks Blitz</a></li>
+				<li><a href="http://www.wottactic.tk/aw.html">Armored Warfare</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<% if (!user.identity) { %>
+				<button class="btn btn-warning navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown">
+					<span id="sign_in_text">Sign in</span> <span class="caret"></span>
+				</button>
+			<% } else { %>
+				<button class="btn btn-success navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown">
+					<span id="sign_in_text">Hi, <%=user.name%></span> <span class="caret"></span>
+				</button>
+			<% }%>
+			<ul class="dropdown-menu" id="login_dropdown_select" aria-labelledby="login_dropdown">
+				<li><a id="http://eu.wargaming.net/id/" href="javascript:void(0)">Wargaming EU</a></li>
+				<li><a id="http://ru.wargaming.net/id/" href="javascript:void(0)">Wargaming RU</a></li>
+				<li><a id="http://asia.wargaming.net/id/" href="javascript:void(0)">Wargaming SEA</a></li>
+				<li><a id="http://na.wargaming.net/id/" href="javascript:void(0)">Wargaming NA</a></li>
+				<li><a id="http://kr.wargaming.net/id/" href="javascript:void(0)">Wargaming KOR</a></li>
+			</ul>
+		</li>
+	</ul>
+</nav>
+
+<script type="text/javascript">
+	$('#login_dropdown_select').on('click', 'a', function () {
+		var form = $("<form action='/auth/openid' method='POST'><input type='hidden' name='openid_identifier' value='"+ this.id +"' /></form>");
+		$('body').append(form);
+		form.submit();
+	});
+</script>

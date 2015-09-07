@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<% include common_headers.ejs %>
+	<script type="text/javascript" src="/javascripts/index.js"></script>
+</head>
+<body>
+    <div class="jumbotron side_bar" style='width:100%;'>
+		<% include navbar.ejs %>
+		<hr>
+			<div class="container" style="text-align:left; width:90%">
+				<ul class="list-group" id="tactic_list" style="vertical-align: middle">
+				
+				<% for (var i in tactics) {%>
+					<% date = new Date(tactics[i][1]); %>	
+					<li class="list-group-item row" id="<%=tactics[i][0]%>"><h5 class="col-sm-7"><%=tactics[i][0]%></h5><h5 class="col-sm-3"><%=date.getFullYear()%>-<%=date.getMonth()%>-<%=date.getDate()%></h5><span class="col-md-1"><a class="btn btn-danger select_tactic_button" href="javascript:void(0);" id="<%=tactics[i][0]%>" role="button"><img src="http://karellodewijk.github.io/icons/bin.png" /></a></span><a class="btn btn-primary select_tactic_button col-md-1" href="<%=game%>planner.html?restore=<%=tactics[i][0]%>" id="<%=tactics[i][0]%>" role="button">Launch&raquo;</a></li>
+				<% } %>				
+				</ul>
+				<script type="text/javascript">
+					$('#tactic_list').on('click', 'a', function () {
+						if ($(this).hasClass('btn-danger')) {
+							$.post('/remove_tactic', {name: this.id});
+							$("li[id='"+this.id+"']").remove();
+						}
+					})
+				</script>
+
+
+			</div>
+		</div>
+	</div>
+</body>
