@@ -1,3 +1,9 @@
+var socket = io.connect('http://'+location.hostname, {
+  'reconnect': true,
+  'reconnection delay': 500,
+  'max reconnection attempts': Infinity
+});
+
 //generates unique id
 function newUid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
@@ -73,7 +79,6 @@ var polygon_outline_color = 0xff0000;
 var polygon_fill_color = 0xff0000;
 var area_outline_color = 0xff0000;
 var area_fill_color = 0xff0000;
-var socket;
 var room;
 var background;
 var draw_thickness;
@@ -1109,8 +1114,8 @@ function create_icon(icon) {
 	sprite.tint = icon.color;
 
 	//sprite.width = x_abs(icon_scale);
-	sprite.height = (sprite.height/29) * y_abs(icon_scale);
-	sprite.width = (sprite.width/29) * x_abs(icon_scale);
+	sprite.height = (sprite.height/29) * y_abs(icon_scale) * icon.scale;
+	sprite.width = (sprite.width/29) * x_abs(icon_scale) * icon.scale;
 	
 	icon.container = new PIXI.Container();
 	icon.container.x = x_abs(icon.x);
@@ -1677,9 +1682,13 @@ function clear_selected() {
 	undo_list.push(["remove", cleared_entities]);
 }
 
+function sleepFor( sleepDuration ){
+    var now = new Date().getTime();
+    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
+}
+
 //connect socket.io socket
 loader.once('complete', function () {
-	socket = io.connect('http://'+location.hostname+':80');
 	$(document).ready(function() {
 		$('#draw_context').hide();
 		$('#icon_context').hide();
@@ -1748,7 +1757,6 @@ loader.once('complete', function () {
 		});
 		
 		room = location.search.split('room=')[1].split("&")[0];
-		console.log(room)
 		socket.emit('join_room', room, game);
 		
 		$(document).on('click', '#store_tactic', function(){

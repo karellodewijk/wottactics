@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./app"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
@@ -16,9 +16,11 @@
     "mongodb": "~2.0.40",
     "morgan": "~1.6.1",
     "passport": "^0.2.2",
+    "passport-facebook": "^2.0.0",
     "passport-google-openidconnect": "0.0.4",
     "passport-openid": "git://github.com/jfaissolle/passport-openid.git#flexible-urls",
     "passport-strategy": "^1.0.0",
+    "passport-twitter": "^1.0.3",
     "serve-favicon": "~2.3.0",
     "socket.io": "~1.3.6",
     "socket.io-express-session": "~0.1.2"

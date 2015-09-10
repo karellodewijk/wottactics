@@ -13,9 +13,8 @@ function newUid() {
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
+var bodyParser = require('body-parser')
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
 var passport = require('passport');
 var app = express();
 
@@ -25,15 +24,14 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-//app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
 app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
 var io = require('socket.io')();
-app.io = io;
 
 // error handlers
 
@@ -60,10 +58,10 @@ app.use(function(err, req, res, next) {
 });
 
 // not pretty but oh so handy to not crash the server
-// process.on('uncaughtException', function (err) {
-	// console.error(err);
-	// console.trace();
-// });
+process.on('uncaughtException', function (err) {
+	console.error(err);
+	console.trace();
+});
 
 function clean_up_room(room) {
 	setTimeout( function() { //just in case nobody joins
@@ -129,27 +127,31 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		var collection = db.collection(identity);
 		var tactics = collection.remove({name:name, game:game});		
 	}
-
+	
+	function create_anonymous_user(req) {
+		req.session.passport.user = {};
+		req.session.passport.user.id = newUid();
+		req.session.passport.user.name = "Anonymous";
+		req.session.save();				
+	}
+	
 	// initializing session middleware
 	var Session = require('express-session');
 	var MongoStore = require('connect-mongo')(Session);
-	var session = Session({ secret: 'pass', resave: true, saveUninitialized: true, cookie: { expires: new Date(Date.now() + 14 * 86400 * 1000) }, store: new MongoStore({db: db}), rolling: true});
+	var session = Session({ secret: 'mumnbojudqs', resave: true, saveUninitialized: true, cookie: { expires: new Date(Date.now() + 1 * 86400 * 1000) }, store: new MongoStore({db: db}), rolling: true});
 	app.use(session); // session support
 	
 	// Configuring Passport
-	var OpenIDStrategy = require('passport-openid').Strategy;
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(function(req, res, next) { //create a default user
 		if (!req.session.passport.user) {
-			req.session.passport.user = {};
-			req.session.passport.user.id = newUid();
-			req.session.passport.user.name = "Anonymous";
-			req.session.save();			
+			create_anonymous_user(req);		
 		}
 		next();
 	});
 	
+	var OpenIDStrategy = require('passport-openid').Strategy;
 	passport.use(new OpenIDStrategy({
 			returnURL: function(req) { return "http://" + req.hostname + "/auth/openid/return";},
 			passReqToCallback: true
@@ -171,7 +173,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	passport.use(new StrategyGoogle({
 		clientID:'544895630420-h9bbrnn1ndmf005on55qapanrqdidt5e.apps.googleusercontent.com',
 		clientSecret: '8jTj6l34XcZ8y_pU2cqwANjw',
-		callbackURL: 'http://localhost/auth/google/callback',
+		callbackURL: '/auth/google/callback',
 		passReqToCallback:true
 	  },
 	  function(req, iss, sub, profile, accessToken, refreshToken, done) {
@@ -187,6 +189,45 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	));	
 
+	var FacebookStrategy = require('passport-facebook').Strategy;
+	passport.use(new FacebookStrategy({
+		clientID: '580177672120479',
+		clientSecret: 'eba898e021a070a00f60e0343450695e',
+		callbackURL: "/auth/facebook/callback",
+		passReqToCallback: true
+	  },
+	  function(req, accessToken, refreshToken, profile, done) {
+		var user = {};
+		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+			user.id = req.session.passport.user.id;
+		} else {
+			user.id = newUid();
+		}
+		user.identity = profile.id;
+		user.name = profile.displayName;
+		done(null, user);
+	  }
+	));
+
+	var TwitterStrategy = require('passport-twitter').Strategy;
+	passport.use(new TwitterStrategy({
+		consumerKey: 'kyuE5HUWJipJpz1JraWrGKu0Z',
+		consumerSecret: 'qruzs2fwJG8nVMzPeFSvxWZ2ua6WzkJNpBhI5yPCSS525ivTSI',
+		callbackURL: "/auth/twitter/callback",
+		passReqToCallback: true
+	  },
+	  function(req, token, tokenSecret, profile, done) {
+		var user = {};
+		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+			user.id = req.session.passport.user.id;
+		} else {
+			user.id = newUid();
+		}
+		user.identity = profile.id;
+		user.name = profile.displayName;
+		done(null, user);
+	  }
+	));	
 
 	passport.serializeUser(function(user, done) {
 		done(null, user);
@@ -205,9 +246,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var router = express.Router();
 
 	router.get('/', function(req, res, next) {
-		if (req.hostname.indexOf('awtactics') != -1) {
+		if (req.hostname.indexOf('awtactic') != -1) {
 			req.session.game = "aw";
-		} else if (req.hostname.indexOf('wowstactics') != -1) {
+		} else if (req.hostname.indexOf('wowstactic') != -1) {
 			req.session.game = "wows";
 		} else {
 			req.session.game = "wot";
@@ -313,6 +354,14 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.post('/auth/google', save_return, passport.authenticate('google-openidconnect'));
 	router.get('/auth/google/callback', passport.authenticate('google-openidconnect'), redirect_return);
 	
+	//facebook
+	router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
+	router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
+
+	//twitter
+	router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
+	router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
+	
 	//add router to app
 	app.use('/', router); 
 	
@@ -325,6 +374,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//socket.io callbacks
 	io.sockets.on('connection', function(socket) { 
+		console.log("reconnect")
+	
 		if (!socket.handshake.session.passport) {
 			socket.handshake.session.passport = {};
 		}
@@ -354,6 +405,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 
 			room_data[room].last_join = Date.now();
+			if (!socket.handshake.session.passport.user) {
+				create_anonymous_user(socket.handshake);
+			}
 			var user = JSON.parse(JSON.stringify(socket.handshake.session.passport.user));
 
 			if (room_data[room].userlist[user.id]) {
@@ -464,6 +518,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 	});
+	
+	//create server
+	var http = require('http');
+	var server = http.createServer(app);
+	io.attach(server);
+	server.listen(80);	
 });
 
-module.exports = app;
