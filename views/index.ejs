@@ -4,11 +4,13 @@
 	<% include common_headers.ejs %>
 	<script type="text/javascript" src="/javascripts/index.js"></script>
 </head>
-<body style="text-align:center">
+<body>
+	<div class="container" style='width:100%; padding-top:70px;'>
     <div class="jumbotron side_bar" style='width:100%;'>
+	
 		<% include navbar.ejs %>
 
-		<div class="container" id="big_button_frame">
+		<div class="container" id="big_button_frame" style="text-align:center">
 			<h1>
 				<% if (game == 'wot') { %>
 					World of Tanks Tactics
@@ -21,13 +23,28 @@
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button">Create new room &raquo;</a></p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a></p>
 		</div>
 	
 	</div>
 
-	<div class="container" style="text-align:left; width:100%">
-		<ul class="list-group" id="tactic_list" style="vertical-align: middle"></ul>	
+	<div class="row">
+	<div class="col-md-4">
+		<h2>Welcome</h2>
+		<p>This website is created to make tactical quick and easy. Just press the blue button, share the link with friends or not and get started. If you want the people you invite to be able to edit too, click on their name or the unlock button. There is more information in the getting started guide.
+		</p>
 	</div>
+	<div class="col-md-4">
+		<h2>Free and open</h2>
+		<p>This website is free of charge, free of adds and open-source and I intend to keep it that way.</p>
+	</div>
+	<div class="col-md-4">
+		<h2>Looking for translator</h2>
+		<p>Right now this website is only available in English, but I'd like to a Russian version and maybe you want it translated in your language too ? So if your English is ok and want this website available in an other language, get in touch. No technical skill required.</p>
+	</div>
+</div>
 	
+	<% include footer.ejs %>
+	
+	</div>
 </body>

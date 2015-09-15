@@ -17,6 +17,7 @@ var bodyParser = require('body-parser')
 var logger = require('morgan');
 var passport = require('passport');
 var app = express();
+var heapdump = require('heapdump');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -32,6 +33,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
 var io = require('socket.io')();
+
+//configure localization support
+var i18n = require('i18n');
+i18n.configure({
+	locales: ['en', 'nl'],
+	directory: "./locales",
+	updateFiles: true
+});
+app.locals.l = i18n.__;
+app.locals.ln = i18n.__n;
 
 // error handlers
 
@@ -77,20 +88,24 @@ function clean_up_room(room) {
 	}, 60000);
 }
 
+setTimeout( function() { //just in case nobody joins
+	 heapdump.writeSnapshot();
+}, 3000000);
+
 //load mongo
-var connection_string = '127.0.0.1:27017/wottactics';
-var MongoClient = require('mongodb').MongoClient;
+connection_string = '127.0.0.1:27017/wottactics';
+MongoClient = require('mongodb').MongoClient;
 MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	if(err) throw err;	
 	
 	function get_tactics(identity, game, cb) {
 		if (identity) {
-			var collection = db.collection(identity);
-			var name_list = [];
-			var tactics = collection.find({game:game}, {"sort" : [['date', 'desc']], name:1, date:1});
+			collection = db.collection(identity);
+			name_list = [];
+			tactics = collection.find({game:game}, {"sort" : [['date', 'desc']], name:1, date:1});
 			tactics.each(function (err, tactic) {			
 				if (tactic) {
-					var game = 'wot';
+					game = 'wot';
 					if (tactic.game) {
 						game = tactic.game;
 					}
@@ -104,10 +119,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	function restore_tactic(identity, game, name, cb) {
 		if (identity) {
-			var collection = db.collection(identity);
-			var tactics = collection.findOne({game:game, name:name}, function(err, result) {
+			collection = db.collection(identity);
+			tactics = collection.findOne({game:game, name:name}, function(err, result) {
 				if (!err && result) { 
-					var uid = newUid();
+					uid = newUid();
 					room_data[uid] = {};
 					room_data[uid].history = result.history;
 					room_data[uid].userlist = {};
@@ -124,21 +139,20 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	function remove_tactic(identity, game, name) {
-		var collection = db.collection(identity);
-		var tactics = collection.remove({name:name, game:game});		
+		collection = db.collection(identity);
+		tactics = collection.remove({name:name, game:game});		
 	}
 	
 	function create_anonymous_user(req) {
 		req.session.passport.user = {};
 		req.session.passport.user.id = newUid();
-		req.session.passport.user.name = "Anonymous";
-		req.session.save();				
+		req.session.passport.user.name = "Anonymous";		
 	}
 	
 	// initializing session middleware
-	var Session = require('express-session');
-	var MongoStore = require('connect-mongo')(Session);
-	var session = Session({ secret: 'mumnbojudqs', resave: true, saveUninitialized: true, cookie: { expires: new Date(Date.now() + 1 * 86400 * 1000) }, store: new MongoStore({db: db}), rolling: true});
+	Session = require('express-session');
+	RedisStore = require('connect-redis')(Session);
+	session = Session({ secret: 'mumnbojudqs', resave:true, saveUninitialized:false, cookie: { expires: new Date(Date.now() + 1 * 86400 * 1000) }, store: new RedisStore()});
 	app.use(session); // session support
 	
 	// Configuring Passport
@@ -148,16 +162,23 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (!req.session.passport.user) {
 			create_anonymous_user(req);		
 		}
+		if (req.query.lang) {
+			req.session.locale = req.query.lang;
+		} else if (!req.session.locale) {
+			req.session.locale = "en";
+		}
+		//console.log("setting language to:", req.session.locale)
+		//res.locale = req.session.locale;
 		next();
 	});
 	
-	var OpenIDStrategy = require('passport-openid').Strategy;
+	OpenIDStrategy = require('passport-openid').Strategy;
 	passport.use(new OpenIDStrategy({
-			returnURL: function(req) { return "http://" + req.hostname + "/auth/openid/return";},
+			returnURL: function(req) { return "http://" + req.hostname + "/auth/openid/callback"; },
 			passReqToCallback: true
 		},
 		function(req, identifier, done) {
-			var user = {};
+			user = {};
 			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 				user.id = req.session.passport.user.id;
 			} else {
@@ -169,7 +190,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 	));
 	
-	var StrategyGoogle = require('passport-google-openidconnect').Strategy;
+	StrategyGoogle = require('passport-google-openidconnect').Strategy;
 	passport.use(new StrategyGoogle({
 		clientID:'544895630420-h9bbrnn1ndmf005on55qapanrqdidt5e.apps.googleusercontent.com',
 		clientSecret: '8jTj6l34XcZ8y_pU2cqwANjw',
@@ -177,7 +198,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		passReqToCallback:true
 	  },
 	  function(req, iss, sub, profile, accessToken, refreshToken, done) {
-		var user = {};
+		user = {};
 		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 			user.id = req.session.passport.user.id;
 		} else {
@@ -189,7 +210,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	));	
 
-	var FacebookStrategy = require('passport-facebook').Strategy;
+	FacebookStrategy = require('passport-facebook').Strategy;
 	passport.use(new FacebookStrategy({
 		clientID: '580177672120479',
 		clientSecret: 'eba898e021a070a00f60e0343450695e',
@@ -197,7 +218,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		passReqToCallback: true
 	  },
 	  function(req, accessToken, refreshToken, profile, done) {
-		var user = {};
+		user = {};
 		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 			user.id = req.session.passport.user.id;
 		} else {
@@ -209,7 +230,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	));
 
-	var TwitterStrategy = require('passport-twitter').Strategy;
+	TwitterStrategy = require('passport-twitter').Strategy;
 	passport.use(new TwitterStrategy({
 		consumerKey: 'kyuE5HUWJipJpz1JraWrGKu0Z',
 		consumerSecret: 'qruzs2fwJG8nVMzPeFSvxWZ2ua6WzkJNpBhI5yPCSS525ivTSI',
@@ -217,7 +238,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		passReqToCallback: true
 	  },
 	  function(req, token, tokenSecret, profile, done) {
-		var user = {};
+		user = {};
 		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 			user.id = req.session.passport.user.id;
 		} else {
@@ -243,7 +264,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	
 	// setup routes
-	var router = express.Router();
+	router = express.Router();
 
 	router.get('/', function(req, res, next) {
 		if (req.hostname.indexOf('awtactic') != -1) {
@@ -258,26 +279,30 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.get('/wot.html', function(req, res, next) {
 	  req.session.game = 'wot';
 	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user });
+							user: req.session.passport.user,
+							locale: req.session.locale });
 	});
 	router.get('/aw.html', function(req, res, next) {
 	  req.session.game = 'aw';
 	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user });
+							user: req.session.passport.user,
+							locale: req.session.locale });
 	});
 	router.get('/wows.html', function(req, res, next) {
 	  req.session.game = 'wows';
 	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user });
+							user: req.session.passport.user,
+							locale: req.session.locale });
 	});
 	router.get('/blitz.html', function(req, res, next) {
 	  req.session.game = 'blitz';
 	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user });
+							user: req.session.passport.user,
+							locale: req.session.locale });
 	});
 	function planner_redirect(req, res, game) {
 	  if (req.query.restore) {
-		var uid = newUid();
+		uid = newUid();
 		restore_tactic(req.session.passport.user.identity, req.session.game, req.query.restore, function (uid) {
 			res.redirect(game+'planner.html?room='+uid);
 		});
@@ -286,7 +311,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }	else {
 		  req.session.game = game;
 		  res.render('planner', { game: req.session.game, 
-								  user: req.session.passport.user });
+								  user: req.session.passport.user,
+								  locale: req.session.locale });
 	  }
 	}
 	router.get('/wotplanner.html', function(req, res, next) {
@@ -306,14 +332,16 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		  req.session.game = 'wot';
 	  }
 	  res.render('about', { game: req.session.game, 
-							user: req.session.passport.user });
+							user: req.session.passport.user,
+							locale: req.session.locale });
 	});
 	router.get('/getting_started.html', function(req, res, next) {
 	  if (!req.session.game) {
 		req.session.game = 'wot';
 	  }
 	  res.render('getting_started', { game: req.session.game, 
-									  user: req.session.passport.user });
+									  user: req.session.passport.user,
+									  locale: req.session.locale });
 	});
 	router.get('/stored_tactics.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -323,6 +351,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		get_tactics(req.session.passport.user.identity, req.session.game, function(tactics) {
 		  res.render('stored_tactics', { game: req.session.game, 
 										 user: req.session.passport.user,
+										 locale: req.session.locale,
 										 tactics: tactics });
 		});
 	  } else {
@@ -348,12 +377,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//openid
 	router.post('/auth/openid', save_return, passport.authenticate('openid'));
-	router.get('/auth/openid/return', passport.authenticate('openid'), redirect_return);	
-	
+	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
+
 	//google
 	router.post('/auth/google', save_return, passport.authenticate('google-openidconnect'));
 	router.get('/auth/google/callback', passport.authenticate('google-openidconnect'), redirect_return);
-	
+
 	//facebook
 	router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
 	router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
@@ -367,26 +396,16 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	// catch 404 and forward to error handler
 	app.use(function(req, res, next) {
-		var err = new Error('Not Found: "' + req.path + '"');
+		err = new Error('Not Found: "' + req.path + '"');
 		err.status = 404;
 		next(err);
 	});
 	
 	//socket.io callbacks
 	io.sockets.on('connection', function(socket) { 
-		console.log("reconnect")
-	
 		if (!socket.handshake.session.passport) {
 			socket.handshake.session.passport = {};
 		}
-		
-		// if (!socket.handshake.session.passport.user) {
-			// socket.handshake.session.passport.user = {};
-			// var user = socket.handshake.session.passport.user;
-			// user.id = newUid();
-			// user.name = "Anonymous";
-			// socket.handshake.session.save();
-		// }
 		
 		socket.on('error', function (err) {
 			console.error(err);
@@ -394,7 +413,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 		
 		socket.on('join_room', function(room, game) {
-			var new_room = false;
+			new_room = false;
 			if (!(room in room_data)) { 
 				room_data[room] = {};
 				room_data[room].history = {};
@@ -408,7 +427,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (!socket.handshake.session.passport.user) {
 				create_anonymous_user(socket.handshake);
 			}
-			var user = JSON.parse(JSON.stringify(socket.handshake.session.passport.user));
+			user = JSON.parse(JSON.stringify(socket.handshake.session.passport.user));
 
 			if (room_data[room].userlist[user.id]) {
 				//a user is already connected to this room in probably another tab, just increase a counter
@@ -429,11 +448,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			socket.emit('room_data', room_data[room], user.id);
 		});
 
-		socket.onclose = function(reason){
+		socket.onclose = function(reason) {
 			//hijack the onclose event because otherwise we lose socket.rooms data
-			var user = socket.handshake.session.passport.user;
+			user = socket.handshake.session.passport.user;
 			for (i = 1; i < socket.rooms.length; i++) { //first room is clients own little private room so we start at 1
-				var room = socket.rooms[i];
+				room = socket.rooms[i];
 				if (room_data[room] && room_data[room].userlist[user.id]) {
 					if (room_data[room].userlist[user.id].count == 1) {
 						socket.broadcast.to(room).emit('remove_user', user.id);
@@ -445,7 +464,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						room_data[room].userlist[user.id].count--;
 					}
 				}				
-				if (Object.keys(io.sockets.adapter.rooms[room]).length == 1) {	//we're the last one in the room and we're leaving
+				if (Object.keys(io.sockets.adapter.rooms[room]).length <= 1) {	//we're the last one in the room and we're leaving
 					clean_up_room(room);
 				}
 			}
@@ -512,7 +531,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('store', function(room, name) {
 			user = socket.handshake.session.passport.user;
 			if (room_data[room] && user.identity) { //room exists, user is logged in
-				var collection = db.collection(user.identity);
+				collection = db.collection(user.identity);
 				room_data[room].name = name;
 				collection.update({name:name}, {name:name, history:room_data[room].history, date:Date.now(), game:room_data[room].game}, {upsert: true});
 			}
@@ -520,8 +539,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	
 	//create server
-	var http = require('http');
-	var server = http.createServer(app);
+	http = require('http');
+	server = http.createServer(app);
 	io.attach(server);
 	server.listen(80);	
 });

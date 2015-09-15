@@ -34,21 +34,21 @@
 	</div>
 	<ul class="nav navbar-nav navbar-left container-fluid btn-group">
 		<%if (game != 'blitz') { %>	
-			<li><button id="save" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="Save">
+			<li><button id="save" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 				<img src="http://karellodewijk.github.io/icons/save.png">
 			</button></li>
 			<li><button id="save_as" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom"
 			data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default navbar-btn btn-xs'>Store</button>">
-				<img data-toggle="tooltip" title="Save as" src="http://karellodewijk.github.io/icons/save_as.png">
+				<img data-toggle="tooltip" title="<%=l('Save as')%>" src="http://karellodewijk.github.io/icons/save_as.png">
 			</button></li>
 
-			<li><button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="Locks/unlocks edit mode for users without additional permissions">
+			<li><button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
 				<img src="http://karellodewijk.github.io/icons/lock.png">
 			</button></li>
-			<li><button id="export" class="btn btn-default navbar-btn" data-toggle="tooltip" title="Save tactic as image">
+			<li><button id="export" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
 				<img src="http://karellodewijk.github.io/icons/export.png">
 			</button></li>
-			<li><button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="Copy link to clipboard, send it to friends or clan mates to invite them to this tactic">
+			<li><button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 				<img src="http://karellodewijk.github.io/icons/link.png">
 			</button></li>
 		<% } %>	
@@ -60,7 +60,7 @@
 
 		<div class="top">
 			<div class="left_column">	
-				<h4>Map</h4>
+				<h4><%=l('Map')%></h4>
 				<p>
 					<div class="dropdown">
 						<select class="selectpicker" id="map_select">
@@ -79,14 +79,14 @@
 
 				<hr>
 
-				<h4>Tools</h4>
+				<h4><%=l('Tools')%></h4>
 				<p>
 					<div id="contexts">
 					<div class="btn-group">
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="ping" data-toggle="tooltip" title="Ping map">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="ping" data-toggle="tooltip" title="<%=l('Ping map')%>">
 						<img src="http://karellodewijk.github.io/icons/circle_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="icon" data-toggle="tooltip" title="Add icon (click map)">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
 						<img src="http://karellodewijk.github.io/icons/
 							<%if (game == 'wows') { %>
 								ship_icon.png
@@ -97,49 +97,49 @@
 							<%} %>
 						"/>
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="draw" data-toggle="tooltip" title="Free draw">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
 						<img src="http://karellodewijk.github.io/icons/pencil.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="text" data-toggle="tooltip" title="Add Text">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
 						<img src="http://karellodewijk.github.io/icons/text_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="line" data-toggle="tooltip" title="Draw line (hold left mouse)">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="line" data-toggle="tooltip" title="<%=l('Draw line (hold left mouse)')%>">
 						<img src="http://karellodewijk.github.io/icons/line_icon.png" />
 					</button>
 					</div>
 					<br />
 					<div class="btn-group">
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="curve" data-toggle="tooltip" title="Draw curve (double click to end)">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="curve" data-toggle="tooltip" title="<%=l('Draw curve (double click to end)')%>">
 						<img src="http://karellodewijk.github.io/icons/curve.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="Draw rectangle">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="<%=l('Draw rectangle')%>">
 						<img src="http://karellodewijk.github.io/icons/rectangle.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="circle" data-toggle="tooltip" title="Draw circle">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="circle" data-toggle="tooltip" title="<%=l('Draw circle')%>">
 						<img src="http://karellodewijk.github.io/icons/draw_circle_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="polygon" data-toggle="tooltip" title="Draw polygon">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="polygon" data-toggle="tooltip" title="<%=l('Draw polygon')%>">
 						<img src="http://karellodewijk.github.io/icons/polygon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="area" data-toggle="tooltip" title="Draw area">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="area" data-toggle="tooltip" title="<%=l('Draw area')%>">
 						<img src="http://karellodewijk.github.io/icons/area.png" />
 					</button>
 					</div>
 					<br />
 					<div class="btn-group">
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="remove" data-toggle="tooltip" title="Delete (click map)/Delete menu">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="remove" data-toggle="tooltip" title="<%=l('Delete (click map)/Delete menu')%>">
 						<img src="http://karellodewijk.github.io/icons/bin.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="track" data-toggle="tooltip" title="Track cursor">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
 						<img src="http://karellodewijk.github.io/icons/recticle_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="select" data-toggle="tooltip" title="Select items on the map">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
 						<img src="http://karellodewijk.github.io/icons/select.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="undo" data-toggle="tooltip" title="Undo last action">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="undo" data-toggle="tooltip" title="<%=l('Undo last action')%>">
 						<img src="http://karellodewijk.github.io/icons/undo.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="redo" data-toggle="tooltip" title="Redo last action">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="redo" data-toggle="tooltip" title="<%=l('Redo last action')%>">
 						<img src="http://karellodewijk.github.io/icons/redo.png" />
 					</button>
 					</div>
@@ -153,7 +153,7 @@
 				<div class="container" style="max-width: 250px; padding:0px;">
 				
 					<p>	
-					<small>Label:</small> <input type="text" id="icon_label"/>
+					<small><%=l('Label')%></small> <input type="text" id="icon_label"/>
 					<p>				
 						<%if (game == 'wot') { %>
 							<%include wot_icons.ejs%>
@@ -178,7 +178,7 @@
 
 					<div class="row">
 						<div class="col-sm-4">
-							<small>Label size</small>
+							<small><%=l('Label size')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="label_font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="3" data-slider-max="99" data-slider-step="1" data-slider-value=<%if (game == 'blitz') { %>"15"<%} else {%>"10"<%}%>/>
@@ -189,7 +189,7 @@
 					</div>
 					<div class="row">
 						<div class="col-sm-4">
-							<small>Icon size</small>
+							<small><%=l('Icon size')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="icon_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="50" data-slider-step="1" data-slider-value=<%if (game == 'blitz') { %>"35"<%} else {%>"20"<%}%>/>
@@ -203,7 +203,7 @@
 
 				<div id='draw_context'>			
 				
-				<h4>Draw options</h4>
+				<h4><%=l('Draw options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
@@ -216,7 +216,7 @@
 					</select>
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Thickness</small>
+							<small><%=l('Thickness')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="draw_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
@@ -230,7 +230,7 @@
 
 				<div id='curve_context'>			
 				
-				<h4>Curve options</h4>
+				<h4><%=l('Curve options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
@@ -243,7 +243,7 @@
 					</select>
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Thickness</small>
+							<small><%=l('Thickness')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="curve_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
@@ -257,7 +257,7 @@
 				
 				<div id='rectangle_context'>			
 				
-				<h4>Rectangle options</h4>
+				<h4><%=l('Rectangle options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
@@ -273,7 +273,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Thickness</small>
+							<small><%=l('Thickness')%></small>
 						</div>	
 						<div class="col-sm-5">
 							<input id="rectangle_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
@@ -283,7 +283,7 @@
 					</div>	
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Opacity</small>
+							<small><%=l('Opacity')%></small>
 						</div>	
 						<div class="col-sm-5">
 							<input id="rectangle_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
@@ -293,7 +293,7 @@
 						</div>
 					</div>	
 									
-					<h5>Fill:</h5>	
+					<h5><%=l('Fill')%></h5>	
 					<select name="colorpicker" id="rectangle_fill_colorpicker">
 						<option value="#ff0000">Red</option>
 						<option value="#00ff00">Green</option>
@@ -306,7 +306,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Opacity</small>
+							<small><%=l('Opacity')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="rectangle_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
@@ -320,7 +320,7 @@
 
 				<div id='circle_context'>			
 				
-				<h4>Circle options</h4>
+				<h4><%=l('Circle options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
@@ -336,7 +336,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Thickness</small>
+							<small><%=l('Thickness')%></small>
 						</div>	
 						<div class="col-sm-5">
 							<input id="circle_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
@@ -346,7 +346,7 @@
 					</div>	
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Opacity</small>
+							<small><%=l('Opacity')%></small>
 						</div>	
 						<div class="col-sm-5">
 							<input id="circle_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
@@ -356,7 +356,7 @@
 						</div>
 					</div>	
 									
-					<h5>Fill:</h5>		
+					<h5><%=l('Fill')%></h5>		
 					<select name="colorpicker" id="circle_fill_colorpicker">
 						<option value="#ff0000">Red</option>
 						<option value="#00ff00">Green</option>
@@ -368,7 +368,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Opacity</small>
+							<small><%=l('Opacity')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="circle_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
@@ -382,7 +382,7 @@
 
 				<div id='polygon_context'>			
 				
-				<h4>Polygon options</h4>
+				<h4><%=l('Polygon options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
@@ -398,7 +398,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Thickness</small>
+							<small><%=l('Thickness')%></small>
 						</div>	
 						<div class="col-sm-5">
 							<input id="polygon_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
@@ -408,7 +408,7 @@
 					</div>	
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Opacity</small>
+							<small><%=l('Opacity')%></small>
 						</div>	
 						<div class="col-sm-5">
 							<input id="polygon_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
@@ -418,7 +418,7 @@
 						</div>
 					</div>	
 									
-					<h5>Fill:</h5>		
+					<h5><%=l('Fill')%></h5>		
 					<select name="colorpicker" id="polygon_fill_colorpicker">
 						<option value="#ff0000">Red</option>
 						<option value="#00ff00">Green</option>
@@ -430,7 +430,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Opacity</small>
+							<small><%=l('Opacity')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="polygon_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
@@ -444,11 +444,11 @@
 
 				<div id='area_context'>			
 				
-				<h4>Area options</h4>
+				<h4><%=l('Area options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
-					<h5>Outline:</h5>
+					<h5><%=l('Outline')%></h5>
 					<select name="colorpicker" id="area_outline_colorpicker">
 						<option value="#ff0000">Red</option>
 						<option value="#00ff00">Green</option>
@@ -460,7 +460,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Thickness</small>
+							<small><%=l('Thickness')%></small>
 						</div>	
 						<div class="col-sm-5">
 							<input id="area_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
@@ -471,7 +471,7 @@
 					</div>	
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Opacity</small>
+							<small><%=l('Opacity')%></small>
 						</div>	
 						<div class="col-sm-5">
 							<input id="area_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
@@ -481,7 +481,7 @@
 						</div>
 					</div>	
 									
-					<h5>Fill:</h5>		
+					<h5><%=l('Fill')%></h5>		
 					<select name="colorpicker" id="area_fill_colorpicker">
 						<option value="#ff0000">Red</option>
 						<option value="#00ff00">Green</option>
@@ -493,7 +493,7 @@
 					
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Opacity</small>
+							<small><%=l('Opacity')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="area_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
@@ -507,7 +507,7 @@
 				
 				<div id='ping_context'>			
 				
-				<h4>Ping options</h4>
+				<h4><%=l('Ping options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
@@ -524,7 +524,7 @@
 
 				<div id='track_context'>
 
-				<h4>Track options</h4>
+				<h4><%=l('Track options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">				
 				<p>
@@ -541,48 +541,48 @@
 				
 				<div id='remove_context'>			
 
-				<h4>Remove options</h4>
+				<h4><%=l('Remove options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
 					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_all" data-toggle="tooltip" title="Clear all">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_all" data-toggle="tooltip" title="<%=l('Clear all')%>">
 							<img src="http://karellodewijk.github.io/icons/clear.png" />
 						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_draw" data-toggle="tooltip" title="Clear all free draw">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_draw" data-toggle="tooltip" title="<%=l('Clear all free draw')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_draw.png" />
 						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_icons" data-toggle="tooltip" title="clear all icons">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_icons" data-toggle="tooltip" title="<%=l('clear all icons')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_icon.png" />
 						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_lines" data-toggle="tooltip" title="Clear all lines and arrow">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_lines" data-toggle="tooltip" title="<%=l('Clear all lines and arrows')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_line.png" />
 						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_text" data-toggle="tooltip" title="Clear all text">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_text" data-toggle="tooltip" title="<%=l('Clear all text')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_text.png" />
 						</button>
 					</div>
 					<br />
 					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_selected" data-toggle="tooltip" title="Clear all selected items">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_selected" data-toggle="tooltip" title="<%=l('Clear all selected items')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_selected.png" />
 						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_curve" data-toggle="tooltip" title="Clear all curved line">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_curve" data-toggle="tooltip" title="<%=l('Clear all curved lines')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_curve.png" />
 						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_rectangle" data-toggle="tooltip" title="Clear all rectangles">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_rectangle" data-toggle="tooltip" title="<%=l('Clear all rectangles')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_rectangle.png" />
 						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_circle" data-toggle="tooltip" title="Clear all circles">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_circle" data-toggle="tooltip" title="<%=l('Clear all circles')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_circle.png" />
 						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_polygon" data-toggle="tooltip" title="Clear all polygons">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_polygon" data-toggle="tooltip" title="<%=l('Clear all polygons')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_polygon.png" />
 						</button>
 					</div>
 					<br />
 					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_area" data-toggle="tooltip" title="Clear all areas">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_area" data-toggle="tooltip" title="<%=l('Clear all areas')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_area.png" />
 						</button>
 						
@@ -593,7 +593,7 @@
 
 				<div id='text_context'>
 
-				<h4>Text options</h4>
+				<h4><%=l('Text options')%></h4>
 				
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>	
@@ -611,7 +611,7 @@
 					<br />
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Size</small>
+							<small><%=l('Size')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="99" data-slider-step="1" data-slider-value="10"/>
@@ -639,7 +639,7 @@
 					<br/>
 					<div class="row">
 						<div class="col-sm-3">
-							<small>Thickness</small>
+							<small><%=l('Thickness')%></small>
 						</div>
 						<div class="col-sm-5">
 							<input id="line_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
@@ -671,21 +671,21 @@
 				<p>
 				
 				<div class="btn-group" role="group">
-				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="Save">
+				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<img src="http://karellodewijk.github.io/icons/save.png">
 				</a>
 				<a id="save_as" href="javascript:void(0)" class="btn btn-default" data-placement="bottom"
 				data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default btn-xs'>Store</button>">
-					<img data-toggle="tooltip" title="Save as" src="http://karellodewijk.github.io/icons/save_as.png">
+					<img data-toggle="tooltip" title="<%=l('Save as')%>" src="http://karellodewijk.github.io/icons/save_as.png">
 				</a>
 
-				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="Locks/unlocks edit mode for users without additional permissions">
+				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
 					<img src="http://karellodewijk.github.io/icons/lock.png">
 				</button>
-				<button id="export" class="btn btn-default" data-toggle="tooltip" title="Save tactic as image">
+				<button id="export" class="btn btn-default" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
 					<img src="http://karellodewijk.github.io/icons/export.png">
 				</button>
-				<button id="link" class="btn btn-default" data-toggle="tooltip" title="Copy link to clipboard, send it to friends or clan mates to invite them to this tactic">
+				<button id="link" class="btn btn-default" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 					<img src="http://karellodewijk.github.io/icons/link.png">
 				</button>
 				</div>
@@ -694,7 +694,7 @@
 			</div>
 			<%if (game != 'blitz') { %>	
 			<div class="right_column">
-				<h4>User list (<span id="user_count"></span>)</h4>
+				<h4><%=l('User list')%> (<span id="user_count"></span>)</h4>
 				<p>
 				<div class="btn-group-vertical btn-group-xs" role="group" id="userlist"></div>
 			</div>
@@ -719,7 +719,7 @@
 	</div>
 	<div class="side_bar jumbotron">
 		<div class="right_column">
-			<h4>User list (<span id="user_count"></span>)</h4>
+			<h4><%=l('User list')%> (<span id="user_count"></span>)</h4>
 			<p>
 			<div class="btn-group-vertical btn-group-xs" role="group" id="userlist"></div>
 		</div>
