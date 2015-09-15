@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default container-fluid">
+<nav class="navbar navbar-inverse navbar-fixed-top container-fluid">
 	<div class="navbar-header">
 		<a class="navbar-brand" 
 			<% if (game == 'wot') { %>
@@ -13,14 +13,14 @@
 		</a>
 	</div>
 	<ul class="nav navbar-nav navbar-left container-fluid">
-		<li><a href="stored_tactics.html" class="">Stored tactics</a></li>
-		<li><a href="getting_started.html" class="">Getting started</a></li>
-		<li><a href="about.html" class="">About</a></li>
+		<li><a href="stored_tactics.html" class=""><%=l('Stored tactics')%></a></li>
+		<li><a href="getting_started.html" class=""><%=l('Getting started')%></a></li>
+		<li><a href="about.html" class=""><%=l('About')%></a></li>
 	</ul>
 	<ul class="nav navbar-nav navbar-right container-fluid">
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-			  Other Games<span class="caret"></span>
+			  <%=l('Other Games')%><span class="caret"></span>
 			</a>
 			<ul class="dropdown-menu">
 				<li><a href="http://www.wottactic.tk">World of Tanks</a></li>
@@ -33,4 +33,6 @@
 	</ul>
 <div id="result"></div>
 </nav>
+
+<hr>
 

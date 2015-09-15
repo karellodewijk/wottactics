@@ -1,17 +1,17 @@
 <li class="dropdown">
 	<% if (!user.identity) { %>
 		<button class="btn btn-warning navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown">
-			<span id="sign_in_text">Sign in</span> <span class="caret"></span>
+			<span id="sign_in_text"><%=l('Sign in')%></span> <span class="caret"></span>
 		</button>
 	<% } else { %>
 		<button class="btn btn-success navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown">
-			<span id="sign_in_text">Hi, <%=user.name%></span> <span class="caret"></span>
+			<span id="sign_in_text"><%=l('Hi,')%> <%=user.name%></span> <span class="caret"></span>
 		</button>
 	<% }%>
 	<ul class="dropdown-menu" id="login_dropdown_select" aria-labelledby="login_dropdown">
-		<li><a id="https://accounts.google.com/o/oauth2/auth" href="javascript:void(0)"><img src='http://karellodewijk.github.io/icons/google.png' /> Google</a></li>
-		<li><a id="https://www.facebook.com/dialog/oauth" href="javascript:void(0)"><img src='http://karellodewijk.github.io/icons/facebook.png' /> Facebook</a></li>
-		<li><a id="https://api.twitter.com/oauth/authorize" href="javascript:void(0)"><img src='http://karellodewijk.github.io/icons/twitter.png' /> Twitter</a></li>
+		<li><a href="javascript:void(0)"><img src='http://google.com/favicon.ico' width=16 height=16 /> Google</a></li>
+		<li><a id="https://www.facebook.com/dialog/oauth" href="javascript:void(0)"><img src='http://facebook.com/favicon.ico' width=16 height=16 /> Facebook</a></li>
+		<li><a id="https://api.twitter.com/oauth/authorize" href="javascript:void(0)"><img src='http://twitter.com/favicon.ico' width=16 height=16/> Twitter</a></li>
 		<li><a id="http://eu.wargaming.net/id/" href="javascript:void(0)"><img src='http://karellodewijk.github.io/icons/wargaming.png' /> Wargaming EU</a></li>
 		<li><a id="http://ru.wargaming.net/id/" href="javascript:void(0)"><img src='http://karellodewijk.github.io/icons/wargaming.png' /> Wargaming RU</a></li>
 		<li><a id="http://asia.wargaming.net/id/" href="javascript:void(0)"><img src='http://karellodewijk.github.io/icons/wargaming.png' /> Wargaming SEA</a></li>
@@ -23,7 +23,6 @@
 <script type="text/javascript">
 	$('#login_dropdown_select').on('click', 'a', function () {
 		if (this.text.indexOf('Wargaming') != -1) {
-			console.log("logging in with WG")
 			var form = $("<form action='/auth/openid' method='POST'><input type='hidden' name='openid_identifier' value='"+ this.id +"' /></form>");
 			$('body').append(form);
 			form.submit();

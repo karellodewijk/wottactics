@@ -1,0 +1,14 @@
+{
+  "config": {
+    "target": "http://localhost",
+    "phases": [
+      {"duration": 120, "arrivalRate": 10}
+    ]
+  },
+  "scenarios": [
+    {
+      "flow": [
+        { "get": {"url": "/"}}
+    }
+  ]
+}
