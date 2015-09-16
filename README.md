@@ -10,4 +10,4 @@ If you want to run this yourself, install node.js, redis and mongodb.
 4. run "node start" or "sudo node start" (sudo because default port 80 requires elevated privileges)
 
 
-The interesting parts of this project are the server ("app.js") and the clientside javascript that makes the editor tick, ("public/planner.js").
+The interesting parts of this project are the server ("app.js") and the clientside javascript that makes the editor tick, ("public/javascripts/planner.js").
