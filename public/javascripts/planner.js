@@ -8,7 +8,7 @@ var socket = io.connect('http://'+location.hostname, {
 function newUid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
     function(c) {
-      var r = Math.random() * 16 | 0,
+      r = Math.random() * 16 | 0,
         v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     }).toUpperCase();
@@ -29,9 +29,9 @@ function is_ie() {
 
 var image_host;
 if (is_safari()) {
-	var image_host = 'http://'+location.host+'/icons/'; //enable for local image hosting
+	image_host = 'http://'+location.host+'/icons/'; //enable for local image hosting
 } else {
-	var image_host = "http://karellodewijk.github.io/icons/";
+	image_host = "http://karellodewijk.github.io/icons/";
 }
 	
 var assets;
@@ -49,7 +49,7 @@ if (game == "wows") { //wows
 assets.push(image_host+"circle.png", image_host+"recticle.png");
 
 var loader = PIXI.loader; 
-for (var i in assets) {
+for (i in assets) {
 	loader.add(assets[i], assets[i]);
 }
 loader.load();
@@ -166,8 +166,8 @@ objectContainer.addChild(background_sprite);
 
 //resize the render window
 function resize_renderer(new_size_x, new_size_y) {
-	var last_size_x = size_x;
-	var last_size_y = size_y;
+	last_size_x = size_x;
+	last_size_y = size_y;
 	size_x = new_size_x;
 	size_y = new_size_y;
 	objectContainer.scale.x *= size_x/last_size_x;
@@ -269,14 +269,14 @@ function on_drag_start(e) {
 
 	move_selected = false;
 	if (selected_entities.length > 0) {
-		for (var i in selected_entities) {
+		for (i in selected_entities) {
 			if (selected_entities[i].uid == this.entity.uid) {
 				move_selected = true;
 				break;
 			}
 		}
 		if (move_selected) {
-			for (var i in selected_entities) {
+			for (i in selected_entities) {
 				selected_entities[i].container.alpha = 0.5;
 				selected_entities[i].origin_x = selected_entities[i].x;
 				selected_entities[i].origin_y = selected_entities[i].y;
@@ -296,10 +296,10 @@ function on_drag_end(e) {
 		socket.emit('remove', room, this.entity.uid);
 	} else {
 		if (move_selected) {
-			var origin_entity_map = [];
-			for (var i in selected_entities) {
+			origin_entity_map = [];
+			for (i in selected_entities) {
 				selected_entities[i].container.alpha = 1;
-				var origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
+				origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
 				origin_entity_map.push([origin, selected_entities[i]]);
 				delete selected_entities[i].origin_x;
 				delete selected_entities[i].origin_y;
@@ -307,7 +307,7 @@ function on_drag_end(e) {
 			}
 			undo_list.push(["drag", origin_entity_map]);
 		} else {
-			var origin = [this.origin_x, this.origin_y];
+			origin = [this.origin_x, this.origin_y];
 			delete this.origin_x;
 			delete this.origin_y;
 			undo_list.push(["drag", [[origin, this.entity]]])
@@ -327,8 +327,8 @@ function on_drag_end(e) {
 
 //move an entity but keep it within the bounds
 function move_entity(entity, delta_x, delta_y) {
-	var new_x = entity.container.x + x_abs(delta_x);
-	var new_y = entity.container.y + y_abs(delta_y);
+	new_x = entity.container.x + x_abs(delta_x);
+	new_y = entity.container.y + y_abs(delta_y);
 	
 	new_x = Math.max(new_x, 0);
 	new_y = Math.max(new_y, 0);
@@ -347,11 +347,11 @@ function move_entity(entity, delta_x, delta_y) {
 
 function on_drag_move(e) {
 	//move by deltamouse
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	var delta_x = x_rel(mouse_x_abs(mouse_location.x) - last_mouse_location[0]);
-	var delta_y = y_rel(mouse_y_abs(mouse_location.y) - last_mouse_location[1]);
+	mouse_location = e.data.getLocalPosition(objectContainer);
+	delta_x = x_rel(mouse_x_abs(mouse_location.x) - last_mouse_location[0]);
+	delta_y = y_rel(mouse_y_abs(mouse_location.y) - last_mouse_location[1]);
 	if (move_selected) {
-		for (var i in selected_entities) {
+		for (i in selected_entities) {
 			move_entity(selected_entities[i], delta_x, delta_y);
 		}
 	} else {
@@ -368,14 +368,14 @@ function remove(uid) {
 		delete history[uid].container;
 	}
 	if (history[uid].type == "icon") {
-		var counter = $('#'+history[uid].tank).find("span");
+		counter = $('#'+history[uid].tank).find("span");
 		counter.text((parseInt(counter.text())-1).toString());		
 		counter = $("#icon_context").find("span").first();
 		counter.text((parseInt(counter.text())-1).toString());
 	}
 	
 	//if an item is removed, remove them from selected_entities
-	var i = selected_entities.length
+	i = selected_entities.length
 	while (i--) {
 		if (selected_entities[i].uid == uid) {
 			selected_entities.splice(i, 1);
@@ -433,7 +433,7 @@ function on_left_click(e) {
 	if (is_room_locked && !my_user.role) {
 		return;
 	}
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	mouse_location = e.data.getLocalPosition(objectContainer);
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
 		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), path:[[0, 0]]};
@@ -453,7 +453,7 @@ function on_left_click(e) {
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+			end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			renderer.render(stage);
@@ -470,7 +470,7 @@ function on_left_click(e) {
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+			end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			renderer.render(stage);
@@ -513,7 +513,7 @@ function on_left_click(e) {
 }
 
 function create_tracker(tracker) {
-	var texture = PIXI.Texture.fromImage(image_host + 'recticle.png');
+	texture = PIXI.Texture.fromImage(image_host + 'recticle.png');
 	tracker.container = new PIXI.Sprite(texture);	
 	tracker.container.tint = tracker.color;
 	tracker.container.anchor.set(0.5);
@@ -533,8 +533,8 @@ function remove_tracker(uid) {
 }
 
 function ping(x, y, color) {
-	var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
-	var sprite = new PIXI.Sprite(texture);
+	texture = PIXI.Texture.fromImage(image_host + 'circle.png');
+	sprite = new PIXI.Sprite(texture);
 
 	sprite.tint = color;
 	sprite.anchor.set(0.5);
@@ -554,16 +554,16 @@ function ping(x, y, color) {
 
 
 function on_track_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
+	mouse_location = e.data.getLocalPosition(objectContainer);	
+	x = mouse_x_rel(mouse_location.x);
+	y = mouse_y_rel(mouse_location.y);
 	my_tracker.x = x;
 	my_tracker.y = y;
 	my_tracker.container.x = x_abs(x);
 	my_tracker.container.y = x_abs(y);
 	renderer.render(stage);
 	
-	var dist_sq = (last_track_position[0] - my_tracker.x) * (last_track_position[0] - my_tracker.x)
+	dist_sq = (last_track_position[0] - my_tracker.x) * (last_track_position[0] - my_tracker.x)
 			     +(last_track_position[1] - my_tracker.y) * (last_track_position[1] - my_tracker.y);
 	if (dist_sq > min_track_move_distance_sq) {
 		socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
@@ -572,9 +572,9 @@ function on_track_move(e) {
 }
 
 function on_area_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
+	mouse_location = e.data.getLocalPosition(objectContainer);	
+	x = mouse_x_rel(mouse_location.x);
+	y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -592,9 +592,9 @@ function on_area_move(e) {
 }
 
 function on_area_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
+	mouse_location = e.data.getLocalPosition(objectContainer);	
+	x = mouse_x_rel(mouse_location.x);
+	y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -602,9 +602,9 @@ function on_area_end(e) {
 	new_x = x - new_drawing.x;
 	new_y = y - new_drawing.y;
 	
-	var squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
+	squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
 
-	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+	end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 	
 	if (squared_distance_to_start < (end_circle_radius*end_circle_radius)) {
 		setup_mouse_events(undefined, undefined);
@@ -622,9 +622,9 @@ function on_area_end(e) {
 }
 
 function on_curve_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
+	mouse_location = e.data.getLocalPosition(objectContainer);	
+	x = mouse_x_rel(mouse_location.x);
+	y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -642,9 +642,9 @@ function on_curve_move(e) {
 }
 
 function on_curve_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
+	mouse_location = e.data.getLocalPosition(objectContainer);	
+	x = mouse_x_rel(mouse_location.x);
+	y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -652,7 +652,7 @@ function on_curve_end(e) {
 	new_x = x - new_drawing.x;
 	new_y = y - new_drawing.y;
 	
-	var last_x, last_y;
+	last_x, last_y;
 	if (new_drawing.path.length > 0) {
 		last_x = new_drawing.path[new_drawing.path.length-1][0];
 		last_y = new_drawing.path[new_drawing.path.length-1][1];
@@ -661,7 +661,7 @@ function on_curve_end(e) {
 		last_y = 0;
 	}
 	
-	var squared_distance_to_last = (new_x - last_x) * (new_x - last_x) + (new_y - last_y) * (new_y - last_y);
+	squared_distance_to_last = (new_x - last_x) * (new_x - last_x) + (new_y - last_y) * (new_y - last_y);
 	
 	if (squared_distance_to_last < (min_polygon_end_distance*min_polygon_end_distance)) {
 		setup_mouse_events(undefined, undefined);
@@ -675,10 +675,10 @@ function on_curve_end(e) {
 }
 
 function on_polygon_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	var graphic = new PIXI.Graphics();
+	mouse_location = e.data.getLocalPosition(objectContainer);
+	graphic = new PIXI.Graphics();
 	graphic.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, 0.5);
-	var a;
+	a;
 	if (new_drawing.path.length == 0) {
 		a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
 	} else {
@@ -695,17 +695,17 @@ function on_polygon_move(e) {
 }
 
 function on_polygon_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
+	mouse_location = e.data.getLocalPosition(objectContainer);	
+	x = mouse_x_rel(mouse_location.x);
+	y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
 	y = Math.min(1, y);
 
-	var squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
+	squared_distance_to_start = (x - new_drawing.x) * (x - new_drawing.x) + (y - new_drawing.y) * (y - new_drawing.y);
 	
-	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+	end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 	
 	if (squared_distance_to_start < (end_circle_radius*end_circle_radius)) {
 		setup_mouse_events(undefined, undefined);
@@ -717,17 +717,17 @@ function on_polygon_end(e) {
 		graphics = null;
 	} else {
 		new_drawing.path.push([x - new_drawing.x, y - new_drawing.y]);
-		var graphic = new PIXI.Graphics();
+		graphic = new PIXI.Graphics();
 		graphic.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, 1);
 		
-		var a;
+		a;
 		if (new_drawing.path.length == 1) {
 			a = [x_abs(new_drawing.x), x_abs(new_drawing.y)];
 		} else {
 			a = [x_abs(new_drawing.path[new_drawing.path.length - 2][0] + new_drawing.x), 
 				 y_abs(new_drawing.path[new_drawing.path.length - 2][1] + new_drawing.y)];
 		}
-		var b = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x), 
+		b = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x), 
 				 y_abs(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
 
 		graphic.moveTo(a[0], a[1]);	
@@ -743,7 +743,7 @@ function on_polygon_end(e) {
 }
 
 function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opacity, fill_color, shape) {
-	var graphic = new PIXI.Graphics();
+	graphic = new PIXI.Graphics();
 	graphic.lineStyle(outline_thickness * x_abs(thickness_scale), outline_color, outline_opacity);
 	graphic.beginFill(fill_color, fill_opacity);
 	graphic.drawShape(shape);
@@ -752,14 +752,14 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 }
 
 function on_circle_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	mouse_location = e.data.getLocalPosition(objectContainer);
 	
-	var center_x = (left_click_origin[0] + mouse_x_abs(mouse_location.x)) / 2;
-	var center_y = (left_click_origin[1] + mouse_y_abs(mouse_location.y)) / 2;
-	var radius = Math.sqrt((left_click_origin[0] - mouse_x_abs(mouse_location.x)) * (left_click_origin[0] - mouse_x_abs(mouse_location.x))+(left_click_origin[1] - mouse_y_abs(mouse_location.y)) * (left_click_origin[1] - mouse_y_abs(mouse_location.y)));
+	center_x = (left_click_origin[0] + mouse_x_abs(mouse_location.x)) / 2;
+	center_y = (left_click_origin[1] + mouse_y_abs(mouse_location.y)) / 2;
+	radius = Math.sqrt((left_click_origin[0] - mouse_x_abs(mouse_location.x)) * (left_click_origin[0] - mouse_x_abs(mouse_location.x))+(left_click_origin[1] - mouse_y_abs(mouse_location.y)) * (left_click_origin[1] - mouse_y_abs(mouse_location.y)));
 	radius /= 2;
 	
-	var graphic = draw_shape(circle_outline_thickness,
+	graphic = draw_shape(circle_outline_thickness,
 							 circle_outline_opacity,
 							 circle_outline_color,
 							 circle_fill_opacity,
@@ -773,16 +773,16 @@ function on_circle_move(e) {
 }
 
 function on_circle_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	mouse_location = e.data.getLocalPosition(objectContainer);
 	
-	var center_x = (left_click_origin[0] + mouse_x_abs(mouse_location.x)) / 2;
-	var center_y = (left_click_origin[1] + mouse_y_abs(mouse_location.y)) / 2;
-	var radius = Math.sqrt((left_click_origin[0] - mouse_x_abs(mouse_location.x)) * (left_click_origin[0] - mouse_x_abs(mouse_location.x))+(left_click_origin[1] - mouse_y_abs(mouse_location.y)) * (left_click_origin[1] - mouse_y_abs(mouse_location.y)));
+	center_x = (left_click_origin[0] + mouse_x_abs(mouse_location.x)) / 2;
+	center_y = (left_click_origin[1] + mouse_y_abs(mouse_location.y)) / 2;
+	radius = Math.sqrt((left_click_origin[0] - mouse_x_abs(mouse_location.x)) * (left_click_origin[0] - mouse_x_abs(mouse_location.x))+(left_click_origin[1] - mouse_y_abs(mouse_location.y)) * (left_click_origin[1] - mouse_y_abs(mouse_location.y)));
 	radius /= 2;
 	
 	setup_mouse_events(undefined, undefined);
 	
-	var new_shape = {uid:newUid(), type:'circle', x:x_rel(center_x), y:y_rel(center_y), radius:x_rel(radius), outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1};	
+	new_shape = {uid:newUid(), type:'circle', x:x_rel(center_x), y:y_rel(center_y), radius:x_rel(radius), outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1};	
 
 	create_circle(new_shape);
 	snap_and_emit_entity(new_shape);
@@ -791,12 +791,12 @@ function on_circle_end(e) {
 }
 
 function on_rectangle_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	var left_x = Math.min(left_click_origin[0], mouse_x_abs(mouse_location.x));
-	var left_y = Math.min(left_click_origin[1], mouse_y_abs(mouse_location.y));
-	var right_x = Math.max(left_click_origin[0], mouse_x_abs(mouse_location.x));
-	var right_y = Math.max(left_click_origin[1], mouse_y_abs(mouse_location.y));
-	var graphic = draw_shape(rectangle_outline_thickness,
+	mouse_location = e.data.getLocalPosition(objectContainer);
+	left_x = Math.min(left_click_origin[0], mouse_x_abs(mouse_location.x));
+	left_y = Math.min(left_click_origin[1], mouse_y_abs(mouse_location.y));
+	right_x = Math.max(left_click_origin[0], mouse_x_abs(mouse_location.x));
+	right_y = Math.max(left_click_origin[1], mouse_y_abs(mouse_location.y));
+	graphic = draw_shape(rectangle_outline_thickness,
 							 rectangle_outline_opacity,
 							 rectangle_outline_color,
 							 rectangle_fill_opacity,
@@ -809,23 +809,23 @@ function on_rectangle_move(e) {
 }
 
 function on_rectangle_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	var left_x = Math.min(left_click_origin[0], mouse_x_abs(mouse_location.x));
-	var left_y = Math.min(left_click_origin[1], mouse_y_abs(mouse_location.y));
-	var right_x = Math.max(left_click_origin[0], mouse_x_abs(mouse_location.x));
-	var right_y = Math.max(left_click_origin[1], mouse_y_abs(mouse_location.y));
+	mouse_location = e.data.getLocalPosition(objectContainer);
+	left_x = Math.min(left_click_origin[0], mouse_x_abs(mouse_location.x));
+	left_y = Math.min(left_click_origin[1], mouse_y_abs(mouse_location.y));
+	right_x = Math.max(left_click_origin[0], mouse_x_abs(mouse_location.x));
+	right_y = Math.max(left_click_origin[1], mouse_y_abs(mouse_location.y));
 	setup_mouse_events(undefined, undefined);
-	var new_shape = {uid:newUid(), type:'rectangle', x:x_rel(left_x), y:y_rel(left_y), width:x_rel(right_x - left_x), height:y_rel(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1};
+	new_shape = {uid:newUid(), type:'rectangle', x:x_rel(left_x), y:y_rel(left_y), width:x_rel(right_x - left_x), height:y_rel(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1};
 	create_rectangle(new_shape);
 	snap_and_emit_entity(new_shape);
 	undo_list.push(["add", new_shape]);
 }
 
 function on_ping_move(e) {
-	var time = new Date();
-	var timeDiff = time - last_ping_time;
+	time = new Date();
+	timeDiff = time - last_ping_time;
 	if (timeDiff > 120) {
-		var mouse_location = e.data.getLocalPosition(objectContainer);
+		mouse_location = e.data.getLocalPosition(objectContainer);
 		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		socket.emit("ping", room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = time;
@@ -837,9 +837,9 @@ function on_ping_end(e) {
 }
 
 function on_select_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	mouse_location = e.data.getLocalPosition(objectContainer);
 	// draw a rounded rectangle
-	var graphic = new PIXI.Graphics();
+	graphic = new PIXI.Graphics();
 	graphic.lineStyle(2, 0xBBBBBB, 1);
 	graphic.beginFill(0xBBBBBB, 0.25);
 	graphic.drawRect(left_click_origin[0], left_click_origin[1], mouse_x_abs(mouse_location.x)-left_click_origin[0], mouse_y_abs(mouse_location.y)-left_click_origin[1]);
@@ -852,7 +852,7 @@ function on_select_move(e) {
 function on_select_end(e) {
 	setup_mouse_events(undefined, undefined);
 
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	mouse_location = e.data.getLocalPosition(objectContainer);	
 	x_min = Math.min(mouse_x_abs(mouse_location.x), left_click_origin[0]);
 	y_min = Math.min(mouse_y_abs(mouse_location.y), left_click_origin[1]);
 	x_max = Math.max(mouse_x_abs(mouse_location.x), left_click_origin[0]);
@@ -860,7 +860,7 @@ function on_select_end(e) {
 	
 	for (key in history) {
 		if (history.hasOwnProperty(key) && history[key].container) {
-			var box = history[key].container.getBounds();
+			box = history[key].container.getBounds();
 			if (box.x > x_min && box.y > y_min && box.x + box.width < x_max && box.y + box.height < y_max) {
 				selected_entities.push(history[key]);
 			}
@@ -873,7 +873,7 @@ function on_select_end(e) {
 }
 
 function select_entities() {
-	var filter = new PIXI.filters.ColorMatrixFilter();
+	filter = new PIXI.filters.ColorMatrixFilter();
 	filter.matrix = [
 		1, 0, 0, 0, 0,
 		0, 1, 0, 0, 0,
@@ -881,7 +881,7 @@ function select_entities() {
 		0, 0, 0, 0.5, 0
 	]
 	
-	for (var i in selected_entities) {
+	for (i in selected_entities) {
 		history[selected_entities[i].uid].container.filters = [filter];
 	}
 }
@@ -899,33 +899,33 @@ function deselect_all() {
 //points and every redraw_countdown interpolation points I redraw the whole history.
 var redraw_countdown = 20;
 function on_draw_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	var a = new_drawing.path[new_drawing.path.length-1];
-	var b = [mouse_x_rel(mouse_location.x) - new_drawing.x, 
+	mouse_location = e.data.getLocalPosition(objectContainer);
+	a = new_drawing.path[new_drawing.path.length-1];
+	b = [mouse_x_rel(mouse_location.x) - new_drawing.x, 
 	         mouse_y_rel(mouse_location.y) - new_drawing.y];
 	
-	var dist_sq = (a[0]-b[0])*(a[0]-b[0]) + (a[1]-b[1])*(a[1]-b[1]);
+	dist_sq = (a[0]-b[0])*(a[0]-b[0]) + (a[1]-b[1])*(a[1]-b[1]);
 	
 	new_drawing.path.push(b);
-	var path = new_drawing.path.slice(Math.max(new_drawing.path.length-30, 0));
+	path = new_drawing.path.slice(Math.max(new_drawing.path.length-30, 0));
 	
-	var path_x = [];
-	var path_y = [];
+	path_x = [];
+	path_y = [];
 	
 	for (i = 0; i < path.length; i++) {
 		path_x.push(x_abs(new_drawing.x + path[i][0]));
 		path_y.push(y_abs(new_drawing.y + path[i][1]));
 	}
 
-	var cx = computeControlPoints(path_x);
-	var cy = computeControlPoints(path_y);		
+	cx = computeControlPoints(path_x);
+	cy = computeControlPoints(path_y);		
 
 	graphic = new PIXI.Graphics();
 	graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), draw_color, 1);
 	
 	if (path.length >= 30) {
 		graphic.moveTo(path_x[5], path_y[5])
-		for (var i = 5; i < path_x.length-1; i++) {
+		for (i = 5; i < path_x.length-1; i++) {
 			graphic.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
 		}
 	} else {
@@ -934,7 +934,7 @@ function on_draw_move(e) {
 			graphic.lineTo(path_x[1], path_y[1]);
 		} else {
 			graphic.moveTo(path_x[0], path_y[0])
-			for (var i = 0; i < path_x.length-1; i++) {
+			for (i = 0; i < path_x.length-1; i++) {
 				graphic.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
 			}
 		}
@@ -966,7 +966,7 @@ function on_draw_end(e) {
 	setup_mouse_events(undefined, undefined);
 	objectContainer.removeChild(graphics);
 	renderer.render(stage);	
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	mouse_location = e.data.getLocalPosition(objectContainer);
 	new_drawing.path.push([mouse_x_rel(mouse_location.x) - new_drawing.x, mouse_y_rel(mouse_location.y) - new_drawing.y]);
 	undo_list.push(["add", new_drawing]);
 	create_drawing(new_drawing);
@@ -978,7 +978,7 @@ function on_draw_end(e) {
 function snap_and_emit_entity(entity) {
 	move_entity(entity, 0, 0);
 	renderer.render(stage);
-	var container = entity.container;
+	container = entity.container;
 	delete entity.container;
 	socket.emit('create_entity', room, entity);
 	entity.container = container;
@@ -987,12 +987,12 @@ function snap_and_emit_entity(entity) {
 
 function on_icon_end(e) {
 	setup_mouse_events(undefined, undefined);
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	mouse_location = e.data.getLocalPosition(objectContainer);
 
-	var x = mouse_x_rel(mouse_location.x) - (icon_scale/2);
-	var y = mouse_y_rel(mouse_location.y) - (icon_scale/2);
+	x = mouse_x_rel(mouse_location.x) - (icon_scale/2);
+	y = mouse_y_rel(mouse_location.y) - (icon_scale/2);
 	
-	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:(icon_size/20), color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Arial"}
+	icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:(icon_size/20), color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Arial"}
 	undo_list.push(["add", icon]);
 	create_icon(icon);
 	snap_and_emit_entity(icon);
@@ -1000,20 +1000,20 @@ function on_icon_end(e) {
 
 function on_text_end(e) {
 	setup_mouse_events(undefined, undefined);
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
-	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
+	mouse_location = e.data.getLocalPosition(objectContainer);	
+	x = mouse_x_rel(mouse_location.x);
+	y = mouse_y_rel(mouse_location.y);
+	text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
 	undo_list.push(["add", text]);
 	create_text(text);
 	snap_and_emit_entity(text);
 }
 
 function on_line_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	var graphic = new PIXI.Graphics();
+	mouse_location = e.data.getLocalPosition(objectContainer);
+	graphic = new PIXI.Graphics();
 	graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 0.5);
-	var a;
+	a;
 	if (new_drawing.path.length == 0) {
 		a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
 	} else {
@@ -1034,9 +1034,9 @@ function on_line_move(e) {
 }
 
 function on_line_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
+	mouse_location = e.data.getLocalPosition(objectContainer);	
+	x = mouse_x_rel(mouse_location.x);
+	y = mouse_y_rel(mouse_location.y);
 	x = Math.max(0, x);
 	y = Math.max(0, y);
 	x = Math.min(1, x);
@@ -1058,17 +1058,17 @@ function on_line_end(e) {
 		new_drawing = null;
 		graphics = null;
 	} else {
-		var graphic = new PIXI.Graphics();
+		graphic = new PIXI.Graphics();
 		graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), line_color, 1);
 		
-		var a;
+		a;
 		if (new_drawing.path.length == 1) {
 			a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
 		} else {
 			a = [x_abs(new_drawing.path[new_drawing.path.length - 2][0] + new_drawing.x), 
 				 y_abs(new_drawing.path[new_drawing.path.length - 2][1] + new_drawing.y)];
 		}
-		var b = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x), 
+		b = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x), 
 				 y_abs(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
 
 		graphic.moveTo(a[0], a[1]);	
@@ -1088,8 +1088,8 @@ objectContainer.mousedown = on_left_click;
 objectContainer.touchstart = on_left_click;
 
 function create_text(text_entity) {
-	var size = "bold "+text_entity.font_size*x_abs(font_scale)+"px " + text_entity.font;
-	var text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
+	size = "bold "+text_entity.font_size*x_abs(font_scale)+"px " + text_entity.font;
+	text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
 	text.x = x_abs(text_entity.x);
 	text.y = y_abs(text_entity.y);
 	
@@ -1105,12 +1105,12 @@ function create_text(text_entity) {
 }
 	
 function create_icon(icon) {
-	var counter = $('#'+icon.tank).find("span");
+	counter = $('#'+icon.tank).find("span");
 	counter.text((parseInt(counter.text())+1).toString());
 	counter = $("#icon_counter");
 	counter.text((parseInt(counter.text())+1).toString());
-	var texture = PIXI.Texture.fromImage(image_host + icon.tank +'.png');
-	var sprite = new PIXI.Sprite(texture);
+	texture = PIXI.Texture.fromImage(image_host + icon.tank +'.png');
+	sprite = new PIXI.Sprite(texture);
 	sprite.tint = icon.color;
 
 	//sprite.width = x_abs(icon_scale);
@@ -1123,8 +1123,8 @@ function create_icon(icon) {
 
 	icon.container.addChild(sprite);	
 	if (icon.label && icon.label != "") {
-		var size = "bold "+icon.label_font_size*x_abs(font_scale)+"px " + icon.label_font;
-		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
+		size = "bold "+icon.label_font_size*x_abs(font_scale)+"px " + icon.label_font;
+		text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
 		text.x += sprite.width/2 - text.width/2;
 		text.y += sprite.height;
 		icon['container'].addChild(text);
@@ -1153,13 +1153,13 @@ function make_draggable(root) {
 }
 
 function draw_dotted_line(graphic, x0, y0, x1, y1) {
-	var x_diff = x1-x0;
-	var y_diff = y1-y0;
-	var size = Math.sqrt(x_diff*x_diff+y_diff*y_diff);
+	x_diff = x1-x0;
+	y_diff = y1-y0;
+	size = Math.sqrt(x_diff*x_diff+y_diff*y_diff);
 	x_diff /= size;
 	y_diff /= size;
-	var increment = x_abs(0.02);
-	for (var i = increment; i < size; i+=increment) {
+	increment = x_abs(0.02);
+	for (i = increment; i < size; i+=increment) {
 		graphic.lineTo(x0 + i*x_diff, y0 + i*y_diff);
 		i+=increment;
 		if (i > size) { //last bit should never be skipped
@@ -1172,22 +1172,22 @@ function draw_dotted_line(graphic, x0, y0, x1, y1) {
 }
 
 function draw_arrow(graphic, a, b) {
-	var x = (b[0] - a[0]);
-	var y = (b[1] - a[1]);
-	var angle = 2.75; //in radians, angle between forward facing vector and backward facing arrow head
-	var cos_angle = Math.cos(angle);
-	var sin_angle = Math.sin(angle);
-	var x_1 = x * cos_angle - y * sin_angle;
-	var y_1 = x * sin_angle + y * cos_angle;
-	var size = Math.sqrt(x_1*x_1 + y_1*y_1);
+	x = (b[0] - a[0]);
+	y = (b[1] - a[1]);
+	angle = 2.75; //in radians, angle between forward facing vector and backward facing arrow head
+	cos_angle = Math.cos(angle);
+	sin_angle = Math.sin(angle);
+	x_1 = x * cos_angle - y * sin_angle;
+	y_1 = x * sin_angle + y * cos_angle;
+	size = Math.sqrt(x_1*x_1 + y_1*y_1);
 	x_1 = x_1/size;
 	y_1 = y_1/size;
-	var x_2 = x * cos_angle + y * sin_angle;
-	var y_2 = - x * sin_angle + y * cos_angle;
+	x_2 = x * cos_angle + y * sin_angle;
+	y_2 = - x * sin_angle + y * cos_angle;
 	size = Math.sqrt(x_2*x_2 + y_2*y_2);
 	x_2 = x_2/size;
 	y_2 = y_2/size;	
-	var scale = x_abs(1.0/35);
+	scale = x_abs(1.0/35);
 	graphic.moveTo(b[0], b[1]);	
 	graphic.lineTo(b[0] + x_1 * scale, b[1] + y_1 * scale);
 	graphic.moveTo(b[0], b[1]);
@@ -1255,8 +1255,8 @@ function free_draw(graph, drawing, smooth_out) {
 		graph.lineTo(x_abs(drawing.x + drawing.path[0][0]), 
 		             y_abs(drawing.y + drawing.path[0][1]));
 	} else {
-		var path_x = [x_abs(drawing.x)];
-		var path_y = [y_abs(drawing.y)];
+		path_x = [x_abs(drawing.x)];
+		path_y = [y_abs(drawing.y)];
 		
 		for (i = 0; i < drawing.path.length; i++) {
 			path_x.push(x_abs(drawing.x + drawing.path[i][0]));
@@ -1272,12 +1272,12 @@ function free_draw(graph, drawing, smooth_out) {
 			path_y = path_y.slice(path_y.length-slice_size-1, path_y.length-1).concat(path_y.concat(path_y.slice(1, slice_size+1)))
 		}
 
-		var cx = computeControlPoints(path_x);
-		var cy = computeControlPoints(path_y);
+		cx = computeControlPoints(path_x);
+		cy = computeControlPoints(path_y);
 		
 		if (smooth_out) {
-			var left = slice_size;
-			var right = path_x.length-slice_size;
+			left = slice_size;
+			right = path_x.length-slice_size;
 			path_x = path_x.slice(left, right)
 			path_y = path_y.slice(left, right)
 			cx.p1 = cx.p1.slice(left, right)
@@ -1295,7 +1295,7 @@ function free_draw(graph, drawing, smooth_out) {
 }
 
 function create_drawing(drawing) {
-	var graphic = new PIXI.Graphics();
+	graphic = new PIXI.Graphics();
 	graphic.lineStyle(drawing.thickness * x_abs(thickness_scale), drawing.color, 1);
 	free_draw(graphic, drawing);		
 	graphic.graphicsData[0].shape.closed = false;
@@ -1313,36 +1313,36 @@ function create_area(drawing, smooth_point) {
 }
 
 function create_rectangle(drawing) {
-	var rect = new PIXI.Rectangle(x_abs(drawing.x), y_abs(drawing.y), x_abs(drawing.width), y_abs(drawing.height));
-	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, rect);
+	rect = new PIXI.Rectangle(x_abs(drawing.x), y_abs(drawing.y), x_abs(drawing.width), y_abs(drawing.height));
+	graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, rect);
 	init_graphic(drawing, graphic);	
 }
 
 function create_circle(drawing) {
-	var circle = new PIXI.Circle(x_abs(drawing.x), y_abs(drawing.y), x_abs(drawing.radius));
-	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, circle);
+	circle = new PIXI.Circle(x_abs(drawing.x), y_abs(drawing.y), x_abs(drawing.radius));
+	graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, circle);
 	init_graphic(drawing, graphic);	
 }
 
 function create_polygon(drawing) {
-	var path = [x_abs(drawing.x), y_abs(drawing.y)];
-	for (var i in drawing.path) {
+	path = [x_abs(drawing.x), y_abs(drawing.y)];
+	for (i in drawing.path) {
 		path.push(x_abs(drawing.path[i][0]+drawing.x));
 		path.push(y_abs(drawing.path[i][1]+drawing.y));
 	}
-	var polygon = new PIXI.Polygon(path);
-	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, polygon);
+	polygon = new PIXI.Polygon(path);
+	graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, polygon);
 	init_graphic(drawing, graphic);	
 }
 
 function create_line(drawing) {
-	var graphic = new PIXI.Graphics();
+	graphic = new PIXI.Graphics();
 	graphic.lineStyle(drawing.thickness * x_abs(thickness_scale), drawing.color, 1);
-	var last_x = x_abs(drawing.x), last_y = y_abs(drawing.y);
+	last_x = x_abs(drawing.x), last_y = y_abs(drawing.y);
 	graphic.moveTo(last_x, last_y);
 	for (i = 0; i < drawing.path.length; i++) {
-		var x_i = x_abs(drawing.x + drawing.path[i][0]);
-		var y_i = y_abs(drawing.y + drawing.path[i][1]);
+		x_i = x_abs(drawing.x + drawing.path[i][0]);
+		y_i = y_abs(drawing.y + drawing.path[i][1]);
 		if (!drawing.is_dotted) {
 			graphic.lineTo(x_i, y_i);
 		} else {
@@ -1360,7 +1360,7 @@ function create_line(drawing) {
 			a = [x_abs(drawing.x + drawing.path[drawing.path.length-2][0]), 
 			     y_abs(drawing.y + drawing.path[drawing.path.length-2][1])];
 		}
-		var b = [x_abs(drawing.x + drawing.path[drawing.path.length-1][0]), 
+		b = [x_abs(drawing.x + drawing.path[drawing.path.length-1][0]), 
 			     y_abs(drawing.y + drawing.path[drawing.path.length-1][1])];
 		draw_arrow(graphic, a, b);
 	}
@@ -1371,9 +1371,9 @@ function create_line(drawing) {
 }
 
 function init_graphic(drawing, graphic) {
-	var texture = graphic.generateTexture();
-	var sprite = new PIXI.Sprite(texture);
-	var box = graphic.getBounds();
+	texture = graphic.generateTexture();
+	sprite = new PIXI.Sprite(texture);
+	box = graphic.getBounds();
 	
 	sprite.x = box.x;
 	sprite.y = box.y;
@@ -1431,7 +1431,7 @@ function add_user(user) {
 		my_user = user;
 	}
 	if (user.id in userlist) {
-		var node = $("#"+user.id);
+		node = $("#"+user.id);
 		if (user.id == my_user_id) {
 			node.find('input').attr('placeholder', user.name);
 		} else {
@@ -1439,7 +1439,7 @@ function add_user(user) {
 		}
 	} else {	
 		if (user.id == my_user_id) {
-			var node = "<div class='btn' style='text-align:left;' id='" + user.id + "'><input type='text' placeholder='"+ user.name + "'></div>";
+			node = "<div class='btn' style='text-align:left;' id='" + user.id + "'><input type='text' placeholder='"+ user.name + "'></div>";
 			$("#userlist").prepend(node);
 			input_node = $("#userlist").find("input");
 			input_node.on('blur', function() {
@@ -1447,14 +1447,14 @@ function add_user(user) {
 			});
 			input_node.onkeypress = function(e) {
 				if (!e) e = window.event;
-					var keyCode = e.keyCode || e.which;
+					keyCode = e.keyCode || e.which;
 					if (keyCode == '13') { //update username when enter is pressed
 						update_username(this.value);
 					}
 			}
 
 		} else { 
-			var node = "<button class='btn' style='text-align:left;' data-toggle='tooltip' title='Click to toggle this user&#39;s permission.' id='" + user.id + "'>" + user.name + "</button>";
+			node = "<button class='btn' style='text-align:left;' data-toggle='tooltip' title='Click to toggle this user&#39;s permission.' id='" + user.id + "'>" + user.name + "</button>";
 			$("#userlist").append(node);
 		}
 	}
@@ -1490,8 +1490,8 @@ function update_my_user() {
 }
 
 function update_lock() {
-	var node = $('#lock').find('img');
-	var path = node.attr('src').substring(0, node.attr('src').lastIndexOf("/"));
+	node = $('#lock').find('img');
+	path = node.attr('src').substring(0, node.attr('src').lastIndexOf("/"));
 	
 	if (is_room_locked) {
 		node.attr('src', path + "/lock.png");
@@ -1531,7 +1531,7 @@ function initialize_color_picker(slider_id, variable_name) {
 }
 
 function initialize_slider(slider_id, slider_text_id, variable_name) {
-	var slider = $("#"+ slider_id).slider({tooltip:'hide'});
+	slider = $("#"+ slider_id).slider({tooltip:'hide'});
 	$("#"+slider_text_id).val(slider.attr('value'));
 	window[variable_name] = parseFloat(slider.attr('value'));
 	slider.on("slide", function(slideEvt) {
@@ -1539,7 +1539,7 @@ function initialize_slider(slider_id, slider_text_id, variable_name) {
 		window[variable_name] = parseFloat(slideEvt.value);
 	});
 	$("#"+slider_text_id).change(function () {
-		var new_value = parseFloat(this.value); 
+		new_value = parseFloat(this.value); 
 		if (isNaN(new_value)) {
 			this.value = window[variable_name]; //restore old value
 		} else {
@@ -1551,10 +1551,10 @@ function initialize_slider(slider_id, slider_text_id, variable_name) {
 
 //clear entities of a certain type from the map
 function clear(type) {
-	var cleared_entities = [];
+	cleared_entities = [];
 	for (key in history) {
 		if (history.hasOwnProperty(key) && (history[key].type == type || !type) && (history[key].type != 'background')) {
-			var entity = history[key];
+			entity = history[key];
 			remove(key);
 			cleared_entities.push(entity)
 			socket.emit('remove', room, key);
@@ -1564,7 +1564,7 @@ function clear(type) {
 }
 
 function undo() {
-	var action = undo_list.pop();
+	action = undo_list.pop();
 	if (action) {
 		if (action[0] == "add") {
 			if (action[1].uid) {
@@ -1574,10 +1574,10 @@ function undo() {
 				redo_list.push(action);
 			}
 		} else if (action[0] == "drag") {
-			for (var i in action[1]) {
-				var x = action[1][i][0][0];
-				var y = action[1][i][0][1];
-				var uid = action[1][i][1].uid;
+			for (i in action[1]) {
+				x = action[1][i][0][0];
+				y = action[1][i][0][1];
+				uid = action[1][i][1].uid;
 				if (history[uid]) { //still exists
 					action[1][i][0][0] = history[uid].x;
 					action[1][i][0][1] = history[uid].y;
@@ -1591,17 +1591,17 @@ function undo() {
 			}
 			redo_list.push(action);
 		} else if (action[0] == "remove") {
-			for (var i in action[1]) {
-				var entity = action[1][i];
+			for (i in action[1]) {
+				entity = action[1][i];
 				delete entity.container;
 				socket.emit('create_entity', room, entity);
 				create_entity(entity);
 			}
 			redo_list.push(action);
 		} else if (action[0] == "select") {
-			var new_selected_entities = [];
-			for (var i in action[2]) {
-				var entity = action[2][i];
+			new_selected_entities = [];
+			for (i in action[2]) {
+				entity = action[2][i];
 				if (history.hasOwnProperty(entity.uid)) {
 					new_selected_entities.push(entity);
 				}
@@ -1616,7 +1616,7 @@ function undo() {
 }
 
 function redo() {
-	var action = redo_list.pop();
+	action = redo_list.pop();
 	if (action) {
 		if (action[0] == "add") {
 			if (action[1].uid) {
@@ -1625,10 +1625,10 @@ function redo() {
 				create_entity(action[1]);
 			}
 		} else if (action[0] == "drag") {
-			for (var i in action[1]) {
-				var x = action[1][i][0][0];
-				var y = action[1][i][0][1];
-				var uid = action[1][i][1].uid;
+			for (i in action[1]) {
+				x = action[1][i][0][0];
+				y = action[1][i][0][1];
+				uid = action[1][i][1].uid;
 				if (history[uid]) { //still exists
 					action[1][i][0][0] = history[uid].x;
 					action[1][i][0][1] = history[uid].y;
@@ -1642,8 +1642,8 @@ function redo() {
 			}
 			undo_list.push(action);
 		} else if (action[0] == "remove") {
-			for (var i in action[1]) {
-				var entity = action[1][i];
+			for (i in action[1]) {
+				entity = action[1][i];
 				if (history.hasOwnProperty(entity.uid)) {
 					remove(entity.uid);
 					delete entity.container;
@@ -1652,9 +1652,9 @@ function redo() {
 			}
 			undo_list.push(action);
 		} else if (action[0] == "select") {
-			var new_selected_entities = [];
-			for (var i in action[1]) {
-				var entity = action[1][i];
+			new_selected_entities = [];
+			for (i in action[1]) {
+				entity = action[1][i];
 				if (history.hasOwnProperty(entity.uid)) {
 					new_selected_entities.push(entity);
 				}
@@ -1670,10 +1670,10 @@ function redo() {
 }
 
 function clear_selected() {
-	var clone = selected_entities.slice(0);
-	var cleared_entities = [];
+	clone = selected_entities.slice(0);
+	cleared_entities = [];
 	for (i in clone) {
-		var entity = clone[i];
+		entity = clone[i];
 		remove(clone[i].uid);
 		cleared_entities.push(entity)
 		socket.emit('remove', room, entity.uid);
@@ -1683,7 +1683,7 @@ function clear_selected() {
 }
 
 function sleepFor( sleepDuration ){
-    var now = new Date().getTime();
+    now = new Date().getTime();
     while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
 }
 
@@ -1705,7 +1705,7 @@ loader.once('complete', function () {
 		$("#save").hide();
 		$('#ping').addClass('active');
 		$('#full_line').addClass('active');		
-		var first_icon = $("#icon_context").find("button:first");
+		first_icon = $("#icon_context").find("button:first");
 		first_icon.addClass('selected');
 		selected_icon = first_icon.attr("id");
 
@@ -1760,7 +1760,7 @@ loader.once('complete', function () {
 		socket.emit('join_room', room, game);
 		
 		$(document).on('click', '#store_tactic', function(){
-			var name = $(document).find('#tactic_name')[0].value;
+			name = $(document).find('#tactic_name')[0].value;
 			$('#save_as').popover('hide');
 			if (name == "") {
 				alert("Empty name, tactic not stored");
@@ -1779,9 +1779,9 @@ loader.once('complete', function () {
 		});
 
 		$('#link').click(function() { 
-			var copySupported = document.queryCommandSupported('copy');
-			var textArea = document.createElement("textarea");
-			var link_text = "http://" + location.host + location.pathname+"?room="+room;
+			copySupported = document.queryCommandSupported('copy');
+			textArea = document.createElement("textarea");
+			link_text = "http://" + location.host + location.pathname+"?room="+room;
 			textArea.value = link_text;
 			document.body.appendChild(textArea);
 			//textArea.select();
@@ -1791,7 +1791,7 @@ loader.once('complete', function () {
 		
 		$("#chat_input").keyup(function (e) {
 			if (e.keyCode == 13) {
-				var message = my_user.name + ": " + $("#chat_input").val() + "\n";
+				message = my_user.name + ": " + $("#chat_input").val() + "\n";
 				socket.emit("chat", room, message);
 				chat(message);
 				$("#chat_input").val("");
@@ -1800,15 +1800,23 @@ loader.once('complete', function () {
 
 		$('#export').click(function () {
 			renderer.render(stage);	
-			var data = renderer.view.toDataURL("image/jpeg", 0.9);			
+			var data;
+			if (!is_safari()) {
+				data = renderer.view.toDataURL("image/jpeg", 0.9);
+			} else {
+				new_renderer = new PIXI.CanvasRenderer(size, size,{backgroundColor : 0xBBBBBB});
+				new_renderer.render(stage);			
+				data = new_renderer.view.toDataURL("image/jpeg", 0.9);
+			}
+			
 			if (is_ie()) {
-				var win=window.open();
+				win=window.open();
 				win.document.write("<img src='" + data + "'/>");
 			} else {			
-				var link = document.createElement("a");
+				link = document.createElement("a");
 				link.setAttribute("target","_blank");
 				if(Blob !== undefined) {
-					var blob = new Blob([data], {type: "image/jpeg"});
+					blob = new Blob([data], {type: "image/jpeg"});
 					link.setAttribute("href", data);
 				} else {
 					link.setAttribute("href", data);
@@ -1818,11 +1826,16 @@ loader.once('complete', function () {
 				link.click();
 				document.body.removeChild(link);
 			}
+				
+			//} else {
+			//	data = renderer.view.toDataURL("image/jpeg", 0.9);
+			//}
+
 		});
 		
 		$('#lock').click(function () {
-			var node = $(this).find('img');
-			var file = node.attr('src').substring(node.attr('src').lastIndexOf("/")+1);
+			node = $(this).find('img');
+			file = node.attr('src').substring(node.attr('src').lastIndexOf("/")+1);
 			if (file == "lock.png") {
 				is_room_locked = false;				
 			} else {
@@ -1843,8 +1856,8 @@ loader.once('complete', function () {
 			}			
 			$('#contexts').find("button").removeClass('active');
 			$(this).addClass('active');			
-			var new_context = $(this).attr('id')+"_context";	
-			var new_context = $(this).attr('id')+"_context";
+			new_context = $(this).attr('id')+"_context";	
+			new_context = $(this).attr('id')+"_context";
 			if (active_context == new_context) { return; } 			
 			$('#'+active_context).hide();
 			$('#'+new_context).show();
@@ -1857,7 +1870,7 @@ loader.once('complete', function () {
 		});	
 		
 		$('#userlist').on('click', 'button', function () {
-			var id = $(this).attr('id');
+			id = $(this).attr('id');
 			if (id == my_user.id) { return; } //you can't change your own permission level
 			if (my_user.role != "owner") { return; } //only the owner can change permission level
 			if (!userlist[id].role) { //permission toggle
@@ -1917,11 +1930,11 @@ loader.once('complete', function () {
 		});
 		
 		$(".edit_window").append(renderer.view);
-		var map_select_box = document.getElementById("map_select");
+		map_select_box = document.getElementById("map_select");
 		map_select_box.onchange = function() {
-			var path = map_select_box.options[map_select_box.selectedIndex].value;
+			path = map_select_box.options[map_select_box.selectedIndex].value;
 			if (!background || background.path != path) {
-				var uid = background ? background.uid : newUid();
+				uid = background ? background.uid : newUid();
 				new_background = {uid:uid, type:'background', path:path};
 				socket.emit('create_entity', room, new_background);
 				set_background(new_background);
@@ -1937,10 +1950,10 @@ loader.once('complete', function () {
 		if (room_data.name) {
 			tactic_name = room_data.name;
 		}
-		for (var user in room_data.userlist) {
+		for (user in room_data.userlist) {
 			add_user(room_data.userlist[user]);
 		}
-		for (var key in room_data.history) {
+		for (key in room_data.history) {
 			create_entity(room_data.history[key]);
 		}
 		update_my_user();

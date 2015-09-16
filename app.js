@@ -10,14 +10,17 @@ function newUid() {
     }).toUpperCase();
 }
 
+var compress = require('compression');
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var bodyParser = require('body-parser')
 var logger = require('morgan');
 var passport = require('passport');
+
 var app = express();
-var heapdump = require('heapdump');
+
+app.use(compress());  
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -88,10 +91,6 @@ function clean_up_room(room) {
 	}, 60000);
 }
 
-setTimeout( function() { //just in case nobody joins
-	 heapdump.writeSnapshot();
-}, 3000000);
-
 //load mongo
 connection_string = '127.0.0.1:27017/wottactics';
 MongoClient = require('mongodb').MongoClient;
@@ -152,7 +151,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	// initializing session middleware
 	Session = require('express-session');
 	RedisStore = require('connect-redis')(Session);
-	session = Session({ secret: 'mumnbojudqs', resave:true, saveUninitialized:false, cookie: { expires: new Date(Date.now() + 1 * 86400 * 1000) }, store: new RedisStore()});
+	session = Session({ secret: 'mumnbojudqs', resave:true, saveUninitialized:false, cookie: { expires: new Date(Date.now() + 14 * 86400 * 1000) }, store: new RedisStore()});
 	app.use(session); // session support
 	
 	// Configuring Passport
