@@ -99,12 +99,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	function get_tactics(identity, game, cb) {
 		if (identity) {
-			collection = db.collection(identity);
-			name_list = [];
-			tactics = collection.find({game:game}, {"sort" : [['date', 'desc']], name:1, date:1});
+			var collection = db.collection(identity);
+			var name_list = [];
+			var tactics = collection.find({game:game}, {"sort" : [['date', 'desc']], name:1, date:1});
 			tactics.each(function (err, tactic) {			
 				if (tactic) {
-					game = 'wot';
+					var game = 'wot';
 					if (tactic.game) {
 						game = tactic.game;
 					}
@@ -118,10 +118,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	function restore_tactic(identity, game, name, cb) {
 		if (identity) {
-			collection = db.collection(identity);
-			tactics = collection.findOne({game:game, name:name}, function(err, result) {
+			var collection = db.collection(identity);
+			var tactics = collection.findOne({game:game, name:name}, function(err, result) {
 				if (!err && result) { 
-					uid = newUid();
+					var uid = newUid();
 					room_data[uid] = {};
 					room_data[uid].history = result.history;
 					room_data[uid].userlist = {};
@@ -138,8 +138,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	function remove_tactic(identity, game, name) {
-		collection = db.collection(identity);
-		tactics = collection.remove({name:name, game:game});		
+		var collection = db.collection(identity);
+		var tactics = collection.remove({name:name, game:game});		
 	}
 	
 	function create_anonymous_user(req) {
@@ -149,9 +149,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	// initializing session middleware
-	Session = require('express-session');
-	RedisStore = require('connect-redis')(Session);
-	session = Session({ secret: 'mumnbojudqs', resave:true, saveUninitialized:false, cookie: { expires: new Date(Date.now() + 14 * 86400 * 1000) }, store: new RedisStore()});
+	var Session = require('express-session');
+	var RedisStore = require('connect-redis')(Session);
+	var session = Session({ secret: 'mumnbojudqs', resave:true, saveUninitialized:false, cookie: { expires: new Date(Date.now() + 14 * 86400 * 1000) }, store: new RedisStore()});
 	app.use(session); // session support
 	
 	// Configuring Passport
@@ -177,7 +177,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			passReqToCallback: true
 		},
 		function(req, identifier, done) {
-			user = {};
+			var user = {};
 			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 				user.id = req.session.passport.user.id;
 			} else {
@@ -197,7 +197,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		passReqToCallback:true
 	  },
 	  function(req, iss, sub, profile, accessToken, refreshToken, done) {
-		user = {};
+		var user = {};
 		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 			user.id = req.session.passport.user.id;
 		} else {
@@ -217,7 +217,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		passReqToCallback: true
 	  },
 	  function(req, accessToken, refreshToken, profile, done) {
-		user = {};
+		var user = {};
 		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 			user.id = req.session.passport.user.id;
 		} else {
@@ -237,7 +237,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		passReqToCallback: true
 	  },
 	  function(req, token, tokenSecret, profile, done) {
-		user = {};
+		var user = {};
 		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 			user.id = req.session.passport.user.id;
 		} else {
@@ -263,7 +263,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	
 	// setup routes
-	router = express.Router();
+	var router = express.Router();
 
 	router.get('/', function(req, res, next) {
 		if (req.hostname.indexOf('awtactic') != -1) {
@@ -301,7 +301,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	function planner_redirect(req, res, game) {
 	  if (req.query.restore) {
-		uid = newUid();
+		var uid = newUid();
 		restore_tactic(req.session.passport.user.identity, req.session.game, req.query.restore, function (uid) {
 			res.redirect(game+'planner.html?room='+uid);
 		});
@@ -395,7 +395,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	// catch 404 and forward to error handler
 	app.use(function(req, res, next) {
-		err = new Error('Not Found: "' + req.path + '"');
+		var err = new Error('Not Found: "' + req.path + '"');
 		err.status = 404;
 		next(err);
 	});
@@ -412,7 +412,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 		
 		socket.on('join_room', function(room, game) {
-			new_room = false;
+			var new_room = false;
 			if (!(room in room_data)) { 
 				room_data[room] = {};
 				room_data[room].history = {};
@@ -426,7 +426,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (!socket.handshake.session.passport.user) {
 				create_anonymous_user(socket.handshake);
 			}
-			user = JSON.parse(JSON.stringify(socket.handshake.session.passport.user));
+			var user = JSON.parse(JSON.stringify(socket.handshake.session.passport.user));
 
 			if (user) {
 				if (room_data[room].userlist[user.id]) {
@@ -451,9 +451,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 		socket.onclose = function(reason) {
 			//hijack the onclose event because otherwise we lose socket.rooms data
-			user = socket.handshake.session.passport.user;
-			for (i = 1; i < socket.rooms.length; i++) { //first room is clients own little private room so we start at 1
-				room = socket.rooms[i];
+			var user = socket.handshake.session.passport.user;
+			for (var i = 1; i < socket.rooms.length; i++) { //first room is clients own little private room so we start at 1
+				var room = socket.rooms[i];
 				if (room_data[room] && room_data[room].userlist[user.id]) {
 					if (room_data[room].userlist[user.id].count == 1) {
 						socket.broadcast.to(room).emit('remove_user', user.id);
@@ -530,9 +530,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 
 		socket.on('store', function(room, name) {
-			user = socket.handshake.session.passport.user;
+			var user = socket.handshake.session.passport.user;
 			if (room_data[room] && user.identity) { //room exists, user is logged in
-				collection = db.collection(user.identity);
+				var collection = db.collection(user.identity);
 				room_data[room].name = name;
 				collection.update({name:name}, {name:name, history:room_data[room].history, date:Date.now(), game:room_data[room].game}, {upsert: true});
 			}
@@ -540,8 +540,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	
 	//create server
-	http = require('http');
-	server = http.createServer(app);
+	var http = require('http');
+	var server = http.createServer(app);
 	io.attach(server);
 	server.listen(80);	
 });
