@@ -5,6 +5,10 @@ body {
 	padding-right:5px;
 }
 
+nav a {
+    outline: none !important;
+}
+
 .navbar {
     margin-bottom: 0px;
 }

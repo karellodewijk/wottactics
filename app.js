@@ -428,23 +428,25 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 			user = JSON.parse(JSON.stringify(socket.handshake.session.passport.user));
 
-			if (room_data[room].userlist[user.id]) {
-				//a user is already connected to this room in probably another tab, just increase a counter
-				room_data[room].userlist[user.id].count++;
-			} else {
-				room_data[room].userlist[user.id] = user;
-				room_data[room].userlist[user.id].count = 1;
-				if (!io.sockets.adapter.rooms[room] || Object.keys(io.sockets.adapter.rooms[room]).length == 0) { //no users
-					//we should make the first client the owner
-					room_data[room].userlist[user.id].role = "owner";
-				} else if (room_data[room].lost_users[user.id]) {
-					//if a user was previously connected to this room and had a role, restore that role
-					room_data[room].userlist[user.id].role = room_data[room].lost_users[user.id];
-				}
-				socket.broadcast.to(room).emit('add_user', room_data[room].userlist[user.id]);			
-			}			
-			socket.join(room);
-			socket.emit('room_data', room_data[room], user.id);
+			if (user) {
+				if (room_data[room].userlist[user.id]) {
+					//a user is already connected to this room in probably another tab, just increase a counter
+					room_data[room].userlist[user.id].count++;
+				} else {
+					room_data[room].userlist[user.id] = user;
+					room_data[room].userlist[user.id].count = 1;
+					if (!io.sockets.adapter.rooms[room] || Object.keys(io.sockets.adapter.rooms[room]).length == 0) { //no users
+						//we should make the first client the owner
+						room_data[room].userlist[user.id].role = "owner";
+					} else if (room_data[room].lost_users[user.id]) {
+						//if a user was previously connected to this room and had a role, restore that role
+						room_data[room].userlist[user.id].role = room_data[room].lost_users[user.id];
+					}
+					socket.broadcast.to(room).emit('add_user', room_data[room].userlist[user.id]);			
+				}			
+				socket.join(room);
+				socket.emit('room_data', room_data[room], user.id);
+			}
 		});
 
 		socket.onclose = function(reason) {

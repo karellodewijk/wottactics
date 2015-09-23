@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://cdn.socket.io/socket.io-1.3.6.js"></script>
+<link rel="icon" type="image/png" href="http://karellodewijk.github.io/icons/favicon.ico">
+<link rel="stylesheet" href="/stylesheets/style.css" />
+</head>
+<body>
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+<script type="text/javascript">
+	function handleFileSelect(evt) {
+		files = evt.target.files; // FileList object
+		// files is a FileList of File objects. List some properties.
+		output = [];		
+		for (i = 0; i < files.length; i++) {
+			f = files[i];
+			output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',	f.size, ' bytes, last modified: ', f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</li>');
+		}
+		document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';		
+		for (i = 0; i < files.length; i++) {
+			file_to_json(files[i], parse_json)
+		}
+	}
+	
+	function file_to_json(file, cb) {
+		hr = new FileReader();
+		hr.readAsArrayBuffer(file.slice(0,12));
+		hr.onload = function(e) {
+			dv = new DataView(e.target.result);
+			nr_of_blocks = dv.getUint32(4, true);
+			block1_size = dv.getUint32(8, true);
+			fr = new FileReader();
+			if (nr_of_blocks >= 1) {
+				fr.readAsText(file.slice(12, 12 + block1_size));
+				fr.onload = function(e) { 
+					json1 = JSON.parse(e.target.result);
+					if (nr_of_blocks >= 2) {
+						hr2 = new FileReader();
+						hr2.readAsArrayBuffer(file.slice(12 + block1_size, 16 + block1_size));
+						hr2.onload = function(e) {
+							dv2 = new DataView(e.target.result);
+							block2_size = dv2.getUint32(0, true);
+							fr.readAsText(file.slice(16 + block1_size, 16 + block1_size + block2_size));
+							fr.onload = function(e) { 
+								json2 = JSON.parse(e.target.result);
+								cb(json1, json2);
+							};
+						}						
+					} else {
+						cb(json1);
+					}
+				};
+			}
+		};
+	}
+	
+	battle_types = ['Unknown', 'Regular', 'Training', 'Company',		'Tournament', 'Clanwar', 'Tutorial', 'Team battle', 'Historical battle', 'Event', 'Stronghold', 'Stronghold' , 'Ranked', 'Clanwar'];
+	
+	function parse_json(block1, block2) {
+		$("body").append("<pre>" + JSON.stringify(block1, null, 2)+"<\pre>");
+		$("body").append("<pre>" + JSON.stringify(block2, null, 2)+"<\pre>");
+		
+		replay_data = {battle_type: battle_types[block1.battleType], commander: block1.playerName, region:block1.regionCode, map_id: block1.mapName,map_name: block1.mapDisplayName, side:undefined, time:block1.dateTime, players:[]};
+
+		for (i in block1.vehicles) {
+			if (block1.vehicles[i].name == block1.playerName) {
+				replay_data.side = block1.vehicles[i].team;
+				break;
+			}
+		}
+		
+		for (i in block1.vehicles) {
+			if (block1.vehicles[i].team == replay_data.side) {
+				replay_data.players.push(block1.vehicles[i].name);
+			}
+		}
+		
+		$("body").append("<pre>" + JSON.stringify(replay_data, null, 2)+"<\pre>");
+		
+	}
+	
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	
+</script>
+</body>
