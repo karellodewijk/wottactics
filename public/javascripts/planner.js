@@ -678,7 +678,6 @@ function on_polygon_move(e) {
 	mouse_location = e.data.getLocalPosition(objectContainer);
 	graphic = new PIXI.Graphics();
 	graphic.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, 0.5);
-	a;
 	if (new_drawing.path.length == 0) {
 		a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
 	} else {
@@ -719,8 +718,6 @@ function on_polygon_end(e) {
 		new_drawing.path.push([x - new_drawing.x, y - new_drawing.y]);
 		graphic = new PIXI.Graphics();
 		graphic.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, 1);
-		
-		a;
 		if (new_drawing.path.length == 1) {
 			a = [x_abs(new_drawing.x), x_abs(new_drawing.y)];
 		} else {
@@ -1013,7 +1010,6 @@ function on_line_move(e) {
 	mouse_location = e.data.getLocalPosition(objectContainer);
 	graphic = new PIXI.Graphics();
 	graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 0.5);
-	a;
 	if (new_drawing.path.length == 0) {
 		a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
 	} else {
@@ -1089,12 +1085,11 @@ objectContainer.touchstart = on_left_click;
 
 function create_text(text_entity) {
 	size = "bold "+text_entity.font_size*x_abs(font_scale)+"px " + text_entity.font;
-	text = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
-	text.x = x_abs(text_entity.x);
-	text.y = y_abs(text_entity.y);
+	text_entity.container = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
+	text_entity.container.x = x_abs(text_entity.x);
+	text_entity.container.y = y_abs(text_entity.y);
 	
-	text_entity.container = text;
-	text.entity = text_entity;
+	text_entity.container.entity = text_entity;
 	text_entity.container.alpha = text_entity.alpha;
 	
 	make_draggable(text_entity.container);	
@@ -1158,7 +1153,7 @@ function draw_dotted_line(graphic, x0, y0, x1, y1) {
 	size = Math.sqrt(x_diff*x_diff+y_diff*y_diff);
 	x_diff /= size;
 	y_diff /= size;
-	increment = x_abs(0.02);
+	increment = x_abs(0.01);
 	for (i = increment; i < size; i+=increment) {
 		graphic.lineTo(x0 + i*x_diff, y0 + i*y_diff);
 		i+=increment;

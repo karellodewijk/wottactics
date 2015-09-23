@@ -1,17 +1,24 @@
+<%if (game == 'wot') { %>
+<%	home = "wot.html" %>
+<%} else if (game == 'wows') { %>
+<%	home = "wows.html" %>
+<%} else if (game == 'blitz') { %>
+<%	home = "blitz.html" %>
+<%} else if (game == 'aw') { %>
+<%	home = "aw.html" %>
+<%} %>
 <nav class="navbar navbar-inverse navbar-fixed-top container-fluid">
-	<div class="navbar-header">
-		<a class="navbar-brand" 
-			<% if (game == 'wot') { %>
-				href="/wot.html">WOT Tactics
-			<% } else if (game == 'wows') { %>
-				href="/wows.html">WOWS Tactics
-			<% } else if (game == 'blitz') { %>
-				href="/blitz.html">Blitz Tactics
-			<% } else if (game == 'aw') { %>
-				href="/aw.html">AW Tactics
-			<% } %>
-		</a>
-	</div>
+	<a class="navbar-brand" href=<%=home%>>
+		<% if (game == 'wot') { %>
+			WOT Tactics
+		<% } else if (game == 'wows') { %>
+			WOWS Tactics
+		<% } else if (game == 'blitz') { %>
+			Blitz Tactics
+		<% } else if (game == 'aw') { %>
+			AW Tactics
+		<% } %>
+	</a>
 	<ul class="nav navbar-nav navbar-left container-fluid">
 		<li><a href="stored_tactics.html" class=""><%=l('Stored tactics')%></a></li>
 		<li><a href="getting_started.html" class=""><%=l('Getting started')%></a></li>
