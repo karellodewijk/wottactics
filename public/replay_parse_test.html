@@ -29,26 +29,27 @@
 	}
 	
 	function file_to_json(file, cb) {
-		hr = new FileReader();
+		var hr = new FileReader();
 		hr.readAsArrayBuffer(file.slice(0,12));
 		hr.onload = function(e) {
-			dv = new DataView(e.target.result);
-			nr_of_blocks = dv.getUint32(4, true);
-			block1_size = dv.getUint32(8, true);
-			fr = new FileReader();
+			var dv = new DataView(e.target.result);
+			var nr_of_blocks = dv.getUint32(4, true);
+			var block1_size = dv.getUint32(8, true);
+			var fr = new FileReader();
 			if (nr_of_blocks >= 1) {
 				fr.readAsText(file.slice(12, 12 + block1_size));
-				fr.onload = function(e) { 
-					json1 = JSON.parse(e.target.result);
+				fr.onload = function(e2) { 
+					var json1 = JSON.parse(e2.target.result);
 					if (nr_of_blocks >= 2) {
-						hr2 = new FileReader();
+						var hr2 = new FileReader();
 						hr2.readAsArrayBuffer(file.slice(12 + block1_size, 16 + block1_size));
-						hr2.onload = function(e) {
-							dv2 = new DataView(e.target.result);
-							block2_size = dv2.getUint32(0, true);
-							fr.readAsText(file.slice(16 + block1_size, 16 + block1_size + block2_size));
-							fr.onload = function(e) { 
-								json2 = JSON.parse(e.target.result);
+						hr2.onload = function(e3) {
+							var dv2 = new DataView(e3.target.result);
+							var block2_size = dv2.getUint32(0, true);
+							var fr2 = new FileReader();
+							fr2.readAsText(file.slice(16 + block1_size, 16 + block1_size + block2_size));
+							fr2.onload = function(e4) { 
+								var json2 = JSON.parse(e4.target.result);
 								cb(json1, json2);
 							};
 						}						
