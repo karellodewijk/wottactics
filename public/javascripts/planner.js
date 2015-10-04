@@ -1683,6 +1683,21 @@ function clear_selected() {
 //connect socket.io socket
 loader.once('complete', function () {
 	$(document).ready(function() {
+		//sorts maps alphabetically, can't presort cause it depends on language
+		var map_select = $("#map_select");
+		var options = map_select.children('option');
+		options.sort(function(a,b) {
+			if(a.innerHTML < b.innerHTML) {
+				return -1;
+			} else {
+				return 1;
+			}
+			return 0;
+		})
+		options.detach().appendTo(map_select);
+		map_select.val("");
+	
+		$('#draw_context').hide();
 		$('#draw_context').hide();
 		$('#icon_context').hide();
 		$('#remove_context').hide();
