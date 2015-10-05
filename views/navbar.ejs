@@ -24,7 +24,7 @@
 		<li><a href="getting_started.html" class=""><%=l('Getting started')%></a></li>
 		<li><a href="about.html" class=""><%=l('About')%></a></li>
 	</ul>
-	<ul class="nav navbar-nav navbar-right container-fluid">
+	<ul class="nav navbar-nav navbar-right container-fluid">+
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 			  <%=l('Other Games')%><span class="caret"></span>
@@ -34,6 +34,15 @@
 				<li><a href="http://www.wowstactic.tk">World of Warships</a></li>
 				<li><a href="http://www.wottactic.tk/blitz.html">World of Tanks Blitz</a></li>
 				<li><a href="http://www.awtactic.tk">Armored Warfare</a></li>
+			</ul>
+		</li>
+		<li class="dropdown menu-item">  
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+				<img src="http://karellodewijk.github.io/icons/flags/<%=locale%>.png"> <%=locale%><span class="caret"></span>
+			</a>
+			<ul class="dropdown-menu">
+				<li><a href="?lang=en"><img src="http://karellodewijk.github.io/icons/flags/en.png"> English</a>
+				<li><a href="?lang=rs"><img src="http://karellodewijk.github.io/icons/flags/rs.png"> Srpski</a>
 			</ul>
 		</li>
 		<% include login_button.ejs %>
