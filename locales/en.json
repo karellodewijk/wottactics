@@ -108,7 +108,7 @@
 	"Getting started": "Getting started",
 	"About": "About",
 	"Other Games": "Other Games",
-	"Developed by ": "Developed by ",
+	"Developed by": "Developed by",
 	"Black Goldville": "Black Goldville",
 	"Castilla": "Castilla",
 	"Copperfield": "Copperfield",
@@ -169,5 +169,15 @@
 	"Operation Rolling Thunder": "Operation Rolling Thunder",
 	"Operation Sapphire": "Operation Sapphire",
 	"Operation Starry Night": "Operation Starry Night",
-	"Operation Stormy Weather": "Operation Stormy Weather"
+	"Operation Stormy Weather": "Operation Stormy Weather",
+	"Icon options": "Icon options",
+	"Line options": "Line options",
+	"Text": "Text",
+	"Red": "Red",
+	"Green": "Green",
+	"Blue": "Blue",
+	"Yellow": "Yellow",
+	"White": "White",
+	"Black": "Black",
+	"Cyan": "Cyan"
 }

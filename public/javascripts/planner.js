@@ -1684,18 +1684,13 @@ function clear_selected() {
 loader.once('complete', function () {
 	$(document).ready(function() {
 		//sorts maps alphabetically, can't presort cause it depends on language
-		var map_select = $("#map_select");
-		var options = map_select.children('option');
-		options.sort(function(a,b) {
-			if(a.innerHTML < b.innerHTML) {
-				return -1;
-			} else {
-				return 1;
-			}
-			return 0;
-		})
-		options.detach().appendTo(map_select);
-		map_select.val("");
+		var options = $("#map_select option").sort(function(a,b){ 
+			return a.innerHTML > b.innerHTML ? 1 : -1; 
+		});
+		$("#map_select").empty();
+		$("#map_select").append(options.clone());
+		$("#map_select").focus();
+		$("#map_select").val("");
 	
 		$('#draw_context').hide();
 		$('#draw_context').hide();
