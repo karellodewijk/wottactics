@@ -10,6 +10,11 @@ function newUid() {
     }).toUpperCase();
 }
 
+function isEmpty(obj) {
+  for(var i in obj) { return false; }
+  return true;
+}
+
 var compress = require('compression');
 var express = require('express');
 var path = require('path');
@@ -40,7 +45,7 @@ var io = require('socket.io')();
 //configure localization support
 var i18n = require('i18n');
 i18n.configure({
-	locales: ['en', 'nl'],
+	locales: ['en', 'rs'],
 	directory: "./locales",
 	updateFiles: true
 });
@@ -77,25 +82,31 @@ process.on('uncaughtException', function (err) {
 	console.trace();
 });
 
-function clean_up_room(room) {
-	setTimeout( function() { //just in case nobody joins
-		if (room_data[room]) {
-			if (!io.sockets.adapter.rooms[room]) {
-				if (Date.now() - room_data[room].last_join > 50000) {
-					delete room_data[room];
-				} else {
-					clean_up_room(room); //try again
-				}
-			}
-		}
-	}, 60000);
-}
-
 //load mongo
 connection_string = '127.0.0.1:27017/wottactics';
 MongoClient = require('mongodb').MongoClient;
 MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	if(err) throw err;	
+	
+	db.createCollection('tactics', { autoIndexId:false });
+	db.collection('tactics').createIndex( { "createdAt": 1, "uid":1 }, { expireAfterSeconds: 2592000 } );
+
+	function clean_up_room(room) {
+		setTimeout( function() { //just in case nobody joins
+			if (room_data[room]) {
+				if (!io.sockets.adapter.rooms[room]) {
+					if (Date.now() - room_data[room].last_join > 50000) {
+						if (!isEmpty(room_data[room].history)) {
+							db.collection('tactics').update({uid:room}, {uid:room, name:room_data[room].name, history:room_data[room].history, createdAt:new Date(), game:room_data[room].game, locked:room_data[room].locked, lost_identities:room_data[room].lost_identities, lost_users:room_data[room].lost_users}, {upsert: true});
+						}
+						delete room_data[room];
+					} else {
+						clean_up_room(room); //try again
+					}
+				}
+			}
+		}, 60000);
+	}
 	
 	function get_tactics(identity, game, cb) {
 		if (identity) {
@@ -126,6 +137,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 					room_data[uid].history = result.history;
 					room_data[uid].userlist = {};
 					room_data[uid].lost_users = {};
+					room_data[uid].lost_identities = {};
 					room_data[uid].locked = true;
 					room_data[uid].name = name;
 					room_data[uid].game = game;
@@ -166,8 +178,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		} else if (!req.session.locale) {
 			req.session.locale = "en";
 		}
-		//console.log("setting language to:", req.session.locale)
-		//res.locale = req.session.locale;
 		next();
 	});
 	
@@ -399,6 +409,36 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		err.status = 404;
 		next(err);
 	});
+
+	function join_room(socket, room, new_room) {
+		room_data[room].last_join = Date.now();
+		if (!socket.handshake.session.passport.user) {
+			create_anonymous_user(socket.handshake);
+		}
+		var user = JSON.parse(JSON.stringify(socket.handshake.session.passport.user));
+
+		if (user) {
+			if (room_data[room].userlist[user.id]) {
+				//a user is already connected to this room in probably another tab, just increase a counter
+				room_data[room].userlist[user.id].count++;
+			} else {
+				room_data[room].userlist[user.id] = user;
+				room_data[room].userlist[user.id].count = 1;
+				if (new_room && (!io.sockets.adapter.rooms[room] || Object.keys(io.sockets.adapter.rooms[room]).length == 0)) { //no users
+					//we should make the first client the owner
+					room_data[room].userlist[user.id].role = "owner";
+				} else if (room_data[room].lost_users[user.id]) {
+					//if a user was previously connected to this room and had a role, restore that role
+					room_data[room].userlist[user.id].role = room_data[room].lost_users[user.id];
+				} else if (user.identity && room_data[room].lost_identities[user.identity]) {
+					room_data[room].userlist[user.id].role = room_data[room].lost_identities[user.identity];
+				}
+				socket.broadcast.to(room).emit('add_user', room_data[room].userlist[user.id]);			
+			}			
+			socket.join(room);
+			socket.emit('room_data', room_data[room], user.id);
+		}
+	}
 	
 	//socket.io callbacks
 	io.sockets.on('connection', function(socket) { 
@@ -406,46 +446,39 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			socket.handshake.session.passport = {};
 		}
 		
-		socket.on('error', function (err) {
-			console.error(err);
-			console.trace();
-		});
+
 		
 		socket.on('join_room', function(room, game) {
 			var new_room = false;
-			if (!(room in room_data)) { 
-				room_data[room] = {};
-				room_data[room].history = {};
-				room_data[room].userlist = {};
-				room_data[room].lost_users = {};
-				room_data[room].game = game;
-				room_data[room].locked = true;
-			}
-
-			room_data[room].last_join = Date.now();
-			if (!socket.handshake.session.passport.user) {
-				create_anonymous_user(socket.handshake);
-			}
-			var user = JSON.parse(JSON.stringify(socket.handshake.session.passport.user));
-
-			if (user) {
-				if (room_data[room].userlist[user.id]) {
-					//a user is already connected to this room in probably another tab, just increase a counter
-					room_data[room].userlist[user.id].count++;
-				} else {
-					room_data[room].userlist[user.id] = user;
-					room_data[room].userlist[user.id].count = 1;
-					if (!io.sockets.adapter.rooms[room] || Object.keys(io.sockets.adapter.rooms[room]).length == 0) { //no users
-						//we should make the first client the owner
-						room_data[room].userlist[user.id].role = "owner";
-					} else if (room_data[room].lost_users[user.id]) {
-						//if a user was previously connected to this room and had a role, restore that role
-						room_data[room].userlist[user.id].role = room_data[room].lost_users[user.id];
+			
+			if (!(room in room_data)) {
+				db.collection('tactics').findOne({uid:room}, function(err, result) {
+					if (!err && result) { 
+						room_data[room] = {};
+						room_data[room].history = result.history;
+						room_data[room].userlist = {};
+						room_data[room].lost_users = result.lost_users;
+						room_data[room].lost_identities = result.lost_identities;
+						room_data[room].locked = result.locked;
+						room_data[room].name = result.name;
+						room_data[room].game = result.game;
+						room_data[room].last_join = Date.now();					
+					} else {
+						room_data[room] = {};
+						room_data[room].history = {};
+						room_data[room].userlist = {};
+						room_data[room].lost_users = {};
+						room_data[room].lost_identities = {};
+						room_data[room].game = game;
+						room_data[room].locked = true;
+						new_room = true;						
 					}
-					socket.broadcast.to(room).emit('add_user', room_data[room].userlist[user.id]);			
-				}			
-				socket.join(room);
-				socket.emit('room_data', room_data[room], user.id);
+					join_room(socket, room, new_room);
+					return;
+				});
+			} else {
+				join_room(socket, room, new_room);
+				return;
 			}
 		});
 
@@ -459,6 +492,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						socket.broadcast.to(room).emit('remove_user', user.id);
 						if (room_data[room].userlist[user.id].role) {
 							room_data[room].lost_users[user.id] = room_data[room].userlist[user.id].role;
+							if (user.identity) {
+								room_data[room].lost_identities[user.identity] = room_data[room].userlist[user.id].role;
+							}
 						}
 						delete room_data[room].userlist[user.id];
 					} else {
