@@ -88,16 +88,16 @@ MongoClient = require('mongodb').MongoClient;
 MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	if(err) throw err;	
 	
-	db.createCollection('tactics', { autoIndexId:false });
-	db.collection('tactics').createIndex( { "createdAt": 1, "uid":1 }, { expireAfterSeconds: 2592000 } );
+	db.createCollection('tactics');
+	db.collection('tactics').createIndex( { "createdAt": 1 }, { expireAfterSeconds: 2592000 } );
 
 	function clean_up_room(room) {
-		setTimeout( function() { //just in case nobody joins
+		setTimeout( function() {
 			if (room_data[room]) {
 				if (!io.sockets.adapter.rooms[room]) {
 					if (Date.now() - room_data[room].last_join > 50000) {
 						if (!isEmpty(room_data[room].history)) {
-							db.collection('tactics').update({uid:room}, {uid:room, name:room_data[room].name, history:room_data[room].history, createdAt:new Date(), game:room_data[room].game, locked:room_data[room].locked, lost_identities:room_data[room].lost_identities, lost_users:room_data[room].lost_users}, {upsert: true});
+							db.collection('tactics').update({_id:room}, {name:room_data[room].name, history:room_data[room].history, createdAt:new Date(), game:room_data[room].game, locked:room_data[room].locked, lost_identities:room_data[room].lost_identities, lost_users:room_data[room].lost_users}, {upsert: true});
 						}
 						delete room_data[room];
 					} else {
@@ -445,14 +445,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (!socket.handshake.session.passport) {
 			socket.handshake.session.passport = {};
 		}
-		
-
-		
+			
 		socket.on('join_room', function(room, game) {
-			var new_room = false;
+			var new_room = true;
 			
 			if (!(room in room_data)) {
-				db.collection('tactics').findOne({uid:room}, function(err, result) {
+				db.collection('tactics').findOne({_id:room}, function(err, result) {
 					if (!err && result) { 
 						room_data[room] = {};
 						room_data[room].history = result.history;
@@ -462,7 +460,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						room_data[room].locked = result.locked;
 						room_data[room].name = result.name;
 						room_data[room].game = result.game;
-						room_data[room].last_join = Date.now();					
+						room_data[room].last_join = Date.now();	
+						new_room = false;
 					} else {
 						room_data[room] = {};
 						room_data[room].history = {};
@@ -470,8 +469,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						room_data[room].lost_users = {};
 						room_data[room].lost_identities = {};
 						room_data[room].game = game;
-						room_data[room].locked = true;
-						new_room = true;						
+						room_data[room].locked = true;						
 					}
 					join_room(socket, room, new_room);
 					return;
