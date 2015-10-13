@@ -12,7 +12,7 @@
 	"Add icon (click map)": "Add icon (click map)",
 	"Free draw": "Free draw",
 	"Add Text": "Add Text",
-	"Draw line (hold left mouse)": "Draw line (hold left mouse)",
+	"Draw line (hold left mouse)": "Draw line (hold left mouse, use shift for multi-part line)",
 	"Draw curve (double click to end)": "Draw curve (double click to end)",
 	"Draw rectangle": "Draw rectangle",
 	"Draw circle": "Draw circle",
@@ -179,5 +179,7 @@
 	"Yellow": "Yellow",
 	"White": "White",
 	"Black": "Black",
-	"Cyan": "Cyan"
+	"Cyan": "Cyan",
+	"Home": "Home",
+	"Store": "Store"
 }

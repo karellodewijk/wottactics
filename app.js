@@ -45,7 +45,7 @@ var io = require('socket.io')();
 //configure localization support
 var i18n = require('i18n');
 i18n.configure({
-	locales: ['en', 'rs', 'de'],
+	locales: ['en', 'rs', 'de', 'es'],
 	directory: "./locales",
 	updateFiles: true
 });

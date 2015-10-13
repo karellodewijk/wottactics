@@ -54,176 +54,94 @@
 	"Size": "Größe",
 	"User list": "Benutzerliste",
 	"Abbey": "Kloster",
-	
-"Airfield": "Flugplatz",
-	
-"Arctic Region": "Polargebiet",
-	
-"Attack/Defence": "Angriff/Verteidigung",
-	
-"Cliffs": "Klippe",
-	
-"Dragon Ridge": "Drachenkamm",
-	
-"El Halluf": "El Halluf",
-	
-"Encounter": "Begegnung",
-	
-"Ensk": "Ensk",
-	
-"Erlenberg": "Erlenberg",
-	
-"Assault": "Angriff",
-	
-"Fiery Salient": "Feuriger Bogen",
- 	
-"Fisherman's Bay": "Fischerbucht",
-	
-"Ghost Town": "Geisterstadt",
-	
-"Hidden Village": "Hidden Village",
-	
-"Fjords": "Fjorde",
-	
-"Highway": "Highway",
-	
-"Himmelsdorf": "Himmelsdorf",
-	
-"Karelia": "Karelien",
-	
-"Komarin": "Komarin",
-	
-"Krarkov": "Charkow",
-	
-"Lakeville": "Lakeville",
-	
-"Live Oaks": "Live Oaks",
-	
-"Malinovka": "Malinowka",
-	
-"Mines": "Minen",
-	
-"Mittengard": "Mittengard",
-	
-"Mountain pass": "Bergpaass",
-	
-"Murovanka": "Murowanka",
+	"Airfield": "Flugplatz",
+	"Arctic Region": "Polargebiet",
+	"Attack/Defence": "Angriff/Verteidigung",
+	"Cliffs": "Klippe",
+	"Dragon Ridge": "Drachenkamm",
+	"El Halluf": "El Halluf",
+	"Encounter": "Begegnung",
+	"Ensk": "Ensk",
+	"Erlenberg": "Erlenberg",
+	"Assault": "Angriff",
+	"Fiery Salient": "Feuriger Bogen",
+	"Fisherman's Bay": "Fischerbucht",
+	"Ghost Town": "Geisterstadt",
+	"Hidden Village": "Hidden Village",
+	"Fjords": "Fjorde",
+	"Highway": "Highway",
+	"Himmelsdorf": "Himmelsdorf",
+	"Karelia": "Karelien",
+	"Komarin": "Komarin",
+	"Krarkov": "Charkow",
+	"Lakeville": "Lakeville",
+	"Live Oaks": "Live Oaks",
+	"Malinovka": "Malinowka",
+	"Mines": "Minen",
+	"Mittengard": "Mittengard",
+	"Mountain pass": "Bergpaass",
+	"Murovanka": "Murowanka",
 	"Northwest": "Northwest",
-	
-"Overlord": "Overlord",
-	
-"Pearl River": "Perlenfluss",
-	
-"Phrokorovka": "Phrokorovka",
-	
-"Province": "Provinz",
-	
-"Redshire": "Redshire",
+	"Overlord": "Overlord",
+	"Pearl River": "Perlenfluss",
+	"Phrokorovka": "Phrokorovka",
+	"Province": "Provinz",
+	"Redshire": "Redshire",
 	"Ruinberg": "Ruinberg",
-	
-"Ruinberg on fire": "Ruinberg on fire",
-	
-"Sacred Valley": "Heiliges Tal",
-	
-"Sand River": "Wadi",
-	
-"Serene Coast": "Küste",
+	"Ruinberg on fire": "Ruinberg on fire",
+	"Sacred Valley": "Heiliges Tal",
+	"Sand River": "Wadi",
+	"Serene Coast": "Küste",
 	"Severogorsk": "Severogorsk",
-	
-"Siegfried Line": "Siegfriedlinie",
-	
-"South Coast": "Südküste",
-	
-"Stalingrad": "Stalingrad",
-	
-"Steppes": "Steppen",
-	
-"Swamp": "Moor",
-	
-"Tundra": "Tundra",
-	
-"Westfield": "Westfield",
-	
-"Widepark": "Weitpark",
-	
-"Windstorm": "Windsturm",
-	
-"Winter Himmelsdorf": "Winter Himmelsdorf",
+	"Siegfried Line": "Siegfriedlinie",
+	"South Coast": "Südküste",
+	"Stalingrad": "Stalingrad",
+	"Steppes": "Steppen",
+	"Swamp": "Moor",
+	"Tundra": "Tundra",
+	"Westfield": "Westfield",
+	"Widepark": "Weitpark",
+	"Windstorm": "Windsturm",
+	"Winter Himmelsdorf": "Winter Himmelsdorf",
 	"Winter Ruinberg": "Winter Ruinberg",
-	
-"Stored tactics": "Gespeicherte Taktiken",
-	
-"Getting started": "Starthilfe",
-	
-"About": "Über",
-	
-"Other Games": "Andere Spiele",
-	
-"Developed by": "Erstellt von",
-	
-"Black Goldville": "Schwarzes Gold",
-	
-"Castilla": "Kastillien",
-	
-"Copperfield": "Kupferfeld",
-	
-"Dead Rail": "Abstellgleis",
-	
-"Desert sands": "Wüstenstaub",
-	
-"Falls Creek": "Sturzbach",
-	
-"Fort Despair": "Festung der Verzweifelung",
-	
-"Lost Temple": "Verlorener Tempel",
+	"Stored tactics": "Gespeicherte Taktiken",
+	"Getting started": "Starthilfe",
+	"About": "Über",
+	"Other Games": "Andere Spiele",
+	"Developed by": "Erstellt von",
+	"Black Goldville": "Schwarzes Gold",
+	"Castilla": "Kastillien",
+	"Copperfield": "Kupferfeld",
+	"Dead Rail": "Abstellgleis",
+	"Desert sands": "Wüstenstaub",
+	"Falls Creek": "Sturzbach",
+	"Fort Despair": "Festung der Verzweifelung",
+	"Lost Temple": "Verlorener Tempel",
 	"Middleburg": "Mittelburg",
-	
-"Port Bay": "Hafenbucht",
-	
-"Oasis Palms": "Die Oasenpalmen",
-	
-"Rockfield": "Steinfeld",
-	
-"Winter Malinovka": "Malinovka im Winter",
-	
-"Bees to honey": "Bees to honey",
-	
-"Big Race": "Big Race",
-	
-"Fault Line": "Fault Line",
-	
-"Ice Islands": "Ice Islands",
-	
-"Islands": "Islands",
-	
-"New Dawn": "New Dawn",
-	
-"North": "North",
-	
-"Ocean": "Ocean",
-	
-"Tutorial": "Anleitung",
-	
-"Two brothers": "Two brothers",
-	
-"Coldstrike": "Coldstrike",
-	
-"Ghostfield": "Ghostfield",
-	
-"Portstorm": "Portstorm",
-	
-"Riverpoint": "Riverpoint",
-	
-"Roughneck": "Roughneck",
-	
-"Narrows": "Narrows",
-	
-"Pipelines": "Pipelines",
+	"Port Bay": "Hafenbucht",
+	"Oasis Palms": "Die Oasenpalmen",
+	"Rockfield": "Steinfeld",
+	"Winter Malinovka": "Malinovka im Winter",
+	"Bees to honey": "Bees to honey",
+	"Big Race": "Big Race",
+	"Fault Line": "Fault Line",
+	"Ice Islands": "Ice Islands",
+	"Islands": "Islands",
+	"New Dawn": "New Dawn",
+	"North": "North",
+	"Ocean": "Ocean",
+	"Tutorial": "Anleitung",
+	"Two brothers": "Two brothers",
+	"Coldstrike": "Coldstrike",
+	"Ghostfield": "Ghostfield",
+	"Portstorm": "Portstorm",
+	"Riverpoint": "Riverpoint",
+	"Roughneck": "Roughneck",
+	"Narrows": "Narrows",
+	"Pipelines": "Pipelines",
 	"Operation Cavalry": "Operation Cavalry",
-	
-"Operation Coastal Threath": "Operation Coastal Threath",
-	
-"Operation Direwolf": "Operation Direwolf",
+	"Operation Coastal Threath": "Operation Coastal Threath",
+	"Operation Direwolf": "Operation Direwolf",
 	"Operation Ghosthunt": "Operation Ghosthunt",
 	"Operation Phalanx": "Operation Phalanx",
 	"Operation Quarterback": "Operation Quarterback",
@@ -261,5 +179,6 @@
 	"Yellow": "Gelb",
 	"White": "Weiss",
 	"Black": "Schwarz",
-	"Cyan": "Cyan"
+	"Cyan": "Cyan",
+	"Home": "Home"
 }

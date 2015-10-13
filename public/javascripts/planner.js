@@ -122,10 +122,10 @@ var my_user_id;
 //keyboard shortcuts
 var shifted; //need to know if the shift key is pressed
 $(document).on('keyup keydown', function(e) {
-	shifted = e.shiftKey;
-	
+	shifted = e.shiftKey;	
 	if (document.activeElement.localName != "input") {	
 		if (e.type == "keyup") {
+			(e.key)
 			if (e.ctrlKey) {
 				if (e.key == 'z') {
 					undo();
@@ -138,6 +138,11 @@ $(document).on('keyup keydown', function(e) {
 				}
 			} else if (e.key == "Delete") {
 				clear_selected();
+			} else if (e.key == "Shift") {
+				if (active_context == 'line_context') {
+					console.error("ending")
+					on_line_end(e);
+				}
 			}
 		}
 	}
@@ -1033,14 +1038,18 @@ function on_line_move(e) {
 }
 
 function on_line_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
-	x = Math.max(0, x);
-	y = Math.max(0, y);
-	x = Math.min(1, x);
-	y = Math.min(1, y);
-	new_drawing.path.push([x - new_drawing.x, y - new_drawing.y]);			
+	try {
+		var mouse_location = e.data.getLocalPosition(objectContainer);	
+		var x = mouse_x_rel(mouse_location.x);
+		var y = mouse_y_rel(mouse_location.y);
+		x = Math.max(0, x);
+		y = Math.max(0, y);
+		x = Math.min(1, x);
+		y = Math.min(1, y);
+		x -= new_drawing.x;
+		y -= new_drawing.y;		
+		new_drawing.path.push([x, y]);		
+	} catch (e) {}
 	if (!shifted) {
 		setup_mouse_events(undefined, undefined);
 		//checks against an edge case where you haven't moved since the last registered point
