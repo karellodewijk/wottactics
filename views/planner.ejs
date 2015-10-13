@@ -29,7 +29,7 @@
 				href="/blitz.html">
 			<% } else if (game == 'aw') { %>
 				href="/aw.html">
-			<% } %>Home
+			<% } %><%=l('Home')%>
 		</a>
 	</div>
 	<ul class="nav navbar-nav navbar-left container-fluid btn-group">
@@ -37,10 +37,10 @@
 			<li><button id="save" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 				<img src="http://karellodewijk.github.io/icons/save.png">
 			</button></li>
-			<li><button id="save_as" data-toggle="tooltip" title="<%=l('Save as')%>" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom"
-			data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default navbar-btn btn-xs'>Store</button>">
+			<li><span title="<%=l('Save as')%>" data-placement="bottom" data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default navbar-btn btn-xs'><%=l('Store')%></button>"><button id="save_as" data-toggle="tooltip" title="<%=l('Save as')%>" href="javascript:void(0)" class="btn btn-default navbar-btn"
+			data-toggle="tooltip" title="<%=l('Save as')%>">
 				<img src="http://karellodewijk.github.io/icons/save_as.png">
-			</button></li>
+			</button></span></li>
 
 			<li><button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
 				<img src="http://karellodewijk.github.io/icons/lock.png">
