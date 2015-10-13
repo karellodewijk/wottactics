@@ -36,18 +36,7 @@
 				<li><a href="http://www.awtactic.tk">Armored Warfare</a></li>
 			</ul>
 		</li>
-		<li class="dropdown menu-item">  
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-				<img src="http://karellodewijk.github.io/icons/flags/<%=locale%>.png"> <%=locale%><span class="caret"></span>
-			</a>
-			<ul class="dropdown-menu">
-				<li><a href="?lang=de"><img src="http://karellodewijk.github.io/icons/flags/de.png"> Deutsch</a>
-				<li><a href="?lang=en"><img src="http://karellodewijk.github.io/icons/flags/en.png"> English</a>
-				<li><a href="?lang=es"><img src="http://karellodewijk.github.io/icons/flags/es.png"> Español</a>
-				<li><a href="?lang=rs"><img src="http://karellodewijk.github.io/icons/flags/rs.png"> Srpski</a>
-
-			</ul>
-		</li>
+		<% include language_select.ejs %>
 		<% include login_button.ejs %>
 	</ul>
 <div id="result"></div>
