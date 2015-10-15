@@ -441,7 +441,7 @@ function on_left_click(e) {
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), path:[[0, 0]]};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), is_arrow:false, path:[[0, 0]]};
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_line_end);
@@ -466,7 +466,7 @@ function on_left_click(e) {
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_curve_move, on_curve_end);
-			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:false, is_dotted:false};
+			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:$('#curve_arrow').hasClass('active'), is_dotted:false};
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
@@ -945,6 +945,12 @@ function on_draw_move(e) {
 	}
 	graphic.graphicsData[graphic.graphicsData.length-1].shape.closed = false;
 	
+	if ($('#draw_arrow').hasClass('active')) {
+		if (path_x.length >= 3) {
+			draw_arrow(graphic, [path_x[path_x.length-3], path_y[path_y.length-3]], [path_x[path_x.length-1], path_y[path_y.length-1]]);
+		}
+	}
+	
 	objectContainer.addChild(graphic);
 	renderer.render(stage);
 	objectContainer.removeChild(graphic);
@@ -972,6 +978,7 @@ function on_draw_end(e) {
 	renderer.render(stage);	
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 	new_drawing.path.push([mouse_x_rel(mouse_location.x) - new_drawing.x, mouse_y_rel(mouse_location.y) - new_drawing.y]);
+	new_drawing.is_arrow = $('#draw_arrow').hasClass('active');
 	undo_list.push(["add", new_drawing]);
 	create_drawing(new_drawing);
 	snap_and_emit_entity(new_drawing);
@@ -1258,9 +1265,15 @@ function computeControlPoints(K)
 
 function free_draw(graph, drawing, smooth_out) {
 	if (drawing.path.length == 1) {
-		graph.moveTo(x_abs(drawing.x), y_abs(drawing.y));
-		graph.lineTo(x_abs(drawing.x + drawing.path[0][0]), 
-		             y_abs(drawing.y + drawing.path[0][1]));
+		var a = [x_abs(drawing.x), y_abs(drawing.y)]
+		var b = [x_abs(drawing.x + drawing.path[0][0]), 
+		         y_abs(drawing.y + drawing.path[0][1])]
+		graph.moveTo(a[0], a[1]);
+		graph.lineTo(b[0], b[1]);
+		if (drawing.is_arrow) {
+			draw_arrow(graph, a, b);
+		}
+		
 	} else {
 		var path_x = [x_abs(drawing.x)];
 		var path_y = [y_abs(drawing.y)];
@@ -1297,6 +1310,15 @@ function free_draw(graph, drawing, smooth_out) {
 		for (var i = 0; i < path_x.length-1; i++) {
 			graph.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
 		}
+		
+		if (drawing.is_arrow) {
+			if (drawing.type == "drawing") {
+				draw_arrow(graph, [path_x[path_x.length-3], path_y[path_y.length-3]], [path_x[path_x.length-1], path_y[path_y.length-1]]);
+			} else {
+				draw_arrow(graph, [cx.p1[cx.p1.length-1], cy.p1[cy.p1.length-1]], [path_x[path_x.length-1], path_y[path_y.length-1]]);
+			}
+		}
+		
 	}
 	graph.graphicsData[0].shape.closed = false;
 }
@@ -1715,8 +1737,7 @@ loader.once('complete', function () {
 		$('#track_context').hide();
 		$("#save_as").hide();
 		$("#save").hide();
-		$('#ping').addClass('active');
-		$('#full_line').addClass('active');		
+		$('#ping').addClass('active');	
 		var first_icon = $("#icon_context").find("button:first");
 		first_icon.addClass('selected');
 		selected_icon = first_icon.attr("id");
@@ -1870,10 +1891,24 @@ loader.once('complete', function () {
 			active_context = new_context;		
 		});	
 
+		$('#full_line').addClass('active');	
 		$('#line_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
+		});
+		
+		$('#curve_no_arrow').addClass('active');
+		$('#curve_type').on('click', 'button', function (e) {
+			$(this).addClass('active');
+			$(this).siblings().removeClass('active');					
 		});	
+		
+		$('#draw_no_arrow').addClass('active');
+		$('#draw_type').on('click', 'button', function (e) {
+			$(this).addClass('active');
+			$(this).siblings().removeClass('active');					
+		});
+		
 		
 		$('#userlist').on('click', 'button', function () {
 			var id = $(this).attr('id');
