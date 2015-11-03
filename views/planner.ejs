@@ -17,8 +17,9 @@
 
 	<div class="edit_window"></div>
 	
+	
 	<div class="side_bar jumbotron">
-<nav class="navbar navbar-default container-fluid">
+<nav class="navbar navbar-inverse container-fluid">
 	<div class="navbar-header">
 		<a class="navbar-brand" style="padding-left:0px"
 			<% if (game == 'wot') { %>
@@ -37,7 +38,7 @@
 			<li><button id="save" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 				<img src="http://karellodewijk.github.io/icons/save.png">
 			</button></li>
-			<li><span title="<%=l('Save as')%>" data-placement="bottom" data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default navbar-btn btn-xs'><%=l('Store')%></button>"><button id="save_as" data-toggle="tooltip" title="<%=l('Save as')%>" href="javascript:void(0)" class="btn btn-default navbar-btn"
+			<li><span title="<%=l('Save as')%>" id='store_tactic_popover' data-placement="bottom" data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /><button id='store_tactic' class='btn btn-default navbar-btn btn-xs'><%=l('Store')%></button>"><button id="save_as" data-toggle="tooltip" title="<%=l('Save as')%>" href="javascript:void(0)" class="btn btn-default navbar-btn"
 			data-toggle="tooltip" title="<%=l('Save as')%>">
 				<img src="http://karellodewijk.github.io/icons/save_as.png">
 			</button></span></li>
@@ -58,7 +59,6 @@
 		<% include login_button.ejs %>
 	</ul>
 </nav>
-
 		<div class="top">
 			<div class="left_column">	
 				<h4><%=l('Map')%></h4>
@@ -128,21 +128,36 @@
 					</div>
 					<br />
 					<div class="btn-group">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="note" data-toggle="tooltip" title="<%=l('Add a note')%>">
+						<img src="http://karellodewijk.github.io/icons/note.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
+						<img src="http://karellodewijk.github.io/icons/select.png" />
+					</button>
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="remove" data-toggle="tooltip" title="<%=l('Delete (click map)/Delete menu')%>">
 						<img src="http://karellodewijk.github.io/icons/bin.png" />
 					</button>
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
 						<img src="http://karellodewijk.github.io/icons/recticle_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
-						<img src="http://karellodewijk.github.io/icons/select.png" />
-					</button>
+					</div>
+					<br />
+					<div class="btn-group">
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="undo" data-toggle="tooltip" title="<%=l('Undo last action')%>">
 						<img src="http://karellodewijk.github.io/icons/undo.png" />
 					</button>
 					<button type="button" class="btn btn-default" aria-label="Left Align" id="redo" data-toggle="tooltip" title="<%=l('Redo last action')%>">
 						<img src="http://karellodewijk.github.io/icons/redo.png" />
 					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="cut" data-toggle="tooltip" title="<%=l('Cut (ctrl-x)')%>">
+						<img src="http://karellodewijk.github.io/icons/cut.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="copy" data-toggle="tooltip" title="<%=l('Copy (ctrl-c)')%>">
+						<img src="http://karellodewijk.github.io/icons/copy.png" />
+					</button>			
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="paste" data-toggle="tooltip" title="<%=l('Paste (press ctrl-v while on the map to paste to a specific location)')%>">
+						<img src="http://karellodewijk.github.io/icons/paste.png" />
+					</button>						
 					</div>
 					</div>
 				<hr>

@@ -46,7 +46,7 @@ if (game == "wows") { //wows
 	assets = [image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"arty.png", image_host+"td.png"];	
 }
 
-assets.push(image_host+"circle.png", image_host+"recticle.png");
+assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"note.png");
 
 var loader = PIXI.loader; 
 for (var i in assets) {
@@ -110,6 +110,7 @@ var previously_selected_entities = [];
 var label_font_size = 30;
 var last_ping_time;
 var icon_scale = 0.025;
+var note_scale = 0.05;
 var thickness_scale = 0.0015;
 var font_scale = 0.002;
 var trackers = {};
@@ -118,6 +119,7 @@ var last_track_position;
 var tracker_width = 0.05;
 var tracker_height = 0.05;
 var my_user_id;
+var clipboard = [];
 
 //keyboard shortcuts
 var shifted; //need to know if the shift key is pressed
@@ -135,18 +137,73 @@ $(document).on('keyup keydown', function(e) {
 					if (my_user.identity && tactic_name && tactic_name != "" && socket) {
 						socket.emit("store", room, tactic_name);
 					}
+				} else if (e.key=='c') {
+					copy();
+				} else if (e.key=='x') {
+					cut();
+				} else if (e.key=='v') {
+					paste();
 				}
 			} else if (e.key == "Delete") {
 				clear_selected();
 			} else if (e.key == "Shift") {
 				if (active_context == 'line_context') {
-					console.error("ending")
 					on_line_end(e);
 				}
 			}
 		}
 	}
 });
+
+function cut() {
+	copy();
+	clear_selected();
+}
+
+function copy() {
+	clipboard = [];
+	for (var i in selected_entities) {
+		var temp = selected_entities[i].container;
+		delete selected_entities[i].container;
+		clipboard.push(JSON.parse(JSON.stringify(selected_entities[i])));
+		selected_entities[i].container = temp;
+	}	
+}
+
+function paste() {
+	if (clipboard.length == 0) {
+		return;
+	}
+	deselect_all();
+	var mouse_location = renderer.plugins.interaction.mouse.global;
+	var mouse_x = mouse_x_rel(mouse_location.x);
+	var mouse_y = mouse_y_rel(mouse_location.y);
+	if (Math.abs(mouse_x) > 1 || Math.abs(mouse_y) > 1) {
+		mouse_x = mouse_y = 0;
+	}	
+	var top = 1;
+	var left = 1;
+	for (var i in clipboard) {				
+		top = Math.min(top, clipboard[i].y);
+		left = Math.min(left, clipboard[i].x);
+	}
+	
+	var new_entities = [];
+	for (var i in clipboard) {
+		var entity = JSON.parse(JSON.stringify(clipboard[i]))
+		entity.uid = newUid();
+		entity.x = mouse_x + (entity.x - left);
+		entity.y = mouse_y + (entity.y - top);
+		new_entities.push(entity);
+		create_entity(entity);
+		snap_and_emit_entity(entity);
+		selected_entities.push(entity);
+	}
+	
+	undo_list.push(["add", new_entities]);	
+	select_entities();
+	renderer.render(stage);
+}
 
 //start pixi renderer
 var border = 30;
@@ -168,6 +225,8 @@ var background_sprite = new PIXI.Sprite();
 background_sprite.height = renderer.height;
 background_sprite.width = renderer.width;
 objectContainer.addChild(background_sprite);
+set_background({uid:newUid(), type:'background', path:""});
+
 
 //resize the render window
 function resize_renderer(new_size_x, new_size_y) {
@@ -177,7 +236,15 @@ function resize_renderer(new_size_x, new_size_y) {
 	size_y = new_size_y;
 	objectContainer.scale.x *= size_x/last_size_x;
 	objectContainer.scale.y *= size_y/last_size_y;	
-	renderer.resize(size_x, size_y)
+	renderer.resize(size_x, size_y);
+	
+	$("#render_frame").attr('style', 'height:' + size_y + 'px; width:' + size_x + 'px;');
+	
+	for (var i in history) {
+		if (history[i] && history[i].type == 'note') {
+		    align_note_text(history[i]);
+		}
+	}
 	renderer.render(stage);
 };
 
@@ -222,33 +289,32 @@ function mouse_y_rel(y) {
 	return y * objectContainer.scale.y / size_y;
 }
 
-function update_background_dimensions(background_sprite) {
-	background_sprite.height = x_abs(1);
-	background_sprite.width = y_abs(1);
-	renderer.render(stage);	
-}
-
 function set_background(new_background) {
 	if (background) {
 		remove(background.uid);
 	}
 	background = new_background;
-	background_sprite.texture = PIXI.Texture.fromImage(background.path);
 	
-	if (!background_sprite.texture.height || !background_sprite.texture.width) {
-		background_sprite.texture.on('update', function () {
-			update_background_dimensions(background_sprite);
-		});
+	if (background.path != "") {
+		background_sprite.texture = PIXI.Texture.fromImage(background.path);
 	} else {
-		update_background_dimensions(background_sprite);
+		var empty_backround = new PIXI.Graphics();
+		empty_backround.beginFill(0xFFFFFF, 1);
+		empty_backround.moveTo(0, 0);
+		empty_backround.lineTo(renderer.width, 0);
+		empty_backround.lineTo(renderer.width, renderer.height);
+		empty_backround.lineTo(0, renderer.height);
+		empty_backround.lineTo(0, 0);
+		empty_backround.endFill();
+		background_sprite.texture = empty_backround.generateTexture();
 	}
+
 	history[background.uid] = background;
 	$("#map_select").val(background.path).change();	
 	renderer.render(stage);
 	background_sprite.texture.on('update', function() {	
 		renderer.render(stage);
 	});
-	setTimeout(function(){ renderer.render(stage); }, 2000);
 }
 
 var context_before_drag;
@@ -256,6 +322,12 @@ var last_mouse_location;
 var move_selected;
 function on_drag_start(e) {
 	if (is_room_locked && !my_user.role) {
+		if (this.entity.type == 'note') {
+			this.mouseup = toggle_note;
+			this.touchend = toggle_note;
+			this.mouseupoutside = toggle_note;
+			this.touchendoutside = toggle_note;
+		}
 		return;
 	}
 	if (active_context != 'drag_context') {
@@ -273,52 +345,58 @@ function on_drag_start(e) {
 	this.touchmove = on_drag_move;
 
 	move_selected = false;
-	if (selected_entities.length > 0) {
-		for (var i in selected_entities) {
-			if (selected_entities[i].uid == this.entity.uid) {
-				move_selected = true;
-				break;
-			}
+	for (var i in selected_entities) {
+		if (selected_entities[i].uid == this.entity.uid) {
+			move_selected = true;
+			break;
 		}
-		if (move_selected) {
-			for (var i in selected_entities) {
-				selected_entities[i].container.alpha = 0.5;
-				selected_entities[i].origin_x = selected_entities[i].x;
-				selected_entities[i].origin_y = selected_entities[i].y;
-			}
-		}
-	} else {
-		this.alpha = 0.5;
-		this.origin_x = this.entity.x;
-		this.origin_y = this.entity.y;
 	}
+	
+	if (!move_selected) {
+		deselect_all();
+		selected_entities = [this.entity];
+		select_entities();
+	}
+	
+	for (var i in selected_entities) {
+		selected_entities[i].origin_x = selected_entities[i].x;
+		selected_entities[i].origin_y = selected_entities[i].y;
+	}
+	this.origin_x = this.entity.x;
+	this.origin_y = this.entity.y;
+}
+
+function toggle_note(e) {
+	if (this.is_open) {
+		this.is_open = false;
+		align_note_text(this.entity);
+	} else {
+		this.is_open = true;
+		align_note_text(this.entity);
+	}	
 }
 
 function on_drag_end(e) {
-	if (context_before_drag == 'remove_context') {
-		remove(this.entity.uid);
-		undo_list.push(["remove", [this.entity]]);
-		socket.emit('remove', room, this.entity.uid);
-	} else {
-		if (move_selected) {
-			var origin_entity_map = [];
-			for (var i in selected_entities) {
-				selected_entities[i].container.alpha = 1;
-				origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
-				origin_entity_map.push([origin, selected_entities[i]]);
-				delete selected_entities[i].origin_x;
-				delete selected_entities[i].origin_y;
-				socket.emit("drag", room, selected_entities[i].uid, selected_entities[i].x, selected_entities[i].y);
-			}
-			undo_list.push(["drag", origin_entity_map]);
-		} else {
-			var origin = [this.origin_x, this.origin_y];
-			delete this.origin_x;
-			delete this.origin_y;
-			undo_list.push(["drag", [[origin, this.entity]]])
-			socket.emit("drag", room, this.entity.uid, this.entity.x, this.entity.y);
-			this.alpha = 1;
+	if (this.origin_x == this.entity.x && this.origin_y == this.entity.y) {	
+		if (context_before_drag == 'remove_context') {
+			remove(this.entity.uid);
+			undo_list.push(["remove", [this.entity]]);
+			socket.emit('remove', room, this.entity.uid);
+		} else if (this.entity.type == 'note') {
+			toggle_note.call(this, e);
+			deselect_all();
 		}
+	} else {
+		var origin_entity_map = [];
+		for (var i in selected_entities) {
+			selected_entities[i].container.alpha = 1;
+			origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
+			origin_entity_map.push([origin, selected_entities[i]]);
+			delete selected_entities[i].origin_x;
+			delete selected_entities[i].origin_y;
+			socket.emit("drag", room, selected_entities[i].uid, selected_entities[i].x, selected_entities[i].y);
+		}
+		undo_list.push(["drag", origin_entity_map]);
 	}
 	this.mouseup = undefined;
 	this.touchend = undefined;
@@ -342,12 +420,8 @@ function move_entity(entity, delta_x, delta_y) {
 
 	//move by relative positioning cause x on the container is the left upper corner of the bounding box
 	//and for the entity this is mostly the start point
-	entity.x += x_rel(new_x - entity.container.x);
-	entity.y += y_rel(new_y - entity.container.y);
 	
-	entity.container.x = new_x;
-	entity.container.y = new_y;
-
+	drag_entity(entity, entity.x + x_rel(new_x - entity.container.x), entity.y + y_rel(new_y - entity.container.y));
 }
 
 function on_drag_move(e) {
@@ -369,10 +443,13 @@ function on_drag_move(e) {
 
 function remove(uid) {
 	if (history[uid] && history[uid].container) {
+		if (history[uid].type == "note") {
+			history[uid].container.menu.remove();
+		}
 		objectContainer.removeChild(history[uid].container);
 		delete history[uid].container;
 	}
-	if (history[uid].type == "icon") {
+	if (history[uid] && history[uid].type == "icon") {
 		var counter = $('#'+history[uid].tank).find("span");
 		counter.text((parseInt(counter.text())-1).toString());		
 		counter = $("#icon_context").find("span").first();
@@ -386,6 +463,7 @@ function remove(uid) {
 			selected_entities.splice(i, 1);
 		}
 	}
+	
 	delete history[uid];	
 	renderer.render(stage);
 }
@@ -433,11 +511,24 @@ function setup_mouse_events(on_move, on_release) {
 	objectContainer.touchmove = on_move;
 }
 
+function align_note_text(entity) {
+	if (entity.container.is_open) {
+		entity.container.menu.attr('style', 'top:' + y_abs(entity.y) * objectContainer.scale.x +'px; left:' + (x_abs(entity.x) + entity.container.width)  * objectContainer.scale.y + 'px; display: block;');
+	} else {
+		entity.container.menu.attr('style', 'top:' + y_abs(entity.y) * objectContainer.scale.x +'px; left:' + (x_abs(entity.x) + entity.container.width)  * objectContainer.scale.y + 'px; display: block; visibility: hidden;');
+	}
+
+}
+
 //function fires when mouse is left clicked on the map and it isn't a drag
 function on_left_click(e) {
 	if (is_room_locked && !my_user.role) {
 		return;
 	}
+	if (active_context == 'drag_context') {
+		return;
+	}
+	deselect_all();
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
@@ -467,12 +558,15 @@ function on_left_click(e) {
 		if (!new_drawing) {
 			setup_mouse_events(on_curve_move, on_curve_end);
 			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[], is_arrow:$('#curve_arrow').hasClass('active'), is_dotted:false};
+			graphics = new PIXI.Graphics();
+			graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 1);
+			objectContainer.addChild(graphics);
+
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_area_move, on_area_end);
 			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[]};
-			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
 			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
@@ -514,7 +608,64 @@ function on_left_click(e) {
 			create_tracker(my_tracker);
 			on_track_move(e);
 		}
+	} else if (active_context == 'note_context') {
+		setup_mouse_events(undefined, on_note_end);
 	}
+}
+
+function on_note_end(e) {
+	setup_mouse_events(undefined, undefined);
+	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var x = mouse_x_rel(mouse_location.x);
+	var y = mouse_y_rel(mouse_location.y);
+	var note = {uid:newUid(), type: 'note', x:x, y:y, scale:1, color:text_color, alpha:1, text:"", font_size:font_size, font:'Arial'};
+	undo_list.push(["add", [note]]);
+	create_note(note);
+	note.container.is_open = true;
+	align_note_text(note);
+	snap_and_emit_entity(note);	
+}
+
+function create_note(note) {
+	var texture = PIXI.Texture.fromImage(image_host+"note.png");
+	var sprite = new PIXI.Sprite(texture);
+
+	sprite.height = (sprite.height/29) * y_abs(note_scale) * note.scale;
+	sprite.width = (sprite.width/29) * x_abs(note_scale) * note.scale;
+	
+	//note.container = new PIXI.Container();
+	sprite.x = x_abs(note.x);
+	sprite.y = y_abs(note.y);
+
+    note.container = sprite;
+	note.container.entity = note; 
+	note.container.is_open = false;
+
+	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="top: 50%;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea id="note_box"></textarea><br /><div align="right"><button id="save_note">save</button></div></div></div>');
+	
+	$("#note_box", note.container.menu).val(note.text);
+	
+	if (is_room_locked && !my_user.role) {
+		$('textarea', note.container.menu).prop('readonly', true);
+		$('button', note.container.menu).hide();
+	}
+	
+	$("#render_frame").append(note.container.menu);
+	$("#save_note", note.container.menu).on('click', function() {
+		note.text = $("#note_box", note.container.menu).val();
+		snap_and_emit_entity(note);
+	});
+	
+	align_note_text(note);
+		
+	make_draggable(note.container);	
+	objectContainer.addChild(note.container);
+		
+	renderer.render(stage);
+	sprite.texture.on('update', function() {	
+		renderer.render(stage);
+	});
+	history[note.uid] = note;
 }
 
 function create_tracker(tracker) {
@@ -616,7 +767,7 @@ function on_area_end(e) {
 		new_drawing.path.push([0, 0]);
 		create_area(new_drawing);
 		snap_and_emit_entity(new_drawing);
-		undo_list.push(["add", new_drawing]);	
+		undo_list.push(["add", [new_drawing]]);	
 		objectContainer.removeChild(graphics);
 		renderer.render(stage);
 		graphics = null;
@@ -640,6 +791,7 @@ function on_curve_move(e) {
 	var graphic = new PIXI.Graphics();
 	graphic.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 1);	
 	free_draw(graphic, new_drawing);
+	
 	objectContainer.addChild(graphic);
 	renderer.render(stage);
 	objectContainer.removeChild(graphic);
@@ -669,13 +821,22 @@ function on_curve_end(e) {
 	var distance_to_last_sq = (new_x - last_x) * (new_x - last_x) + (new_y - last_y) * (new_y - last_y);
 	
 	if (distance_to_last_sq < (min_polygon_end_distance*min_polygon_end_distance)) {
+		objectContainer.removeChild(graphics);
 		setup_mouse_events(undefined, undefined);
 		create_drawing(new_drawing);
 		snap_and_emit_entity(new_drawing);
-		undo_list.push(["add", new_drawing]);
+		undo_list.push(["add", [new_drawing]]);
 		new_drawing = null;
 	} else {
+		objectContainer.removeChild(graphics);
+		graphics = new PIXI.Graphics();
+		graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 1);
+		graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
+		var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+		graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
+		objectContainer.addChild(graphics);
 		new_drawing.path.push([new_x, new_y]);
+		on_curve_move(e);
 	}
 }
 
@@ -717,7 +878,7 @@ function on_polygon_end(e) {
 		objectContainer.removeChild(graphics);
 		create_polygon(new_drawing);
 		snap_and_emit_entity(new_drawing);
-		undo_list.push(["add", new_drawing]);
+		undo_list.push(["add", [new_drawing]]);
 		new_drawing = null;
 		graphics = null;
 	} else {
@@ -790,7 +951,7 @@ function on_circle_end(e) {
 
 	create_circle(new_shape);
 	snap_and_emit_entity(new_shape);
-	undo_list.push(["add", new_shape]);
+	undo_list.push(["add", [new_shape]]);
 	
 }
 
@@ -822,7 +983,7 @@ function on_rectangle_end(e) {
 	var new_shape = {uid:newUid(), type:'rectangle', x:x_rel(left_x), y:y_rel(left_y), width:x_rel(right_x - left_x), height:y_rel(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1};
 	create_rectangle(new_shape);
 	snap_and_emit_entity(new_shape);
-	undo_list.push(["add", new_shape]);
+	undo_list.push(["add", [new_shape]]);
 }
 
 function on_ping_move(e) {
@@ -899,7 +1060,7 @@ function deselect_all() {
 }
 
 //man, am I not happy about this. Incrementally updating a Pixi.graphics between rendering it,
-//causes issues on firefox (TOO_MUCH_MALLOC), so ebery time you move I draw the last 30 interpollation 
+//causes issues on firefox (TOO_MUCH_MALLOC), so every time you move I draw the last 30 interpollation 
 //points and every redraw_countdown interpolation points I redraw the whole history.
 var redraw_countdown = 20;
 function on_draw_move(e) {
@@ -979,7 +1140,7 @@ function on_draw_end(e) {
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 	new_drawing.path.push([mouse_x_rel(mouse_location.x) - new_drawing.x, mouse_y_rel(mouse_location.y) - new_drawing.y]);
 	new_drawing.is_arrow = $('#draw_arrow').hasClass('active');
-	undo_list.push(["add", new_drawing]);
+	undo_list.push(["add", [new_drawing]]);
 	create_drawing(new_drawing);
 	snap_and_emit_entity(new_drawing);
 	new_drawing = null;
@@ -1004,7 +1165,7 @@ function on_icon_end(e) {
 	var y = mouse_y_rel(mouse_location.y) - (icon_scale/2);
 	
 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:(icon_size/20), color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Arial"}
-	undo_list.push(["add", icon]);
+	undo_list.push(["add", [icon]]);
 	create_icon(icon);
 	snap_and_emit_entity(icon);
 }
@@ -1015,7 +1176,7 @@ function on_text_end(e) {
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Arial'};
-	undo_list.push(["add", text]);
+	undo_list.push(["add", [text]]);
 	create_text(text);
 	snap_and_emit_entity(text);
 }
@@ -1066,7 +1227,7 @@ function on_line_end(e) {
 			&& new_drawing.path[new_drawing.path.length-1][1] == new_drawing.path[new_drawing.path.length-2][1]) {
 				new_drawing.path.pop();
 		}
-		undo_list.push(["add", new_drawing]);
+		undo_list.push(["add", [new_drawing]]);
 		objectContainer.removeChild(graphics);
 		create_line(new_drawing);
 		snap_and_emit_entity(new_drawing);
@@ -1421,7 +1582,10 @@ function init_graphic(drawing, graphic) {
 	history[drawing.uid] = drawing;
 }
 
-function create_entity(entity) {
+function create_entity(entity) {	
+	if (history[entity.uid]) {
+		remove(entity.uid);
+	}
 	if (entity.type == 'background') {
 		set_background(entity);
 	} else if (entity.type == 'icon') {
@@ -1434,6 +1598,8 @@ function create_entity(entity) {
 		create_line(entity);
 	} else if (entity.type == 'text') {
 		create_text(entity);
+	} else if (entity.type == 'note') {
+		create_note(entity);
 	} else if (entity.type == 'rectangle') {
 		create_rectangle(entity);
 	} else if (entity.type == 'circle') {
@@ -1530,8 +1696,20 @@ function update_lock() {
 	
 	if (is_room_locked && !my_user.role) {
 		$('.left_column').hide();
+		for (var i in history) {
+			if (history[i] && history[i].type == 'note') {
+				$('textarea', history[i].container.menu).prop('readonly', true);
+				$('button', history[i].container.menu).hide();
+			}
+		}
 	} else {
 		$('.left_column').show();
+		for (var i in history) {
+			if (history[i] && history[i].type == 'note') {
+				$('textarea', history[i].container.menu).prop('readonly', false);
+				$('button', history[i].container.menu).show();
+			}
+		}
 	}
 	
 	if (my_user.role == "owner") {
@@ -1596,12 +1774,14 @@ function undo() {
 	var action = undo_list.pop();
 	if (action) {
 		if (action[0] == "add") {
-			if (action[1].uid) {
-				remove(action[1].uid);
-				delete action[1].container;
-				socket.emit('remove', room, action[1].uid);
-				redo_list.push(action);
+			for (var i in action[1]) {
+				if (action[1][i].uid) {
+					remove(action[1][i].uid);
+					delete action[1][i].container;
+					socket.emit('remove', room, action[1][i].uid);
+				}
 			}
+			redo_list.push(action);
 		} else if (action[0] == "drag") {
 			for (var i in action[1]) {
 				var x = action[1][i][0][0];
@@ -1610,10 +1790,7 @@ function undo() {
 				if (history[uid]) { //still exists
 					action[1][i][0][0] = history[uid].x;
 					action[1][i][0][1] = history[uid].y;
-					history[uid].container.x += x_abs(x-history[uid].x);
-					history[uid].container.y += y_abs(y-history[uid].y);
-					history[uid].x = x;
-					history[uid].y = y;
+					drag_entity(history[uid], x, y);
 					renderer.render(stage);
 					socket.emit('drag', room, uid, x, y);
 				}
@@ -1648,11 +1825,13 @@ function redo() {
 	var action = redo_list.pop();
 	if (action) {
 		if (action[0] == "add") {
-			if (action[1].uid) {
-				undo_list.push(action);
-				socket.emit('create_entity', room, action[1]);
-				create_entity(action[1]);
+			for (var i in action[1]) {
+				if (action[1][i].uid) {
+					socket.emit('create_entity', room, action[1][i]);
+					create_entity(action[1][i]);
+				}
 			}
+			undo_list.push(action);
 		} else if (action[0] == "drag") {
 			for (var i in action[1]) {
 				var x = action[1][i][0][0];
@@ -1661,10 +1840,7 @@ function redo() {
 				if (history[uid]) { //still exists
 					action[1][i][0][0] = history[uid].x;
 					action[1][i][0][1] = history[uid].y;
-					history[uid].container.x += x_abs(x-history[uid].x);
-					history[uid].container.y += y_abs(y-history[uid].y);
-					history[uid].x = x;
-					history[uid].y = y;
+					drag_entity(history[uid], x, y);
 					renderer.render(stage);
 					socket.emit('drag', room, uid, x, y);
 				}
@@ -1709,6 +1885,17 @@ function clear_selected() {
 	}
 	selected_entities = [];
 	undo_list.push(["remove", cleared_entities]);
+}
+
+function drag_entity(entity, x, y) {
+	entity.container.x += x_abs(x-entity.x);
+	entity.container.y += y_abs(y-entity.y);
+	entity.x = x;
+	entity.y = y;
+	if (entity.type == 'note') {
+		align_note_text(entity);
+	}
+	renderer.render(stage);	
 }
 
 //connect socket.io socket
@@ -1794,13 +1981,15 @@ loader.once('complete', function () {
 		
 		$(document).on('click', '#store_tactic', function(){
 			var name = $(document).find('#tactic_name')[0].value;
-			$('#save_as').popover('hide');
 			if (name == "") {
 				alert("Empty name, tactic not stored");
 			} else {
 				var tactic_name = name;
 				socket.emit("store", room, name);
 				$("#save").show();
+				//$('#store_tactic_popover').popover('hide');
+				$('#store_tactic_popover').popover('destroy');
+				$('#store_tactic_popover').popover('destroy');
 				alert("Tactic stored as: " + name);
 			}
 		});	
@@ -1881,7 +2070,18 @@ loader.once('complete', function () {
 			} else if ( $(this).attr('id') == "redo") {
 				redo();
 				return;
-			}			
+			} else if ( $(this).attr('id') == "cut") {
+				cut();
+				return;
+			} else if ( $(this).attr('id') == "copy") {
+				copy();
+				return;
+			} else if ( $(this).attr('id') == "paste") {
+				paste();
+				return;
+			}
+			deselect_all();
+			renderer.render(stage);
 			$('#contexts').find("button").removeClass('active');
 			$(this).addClass('active');			
 			var new_context = $(this).attr('id')+"_context";	
@@ -1970,7 +2170,11 @@ loader.once('complete', function () {
 			selected_icon = $(this).attr('id');
 		});
 		
-		$(".edit_window").append(renderer.view);
+		$(renderer.view).attr('style', 'z-index: 0; position: absolute;');
+		$(".edit_window").append("<div id='render_frame' style='height:" + size_y + "px; width:" + size_x + "px;'></div>");
+		$("#render_frame").append(renderer.view);
+		
+		
 		var map_select_box = document.getElementById("map_select");
 		map_select_box.onchange = function() {
 			var path = map_select_box.options[map_select_box.selectedIndex].value;
@@ -2005,11 +2209,7 @@ loader.once('complete', function () {
 	});
 	
 	socket.on('drag', function(uid, x, y) {
-		history[uid].container.x += x_abs(x-history[uid].x);
-		history[uid].container.y += y_abs(y-history[uid].y);
-		history[uid].x = x;
-		history[uid].y = y;
-		renderer.render(stage);
+		drag_entity(history[uid], x, y);
 	});
 
 	socket.on('ping', function(x, y, color) {

@@ -3,9 +3,27 @@
 		<img src="http://karellodewijk.github.io/icons/flags/<%=locale%>.png"> <%=locale%><span class="caret"></span>
 	</a>
 	<ul class="dropdown-menu">
-		<li><a href="?lang=de"><img src="http://karellodewijk.github.io/icons/flags/de.png"> Deutsch</a>
-		<li><a href="?lang=en"><img src="http://karellodewijk.github.io/icons/flags/en.png"> English</a>
-		<li><a href="?lang=es"><img src="http://karellodewijk.github.io/icons/flags/es.png"> Español</a>
-		<li><a href="?lang=rs"><img src="http://karellodewijk.github.io/icons/flags/rs.png"> Srpski</a>
+		<li><a class="language_link" href="&lang=de"><img src="http://karellodewijk.github.io/icons/flags/de.png"> Deutsch</a>
+		<li><a class="language_link" href="&lang=en"><img src="http://karellodewijk.github.io/icons/flags/en.png"> English</a>
+		<li><a class="language_link" href="&lang=es"><img src="http://karellodewijk.github.io/icons/flags/es.png"> Español</a>
+		<li><a class="language_link" href="&lang=rs"><img src="http://karellodewijk.github.io/icons/flags/rs.png"> Srpski</a>
 	</ul>
 </li>
+
+<script type="text/javascript">
+	$(".language_link").click(function() {
+		var url = document.location.toString();
+		if (url.indexOf('lang') != -1) {
+			url = url.replace(/lang=../g, $(this).attr('href').substring(1)); 
+		} else {
+			if (url.indexOf('?') == -1) {
+				url += '?' + $(this).attr('href').substring(1);
+			} else {
+				url += $(this).attr('href');
+			}
+		}
+		console.error(url);
+		window.location = url;
+		return false;
+	})
+</script>

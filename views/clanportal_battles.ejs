@@ -1,0 +1,353 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<% include common_headers.ejs %>
+	<script type="text/javascript" src="/javascripts/index.js"></script>
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.min.css" />
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js"></script>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.23.5/js/jquery.tablesorter.js"></script>
+	<link rel="stylesheet" href="/stylesheets/tablesorter/style.css" />
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/globalize/1.0.0/globalize.js"></script>
+</head>
+<body>
+	<div class="container" style='width:100%; padding-top:65px;'>
+    <div class="jumbotron side_bar" style='width:100%;'>
+		<% include clanportal_navbar.ejs %>
+		<% if (clan) { %>
+		
+		<% if (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private') { %>
+			<h3>Upload battles</h3>
+			<input type="file" id="files" name="files[]" multiple />
+			<span id="error"></span>
+			<table class="table tablesorter table-bordered" id="upload_list" style="background-color:white;">
+			  <thead>
+				<tr>
+				  <th><b>Type</b></th>
+				  <th><b>S</b></th>
+				  <th><b>W</b></th>
+				  <th><b>Map</b></th>
+				  <th><b>Date</b></th>
+				  <th><b>FC</b></th>
+				  <th><b>Players</b></th>
+				  <th><b>Reserves</b></th>
+				</tr>
+			  </thead> 
+			</table>
+			<button id="add_manual">Add manual battle</button><button id="submit">Submit</button>
+		<% } %>
+			<h3>Battles:</h3>
+			<table class="table tablesorter table-bordered" id="battle_list" style="background-color:white;">
+				<thead>
+				<tr>
+				  <th><b>Type</b></th>
+				  <th><b>S</b></th>
+				  <th><b>W</b></th>
+				  <th><b>Map</b></th>
+				  <th><b>Date</b></th>
+				  <th><b>FC</b></th>
+				  <th><b>Players</b></th>
+				  <th><b>Reserves</b></th>
+				  <th><b>Del</b></th>
+				</tr>
+				</thead>		
+					 <% for (var i in clan.battles) { %>
+					   <tr id=<%=clan.battles[i].uid%>>
+						 <td><%=clan.battles[i].battle_type%></td>
+						 <td><%=clan.battles[i].side%></td>
+						 <td><%=(clan.battles[i].win == 0 ? "y" : "n")%></td>
+						 <td><%=clan.battles[i].map_name%></td>
+						 <td class="date"><%=clan.battles[i].time%></td>
+						 <td><%=clan.battles[i].commander[1]%></td>
+						 <td>
+							<% for (var j in clan.battles[i].players) { %>
+								<%=clan.battles[i].players[j][1]%>, 
+							<% } %>
+						 </td>
+						 <td>
+							<% for (var j in clan.battles[i].reserves) { %>
+								<%=clan.battles[i].reserves[j][1]%>, 
+							<% } %>						 
+						 </td>	
+						 <%if (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private') {%>
+							<td><button class="btn btn-warning remove_battle"><img src="http://karellodewijk.github.io/icons/bin.png" /></button></td>
+						 <%}%>
+					    </tr>
+					 <% } %>					 
+			</table>
+		</div>
+		</div>
+	</div>
+	<% } else { %>
+		You are not in a clan or you are not logged in. Pls login with your WG account.
+	<% } %>
+	</div>
+	<% include footer.ejs %>
+	</div>
+</body>
+	
+<% if (clan) { %>
+	
+<script type="text/javascript">
+	//generates unique id
+	function newUid() {
+	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+		function(c) {
+		  var r = Math.random() * 16 | 0,
+			v = c == 'x' ? r : (r & 0x3 | 0x8);
+		  return v.toString(16);
+		}).toUpperCase();
+	}
+
+	replays = {};
+	extra_data = {};
+	
+	var map_id_map = <% include wot_map_ids.json %>;
+	map_id_map.sort(function(a, b) {
+		if (a.mapname > b.mapname) return 1;
+		return -1;
+	})
+	
+	var map_select = '';
+	map_select += '<select id="map_select">'
+	for (var i in map_id_map) {
+		map_select += '<option value="' + map_id_map[i].mapidname + '">' + map_id_map[i].mapname + '</option>';
+	}
+	map_select += '</select>'
+
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	var players = [];
+	
+	<% for (var i in clan.members) { %>
+	players.push(['<%=clan.members[i].account_id%>', '<%=clan.members[i].account_name %>']);
+	<% } %>
+	
+	var options = '';
+	for (var i in players) {
+		options += "<option value='" + players[i][0] + "'>" + players[i][1] + "</option>";
+	}	
+	var player_select = $("<select id='player_select'></select>");
+	player_select.html($(options).sort(function (a, b) {
+      return a.text.toLowerCase() == b.text.toLowerCase() ? 0 : a.text.toLowerCase() < b.text.toLowerCase() ? -1 : 1;
+	}));
+	player_select = player_select.prop("outerHTML");
+
+	$(".remove_battle").click(function() {
+		 var id = $(this).parents("tr").attr("id");
+		 $.post("/remove_battle.html", {uid:id}).done(function(){
+			window.location.reload();
+		 });
+	});
+
+	$('#add_manual').click(function() {
+		var uid = newUid();
+		var line = '';
+		line += '<tr id="'+ uid + '">';
+		line +=     '<td><select id="type"><option value="Clanwar">Clanwar</option><option value="Stronghold">Stronghold</option><option value="Skirmish">Skirmish</option></select></td>';
+		line +=     '<td><select id="side"><option value=1>1</option><option value=2>2</option></select></td>';
+		line +=     '<td><select id="win"><option value=0>y</option><option value=1>n</option></select></td>';
+		line +=     '<td>'+ map_select + '</td>';
+		line +=     '<td><input class="datepicker"></input></td>';
+		line +=     '<td id="commander">' + player_select + '</td>';
+		line +=   '<td id="players"><span id="player_list"></span>' + player_select + '<button id="add_player">Add</button></td>';
+		line +=   '<td id="reserves"><span id="reserve_list"></span>' + player_select + '<button id="add_reserve">Add</button></td>';
+		line += '</tr>'
+		
+		$('#upload_list').append(line);
+
+		$("#" + uid + " .datepicker").datepicker({todayBtn:"linked"})
+		$("#" + uid + " .datepicker").datepicker('setDate', new Date());
+		
+		$("#" + uid + " #add_reserve").click(function() {
+			var player_id = $("#" + uid + " #reserves #player_select").find(":selected").val();
+			var player = $("#" + uid + " #reserves #player_select").find(":selected").text();
+			$("#" + uid + " #reserve_list").append('<span id='+ player_id + '>' + player + '</span>, ');
+		});
+		$("#" + uid + " #add_player").click(function() {
+			var player_id = $("#" + uid + " #players #player_select").find(":selected").val();
+			var player = $("#" + uid + " #players #player_select").find(":selected").text();
+			$("#" + uid + " #player_list").append('<span id='+ player_id + '>' + player + '</span>, ');
+		});
+	});
+	
+	$('#submit').click(function() {
+		$('#upload_list tr').each(function() {
+			var uid = $(this).attr('id');
+			if (uid && uid.indexOf('-') != -1)  {
+				var battle_type = $(this).find("#type").val();
+				var commander = [$(this).find("#commander #player_select").val(), $(this).find("#commander #player_select :selected").text()];
+				var map_id = $(this).find("#map_select").val();
+				var map_name = $(this).find("#map_select :selected").text();
+				var side = $(this).find("#side").val();
+				var time = $(this).find(".datepicker").datepicker('getDate'); 
+				var win = $(this).find("#win").val();
+				
+				var players = []; 
+				$(this).find("#player_list").children().each(function() {
+					players.push([$(this).attr('id'), $(this).text()]);	
+				});
+				var reserves = []; 
+				$(this).find("#reserve_list").children().each(function() {
+					reserves.push([$(this).attr('id'), $(this).text()]);	
+				});
+				
+				replay_data = {battle_type:battle_type, commander:commander, map_id:map_id, map_name:map_name, side:side, time:time, uid:uid, win:$(this).find("#win").val(), players:players, reserves:reserves};				
+
+				console.error(replay_data)
+				replays[replay_data.uid] = replay_data;		
+			}
+		});
+		$.ajax({url: "/add_battles.html",
+		        data: JSON.stringify({battles: replays}),
+				contentType: 'application/json',
+				method:"POST"}).done(function(data) {
+			window.location.reload();
+		});
+	});
+	
+	function handleFileSelect(evt) {
+		files = evt.target.files; // FileList object
+		for (i = 0; i < files.length; i++) {
+			f = files[i];
+
+		}
+		for (i = 0; i < files.length; i++) {
+			file_to_json(files[i], parse_json)
+		}
+	}
+	
+	function file_to_json(file, cb) {
+		var hr = new FileReader();
+		hr.readAsArrayBuffer(file.slice(0,12));
+		hr.onload = function(e) {
+			var dv = new DataView(e.target.result);
+			var nr_of_blocks = dv.getUint32(4, true);
+			var block1_size = dv.getUint32(8, true);
+			var fr = new FileReader();
+			if (nr_of_blocks >= 1) {
+				fr.readAsText(file.slice(12, 12 + block1_size));
+				fr.onload = function(e2) { 
+					var json1 = JSON.parse(e2.target.result);
+					if (nr_of_blocks >= 2) {
+						var hr2 = new FileReader();
+						hr2.readAsArrayBuffer(file.slice(12 + block1_size, 16 + block1_size));
+						hr2.onload = function(e3) {
+							var dv2 = new DataView(e3.target.result);
+							var block2_size = dv2.getUint32(0, true);
+							var fr2 = new FileReader();
+							fr2.readAsText(file.slice(16 + block1_size, 16 + block1_size + block2_size));
+							fr2.onload = function(e4) { 
+								var json2 = JSON.parse(e4.target.result);
+								cb(json1, json2);
+							};
+						}						
+					} else {
+						cb(json1);
+					}
+				};
+			}
+		};
+	}
+	
+	battle_types = ['Unknown', 'Regular', 'Training', 'Company', 'Tournament', 'Clanwar', 'Tutorial', 'Team battle', 'Historical battle', 'Event', 'Skirmish', 'Stronghold' , 'Ranked', 'Clanwar'];
+	
+	function parse_json(block1, block2) {
+		//$("body").append("<pre>" + JSON.stringify(block1, null, 2)+"<\pre>");
+		//$("body").append("<pre>" + JSON.stringify(block2, null, 2)+"<\pre>");
+		
+		if (!block2) {
+			$("#error").append("<span style='color:red'>warning</span>: Replay for battle on " + block1.mapDisplayName + " not complete and omitted<br/>");
+			return;
+		}
+		
+		replay_data = {battle_type: battle_types[block1.battleType], commander: block1.playerName, region:block1.regionCode, map_id: block1.mapName,map_name: block1.mapDisplayName, side:undefined, time:parseDate(block1.dateTime), uid:block2[0].arenaUniqueID, win:1, players:[], reserves:[]};
+				
+		if (replay_data.battle_type != 'Skirmish' && replay_data.battle_type != 'Clanwar' && replay_data.battle_type != 'Stronghold') {
+			$("#error").append("<span style='color:red'>warning</span>: Replay for battle on " + block1.mapDisplayName + " does not appear to be a Clanwar, Stronghold or Skirmish and was omitted.<br/>");	
+			return;
+		}
+
+		for (i in block1.vehicles) {
+			if (block1.vehicles[i].name == block1.playerName) {
+				replay_data.side = block1.vehicles[i].team;
+				break;
+			}
+		}
+		
+		if (replay_data.side == block2[0].common.winnerTeam) {
+			replay_data.win = 0;
+		}
+
+		
+		for (i in block2[0].players) {
+			if (block2[0].players[i].team == replay_data.side) {
+				replay_data.players.push([i, block2[0].players[i].name]);
+			}
+		}
+		
+		var commander_select = '';
+		commander_select += '<select id="commander_select">';
+		for (var i in replay_data.players) {
+			commander_select += "<option value='" + replay_data.players[i][0] + "'";
+			if (replay_data.players[i][1] == replay_data.commander) {
+				commander_select += ' selected';
+				replay_data.commander = replay_data.players[i];
+			}
+			commander_select += ">" + replay_data.players[i][1] + "</option>";
+		}
+		commander_select += '</select>'
+		
+		var line = '';
+		line += '<tr id=' + replay_data.uid + '>';
+		line +=   '<td>' + replay_data.battle_type + '</td>';
+		line +=   '<td>' + replay_data.side + '</td>';
+		line +=   '<td>' + (replay_data.win ? "n" : "y") + '</td>';
+		line +=   '<td>' + replay_data.map_name + '</td>';
+		line +=   '<td>' + replay_data.time.toLocaleString() + '</td>';
+		line +=   '<td>' + commander_select + '</td>';
+		line +=   '<td>' + replay_data.players.map(function(a) {return a[1]}).join(', ') + '</td>';
+		line +=   '<td><span id="reserve_list"></span>' + player_select + '<button id="add_reserve">Add</button></td>';
+		line += '</tr>'
+		$("#upload_list").append(line);
+
+		replays[replay_data.uid] = replay_data;
+		extra_data[replay_data.arenaUniqueID] = block2[0];
+		
+		$("#" + replay_data.uid + " #add_reserve").click(function() {
+			var player_id = $(this).siblings("#player_select").find(":selected").val();
+			var player = $(this).siblings("#player_select").find(":selected").text();
+			var uid = $(this).parents("tr").attr("id");
+			$(this).siblings("#reserve_list").append(player + ', ');
+			replays[uid].reserves.push([player_id, player])
+		});
+		
+		$("#" + replay_data.uid + " #commander_select").change(function() {
+			  var node = $(this).find(":selected");
+			  var uid = $(this).parents("tr").attr("id");
+			  replays[uid].commander = [node.val(), node.text()];
+		});
+	}
+
+	// parse a date in 'DD.MM.JJJJ HH:MM:SS' format
+	function parseDate(input) {
+	  console.error(input)
+	  var parts = input.split(' ');
+	  var date = parts[0].split('.');
+	  var time = parts[1].split(':');
+	  return new Date(date[2], date[1]-1 , date[0] , time[0], time[1], time[2])
+	}
+	
+	$(document).ready(function() { 
+		$(".date").each(function () {
+		  $(this).html(new Date($(this).text()).toLocaleString()); 
+		});
+        $("#battle_list").tablesorter({sortList: [[4,1],[0,0],[1,0],[2,0],[3,0],[5,0],[6,0]]}); 
+    } 
+); 
+	
+</script>	
+
+<% } %>
+
+
+
+

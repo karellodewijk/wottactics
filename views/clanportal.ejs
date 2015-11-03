@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<% include common_headers.ejs %>
+	<script type="text/javascript" src="/javascripts/index.js"></script>
+</head>
+<body>
+	<div class="container" style='width:100%; padding-top:65px;'>
+    <div class="jumbotron side_bar" style='width:100%;'>
+		<% include clanportal_navbar.ejs %>
+		<div class="container" id="big_button_frame" style="text-align:center">
+			<h1>
+				<% if (clan) { %>
+					<%=clan.name%>
+				<% } %>
+				<%=l('clan portal')%>
+			</h1>
+			<p>
+			<%if (!user.clan_id) {%>
+				You are not in a clan or you are not logged on with your WG id.
+			<%}%>
+		</div>
+	</div>
+
+	<!--<div class="row">
+	<div class="col-md-4">
+		<h2>Welcome</h2>
+		<p>This website is a  tool for clans to keep track of player activity in SH and CW's and a way to calculate gold payouts.
+		</p>
+	</div>
+	<div class="col-md-4">
+		<h2>Free and open</h2>
+		<p>This website is free of charge, free of adds and open-source and I intend to keep it that way.</p>
+	</div>
+	<div class="col-md-4">
+		<h2>Looking for translators</h2>
+		<p>Thanks to some helpful people this website is already available in a few languages. If you want it available in your language too, get in touch. No technical skill required.</p>
+	</div>-->
+</div>
+	
+	<% include footer.ejs %>
+	
+	</div>
+</body>
+

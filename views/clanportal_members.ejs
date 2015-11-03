@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<% include common_headers.ejs %>
+	<script type="text/javascript" src="/javascripts/index.js"></script>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.23.5/js/jquery.tablesorter.js"></script>
+	<link rel="stylesheet" href="/stylesheets/tablesorter/style.css" />
+</head>
+<body>
+	<div class="container" style='width:100%; padding-top:65px;'>
+    <div class="jumbotron side_bar" style='width:100%;'>
+		<% include clanportal_navbar.ejs %>
+
+		<%if (clan) { %>		
+		<h2><%=l('Member list')%></h2>
+		<hr>
+			<div class="container" style="text-align:left; width:95%;">
+				<% include clanportal_member_table.ejs %>
+			</div>
+		</div>
+		<% } else { %>
+			You are not in a clan or you are not logged in. Pls login with your WG account.
+		<% }%>
+		
+	</div>
+	<% include footer.ejs %>
+	</div>
+</body>
+

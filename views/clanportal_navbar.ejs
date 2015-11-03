@@ -1,0 +1,21 @@
+<%	home = "clanportal.html" %>
+<nav class="navbar navbar-inverse navbar-fixed-top container-fluid">
+	<a class="navbar-brand" href=<%=home%>>
+		Clan portal
+	</a>
+	<ul class="nav navbar-nav navbar-left container-fluid">
+		<% if (clan) { %>
+		  <li><a href="members.html"><%=l('Members')%></a></li>
+		  <li><a href="battles.html"><%=l('Battles')%></a></li>	
+		  <% if (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private') { %>
+		    <li><a href="payout.html"><%=l('Calculate payout')%></a></li>
+		  <% } %>
+		<% } %>
+
+	</ul>
+	<ul class="nav navbar-nav navbar-right container-fluid">+
+		<% include login_button.ejs %>
+	</ul>
+</nav>
+
+<hr>
