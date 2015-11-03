@@ -6,6 +6,7 @@
     "start": "node ./app"
   },
   "dependencies": {
+    "binarysearch": "^0.2.4",
     "body-parser": "~1.13.2",
     "compression": "^1.5.2",
     "connect-redis": "^2.5.0",

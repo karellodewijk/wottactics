@@ -1,0 +1,74 @@
+<%function calculate_weight(player, clan) { %>
+<%	var weight = 0; %>
+<%	weight += player.CW[0] * clan.multipliers.CW * clan.multipliers.CWW; %>
+<%	weight += player.SH[0] * clan.multipliers.SH * clan.multipliers.SHW; %>
+<%	weight += player.SK[0] * clan.multipliers.SK * clan.multipliers.SKW; %>
+<%	weight += player.CW[1] * clan.multipliers.CW * clan.multipliers.CWL; %>
+<%	weight += player.SH[1] * clan.multipliers.SH * clan.multipliers.SHL; %>
+<%	weight += player.SK[1] * clan.multipliers.SK * clan.multipliers.SKL; %>
+<%	weight += player.FCCW[0] * (clan.multipliers.CWFC-1) * clan.multipliers.CWW; %>
+<%	weight += player.FCSH[0] * (clan.multipliers.SHFC-1) * clan.multipliers.SHW; %>
+<%	weight += player.FCSK[0] * (clan.multipliers.SKFC-1) * clan.multipliers.SKW; %>			
+<%	weight += player.FCCW[1] * (clan.multipliers.CWFC-1) * clan.multipliers.CWL; %>
+<%	weight += player.FCSH[1] * (clan.multipliers.SHFC-1) * clan.multipliers.SHL; %>
+<%	weight += player.FCSK[1] * (clan.multipliers.SKFC-1) * clan.multipliers.SKL; %>
+<%  return weight; %>
+<%}%>
+
+<%function calculate_gold(clan) { %>
+<%	var total_weight = 0; %>
+<%	for (var i in clan.members) { %>
+<%		total_weight += calculate_weight(clan.members[i], clan); %>
+<%	} %>
+<%	var gold_per_unit = (total_weight) ? clan.treasury / total_weight : 0; %>
+<%	for (var i in clan.members) { %>
+<%		clan.members[i].gold = calculate_weight(clan.members[i], clan) * gold_per_unit; %>
+<%	}%>
+<%}%>
+
+<% calculate_gold(clan);%>
+
+<script type="text/javascript" >
+$(document).ready(function() 
+    { 
+        $("#list").tablesorter({sortList: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]]}); 
+    } 
+); 
+</script>
+
+<table class="table tablesorter table-bordered" id="list" style="background-color:white;">
+	<thead> 
+	<tr>
+	  <th class="header" data-toggle="tooltip" title="Player name"><b>Name</b></th>
+	  <td colspan="2" data-toggle="tooltip" title="Clanwar battles"><b>CW</b></td>
+	  <td colspan="2" data-toggle="tooltip" title="Stronghold Attack and defence battles"><b>Stronghold</b></td>
+	  <td colspan="2" data-toggle="tooltip" title="Skirmish battles"><b>Skirmishes</b></td>
+	  <td data-toggle="tooltip" title="Gold"><b>Gold estimate</b></td>
+	</tr>
+	<tr>
+	  <td type="text/javascript"><b></b></td>
+	  <th class="header" data-toggle="tooltip" title="Clanwar battles since last payout (Wins/Losses/Reserve)"><b>Recent(W/L/R)</b></th>
+	  <th class="header" data-toggle="tooltip" title="Total number of Clanwar battles (Wins/Losses/Reserve)"><b>Total(W/L/R)</b></th>
+	  <th class="header" data-toggle="tooltip" title="Stronghold attack and defence battles since last payout (Wins/Losses/Reserve)"><b>Recent(W/L/R)</b></th>
+	  <th class="header" data-toggle="tooltip" title="Total number of Stronghold attack and defence battles (Wins/Losses/Reserve)"><b>Total(W/L/R)</b></th>
+	  <th class="header" data-toggle="tooltip" title="Skirmishes since last payout (Wins/Losses/Reserve)"><b>Recent(W/L/R)</b></th>
+	  <th class="header" data-toggle="tooltip" title="Total number of Skirmishes (Wins/Losses/Reserve)"><b>Total(W/L/R)</b></th>
+	  <th class="header" data-toggle="tooltip"><b>Total:<%=clan.treasury%></b>
+	</tr>
+	</thead> 
+	<tbody> 
+	<% var members = clan.members; %>
+	<% for (var i in members) { %>
+	  <tr>
+		<td><%=members[i].account_name%></td>
+		<td><%=members[i].CW[0]%>/<%=members[i].CW[1]%>/<%=members[i].CWR[0]+members[i].CWR[1]%></td>
+		<td><%=members[i].TCW[0]%>/<%=members[i].TCW[1]%>/<%=members[i].TCWR[0]+members[i].TCWR[1]%></td>
+		<td><%=members[i].SH[0]%>/<%=members[i].SH[1]%>/<%=members[i].SHR[0]+members[i].SHR[1]%></td>
+		<td><%=members[i].TSH[0]%>/<%=members[i].TSH[1]%>/<%=members[i].TSHR[0]+members[i].TSHR[1]%></td>
+		<td><%=members[i].SK[0]%>/<%=members[i].SK[1]%>/<%=members[i].SKR[0]+members[i].SKR[1]%></td>
+		<td><%=members[i].TSK[0]%>/<%=members[i].TSK[1]%>/<%=members[i].TSKR[0]+members[i].TSKR[1]%></td>
+		<td><%=Math.floor(members[i].gold)%></td>
+	  </tr>
+	<% } %>
+	</tbody> 
+</table>

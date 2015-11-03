@@ -1,1 +1,5 @@
-User-agent: *
+User-agent: *	
+Disallow: /auth/twitter
+Disallow: /auth/facebook	
+Disallow: /auth/google	
+Disallow: /auth/openid

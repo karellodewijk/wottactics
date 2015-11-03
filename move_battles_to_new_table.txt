@@ -1,0 +1,10 @@
+db.battles.find({}).forEach(function(p) { db.clans.update({_id:p._id}, {$set:{battles:p.battles}}, false, true)});
+
+
+Copy:
+
+db.clans.find("").forEach(function(p) { db.battles.insert({_id:p._id, battles:p.battles}, {upsert:true, multi:true})});
+
+Drop:
+
+db.clans.update({},{$unset: {battles:1}},false, true )
