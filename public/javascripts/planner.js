@@ -561,12 +561,12 @@ function on_left_click(e) {
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 1);
 			objectContainer.addChild(graphics);
-
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_area_move, on_area_end);
 			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[]};
+			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
 			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
@@ -641,7 +641,7 @@ function create_note(note) {
 	note.container.entity = note; 
 	note.container.is_open = false;
 
-	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="top: 50%;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea id="note_box"></textarea><br /><div align="right"><button id="save_note">save</button></div></div></div>');
+	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="top: 50%;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea id="note_box"></textarea><br /><span id="notification_area" style="float: left;" hidden>Saved</span><div style="float:right;"><button id="save_note">save</button></div></div></div>');
 	
 	$("#note_box", note.container.menu).val(note.text);
 	
@@ -653,6 +653,8 @@ function create_note(note) {
 	$("#render_frame").append(note.container.menu);
 	$("#save_note", note.container.menu).on('click', function() {
 		note.text = $("#note_box", note.container.menu).val();
+		$("#notification_area", note.container.menu).show();
+		$("#notification_area", note.container.menu).fadeOut("slow");	
 		snap_and_emit_entity(note);
 	});
 	
@@ -820,7 +822,9 @@ function on_curve_end(e) {
 	
 	var distance_to_last_sq = (new_x - last_x) * (new_x - last_x) + (new_y - last_y) * (new_y - last_y);
 	
-	if (distance_to_last_sq < (min_polygon_end_distance*min_polygon_end_distance)) {
+	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside" || e.type == "touchstart" || e.type == "touchstartoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+	
+	if (distance_to_last_sq < (end_circle_radius*end_circle_radius)) {
 		objectContainer.removeChild(graphics);
 		setup_mouse_events(undefined, undefined);
 		create_drawing(new_drawing);
@@ -832,7 +836,6 @@ function on_curve_end(e) {
 		graphics = new PIXI.Graphics();
 		graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 1);
 		graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-		var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 		graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
 		objectContainer.addChild(graphics);
 		new_drawing.path.push([new_x, new_y]);
@@ -2080,12 +2083,14 @@ loader.once('complete', function () {
 				paste();
 				return;
 			}
-			deselect_all();
-			renderer.render(stage);
 			$('#contexts').find("button").removeClass('active');
 			$(this).addClass('active');			
-			var new_context = $(this).attr('id')+"_context";	
-			if (active_context == new_context) { return; } 			
+			var new_context = $(this).attr('id')+"_context";
+			if (active_context == new_context) { return; } 	
+			if (new_context != "remove_context") {
+				deselect_all();
+				renderer.render(stage);
+			}
 			$('#'+active_context).hide();
 			$('#'+new_context).show();
 			active_context = new_context;		

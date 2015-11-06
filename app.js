@@ -75,7 +75,7 @@ app.use(function(err, req, res, next) {
 // not pretty but oh so handy to not crash the server
 process.on('uncaughtException', function (err) {
  	console.error(err);
- 	console.trace();
+  	console.trace();
 });
 
 //load mongo
@@ -441,7 +441,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (!clan.multipliers) {
 				clan.multipliers = {CW:1, CWW:1, CWL:0.5, CWR:0.5, CWFC:1.1,
 								    SH:0.5, SHW:1, SHL:0.5, SHR:0.5, SHFC:1.1,
-								    SK:0.1, SKW:1, SKL:0.5, SKR:0.5, SKFC:1.1};
+								    SK:0.1, SKW:1, SKL:0.5, SKR:0.5, SKFC:1.1,
+									A:0.5};
 			}
 			if (!clan.treasury) {
 				clan.treasury = 0;
@@ -456,21 +457,31 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  });		
 	}
 	
-	function set_clan_role(req, members) {
-	  if (members[req.session.passport.user.wg_account_id]) {
-	    req.session.passport.user.clan_role = members[req.session.passport.user.wg_account_id].role;
+	function set_clan_role(req, clan) {
+	  if (clan.members[req.session.passport.user.wg_account_id]) {
+	    req.session.passport.user.clan_role = clan.members[req.session.passport.user.wg_account_id].role;
 	  }
 	}
 	
 	function load_clan(req, clan_id, cb) {
-	  db.collection('clans').findOne({_id:clan_id}, function(err, result) {
-		if (!err && result) { 
-		  set_clan_role(req, result.members);
-		  cb(result);
-		} else {
-		  refresh_clan(req, clan_id, cb);
-		}
-	  });
+      if (req.load_members || !req.session.passport.user.clan_role) {
+		db.collection('clans').findOne({_id:clan_id}, function(err, result) {
+		  if (!err && result) { 
+		    set_clan_role(req, result);
+		    cb(result);
+		  } else {
+		    refresh_clan(req, clan_id, cb);
+		  }	
+		});
+	  } else {
+		db.collection('clans').findOne({_id:clan_id}, {members:0}, function(err, result) {
+		  if (!err && result) { 
+		    cb(result);
+		  } else {
+		    refresh_clan(req, clan_id, cb);
+		  }	
+		});
+	  }
 	}
 	
 	function verify_clan(req, cb) {
@@ -482,8 +493,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			  buffer += data;
 			}).on('end', function (data) {
 			  var result = JSON.parse(buffer);
-			  req.session.passport.user.clan_id = result.data[req.session.passport.user.wg_account_id].clan_id;
-			  load_clan(req, req.session.passport.user.clan_id, cb);
+			  if (result.data[req.session.passport.user.wg_account_id]) {
+				req.session.passport.user.clan_id = result.data[req.session.passport.user.wg_account_id].clan_id;
+				load_clan(req, req.session.passport.user.clan_id, cb);
+			  } else {
+				cb();
+			  }
 		    }).on('error', function(e) {
 			  cb(); //we won't be loading clan data
 		    });
@@ -497,15 +512,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	router.get('/clanportal.html', function(req, res, next) {
+	  req.load_members = false;
 	  verify_clan(req, function(clan) {
-		res.render('clanportal', { game: req.session.game, 
+	    res.render('clanportal', { game: req.session.game, 
 								   user: req.session.passport.user,
 								   locale: req.session.locale,
-								   clan: clan});
+		                           clan: clan });
 	  });
 	});
-
+	
 	router.get('/members.html', function(req, res, next) {
+	  req.load_members = true;
 	  verify_clan(req, function(clan) {
 		res.render('clanportal_members', { game: req.session.game, 
 								           user: req.session.passport.user,
@@ -515,30 +532,47 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 
 	router.get('/battles.html', function(req, res, next) {
+	  req.load_members = true;
 	  verify_clan(req, function(clan) {
-		get_battles(clan._id, function(battles) {
-		  clan.battles = battles;
-		  res.render('clanportal_battles', { game: req.session.game, 
+	    if (clan) {
+		  get_battles(clan._id, function(battles) {
+		    clan.battles = battles;
+		    res.render('clanportal_battles', { game: req.session.game, 
 								             user: req.session.passport.user,
 								             locale: req.session.locale,
 								             clan: clan});
-		});
+		  });
+		} else {
+		  res.render('clanportal_battles', { game: req.session.game, 
+								             user: req.session.passport.user,
+								             locale: req.session.locale,
+								             clan: clan});			
+		}
 	  });
 	});
 
 	router.get('/payout.html', function(req, res, next) {
+	  req.load_members = true;
 	  verify_clan(req, function(clan) {
-		get_battles(clan._id, function(battles) {
-		  clan.battles = battles;
-		  res.render('clanportal_payout',  { game: req.session.game, 
-								           user: req.session.passport.user,
-								           locale: req.session.locale,
-								           clan: clan});
-		});
+		if (clan) {
+		  get_battles(clan._id, function(battles) {
+		    clan.battles = battles;
+		    res.render('clanportal_payout',  { game: req.session.game, 
+								               user: req.session.passport.user,
+								               locale: req.session.locale,
+								               clan: clan});
+		  });
+		} else {
+		  res.render('clanportal_battles', { game: req.session.game, 
+								             user: req.session.passport.user,
+								             locale: req.session.locale,
+								             clan: clan});			
+		}
 	  });
 	});
 
 	router.post('/add_battles.html', function(req, res, next) {
+	  req.load_members = true;
       refresh_clan(req, req.session.passport.user.clan_id, function(clan) {
 		get_battles(clan._id, function(old_battles) {
 		  if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
@@ -600,18 +634,25 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			  res.send('Success');			
 		    });			
 		  });
+		  if (req.body.extra_data) {
+			var col = db.collection('clan-' + clan._id + '-battles');
+			for (var i in req.body.extra_data) {
+			  col.update({_id:i}, {_id:i, battle:req.body.extra_data[i]}, {upsert: true});
+			}
+		  }
 	    });
 	  });
 	});	
 
 	router.post('/recalculate.html', function(req, res, next) {
+		req.load_members = false;
 		verify_clan(req, function(clan) {
 			if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
 				return;
 			}  
 			clan.treasury = req.body.treasury;
 			clan.multipliers = req.body.multipliers;
-			db.collection('clans').update({_id:clan._id}, clan, {upsert: true}, function() {
+			db.collection('clans').update({_id:clan._id}, {$set: {multipliers:clan.multipliers, treasury:clan.treasury}}, {upsert: true}, function() {
 				res.send('Success');			
 			});
 			return;
@@ -619,29 +660,29 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	
 	router.post('/reset.html', function(req, res, next) {
+	  req.load_members = true;
 	  verify_clan(req, function(clan) {
 		get_battles(clan._id, function(battles) {
 		  if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {			
 			return;
 		  } 
-		  db.collection('old_battles').update({_id:clan._id}, {_id:clan._id, battles:battles}, {upsert: true}, function() {
-			for (var i in clan.members) {
-			  clan.members[i].CW = [0, 0];
-			  clan.members[i].CWR = [0, 0];
-		      clan.members[i].SH = [0, 0];
-			  clan.members[i].SHR = [0, 0];
-			  clan.members[i].SK = [0, 0];
-			  clan.members[i].SKR = [0, 0];
-			  clan.members[i].FCCW = [0, 0];
-			  clan.members[i].FCSH = [0, 0];
-			  clan.members[i].FCSK = [0, 0];
-			}
-			clan.treasury = 0;
-			db.collection('clans').update({_id:clan._id}, clan, {upsert: true}, function() {
-			  db.collection('battles').update({_id:clan._id}, {}, {upsert: true}, function() {
-			    res.send('Success');			
-			  });	
-			});
+		  for (var i in clan.members) {
+			clan.members[i].A[0] = 0;
+			clan.members[i].CW = [0, 0];
+			clan.members[i].CWR = [0, 0];
+		    clan.members[i].SH = [0, 0];
+			clan.members[i].SHR = [0, 0];
+			clan.members[i].SK = [0, 0];
+			clan.members[i].SKR = [0, 0];
+			clan.members[i].FCCW = [0, 0];
+			clan.members[i].FCSH = [0, 0];
+			clan.members[i].FCSK = [0, 0];
+		  }
+		  clan.treasury = 0;
+		  db.collection('clans').update({_id:clan._id}, clan, {upsert: true}, function() {
+			db.collection('battles').update({_id:clan._id}, {}, {upsert: true}, function() {
+			  res.send('Success');			
+			});	
 		  });
 		});
 	  });
@@ -658,6 +699,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	router.post('/remove_battle.html', function(req, res, next) {
+      req.load_members = true;
 	  verify_clan(req, function(clan) {
 		get_battles(clan._id, function(battles) {
 		  if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
@@ -717,6 +759,72 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			  });		
 			});
 		  }
+		});
+	  });
+	});
+
+	router.post('/create_attendance_link.html', function(req, res, next) {
+	  req.load_members = false;
+	  verify_clan(req, function(clan) {
+		if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
+		  return;
+		}
+		var valid_until = new Date();
+		valid_until.setHours(valid_until.getHours() + 12);
+		clan.attendance_link = {id:newUid(), valid_until:valid_until, players:{}};
+		db.collection('clans').update({_id:clan._id}, {$set:{attendance_link:clan.attendance_link}}, {upsert: true}, function() {
+		  res.send("http://" + req.hostname + "/attend?id=" + clan.attendance_link.id);
+		});
+	  });
+	});
+	
+	router.get('/attend', function(req, res, next) {
+	  req.load_members = false;
+	  verify_clan(req, function(clan) {
+		var reason = "";
+		if (!req.query.id) { 
+		  reason = "No id in link";
+		} else if (!clan) {
+		  reason = "Not logged in";
+		} else if (req.query.id != clan.attendance_link.id) {
+		  reason = "This link is no longer valid";
+		} else if (clan.attendance_link.valid_until - (new Date()) < 0) {
+		  reason = "This link has expired";
+		} else if (clan.attendance_link.players[req.session.passport.user.wg_account_id]) {
+		} else {
+		  clan.attendance_link.players[req.session.passport.user.wg_account_id] = req.session.passport.user.name;
+		  var members = {}; 
+		  members['members.' + req.session.passport.user.wg_account_id + '.A.0'] = 1;
+		  members['members.' + req.session.passport.user.wg_account_id + '.TA.0'] = 1;
+		  db.collection('clans').update({_id:clan._id}, {$set:{attendance_link:clan.attendance_link}, $inc:members}, {upsert: true}, function() {
+		    res.render('clanportal_attend', { game: req.session.game, 
+								              user: req.session.passport.user,
+								              locale: req.session.locale,
+								              clan: clan,
+											  reason: reason});
+		  });
+		  return;
+		}
+		res.render('clanportal_attend', { game: req.session.game, 
+								          user: req.session.passport.user,
+								          locale: req.session.locale,
+								          clan: clan,
+										  reason: reason});
+	  });
+	});
+	
+	router.post('/remove_attend', function(req, res, next) {
+	  req.load_members = false;
+	  verify_clan(req, function(clan) {
+		if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
+		  return;
+		}
+		delete clan.attendance_link.players[req.body.player];
+		var members = {}; 
+		members['members.' + req.body.player + '.A.0'] = -1;
+		members['members.' + req.body.player + '.TA.0'] = -1;
+        db.collection('clans').update({_id:clan._id}, {$set:{attendance_link:clan.attendance_link}, $inc:members}, {upsert: true}, function() {
+		   res.send("success");
 		});
 	  });
 	});

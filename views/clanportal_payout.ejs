@@ -22,24 +22,26 @@
 			  <div class="col-md-2"><b>CW</b> <input id="CW" type='text' value=<%=clan.multipliers.CW%> /></div>
 			  <div class="col-md-2">win: <input id="CWW" type='text' value=<%=clan.multipliers.CWW%> /></div>
 			  <div class="col-md-2">loss: <input id="CWL" type='text' value=<%=clan.multipliers.CWL%> /></div>
-			  <div class="col-md-2">reserve: <input id="CWR" type='text' value=<%=clan.multipliers.CWR%> /></div>
+			  <div class="col-md-3">reserve: <input id="CWR" type='text' value=<%=clan.multipliers.CWR%> /></div>
 			  <div class="col-md-2">fc: <input id="CWFC" type='text' value=<%=clan.multipliers.CWFC%> /></div>
 			</div>
     		<div class="list-group-item row">
 			  <div class="col-md-2"><b>SH</b> <input id="SH" type='text' value=<%=clan.multipliers.SH%> /></div>
 			  <div class="col-md-2">win: <input id="SHW" type='text' value=<%=clan.multipliers.SHW%> /></div>
 			  <div class="col-md-2">loss: <input id="SHL" type='text' value=<%=clan.multipliers.SHL%> /></div>
-			  <div class="col-md-2">reserve: <input id="SHR" type='text' value=<%=clan.multipliers.SHR%> /></div>
+			  <div class="col-md-3">reserve: <input id="SHR" type='text' value=<%=clan.multipliers.SHR%> /></div>
 			  <div class="col-md-2">fc: <input id="SHFC" type='text' value=<%=clan.multipliers.SHFC%> /></div>
 			</div>
     		<div class="list-group-item row">
 			  <div class="col-md-2"><b>SK</b> <input id="SK" type='text' value=<%=clan.multipliers.SK%> /></div>
 			  <div class="col-md-2">win: <input id="SKW" type='text' value=<%=clan.multipliers.SKW%> /></div>
 			  <div class="col-md-2">loss: <input id="SKL" type='text' value=<%=clan.multipliers.SKL%> /></div>
-			  <div class="col-md-2">reserve: <input id="SKR" type='text' value=<%=clan.multipliers.SKR%> /></div>
+			  <div class="col-md-3">reserve: <input id="SKR" type='text' value=<%=clan.multipliers.SKR%> /></div>
 			  <div class="col-md-2">fc: <input id="SKFC" type='text' value=<%=clan.multipliers.SKFC%> /></div>			  
 			</div>	
-			
+    		<div class="list-group-item row">
+			  <div class="col-md-12"><b>Attendance</b> <input id="A" type='text' value=<%=clan.multipliers.A%> /></div>	  
+			</div>				
 		</div>
 		
 		<h2><%=l('Member list')%></h2>
@@ -75,6 +77,7 @@
 		multipliers.SKL = parseFloat($("#SKL").val());
 		multipliers.SKR = parseFloat($("#SKR").val());
 		multipliers.SKFC = parseFloat($("#SKFC").val());
+		multipliers.A = parseFloat($("#A").val());
 		console.error(multipliers);
 		var treasury = parseInt($("#treasury").val());
 

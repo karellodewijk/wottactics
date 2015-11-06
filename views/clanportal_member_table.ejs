@@ -12,6 +12,7 @@
 <%	weight += player.FCCW[1] * (clan.multipliers.CWFC-1) * clan.multipliers.CWL; %>
 <%	weight += player.FCSH[1] * (clan.multipliers.SHFC-1) * clan.multipliers.SHL; %>
 <%	weight += player.FCSK[1] * (clan.multipliers.SKFC-1) * clan.multipliers.SKL; %>
+<%	weight += player.A[0] * clan.multipliers.A%>
 <%  return weight; %>
 <%}%>
 
@@ -31,7 +32,7 @@
 <script type="text/javascript" >
 $(document).ready(function() 
     { 
-        $("#list").tablesorter({sortList: [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0]]}); 
+        $("#list").tablesorter({sortList: [[0,0],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1]]}); 
     } 
 ); 
 </script>
@@ -43,6 +44,7 @@ $(document).ready(function()
 	  <td colspan="2" data-toggle="tooltip" title="Clanwar battles"><b>CW</b></td>
 	  <td colspan="2" data-toggle="tooltip" title="Stronghold Attack and defence battles"><b>Stronghold</b></td>
 	  <td colspan="2" data-toggle="tooltip" title="Skirmish battles"><b>Skirmishes</b></td>
+	  <td data-toggle="tooltip" title="Attendances (recent/total)"><b>A</b></td>
 	  <td data-toggle="tooltip" title="Gold"><b>Gold estimate</b></td>
 	</tr>
 	<tr>
@@ -53,11 +55,26 @@ $(document).ready(function()
 	  <th class="header" data-toggle="tooltip" title="Total number of Stronghold attack and defence battles (Wins/Losses/Reserve)"><b>Total(W/L/R)</b></th>
 	  <th class="header" data-toggle="tooltip" title="Skirmishes since last payout (Wins/Losses/Reserve)"><b>Recent(W/L/R)</b></th>
 	  <th class="header" data-toggle="tooltip" title="Total number of Skirmishes (Wins/Losses/Reserve)"><b>Total(W/L/R)</b></th>
+	  <th class="header" data-toggle="tooltip" title=""><b>recent/total</b></th>
 	  <th class="header" data-toggle="tooltip"><b>Total:<%=clan.treasury%></b>
 	</tr>
+	  <tr style="background-color:#EEEEEE; outline:solid 1px;>
+	    <%var members = clan.members; %>
+	    <%var i = user.wg_account_id;%>
+		<div style="background-color:red;">
+		<td><%=members[i].account_name%></td>
+		<td><%=members[i].CW[0]%>/<%=members[i].CW[1]%>/<%=members[i].CWR[0]+members[i].CWR[1]%></td>
+		<td><%=members[i].TCW[0]%>/<%=members[i].TCW[1]%>/<%=members[i].TCWR[0]+members[i].TCWR[1]%></td>
+		<td><%=members[i].SH[0]%>/<%=members[i].SH[1]%>/<%=members[i].SHR[0]+members[i].SHR[1]%></td>
+		<td><%=members[i].TSH[0]%>/<%=members[i].TSH[1]%>/<%=members[i].TSHR[0]+members[i].TSHR[1]%></td>
+		<td><%=members[i].SK[0]%>/<%=members[i].SK[1]%>/<%=members[i].SKR[0]+members[i].SKR[1]%></td>
+		<td><%=members[i].TSK[0]%>/<%=members[i].TSK[1]%>/<%=members[i].TSKR[0]+members[i].TSKR[1]%></td>
+		<td><%=members[i].A[0]%>/<%=members[i].TA[0]%></td>
+		<td><%=Math.floor(members[i].gold)%></td>
+		</div>
+	  </tr>
 	</thead> 
 	<tbody> 
-	<% var members = clan.members; %>
 	<% for (var i in members) { %>
 	  <tr>
 		<td><%=members[i].account_name%></td>
@@ -67,6 +84,7 @@ $(document).ready(function()
 		<td><%=members[i].TSH[0]%>/<%=members[i].TSH[1]%>/<%=members[i].TSHR[0]+members[i].TSHR[1]%></td>
 		<td><%=members[i].SK[0]%>/<%=members[i].SK[1]%>/<%=members[i].SKR[0]+members[i].SKR[1]%></td>
 		<td><%=members[i].TSK[0]%>/<%=members[i].TSK[1]%>/<%=members[i].TSKR[0]+members[i].TSKR[1]%></td>
+		<td><%=members[i].A[0]%>/<%=members[i].TA[0]%></td>
 		<td><%=Math.floor(members[i].gold)%></td>
 	  </tr>
 	<% } %>

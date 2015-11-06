@@ -16,35 +16,69 @@
 		<% if (clan) { %>
 		
 		<% if (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private') { %>
-			<h3>Upload battles</h3>
+			<h3>Attendance <button id="create_attendance_link" class="btn">New link</button></h3>
+			<table class="table" style="background-color:white;">
+			<thead>
+			  <tr>
+				<th><b>Link</b></th>
+				<th><b>Expires</b></th>
+				<th><b>Players</b></th>
+			  </tr>
+			</thead>
+			<tbody>
+			<% if (clan.attendance_link) { %>
+			  <tr>
+				<td id="attendance_link">
+				    <%="/attend?id=" + clan.attendance_link.id%>
+				</td>
+				<td class="date" id="attendance_expiration" 
+				    <% if (clan.attendance_link.valid_until - (new Date()) < 0) { %> 
+					  style="color:red"
+					<% } %>
+					>
+				    <%=clan.attendance_link.valid_until%>
+				</td>
+				<td>
+				<% for (var i in clan.attendance_link.players) { %>
+				    <button class="remove_attendee" id=<%=i%>>x</button><%=clan.attendance_link.players[i]%>,
+				<% } %>	
+				</td>
+               </tr>				
+			<% } %>
+			</tbody>
+			</table>
+			
+			<h3>Add battles</h3>
 			<input type="file" id="files" name="files[]" multiple />
 			<span id="error"></span>
 			<table class="table tablesorter table-bordered" id="upload_list" style="background-color:white;">
 			  <thead>
 				<tr>
 				  <th><b>Type</b></th>
-				  <th><b>S</b></th>
+				  <th data-toggle="tooltip" title="side"><b>S</b></th>
+				  <th data-toggle="tooltip" title="Enemy clan"><b>VS</b></th>
 				  <th><b>W</b></th>
 				  <th><b>Map</b></th>
 				  <th><b>Date</b></th>
-				  <th><b>FC</b></th>
+				  <th data-toggle="tooltip" title="Field commander"><b>FC</b></th>
 				  <th><b>Players</b></th>
 				  <th><b>Reserves</b></th>
 				</tr>
 			  </thead> 
 			</table>
-			<button id="add_manual">Add manual battle</button><button id="submit">Submit</button>
+			<button class="btn" id="add_manual">Add manual battle</button> <button class="btn"id="submit">Submit</button>
 		<% } %>
 			<h3>Battles:</h3>
 			<table class="table tablesorter table-bordered" id="battle_list" style="background-color:white;">
 				<thead>
 				<tr>
 				  <th><b>Type</b></th>
-				  <th><b>S</b></th>
+				  <th data-toggle="tooltip" title="side"><b>S</b></th>
+				  <th data-toggle="tooltip" title="Enemy clan"><b>VS</b></th>
 				  <th><b>W</b></th>
 				  <th><b>Map</b></th>
 				  <th><b>Date</b></th>
-				  <th><b>FC</b></th>
+				  <th data-toggle="tooltip" title="Field commander"><b>FC</b></th>
 				  <th><b>Players</b></th>
 				  <th><b>Reserves</b></th>
 				  <th><b>Del</b></th>
@@ -54,6 +88,7 @@
 					   <tr id=<%=clan.battles[i].uid%>>
 						 <td><%=clan.battles[i].battle_type%></td>
 						 <td><%=clan.battles[i].side%></td>
+						 <td><%=clan.battles[i].vs ? clan.battles[i].vs[1] : ""%></td>
 						 <td><%=(clan.battles[i].win == 0 ? "y" : "n")%></td>
 						 <td><%=clan.battles[i].map_name%></td>
 						 <td class="date"><%=clan.battles[i].time%></td>
@@ -97,7 +132,13 @@
 		  return v.toString(16);
 		}).toUpperCase();
 	}
-
+	
+	if ($("#attendance_link").text().replace(/\s/g,"") != "") {
+	  $("#attendance_link").text("http://" + location.hostname + $("#attendance_link").text().replace(/\s/g,""));
+	} else {
+	  $("#attendance_link").text("Thse is no active attendance link");
+	}
+	
 	replays = {};
 	extra_data = {};
 	
@@ -131,6 +172,12 @@
 	}));
 	player_select = player_select.prop("outerHTML");
 
+	$(".remove_attendee").click(function() {
+		 $.post("/remove_attend", {player:$(this).attr("id")}).done(function(){
+			window.location.reload();
+		 });
+	});
+	
 	$(".remove_battle").click(function() {
 		 var id = $(this).parents("tr").attr("id");
 		 $.post("/remove_battle.html", {uid:id}).done(function(){
@@ -138,12 +185,19 @@
 		 });
 	});
 
+	$('#create_attendance_link').click(function() {
+	  $.post("/create_attendance_link.html").done(function(data){
+	    window.location.reload();
+	  });		
+	});
+	
 	$('#add_manual').click(function() {
 		var uid = newUid();
 		var line = '';
 		line += '<tr id="'+ uid + '">';
 		line +=     '<td><select id="type"><option value="Clanwar">Clanwar</option><option value="Stronghold">Stronghold</option><option value="Skirmish">Skirmish</option></select></td>';
 		line +=     '<td><select id="side"><option value=1>1</option><option value=2>2</option></select></td>';
+		line +=     '<td><input class="text" id="vs"></input></td>';
 		line +=     '<td><select id="win"><option value=0>y</option><option value=1>n</option></select></td>';
 		line +=     '<td>'+ map_select + '</td>';
 		line +=     '<td><input class="datepicker"></input></td>';
@@ -180,6 +234,7 @@
 				var side = $(this).find("#side").val();
 				var time = $(this).find(".datepicker").datepicker('getDate'); 
 				var win = $(this).find("#win").val();
+				var vs = $(this).find("#vs").val();
 				
 				var players = []; 
 				$(this).find("#player_list").children().each(function() {
@@ -190,14 +245,13 @@
 					reserves.push([$(this).attr('id'), $(this).text()]);	
 				});
 				
-				replay_data = {battle_type:battle_type, commander:commander, map_id:map_id, map_name:map_name, side:side, time:time, uid:uid, win:$(this).find("#win").val(), players:players, reserves:reserves};				
+				replay_data = {battle_type:battle_type, commander:commander, map_id:map_id, map_name:map_name, side:side, time:time, uid:uid, win:$(this).find("#win").val(), players:players, reserves:reserves, vs:[0,vs]};				
 
-				console.error(replay_data)
 				replays[replay_data.uid] = replay_data;		
 			}
 		});
 		$.ajax({url: "/add_battles.html",
-		        data: JSON.stringify({battles: replays}),
+		        data: JSON.stringify({battles: replays, extra_data:extra_data}),
 				contentType: 'application/json',
 				method:"POST"}).done(function(data) {
 			window.location.reload();
@@ -259,7 +313,7 @@
 			return;
 		}
 		
-		replay_data = {battle_type: battle_types[block1.battleType], commander: block1.playerName, region:block1.regionCode, map_id: block1.mapName,map_name: block1.mapDisplayName, side:undefined, time:parseDate(block1.dateTime), uid:block2[0].arenaUniqueID, win:1, players:[], reserves:[]};
+		replay_data = {battle_type: battle_types[block1.battleType], commander: block1.playerName, region:block1.regionCode, map_id: block1.mapName,map_name: block1.mapDisplayName, side:undefined, time:parseDate(block1.dateTime), uid:block2[0].arenaUniqueID, win:1, players:[], reserves:[], vs:[0,""]};
 				
 		if (replay_data.battle_type != 'Skirmish' && replay_data.battle_type != 'Clanwar' && replay_data.battle_type != 'Stronghold') {
 			$("#error").append("<span style='color:red'>warning</span>: Replay for battle on " + block1.mapDisplayName + " does not appear to be a Clanwar, Stronghold or Skirmish and was omitted.<br/>");	
@@ -281,6 +335,10 @@
 		for (i in block2[0].players) {
 			if (block2[0].players[i].team == replay_data.side) {
 				replay_data.players.push([i, block2[0].players[i].name]);
+			} else {
+				if (block2[0].players[i].clanDBID) {
+					replay_data.vs = [block2[0].players[i].clanDBID, block2[0].players[i].clanAbbrev];
+				}
 			}
 		}
 		
@@ -295,11 +353,12 @@
 			commander_select += ">" + replay_data.players[i][1] + "</option>";
 		}
 		commander_select += '</select>'
-		
+				
 		var line = '';
 		line += '<tr id=' + replay_data.uid + '>';
 		line +=   '<td>' + replay_data.battle_type + '</td>';
 		line +=   '<td>' + replay_data.side + '</td>';
+		line +=   '<td>' + replay_data.vs[1] + '</td>';
 		line +=   '<td>' + (replay_data.win ? "n" : "y") + '</td>';
 		line +=   '<td>' + replay_data.map_name + '</td>';
 		line +=   '<td>' + replay_data.time.toLocaleString() + '</td>';
@@ -310,7 +369,8 @@
 		$("#upload_list").append(line);
 
 		replays[replay_data.uid] = replay_data;
-		extra_data[replay_data.arenaUniqueID] = block2[0];
+		extra_data[replay_data.uid] = block2[0];
+		extra_data[replay_data.uid].header = replay_data;
 		
 		$("#" + replay_data.uid + " #add_reserve").click(function() {
 			var player_id = $(this).siblings("#player_select").find(":selected").val();
@@ -329,7 +389,6 @@
 
 	// parse a date in 'DD.MM.JJJJ HH:MM:SS' format
 	function parseDate(input) {
-	  console.error(input)
 	  var parts = input.split(' ');
 	  var date = parts[0].split('.');
 	  var time = parts[1].split(':');
