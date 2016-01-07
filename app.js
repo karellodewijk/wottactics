@@ -1,3 +1,7 @@
+wg_api_keys = {
+	eu: '13913bc2f96c6d6f52e5c20ddb6ba623'
+}
+
 room_data = {} //room -> room_data map to be shared with clients
 
 //generates unique id
@@ -41,8 +45,8 @@ var io = require('socket.io')();
 //configure localization support
 var i18n = require('i18n');
 i18n.configure({
-	locales: ['en', 'rs', 'de', 'es'],
-	directory: "./locales",
+	locales: ['en', 'sr', 'rs', 'de', 'es'],
+	directory: __dirname + "/locales",
 	updateFiles: true
 });
 app.locals.l = i18n.__;
@@ -74,8 +78,8 @@ app.use(function(err, req, res, next) {
 
 // not pretty but oh so handy to not crash the server
 process.on('uncaughtException', function (err) {
- 	console.error(err);
-  	console.trace();
+	console.error(err);
+	console.trace();
 });
 
 //load mongo
@@ -93,9 +97,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (room_data[room]) {
 				if (!io.sockets.adapter.rooms[room]) {
 					if (Date.now() - room_data[room].last_join > 50000) {
-						if (!isEmpty(room_data[room].history)) {
-							db.collection('tactics').update({_id:room}, {name:room_data[room].name, history:room_data[room].history, createdAt:new Date(), game:room_data[room].game, locked:room_data[room].locked, lost_identities:room_data[room].lost_identities, lost_users:room_data[room].lost_users}, {upsert: true});
-						}
+						save_room(room);
 						delete room_data[room];
 					} else {
 						clean_up_room(room); //try again
@@ -103,6 +105,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				}
 			}
 		}, 60000);
+	}
+	
+	function save_room(room) {
+		if (!isEmpty(room_data[room].history)) {
+			db.collection('tactics').update({_id:room}, {name:room_data[room].name, history:room_data[room].history, createdAt:new Date(), game:room_data[room].game, locked:room_data[room].locked, lost_identities:room_data[room].lost_identities, lost_users:room_data[room].lost_users}, {upsert: true});
+		}
 	}
 	
 	function get_tactics(identity, game, cb) {
@@ -160,7 +168,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	// initializing session middleware
 	var Session = require('express-session');
 	var RedisStore = require('connect-redis')(Session);
-	var session = Session({ secret: 'mumnbojudqs', resave:true, saveUninitialized:false, cookie: { expires: new Date(Date.now() + 14 * 86400 * 1000) }, store: new RedisStore()});
+	var session = Session({ secret: 'mumnbojudqs', resave:true, saveUninitialized:false, cookie: { expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: new RedisStore()});
 	app.use(session); // session support
 	
 	// Configuring Passport
@@ -190,6 +198,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			} else {
 				user.id = newUid();		
 			}
+			user.server = identifier.split('://')[1].split(".wargaming")[0];
 			user.identity = identifier.split('/id/')[1].split("/")[0];
 			user.wg_account_id = user.identity.split('-')[0];
 			user.name = user.identity.split('-')[1];
@@ -274,15 +283,20 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var router = express.Router();
 
 	router.get('/', function(req, res, next) {
-		if (req.hostname.indexOf('awtactic') != -1) {
-			req.session.game = "aw";
-		} else if (req.hostname.indexOf('wowstactic') != -1) {
-			req.session.game = "wows";
+		if (req.hostname) {
+			if (req.hostname.indexOf('awtactic') != -1) {
+				req.session.game = "aw";
+			} else if (req.hostname.indexOf('wowstactic') != -1) {
+				req.session.game = "wows";
+			} else {
+				req.session.game = "wot";
+			}
 		} else {
 			req.session.game = "wot";
 		}
 		res.redirect('/'+req.session.game+'.html');
 	});
+	
 	router.get('/wot.html', function(req, res, next) {
 	  req.session.game = 'wot';
 	  res.render('index', { game: req.session.game, 
@@ -399,9 +413,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
 	router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
 
-	//clanportal
+	//////////////
+	//clanportal//
+	//////////////
+	
 	function refresh_clan(req, clan_id, cb) {
-	  http.get("http://api.worldoftanks.eu/wgn/clans/info/?application_id=13913bc2f96c6d6f52e5c20ddb6ba623&fields=clan_id,tag,name,members&clan_id="+clan_id, function(res) {
+	  http.get("http://api.worldoftanks."+ req.session.passport.user.server +"/wgn/clans/info/?application_id=" + wg_api_keys[req.session.passport.user.server] + "&fields=clan_id,tag,name,members&clan_id="+clan_id, function(res) {
 		var buffer = '';
 		res.on('data', function (data) {
 		  buffer += data;
@@ -447,6 +464,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (!clan.treasury) {
 				clan.treasury = 0;
 			}
+			set_clan_role(req, clan);
 		    db.collection('clans').update({_id:clan_id}, clan, {upsert:true}, function() {
 			  cb(clan);	 			
 	        });
@@ -466,9 +484,13 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	function load_clan(req, clan_id, cb) {
       if (req.load_members || !req.session.passport.user.clan_role) {
 		db.collection('clans').findOne({_id:clan_id}, function(err, result) {
-		  if (!err && result) { 
-		    set_clan_role(req, result);
-		    cb(result);
+		  if (!err && result) {
+			if (!result.members[req.session.passport.user.wg_account_id]) {
+			  refresh_clan(req, clan_id, cb);
+			} else {
+		      set_clan_role(req, result);
+		      cb(result);
+			}
 		  } else {
 		    refresh_clan(req, clan_id, cb);
 		  }	
@@ -487,7 +509,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	function verify_clan(req, cb) {
 	  if (!req.session.passport.user.clan_id) {
 		if (req.session.passport.user.wg_account_id) {
-		  http.get("http://api.worldoftanks.eu/wot/account/info/?application_id=13913bc2f96c6d6f52e5c20ddb6ba623&fields=clan_id&account_id="+req.session.passport.user.wg_account_id, function(res) {
+		  http.get("http://api.worldoftanks."+ req.session.passport.user.server +"/wot/account/info/?application_id=" + wg_api_keys[req.session.passport.user.server] + "&fields=clan_id&account_id=" + req.session.passport.user.wg_account_id, function(res) {
 			var buffer = '';
 			res.on('data', function (data) {
 			  buffer += data;
@@ -519,6 +541,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								   locale: req.session.locale,
 		                           clan: clan });
 	  });
+	});
+	
+	router.get('/save.html', function(req, res, next) {
+		for (var room in room_data) {
+			save_room(room);
+		}
+		res.send('Success');
+	});
+	
+	router.get('/log.html', function(req, res, next) {
+		res.send("Active rooms: " + Object.keys(room_data).length);
 	});
 	
 	router.get('/members.html', function(req, res, next) {
@@ -828,6 +861,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 	  });
 	});
+
+	//////////////////
+	//end clanportal//
+	//////////////////
 	
 	//add router to app
 	app.use('/', router); 
@@ -933,6 +970,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}	
 			Object.getPrototypeOf(this).onclose.call(this,reason); //call original onclose
 		}
+		
+		socket.on('error', function(e){
+			console.log("error: ", e);
+		});
 		
 		socket.on('create_entity', function(room, entity) {
 			if (room_data[room] && entity) {
