@@ -595,22 +595,30 @@ function on_left_click(e) {
 		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
 	} else if (active_context == 'track_context') {
 		if (my_tracker) {
-			setup_mouse_events(undefined, undefined);
-			socket.emit("stop_track", room, my_tracker.uid);
-			objectContainer.removeChild(my_tracker.container);
-			my_tracker = undefined;
-			renderer.render(stage);
+			stop_tracking();
 		} else {
-			setup_mouse_events(on_track_move, undefined);
-			my_tracker = {uid:newUid(), color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
-			last_track_position = [my_tracker.x, my_tracker.y];
-			socket.emit("track", room, my_tracker);
-			create_tracker(my_tracker);
+			start_tracking(mouse_location);
 			on_track_move(e);
 		}
 	} else if (active_context == 'note_context') {
 		setup_mouse_events(undefined, on_note_end);
 	}
+}
+
+function stop_tracking() {
+	setup_mouse_events(undefined, undefined);
+	socket.emit("stop_track", room, my_tracker.uid);
+	objectContainer.removeChild(my_tracker.container);
+	my_tracker = undefined;
+	renderer.render(stage);
+}
+
+function start_tracking(mouse_location) {
+	setup_mouse_events(on_track_move, undefined);
+	my_tracker = {uid:newUid(), color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
+	last_track_position = [my_tracker.x, my_tracker.y];
+	socket.emit("track", room, my_tracker);
+	create_tracker(my_tracker);
 }
 
 function on_note_end(e) {
@@ -1221,6 +1229,7 @@ function on_line_end(e) {
 		y -= new_drawing.y;		
 		new_drawing.path.push([x, y]);		
 	} catch (e) {}
+	// || e.type == 'mouseupoutside' || e.type == 'touchendoutside'
 	if (!shifted) {
 		setup_mouse_events(undefined, undefined);
 		//checks against an edge case where you haven't moved since the last registered point
@@ -2083,6 +2092,14 @@ loader.once('complete', function () {
 				paste();
 				return;
 			}
+			
+			//dirty trick, if people are still holding shift when changing context, pretend they released it for a sec
+			if (shifted && objectContainer.mouseup) { 
+				shifted = false;
+				objectContainer.mouseup(renderer.plugins.interaction.eventData);
+				shifted = true;
+			}
+			
 			$('#contexts').find("button").removeClass('active');
 			$(this).addClass('active');			
 			var new_context = $(this).attr('id')+"_context";
@@ -2093,7 +2110,14 @@ loader.once('complete', function () {
 			}
 			$('#'+active_context).hide();
 			$('#'+new_context).show();
-			active_context = new_context;		
+			if (my_tracker) {
+				stop_tracking();
+			} 
+			if (new_context == "track_context") {
+				start_tracking({x:-10,y:-10});
+			}
+			active_context = new_context;
+
 		});	
 
 		$('#full_line').addClass('active');	
