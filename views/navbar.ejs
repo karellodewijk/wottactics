@@ -20,7 +20,9 @@
 		<% } %>
 	</a>
 	<ul class="nav navbar-nav navbar-left container-fluid">
-		<li><a href="stored_tactics.html" class=""><%=l('Stored tactics')%></a></li>
+	    <% if (user.identity) { %>
+		    <li><a href="stored_tactics.html" class=""><%=l('Stored tactics')%></a></li>
+		<% } %>
 		<li><a href="getting_started.html" class=""><%=l('Getting started')%></a></li>
 		<li><a href="about.html" class=""><%=l('About')%></a></li>
 	</ul>

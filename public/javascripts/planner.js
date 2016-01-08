@@ -2191,7 +2191,10 @@ loader.once('complete', function () {
 		$('#clear_selected').click(function() {
 			clear_selected();
 		});
-		
+		$('#clear_note').click(function() {
+			clear("note");
+		});		
+
 		//tank icon select
 		$('.tank_select').click(function() {
 			$('.selected').removeClass('selected'); // removes the previous selected class
