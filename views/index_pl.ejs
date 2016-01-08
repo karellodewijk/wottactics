@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<% include common_headers.ejs %>
+	<script type="text/javascript" src="/javascripts/index.js"></script>
+</head>
+<body>
+	<div class="container" style='width:100%; padding-top:65px;'>
+    <div class="jumbotron side_bar" style='width:100%;'>
+	
+		<% include navbar.ejs %>
+
+		<div class="container" id="big_button_frame" style="text-align:center">
+			<h1>
+				<% if (game == 'wot') { %>
+					World of Tanks Tactics
+				<% } else if (game == 'wows') { %>
+					World of Warships Tactics
+				<% } else if (game == 'blitz') { %>
+					World of Tanks Blitz Tactics
+				<% } else if (game == 'aw') { %>
+					Armored Warfare Tactics
+				<% } %>	
+			</h1>
+			<p><span id="quote"></span></p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a></p>
+		</div>
+	
+	</div>
+
+	<div class="row">
+	<div class="col-md-4">
+		<h2>Witajcie</h2>
+		<p>Ta strona powstała aby tworzenie taktyk było szybkie i łatwe. Po prostu naciśnij niebieski przycisk, podziel się linkiem ze znajomymi lub nie i zaczynaj. Jeśli chcesz aby zaproszeni też mogli edytować, naciśnij na ich nick lub przycisk z ikoną kłódki. Więcej informacji znajdziesz w tutorialu Jak zacząć.
+		</p>
+	</div>
+	<div class="col-md-4">
+		<h2>Darmowe i otwarte</h2>
+		<p>Ta strona jest bez opłat, bez reklam i open-source zamierzam utrzymać Ją taką.</p>
+	</div>
+	<div class="col-md-4">
+		<h2>Poszukuję tłumaczeń</h2>
+		<p>Dzięki pomocy ludzi ta strona jest już dostępna w kilku językach. Jeśli chcesz aby była dostępna także w twoim, skontaktuj się ze mną. Nie wymagam żadnych umiejętności technicznych.</p>
+	</div>
+</div>
+	
+	<% include footer.ejs %>
+	
+	</div>
+</body>
