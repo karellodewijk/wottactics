@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<% include common_headers.ejs %>
+	<script type="text/javascript" src="/javascripts/index.js"></script>
+</head>
+<body>
+	<div class="container" style='width:100%; padding-top:65px;'>
+    <div class="jumbotron side_bar" style='width:100%;'>
+	
+		<% include navbar.ejs %>
+
+		<div class="container" id="big_button_frame" style="text-align:center">
+			<h1>
+				<% if (game == 'wot') { %>
+					World of Tanks Tactics
+				<% } else if (game == 'wows') { %>
+					World of Warships Tactics
+				<% } else if (game == 'blitz') { %>
+					World of Tanks Blitz Tactics
+				<% } else if (game == 'aw') { %>
+					Armored Warfare Tactics
+				<% } %>	
+			</h1>
+			<p><span id="quote"></span></p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a></p>
+		</div>
+	
+	</div>
+
+	<div class="row">
+	<div class="col-md-4">
+		<h2>Vítejte</h2>
+		<p>Tato stránka slouží k vytváření taktik rychle a jednoduše. Stačí kliknout na modré tlačítko, sdílet odkaz na taktiku se svými přáteli a dát se do toho. Pokud chcete, aby spoluhráči mohli také editovat Vaši taktiku, klikněte na jejich jména či odemkněte místnost. Více informací najdete v sekci Začínáme.
+		</p>
+	</div>
+	<div class="col-md-4">
+		<h2>Zdarma a otevřená</h2>
+		<p>Tato stránka je bez poplatků, bez reklam a s volně šiřitelným zdrojovým kódem. A chci, aby to tak zůstalo. Nicméně - dole najdete tlačítko Donate, pomocí kterého mi můžete přispět na pokrytí budoucích nákladů.</p>
+	</div>
+	<div class="col-md-4">
+		<h2>Pár statistik</h2>
+		<p>Vypadá to, že má stránka získává na popularitě. Za posledních 30 dní (od 8. prosince) bylo vytvořeno 10.830 jedinečných taktik a 18.047 uživatelů (podle aktivních relací) navštívilo tuto stránku alespoň jednou. Šiřte info o tomto projektu, dejte vědět svým známým! Děkuji Vám!</p>
+	</div>
+
+	</div>
+	<div class="row">
+	<div class="col-md-4">
+		<h2>Hledají se překladatelé</h2>
+		<p>Díky pár ochotným lidem je tato stránka dostupná v několika jazycích. Pokud chcete také překládat, ozvěte se. Nejsou vyžadovány žádné technické dovednosti.</p>
+	</div>
+	</div>
+</div>
+	
+	<% include footer.ejs %>
+	
+	</div>
+</body>

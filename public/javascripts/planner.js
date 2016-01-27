@@ -1911,12 +1911,19 @@ function drag_entity(entity, x, y) {
 }
 
 //connect socket.io socket
-loader.once('complete', function () {
-	$(document).ready(function() {
-		//sorts maps alphabetically, can't presort cause it depends on language
-		var options = $("#map_select option").sort(function(a,b){ 
-			return a.innerHTML > b.innerHTML ? 1 : -1; 
-		});
+$(document).ready(function() {
+	//sorts maps alphabetically, can't presort cause it depends on language
+	var options = $("#map_select option").sort(function(a,b) {
+		if ( a.innerHTML < b.innerHTML )
+		  return -1;
+		if ( a.innerHTML > b.innerHTML )
+		  return 1;
+		return 0;
+	});
+	
+	$("#map_select").empty().append(options); //ie fix no-op
+	
+	loader.once('complete', function () {
 		$("#map_select").empty();
 		$("#map_select").append(options.clone());
 		$("#map_select").focus();
@@ -1996,7 +2003,7 @@ loader.once('complete', function () {
 			if (name == "") {
 				alert("Empty name, tactic not stored");
 			} else {
-				var tactic_name = name;
+				tactic_name = name;
 				socket.emit("store", room, name);
 				$("#save").show();
 				//$('#store_tactic_popover').popover('hide');

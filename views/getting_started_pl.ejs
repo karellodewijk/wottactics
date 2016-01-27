@@ -2,6 +2,14 @@
 <html>
 <head>
 	<% include common_headers.ejs %>
+	<style>
+		#lifetimeInfo{
+			transition:1500ms;
+		}
+		#lifetimeInfo:target{
+			margin-left:15px;
+		}
+	</style>
 </head>
 <body>
 	<div class="container" style='width:100%; padding-top:65px;'>
@@ -20,7 +28,7 @@
 		<h5>
 		<ol>
 			<li>Wybrać mapę.</li>
-			<li>Skopiować link poprzez klikanie tego przycisku lub po prostu skopiowanie adresu z paska przeglądarki.</li>
+			<li>Skopiować link poprzez kliknięcie tego przycisku lub po prostu skopiowanie adresu z paska przeglądarki.</li>
 		</ol>
 		</h5>
 
@@ -31,7 +39,7 @@
 		<img src="http://karellodewijk.github.io/icons/tutorial2.jpg">
 		<p>
 		
-		Po wyborze mapy i dołączeniu znajomych.
+		Po wyborze mapy i dołączeniu znajomych:
 		<h5>
 		<ol start=3>			
             <li>Lista połączonych użytkowników, kliknij na ich nick aby nadać im przywileje (żółty oznacza że mogą rysować, zielony że mogą także przydzielać prawa innym).</li>
@@ -39,7 +47,7 @@
 			<li>Możesz zacząć tworzenie lub tłumaczenie swoich taktyk za pomocą tych narzędzi, czytaj podpowiedzi.</li>
 			<li>Opcje wybranego narzędzia pojawią się tutaj.</li>
 			<li>Możesz rozmawiać ze znajomymi w pokoju za pomocą tego czatu.</li>
-			<li>Możesz się zalogować tutaj swoim kontem WG, jest to całkowicie opcjonalne jednak jest wymagane jeśli chcesz zapisać swoja taktykę <a href="http://wottactic.tk/getting_started.html#lifetimeInfo" >[*]</a>.</li>            
+			<li>Możesz się zalogować tutaj swoim kontem WG, jest to całkowicie opcjonalne jednak jest wymagane jeśli chcesz zapisać swoja taktykę <a href="#lifetimeInfo">[*]</a>.</li>            
 		</ol>
 		</h5>
 		<p><p>
@@ -48,7 +56,7 @@
 		
 		<p>
 				
-        Po zalogowaniu się zobaczysz trochę więcej opcji.
+        Po zalogowaniu się zobaczysz trochę więcej opcji:
 		<h5>
 		<ol start=9>
             <li>To jest teraz zielone, wskazuje na to że zalogowałeś się pomyślnie.</li>
