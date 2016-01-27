@@ -1,5 +1,7 @@
 <% if (locale == "pl") { %>
 <% 	include about_pl.ejs %>
-<% } else { %>
+<% } else if (locale == "cz") { %>
+<% 	include about_cz.ejs %>
+<% } else {	%>
 <% 	include about_en.ejs %>
 <% } %>

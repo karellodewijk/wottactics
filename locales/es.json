@@ -181,5 +181,21 @@
 	"Cyan": "Cian",
 	"Home": "Home",
 	"Store": "Store",
-	"Add a note": "Add a note"
+	"Add a note": "Add a note",
+	"Pilsen": "Pilsen",
+	"Cut (ctrl-x)": "Cut (ctrl-x)",
+	"Copy (ctrl-c)": "Copy (ctrl-c)",
+	"Paste (press ctrl-v while on the map to paste to a specific location)": "Paste (press ctrl-v while on the map to paste to a specific location)",
+	"Self propelled gun": "Self propelled gun",
+	"Heavy tank": "Heavy tank",
+	"Light tank": "Light tank",
+	"Medium tank": "Medium tank",
+	"Tank destroyer": "Tank destroyer",
+	"Normal line": "Normal line",
+	"Arrow": "Arrow",
+	"Normal curved line": "Normal curved line",
+	"Curved arrow": "Curved arrow",
+	"Clear all notes": "Clear all notes",
+	"Dotted line": "Dotted line",
+	"Dotted arrow": "Dotted arrow"
 }
