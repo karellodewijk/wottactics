@@ -1,7 +1,8 @@
 var socket = io.connect('http://'+location.hostname, {
-  'reconnect': true,
-  'reconnection delay': 500,
-  'max reconnection attempts': Infinity
+	'reconnect': true,
+	'reconnection delay': 100, // defaults to 500
+	'reconnection limit': 100, // defaults to Infinity
+	'max reconnection attempts': Infinity // defaults to 10
 });
 
 //generates unique id
@@ -24,7 +25,7 @@ function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
 }
 function is_ie() {
-	return navigator.userAgent.toLowerCase().indexOf('MSIE') > -1;
+	return navigator.userAgent.toLowerCase().indexOf('msie') > -1;
 }
 
 var image_host;
@@ -46,7 +47,7 @@ if (game == "wows") { //wows
 	assets = [image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"arty.png", image_host+"td.png"];	
 }
 
-assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"note.png");
+assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png");
 
 var loader = PIXI.loader; 
 for (var i in assets) {
@@ -54,14 +55,15 @@ for (var i in assets) {
 }
 loader.load();
 
+var room_data;
 var min_draw_point_distance = 0.01;
+var active_slide = 0;
 var min_draw_point_distance_sq = min_draw_point_distance * min_draw_point_distance;
 var min_polygon_end_distance = 0.01; //in ratio to width of map
 var min_polygon_end_distance_touch = 0.025;
 var min_track_move_distance = 0.01;
 var min_track_move_distance_sq = min_track_move_distance * min_track_move_distance;
 var active_context = 'ping_context';
-var history = {};
 var userlist = {};
 var selected_icon;
 var icon_color = 0xff0000;
@@ -120,6 +122,8 @@ var tracker_width = 0.05;
 var tracker_height = 0.05;
 var my_user_id;
 var clipboard = [];
+var slide_name;
+var assets_loaded = false;
 
 //keyboard shortcuts
 var shifted; //need to know if the shift key is pressed
@@ -134,7 +138,7 @@ $(document).on('keyup keydown', function(e) {
 				} else if (e.key=='y') {
 					redo();
 				} else if (e.key=='s') {
-					if (my_user.identity && tactic_name && tactic_name != "" && socket) {
+					if (my_user.logged_in && tactic_name && tactic_name != "" && socket) {
 						socket.emit("store", room, tactic_name);
 					}
 				} else if (e.key=='c') {
@@ -147,7 +151,7 @@ $(document).on('keyup keydown', function(e) {
 			} else if (e.key == "Delete") {
 				clear_selected();
 			} else if (e.key == "Shift") {
-				if (active_context == 'line_context') {
+				if (active_context == 'line_context' && new_drawing) {
 					on_line_end(e);
 				}
 			}
@@ -225,7 +229,7 @@ var background_sprite = new PIXI.Sprite();
 background_sprite.height = renderer.height;
 background_sprite.width = renderer.width;
 objectContainer.addChild(background_sprite);
-set_background({uid:newUid(), type:'background', path:""});
+//set_background({uid:newUid(), type:'background', path:""});
 
 
 //resize the render window
@@ -240,9 +244,9 @@ function resize_renderer(new_size_x, new_size_y) {
 	
 	$("#render_frame").attr('style', 'height:' + size_y + 'px; width:' + size_x + 'px;');
 	
-	for (var i in history) {
-		if (history[i] && history[i].type == 'note') {
-		    align_note_text(history[i]);
+	for (var i in room_data.slides[active_slide]) {
+		if (room_data.slides[active_slide][i] && room_data.slides[active_slide][i].type == 'note') {
+		    align_note_text(room_data.slides[active_slide][i]);
 		}
 	}
 	renderer.render(stage);
@@ -290,9 +294,6 @@ function mouse_y_rel(y) {
 }
 
 function set_background(new_background) {
-	if (background) {
-		remove(background.uid);
-	}
 	background = new_background;
 	
 	if (background.path != "") {
@@ -315,6 +316,9 @@ function set_background(new_background) {
 	background_sprite.texture.on('update', function() {	
 		renderer.render(stage);
 	});
+	
+	room_data.slides[active_slide][new_background.uid] = new_background;
+	
 }
 
 var context_before_drag;
@@ -381,7 +385,7 @@ function on_drag_end(e) {
 		if (context_before_drag == 'remove_context') {
 			remove(this.entity.uid);
 			undo_list.push(["remove", [this.entity]]);
-			socket.emit('remove', room, this.entity.uid);
+			socket.emit('remove', room, this.entity.uid, active_slide);
 		} else if (this.entity.type == 'note') {
 			toggle_note.call(this, e);
 			deselect_all();
@@ -394,7 +398,7 @@ function on_drag_end(e) {
 			origin_entity_map.push([origin, selected_entities[i]]);
 			delete selected_entities[i].origin_x;
 			delete selected_entities[i].origin_y;
-			socket.emit("drag", room, selected_entities[i].uid, selected_entities[i].x, selected_entities[i].y);
+			socket.emit("drag", room, selected_entities[i].uid, active_slide, selected_entities[i].x, selected_entities[i].y);
 		}
 		undo_list.push(["drag", origin_entity_map]);
 	}
@@ -441,16 +445,16 @@ function on_drag_move(e) {
 	renderer.render(stage);
 }
 
-function remove(uid) {
-	if (history[uid] && history[uid].container) {
-		if (history[uid].type == "note") {
-			history[uid].container.menu.remove();
+function remove(uid, keep_entity) {
+	if (room_data.slides[active_slide][uid] && room_data.slides[active_slide][uid].container) {
+		if (room_data.slides[active_slide][uid].type == "note") {
+			room_data.slides[active_slide][uid].container.menu.remove();
 		}
-		objectContainer.removeChild(history[uid].container);
-		delete history[uid].container;
+		objectContainer.removeChild(room_data.slides[active_slide][uid].container);
+		delete room_data.slides[active_slide][uid].container;
 	}
-	if (history[uid] && history[uid].type == "icon") {
-		var counter = $('#'+history[uid].tank).find("span");
+	if (room_data.slides[active_slide][uid] && room_data.slides[active_slide][uid].type == "icon") {
+		var counter = $('#'+room_data.slides[active_slide][uid].tank).find("span");
 		counter.text((parseInt(counter.text())-1).toString());		
 		counter = $("#icon_context").find("span").first();
 		counter.text((parseInt(counter.text())-1).toString());
@@ -464,7 +468,9 @@ function remove(uid) {
 		}
 	}
 	
-	delete history[uid];	
+	if (!keep_entity) {
+		delete room_data.slides[active_slide][uid];	
+	}
 	renderer.render(stage);
 }
 
@@ -472,19 +478,21 @@ function move_tracker(uid, delta_x, delta_y) {
 	move_track_recursive(uid, delta_x * 0.1, delta_y * 0.1, 10);
 }
 
+
 function move_track_recursive(uid, step_x, step_y, count) {
-	if (count) {
-		setTimeout( function() {
-			if (trackers[uid]) {
-				trackers[uid].x += step_x;
-				trackers[uid].y += step_y;
-				trackers[uid].container.x += x_abs(step_x);
-				trackers[uid].container.y += y_abs(step_y);
-				renderer.render(stage);
-				move_track_recursive(uid, step_x, step_y, count-1);
-			}
-		}, 20);
-	}
+	var timer = setInterval(function() {
+		if (trackers[uid]) {
+			trackers[uid].x += step_x;
+			trackers[uid].y += step_y;
+			trackers[uid].container.x += x_abs(step_x);
+			trackers[uid].container.y += y_abs(step_y);
+			renderer.render(stage);
+		}
+		count--;
+		if (count == 0) {
+			clearInterval(timer)
+		}
+	}, 20);
 }
 
 function fade(sprite, steps, alpha) {
@@ -615,7 +623,14 @@ function stop_tracking() {
 
 function start_tracking(mouse_location) {
 	setup_mouse_events(on_track_move, undefined);
-	my_tracker = {uid:newUid(), color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
+	var shape = $('#track_shape .active').attr('id');
+	var size;
+	if (shape == 'dot') {
+		size = 0.02;
+	} else {
+		size = 0.05;
+	}
+	my_tracker = {uid:newUid(), shape:shape, size:size, color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
 	last_track_position = [my_tracker.x, my_tracker.y];
 	socket.emit("track", room, my_tracker);
 	create_tracker(my_tracker);
@@ -649,7 +664,7 @@ function create_note(note) {
 	note.container.entity = note; 
 	note.container.is_open = false;
 
-	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="top: 50%;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea id="note_box"></textarea><br /><span id="notification_area" style="float: left;" hidden>Saved</span><div style="float:right;"><button id="save_note">save</button></div></div></div>');
+	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="top: 50%;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea style="height:400px; width:300px;" id="note_box"></textarea><br /><span id="notification_area" style="float: left;" hidden>Saved</span><div style="float:right;"><button id="save_note">save</button></div></div></div>');
 	
 	$("#note_box", note.container.menu).val(note.text);
 	
@@ -675,18 +690,18 @@ function create_note(note) {
 	sprite.texture.on('update', function() {	
 		renderer.render(stage);
 	});
-	history[note.uid] = note;
+	room_data.slides[active_slide][note.uid] = note;
 }
 
 function create_tracker(tracker) {
-	var texture = PIXI.Texture.fromImage(image_host + 'recticle.png');
+	var texture = PIXI.Texture.fromImage(image_host + tracker.shape + '.png');
 	tracker.container = new PIXI.Sprite(texture);	
 	tracker.container.tint = tracker.color;
 	tracker.container.anchor.set(0.5);
 	tracker.container.x = x_abs(tracker.x);
 	tracker.container.y = y_abs(tracker.y);
-	tracker.container.width = x_abs(tracker_width);
-	tracker.container.height = y_abs(tracker_height);
+	tracker.container.width = x_abs(tracker.size);
+	tracker.container.height = y_abs(tracker.size);
 	trackers[tracker.uid] = tracker;
 	objectContainer.addChild(trackers[tracker.uid].container);
 	renderer.render(stage);
@@ -718,9 +733,10 @@ function ping(x, y, color) {
 	fade(sprite, 10, 0.5);
 }
 
-
+var last_track_update = Date.now();
 function on_track_move(e) {
 	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	my_tracker.x = x;
@@ -731,9 +747,15 @@ function on_track_move(e) {
 	
 	var dist_sq = (last_track_position[0] - my_tracker.x) * (last_track_position[0] - my_tracker.x)
 			     +(last_track_position[1] - my_tracker.y) * (last_track_position[1] - my_tracker.y);
-	if (dist_sq > min_track_move_distance_sq) {
-		socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
-		last_track_position = [my_tracker.x, my_tracker.y];
+	
+	var interval = (Date.now() - last_track_update);
+
+	if (dist_sq > min_track_move_distance_sq || interval > 200) {
+		last_track_update = Date.now();
+		if (Math.abs(my_tracker.x - last_track_position[0] + my_tracker.y - last_track_position[1]) > 0) {
+			socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
+			last_track_position = [my_tracker.x, my_tracker.y];
+		}
 	}
 }
 
@@ -1034,11 +1056,11 @@ function on_select_end(e) {
 	var x_max = Math.max(mouse_x_abs(mouse_location.x), left_click_origin[0]);
 	var y_max = Math.max(mouse_y_abs(mouse_location.y), left_click_origin[1]);
 	
-	for (var key in history) {
-		if (history.hasOwnProperty(key) && history[key].container) {
-			var box = history[key].container.getBounds();
+	for (var key in room_data.slides[active_slide]) {
+		if (room_data.slides[active_slide].hasOwnProperty(key) && room_data.slides[active_slide][key].container) {
+			var box = room_data.slides[active_slide][key].container.getBounds();
 			if (box.x > x_min && box.y > y_min && box.x + box.width < x_max && box.y + box.height < y_max) {
-				selected_entities.push(history[key]);
+				selected_entities.push(room_data.slides[active_slide][key]);
 			}
 		}
 	}
@@ -1058,7 +1080,7 @@ function select_entities() {
 	]
 	
 	for (var i in selected_entities) {
-		history[selected_entities[i].uid].container.filters = [filter];
+		room_data.slides[active_slide][selected_entities[i].uid].container.filters = [filter];
 	}
 }
 
@@ -1072,11 +1094,13 @@ function deselect_all() {
 
 //man, am I not happy about this. Incrementally updating a Pixi.graphics between rendering it,
 //causes issues on firefox (TOO_MUCH_MALLOC), so every time you move I draw the last 30 interpollation 
-//points and every redraw_countdown interpolation points I redraw the whole history.
+//points and every redraw_countdown interpolation points I redraw the whole room_data.slides[active_slide].
 var redraw_countdown = 20;
 function on_draw_move(e) {
 	var mouse_location = e.data.getLocalPosition(objectContainer);
+
 	var a = new_drawing.path[new_drawing.path.length-1];
+	
 	var b = [mouse_x_rel(mouse_location.x) - new_drawing.x, 
 	         mouse_y_rel(mouse_location.y) - new_drawing.y];
 	
@@ -1131,6 +1155,10 @@ function on_draw_move(e) {
 		new_drawing.path.pop();
 	} else {
 		redraw_countdown--;
+		new_drawing.path.pop();
+		b[0] = a[0] + 0.3 * (b[0]-a[0]);
+		b[1] = a[1] + 0.3 * (b[1]-a[1]);
+		new_drawing.path.push(b);
 		if (redraw_countdown == 0) { //redraw ALL
 			redraw_countdown = 20;
 			objectContainer.removeChild(graphics);
@@ -1163,7 +1191,7 @@ function snap_and_emit_entity(entity) {
 	renderer.render(stage);
 	var container = entity.container;
 	entity.container = undefined;
-	socket.emit('create_entity', room, entity);
+	socket.emit('create_entity', room, entity, active_slide);
 	entity.container = container;
 	renderer.render(stage);
 }
@@ -1277,7 +1305,7 @@ objectContainer.touchstart = on_left_click;
 
 function create_text(text_entity) {
 	var size = "bold "+text_entity.font_size*x_abs(font_scale)+"px " + text_entity.font;
-	text_entity.container = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: 1.5, stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
+	text_entity.container = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: (text_entity.font_size/5), stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
 	text_entity.container.x = x_abs(text_entity.x);
 	text_entity.container.y = y_abs(text_entity.y);
 	
@@ -1288,7 +1316,7 @@ function create_text(text_entity) {
 	objectContainer.addChild(text_entity.container);
 	renderer.render(stage);
 	
-	history[text_entity.uid] = text_entity;
+	room_data.slides[active_slide][text_entity.uid] = text_entity;
 }
 	
 function create_icon(icon) {
@@ -1311,7 +1339,7 @@ function create_icon(icon) {
 	icon.container.addChild(sprite);	
 	if (icon.label && icon.label != "") {
 		var size = "bold "+icon.label_font_size*x_abs(font_scale)+"px " + icon.label_font;
-		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: 1.5, stroke: "black", dropShadow:true, dropShadowDistance:1});		
+		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: (icon.label_font_size/5), stroke: "black", dropShadow:true, dropShadowDistance:1});		
 		text.x += sprite.width/2 - text.width/2;
 		text.y += sprite.height;
 		icon['container'].addChild(text);
@@ -1329,7 +1357,8 @@ function create_icon(icon) {
 	sprite.texture.on('update', function() {	
 		renderer.render(stage);
 	});
-	history[icon.uid] = icon;
+	
+	room_data.slides[active_slide][icon.uid] = icon;
 }
 
 function make_draggable(root) {
@@ -1591,13 +1620,10 @@ function init_graphic(drawing, graphic) {
 
 	drawing.container.entity = drawing;
 	renderer.render(stage);	
-	history[drawing.uid] = drawing;
+	room_data.slides[active_slide][drawing.uid] = drawing;
 }
 
 function create_entity(entity) {	
-	if (history[entity.uid]) {
-		remove(entity.uid);
-	}
 	if (entity.type == 'background') {
 		set_background(entity);
 	} else if (entity.type == 'icon') {
@@ -1675,6 +1701,7 @@ function add_user(user) {
 	} else {
 		$("#"+user.id).css('background-color','#EEEEEE');
 	}
+	
 	if (user.id == my_user_id) {
 		update_my_user();
 	}
@@ -1684,7 +1711,7 @@ function add_user(user) {
 //function should be called when anything about you as a user changes, it will update the interface
 //accordingly
 function update_my_user() {
-	if (my_user.identity) { //logged in
+	if (my_user.logged_in) { //logged in
 		$("#save_as").show();
 		if (tactic_name && tactic_name != "") {
 			$("#save").show();
@@ -1708,18 +1735,24 @@ function update_lock() {
 	
 	if (is_room_locked && !my_user.role) {
 		$('.left_column').hide();
-		for (var i in history) {
-			if (history[i] && history[i].type == 'note') {
-				$('textarea', history[i].container.menu).prop('readonly', true);
-				$('button', history[i].container.menu).hide();
+		$('#slide_tab_button').hide();
+		for (var i in room_data.slides[active_slide]) {
+			if (room_data.slides[active_slide][i] && room_data.slides[active_slide][i].type == 'note') {
+				if (room_data.slides[active_slide][i].container) {
+					$('textarea', room_data.slides[active_slide][i].container.menu).prop('readonly', true);
+					$('button', room_data.slides[active_slide][i].container.menu).hide();
+				}
 			}
 		}
 	} else {
 		$('.left_column').show();
-		for (var i in history) {
-			if (history[i] && history[i].type == 'note') {
-				$('textarea', history[i].container.menu).prop('readonly', false);
-				$('button', history[i].container.menu).show();
+		$('#slide_tab_button').show();
+		for (var i in room_data.slides[active_slide]) {
+			if (room_data.slides[active_slide][i] && room_data.slides[active_slide][i].type == 'note') {
+				if (room_data.slides[active_slide][i].container) {
+					$('textarea', room_data.slides[active_slide][i].container.menu).prop('readonly', false);
+					$('button', room_data.slides[active_slide][i].container.menu).show();
+				}
 			}
 		}
 	}
@@ -1746,6 +1779,12 @@ function initialize_color_picker(slider_id, variable_name) {
 	window[variable_name] = parseInt('0x'+$('select[id="'+ slider_id + '"]').val().substring(1));
 	$('select[id="'+ slider_id + '"]').simplecolorpicker().on('change', function() {
 		window[variable_name] = parseInt('0x'+$('select[id="'+ slider_id + '"]').val().substring(1));
+		if (variable_name == 'track_color') { //dirty track color switch hack
+			if (my_tracker) {
+				stop_tracking();
+			}
+			start_tracking({x:2000,y:2000});			
+		}	
 	});
 }
 
@@ -1771,12 +1810,12 @@ function initialize_slider(slider_id, slider_text_id, variable_name) {
 //clear entities of a certain type from the map
 function clear(type) {
 	var cleared_entities = [];
-	for (var key in history) {
-		if (history.hasOwnProperty(key) && (history[key].type == type || !type) && (history[key].type != 'background')) {
-			var entity = history[key];
+	for (var key in room_data.slides[active_slide]) {
+		if (room_data.slides[active_slide].hasOwnProperty(key) && (room_data.slides[active_slide][key].type == type || !type) && (room_data.slides[active_slide][key].type != 'background')) {
+			var entity = room_data.slides[active_slide][key];
 			remove(key);
 			cleared_entities.push(entity)
-			socket.emit('remove', room, key);
+			socket.emit('remove', room, key, active_slide);
 		}
 	}
 	undo_list.push(["remove", cleared_entities]);
@@ -1790,7 +1829,7 @@ function undo() {
 				if (action[1][i].uid) {
 					remove(action[1][i].uid);
 					delete action[1][i].container;
-					socket.emit('remove', room, action[1][i].uid);
+					socket.emit('remove', room, action[1][i].uid, active_slide);
 				}
 			}
 			redo_list.push(action);
@@ -1799,12 +1838,12 @@ function undo() {
 				var x = action[1][i][0][0];
 				var y = action[1][i][0][1];
 				var uid = action[1][i][1].uid;
-				if (history[uid]) { //still exists
-					action[1][i][0][0] = history[uid].x;
-					action[1][i][0][1] = history[uid].y;
-					drag_entity(history[uid], x, y);
+				if (room_data.slides[active_slide][uid]) { //still exists
+					action[1][i][0][0] = room_data.slides[active_slide][uid].x;
+					action[1][i][0][1] = room_data.slides[active_slide][uid].y;
+					drag_entity(room_data.slides[active_slide][uid], x, y);
 					renderer.render(stage);
-					socket.emit('drag', room, uid, x, y);
+					socket.emit('drag', room, uid, active_slide, x, y);
 				}
 			}
 			redo_list.push(action);
@@ -1812,7 +1851,7 @@ function undo() {
 			for (var i in action[1]) {
 				var entity = action[1][i];
 				delete entity.container;
-				socket.emit('create_entity', room, entity);
+				socket.emit('create_entity', room, entity, active_slide);
 				create_entity(entity);
 			}
 			redo_list.push(action);
@@ -1820,7 +1859,7 @@ function undo() {
 			var new_selected_entities = [];
 			for (var i in action[2]) {
 				var entity = action[2][i];
-				if (history.hasOwnProperty(entity.uid)) {
+				if (room_data.slides[active_slide].hasOwnProperty(entity.uid)) {
 					new_selected_entities.push(entity);
 				}
 			}
@@ -1839,7 +1878,7 @@ function redo() {
 		if (action[0] == "add") {
 			for (var i in action[1]) {
 				if (action[1][i].uid) {
-					socket.emit('create_entity', room, action[1][i]);
+					socket.emit('create_entity', room, action[1][i], active_slide);
 					create_entity(action[1][i]);
 				}
 			}
@@ -1849,22 +1888,22 @@ function redo() {
 				var x = action[1][i][0][0];
 				var y = action[1][i][0][1];
 				var uid = action[1][i][1].uid;
-				if (history[uid]) { //still exists
-					action[1][i][0][0] = history[uid].x;
-					action[1][i][0][1] = history[uid].y;
-					drag_entity(history[uid], x, y);
+				if (room_data.slides[active_slide][uid]) { //still exists
+					action[1][i][0][0] = room_data.slides[active_slide][uid].x;
+					action[1][i][0][1] = room_data.slides[active_slide][uid].y;
+					drag_entity(room_data.slides[active_slide][uid], x, y);
 					renderer.render(stage);
-					socket.emit('drag', room, uid, x, y);
+					socket.emit('drag', room, uid, active_slide, x, y);
 				}
 			}
 			undo_list.push(action);
 		} else if (action[0] == "remove") {
 			for (var i in action[1]) {
 				var entity = action[1][i];
-				if (history.hasOwnProperty(entity.uid)) {
+				if (room_data.slides[active_slide].hasOwnProperty(entity.uid)) {
 					remove(entity.uid);
 					delete entity.container;
-					socket.emit('remove', room, entity.uid);
+					socket.emit('remove', room, entity.uid, active_slide);
 				}
 			}
 			undo_list.push(action);
@@ -1872,7 +1911,7 @@ function redo() {
 			var new_selected_entities = [];
 			for (var i in action[1]) {
 				var entity = action[1][i];
-				if (history.hasOwnProperty(entity.uid)) {
+				if (room_data.slides[active_slide].hasOwnProperty(entity.uid)) {
 					new_selected_entities.push(entity);
 				}
 			}
@@ -1893,7 +1932,7 @@ function clear_selected() {
 		var entity = clone[i];
 		remove(clone[i].uid);
 		cleared_entities.push(entity)
-		socket.emit('remove', room, entity.uid);
+		socket.emit('remove', room, entity.uid, active_slide);
 	}
 	selected_entities = [];
 	undo_list.push(["remove", cleared_entities]);
@@ -1908,6 +1947,142 @@ function drag_entity(entity, x, y) {
 		align_note_text(entity);
 	}
 	renderer.render(stage);	
+}
+
+function update_slide_buttons() {
+	if (active_slide == 0) {
+		document.getElementById("prev_slide").disabled = true;
+	} else {
+		document.getElementById("prev_slide").disabled = false;
+	}
+	if (active_slide+1 == room_data.slides.length) {
+		document.getElementById("next_slide").disabled = true;
+	} else {
+		document.getElementById("next_slide").disabled = false;
+	}
+	if (room_data.slides.length == 1) {
+		document.getElementById("remove_slide").disabled = true;
+	} else {
+		document.getElementById("remove_slide").disabled = false;
+	}
+	
+	var name;
+	if (room_data.slide_names[active_slide] == '') {
+		name = slide_name + " " + (active_slide+1);
+	} else {
+		name = room_data.slide_names[active_slide];
+	}
+	$('#slide_name_field').val(name);
+	
+	$('#slide_select').empty();
+	for (var i = 0; i < room_data.slides.length; i++) { 
+		var name;
+		if (room_data.slide_names[i] == '') {
+			name = slide_name + " " + (i+1);
+		} else {
+			name = room_data.slide_names[i];
+		}
+		$('#slide_select').append("<li><a>" + name + "</a></li>")
+	}
+}
+
+function transition(slide) {
+	var to_remove = [];
+	var to_add = [];
+	var to_transition = [];
+	
+	for (var key in room_data.slides[active_slide]) { 
+		if (room_data.slides[slide][key]) {
+			to_transition.push(key);
+		} else {
+			to_remove.push(key);
+		}
+	}	
+	for (var key in room_data.slides[slide]) {
+		if (!room_data.slides[active_slide].hasOwnProperty(key)) {
+			to_add.push(key);
+		}
+	}
+	
+	for (var i in to_remove) {
+		var key = to_remove[i];
+		remove(key, true);
+	}
+
+	for (var i in to_transition) {
+		//take over the container
+		var key = to_transition[i];
+		room_data.slides[slide][key].container = room_data.slides[active_slide][key].container;
+		delete room_data.slides[active_slide][key].container;
+		if (room_data.slides[slide][key].container) {
+			room_data.slides[slide][key].container.entity = room_data.slides[slide][key];
+		}
+
+		if (room_data.slides[slide][key].type == "background") {
+			to_add.push(key);
+		} else {
+			room_data.slides[slide][key].container.x += x_abs(room_data.slides[slide][key].x-room_data.slides[active_slide][key].x);
+			room_data.slides[slide][key].container.y += y_abs(room_data.slides[slide][key].y-room_data.slides[active_slide][key].y);
+			if (room_data.slides[slide][key].type == 'note') {
+				align_note_text(room_data.slides[slide][key]);
+			}
+		}
+	}
+
+	active_slide = slide;
+		
+	for (var i in to_add) {
+		var key = to_add[i];
+		create_entity(room_data.slides[slide][key]);
+	}
+		
+	renderer.render(stage);
+	update_slide_buttons();
+}
+
+function change_slide(slide) {
+	undo_list = [];
+	redo_list = [];
+	deselect_all();
+	transition(slide);	
+}
+
+//add a new slide after #slide
+function new_slide(slide) {
+	deselect_all();
+	
+	var entities = {};
+	for (var key in room_data.slides[slide]) {
+		var temp = room_data.slides[slide][key].container;
+		delete room_data.slides[slide][key].container;
+		entities[key] = JSON.parse(JSON.stringify(room_data.slides[slide][key]));
+		room_data.slides[slide][key].container = temp;
+	}	
+	room_data.slides.splice(slide+1, 0, entities);
+	room_data.slide_names.splice(slide+1, 0, "");
+	
+	transition(slide+1);
+}
+
+function remove_slide(slide) {
+	if (slide == active_slide) {
+		if (slide == 0) {
+			change_slide(1);
+		} else {
+			change_slide(slide-1);
+		}
+	}
+	if (room_data.slides.length > slide) {
+		room_data.slides.splice(slide, 1);
+		room_data.slide_names.splice(slide, 1);
+		active_slide = Math.max(slide-1, 0);
+		update_slide_buttons();
+	}
+}
+
+function rename_slide(slide, name) {
+	room_data.slide_names[slide] = name;
+	update_slide_buttons();
 }
 
 //connect socket.io socket
@@ -1947,7 +2122,13 @@ $(document).ready(function() {
 		var first_icon = $("#icon_context").find("button:first");
 		first_icon.addClass('selected');
 		selected_icon = first_icon.attr("id");
-
+		slide_name = $('#slide_name').attr('content');
+		
+		$('.nav-pills > li > a').click( function() {
+			$('.nav-pills > li.active').removeClass('active');
+			$(this).parent().addClass('active');
+		} );
+		
 		//color selections
 		initialize_color_picker("curve_colorpicker", "curve_color");
 		initialize_color_picker("icon_colorpicker", "icon_color");
@@ -1995,9 +2176,6 @@ $(document).ready(function() {
 			}
 		});
 		
-		room = location.search.split('room=')[1].split("&")[0];
-		socket.emit('join_room', room, game);
-		
 		$(document).on('click', '#store_tactic', function(){
 			var name = $(document).find('#tactic_name')[0].value;
 			if (name == "") {
@@ -2012,12 +2190,38 @@ $(document).ready(function() {
 				alert("Tactic stored as: " + name);
 			}
 		});	
-
+		
+		$('#slide_select').on('click', 'a', function() {
+			var i = $(this).parent().index();
+			if (active_slide == i) {return;}
+			socket.emit("change_slide", room, i);
+			change_slide(i);
+		});
+		$('#prev_slide').click(function() { 
+			socket.emit("change_slide", room, active_slide-1);
+			change_slide(active_slide-1);
+		});
+		$('#next_slide').click(function() {
+			socket.emit("change_slide", room, active_slide+1);
+			change_slide(active_slide+1);
+		});
+		$('#new_slide').click(function() {
+			socket.emit("new_slide", room, active_slide);
+			new_slide(active_slide);
+		});
+		$('#remove_slide').click(function() {
+			socket.emit("remove_slide", room, active_slide);
+			remove_slide(active_slide);
+		});		
 		$('#save').click(function() { 
 			if (tactic_name && tactic_name != "") {
 				socket.emit("store", room, tactic_name);
 			}
 		});
+		$("#slide_name_field").focusout(function() {
+			rename_slide(active_slide, $(this).val());
+			socket.emit("rename_slide", room, active_slide, $(this).val());
+		}); 
 
 		$('#link').click(function() { 
 			var copySupported = document.queryCommandSupported('copy');
@@ -2110,6 +2314,12 @@ $(document).ready(function() {
 			$('#contexts').find("button").removeClass('active');
 			$(this).addClass('active');			
 			var new_context = $(this).attr('id')+"_context";
+			if (my_tracker) {
+				stop_tracking();
+			} 
+			if (new_context == "track_context") {
+				start_tracking({x:2000,y:2000});
+			}			
 			if (active_context == new_context) { return; } 	
 			if (new_context != "remove_context") {
 				deselect_all();
@@ -2117,26 +2327,30 @@ $(document).ready(function() {
 			}
 			$('#'+active_context).hide();
 			$('#'+new_context).show();
-			if (my_tracker) {
-				stop_tracking();
-			} 
-			if (new_context == "track_context") {
-				start_tracking({x:-10,y:-10});
-			}
 			active_context = new_context;
 
 		});	
 
-		$('#full_line').addClass('active');	
+		$('#line_type #full_line').addClass('active');	
 		$('#line_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
-		
-		$('#curve_no_arrow').addClass('active');
+
+		$('#curve_type #curve_no_arrow').addClass('active');	
 		$('#curve_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
+		});		
+		
+		$('#track_shape #circle').addClass('active');
+		$('#track_shape').on('click', 'button', function (e) {
+			$(this).addClass('active');
+			$(this).siblings().removeClass('active');		
+			if (my_tracker) {
+				stop_tracking();
+			}
+			start_tracking({x:2000,y:2000});	
 		});	
 		
 		$('#draw_no_arrow').addClass('active');
@@ -2220,15 +2434,29 @@ $(document).ready(function() {
 			if (!background || background.path != path) {
 				var uid = background ? background.uid : newUid();
 				var new_background = {uid:uid, type:'background', path:path};
-				socket.emit('create_entity', room, new_background);
+				socket.emit('create_entity', room, new_background, active_slide);
 				set_background(new_background);
 			} 
 		}
+		
+		assets_loaded = true;
 	});
 	
 	//network data responses
+
+	room = location.search.split('room=')[1].split("&")[0];		
+	socket.on('connect',function() { 
+		var timer = setInterval(function() {
+			if (assets_loaded) {
+				socket.emit('join_room', room, game);
+				clearInterval(timer);
+			}
+		}, 2);	
+	});
 	
-	socket.on('room_data', function(room_data, my_id) {
+	socket.on('room_data', function(new_room_data, my_id) {
+		room_data = new_room_data;
+		active_slide = room_data.active_slide;
 		is_room_locked = room_data.locked;
 		my_user_id = my_id;
 		if (room_data.name) {
@@ -2237,18 +2465,36 @@ $(document).ready(function() {
 		for (var user in room_data.userlist) {
 			add_user(room_data.userlist[user]);
 		}
-		for (var key in room_data.history) {
-			create_entity(room_data.history[key]);
+		for (var key in room_data.slides[active_slide]) {
+			create_entity(room_data.slides[active_slide][key]);
 		}
+		for (var i = 0; i < room_data.slides.length; i++) { 
+			var name = slide_name + " " + (i+1);
+			if (room_data.slide_names[i] != '') {
+				name = room_data.slide_names[i];
+			}
+			$('#slide_select').append("<li><a>" + name + "</a></li>")
+		}
+		
+		update_slide_buttons();
 		update_my_user();
 	});
 
-	socket.on('create_entity', function(entity) {
-		create_entity(entity);
+	socket.on('create_entity', function(entity, slide) {
+		if (slide != active_slide) {
+			room_data.slides[slide][entity.uid] = entity;
+		} else {
+			create_entity(entity);
+		}
 	});
 	
-	socket.on('drag', function(uid, x, y) {
-		drag_entity(history[uid], x, y);
+	socket.on('drag', function(uid, slide, x, y) {
+		if (slide != active_slide) {
+			room_data.slides[slide][uid].x = x;
+			room_data.slides[slide][uid].y = y;
+		} else {
+			drag_entity(room_data.slides[active_slide][uid], x, y);
+		}
 	});
 
 	socket.on('ping', function(x, y, color) {
@@ -2264,14 +2510,18 @@ $(document).ready(function() {
 		if (!my_user) {
 			my_user = user;
 		} else {
-			my_user.identity = user.identity;
+			my_user.logged_in = user.logged_in;
 			my_user.name = user.name;
 		}
 		update_my_user();
 	});
 
-	socket.on('remove', function(uid) {
-		remove(uid);
+	socket.on('remove', function(uid, slide) {
+		if (slide != active_slide) {
+			delete room_data.slides[slide][uid];
+		} else {
+			remove(uid);
+		}
 	});
 
 	socket.on('add_user', function(user) {
@@ -2289,6 +2539,22 @@ $(document).ready(function() {
 	socket.on('lock_room', function(is_locked) {
 		is_room_locked = is_locked;
 		update_lock();
+	});
+
+	socket.on('change_slide', function(slide) {
+		change_slide(slide);
+	});
+	
+	socket.on('new_slide', function(slide) {
+		new_slide(slide);
+	});
+	
+	socket.on('remove_slide', function(slide) {
+		remove_slide(slide);
+	});
+
+	socket.on('rename_slide', function(slide, name) {
+		rename_slide(slide, name);
 	});
 	
 	socket.on('track', function(tracker) {

@@ -1,0 +1,52 @@
+mongorestore --batchSize=10 dbackup
+
+db.runCommand( { dropDatabase: 1 } )
+
+db.getCollectionNames().forEach(function(collname){
+	db.getCollection(collname).update({history: {$exists: true}}, {$set:{'slides':[], 'active_slide':0, 'slide_names':['']}}, {multi:true});
+	db.getCollection(collname).find({history: {$exists: true}}).forEach(function (doc) {
+		doc.slides[0] = doc.history;
+		delete doc.history;
+		db.getCollection(collname).save(doc); 
+	});
+});
+
+
+db.getCollectionNames().forEach(function(collname){
+	//generates unique id
+	function newUid() {
+	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+		function(c) {
+		  var r = Math.random() * 16 | 0,
+			v = c == 'x' ? r : (r & 0x3 | 0x8);
+		  return v.toString(16);
+		}).toUpperCase();
+	}
+	if (collname != 'tactics') {
+		db.getCollection(collname).find({slides: {$exists: true}}).limit(1).forEach(function (doc) {
+			db.users.update({_id:collname}, {_id:collname, tactics:[]}, {upsert:true});
+		});
+		db.getCollection(collname).find({slides: {$exists: true}}).forEach(function (doc){
+			var uid = newUid();
+			doc._id = uid;
+			db.stored_tactics.insert(doc);
+			db.users.update({_id:collname}, {$push:{tactics:{name:doc.name, date:doc.date, game:doc.game, uid:uid}}});
+		});
+	}
+});
+
+db.getCollectionNames().forEach(function(collname){
+	if (collname != 'tactics' && collname != 'stored_tactics') {
+		db.getCollection(collname).find({slides: {$exists: true}}).limit(1).forEach(function (doc) {
+			print(collname)
+			db.getCollection(collname).drop();
+		});
+	}
+});
+
+db.users.find({_id:'505943778-Kalith'});
+
+
+
+
+
