@@ -14,3 +14,16 @@
 
 </li>
 
+<script type="text/javascript">
+	$("#language_select").on('click', 'a', function() {
+		var url = $(this).attr('href');
+		
+		if (location.search.indexOf('room=') > -1) {
+			url = url + "&room=" + location.search.split('room=')[1].split("&")[0];
+		}
+		
+		window.location = url;
+		return false;
+	})
+</script>
+

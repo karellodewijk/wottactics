@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="http://cdn.socket.io/socket.io-1.3.6.js"></script>
 	<script type="text/javascript" src="/javascripts/TransparencyHitArea.js"></script>
 	<script type="text/javascript" src="/javascripts/planner.js"></script>
+	<meta id="slide_name" content=<%=l('Slide')%>>
 </head>
 <body>
 
@@ -19,7 +20,7 @@
 	
 	
 	<div class="side_bar jumbotron">
-<nav class="navbar navbar-inverse container-fluid">
+<nav class="navbar navbar-inverse container-fluid navbar_planner">
 	<div class="navbar-header">
 		<a class="navbar-brand" style="padding-left:0px"
 			<% if (game == 'wot') { %>
@@ -84,10 +85,10 @@
 				<p>
 					<div id="contexts">
 					<div class="btn-group">
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="ping" data-toggle="tooltip" title="<%=l('Ping map')%>">
-						<img src="http://karellodewijk.github.io/icons/circle_icon.png" />
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="ping" data-toggle="tooltip" title="<%=l('Ping map')%>">
+						<img src="http://karellodewijk.github.io/icons/ping_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
 						<img src="http://karellodewijk.github.io/icons/
 							<%if (game == 'wows') { %>
 								ship_icon.png
@@ -98,68 +99,69 @@
 							<%} %>
 						"/>
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
 						<img src="http://karellodewijk.github.io/icons/pencil.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
 						<img src="http://karellodewijk.github.io/icons/text_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="line" data-toggle="tooltip" title="<%=l('Draw line (hold left mouse)')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="line" data-toggle="tooltip" title="<%=l('Draw line (hold left mouse)')%>">
 						<img src="http://karellodewijk.github.io/icons/line_icon.png" />
 					</button>
 					</div>
 					<br />
 					<div class="btn-group">
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="curve" data-toggle="tooltip" title="<%=l('Draw curve (double click to end)')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="curve" data-toggle="tooltip" title="<%=l('Draw curve (double click to end)')%>">
 						<img src="http://karellodewijk.github.io/icons/curve.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="<%=l('Draw rectangle')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="<%=l('Draw rectangle')%>">
 						<img src="http://karellodewijk.github.io/icons/rectangle.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="circle" data-toggle="tooltip" title="<%=l('Draw circle')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="circle" data-toggle="tooltip" title="<%=l('Draw circle')%>">
 						<img src="http://karellodewijk.github.io/icons/draw_circle_icon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="polygon" data-toggle="tooltip" title="<%=l('Draw polygon')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="polygon" data-toggle="tooltip" title="<%=l('Draw polygon')%>">
 						<img src="http://karellodewijk.github.io/icons/polygon.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="area" data-toggle="tooltip" title="<%=l('Draw area')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="area" data-toggle="tooltip" title="<%=l('Draw area')%>">
 						<img src="http://karellodewijk.github.io/icons/area.png" />
 					</button>
 					</div>
 					<br />
 					<div class="btn-group">
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="note" data-toggle="tooltip" title="<%=l('Add a note')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="note" data-toggle="tooltip" title="<%=l('Add a note')%>">
 						<img src="http://karellodewijk.github.io/icons/note.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
 						<img src="http://karellodewijk.github.io/icons/select.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="remove" data-toggle="tooltip" title="<%=l('Delete (click map)/Delete menu')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="remove" data-toggle="tooltip" title="<%=l('Delete (click map)/Delete menu')%>">
 						<img src="http://karellodewijk.github.io/icons/bin.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
 						<img src="http://karellodewijk.github.io/icons/recticle_icon.png" />
 					</button>
 					</div>
 					<br />
 					<div class="btn-group">
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="undo" data-toggle="tooltip" title="<%=l('Undo last action')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="undo" data-toggle="tooltip" title="<%=l('Undo last action')%>">
 						<img src="http://karellodewijk.github.io/icons/undo.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="redo" data-toggle="tooltip" title="<%=l('Redo last action')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="redo" data-toggle="tooltip" title="<%=l('Redo last action')%>">
 						<img src="http://karellodewijk.github.io/icons/redo.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="cut" data-toggle="tooltip" title="<%=l('Cut (ctrl-x)')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="cut" data-toggle="tooltip" title="<%=l('Cut (ctrl-x)')%>">
 						<img src="http://karellodewijk.github.io/icons/cut.png" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="copy" data-toggle="tooltip" title="<%=l('Copy (ctrl-c)')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="copy" data-toggle="tooltip" title="<%=l('Copy (ctrl-c)')%>">
 						<img src="http://karellodewijk.github.io/icons/copy.png" />
 					</button>			
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="paste" data-toggle="tooltip" title="<%=l('Paste (press ctrl-v while on the map to paste to a specific location)')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="paste" data-toggle="tooltip" title="<%=l('Paste (press ctrl-v while on the map to paste to a specific location)')%>">
 						<img src="http://karellodewijk.github.io/icons/paste.png" />
 					</button>						
 					</div>
-					</div>
+					</div>					
+
 				<hr>
 				
 				<div id='icon_context'>
@@ -229,6 +231,7 @@
 						<option value="#0000ff"><%=l('Blue')%></option>
 						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
+						<option value="#000000"><%=l('Black')%></option>
 					</select>
 					<div class="row">
 						<div class="col-sm-3">
@@ -551,6 +554,7 @@
 						<option value="#0000ff"><%=l('Blue')%></option>
 						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
+						<option value="#000000"><%=l('Black')%></option>
 					</select>
 				
 				</div>
@@ -568,10 +572,24 @@
 						<option value="#0000ff"><%=l('Blue')%></option>
 						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-					</select>
+						<option value="#000000"><%=l('Black')%></option>
+					</select>				
+				</div>
+
+				<div class="btn-group" role="group" id="track_shape">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="circle" data-toggle="tooltip" title="<%=l('Circle')%>">
+						<img src="http://karellodewijk.github.io/icons/circle_icon.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="dot" data-toggle="tooltip" title="<%=l('Dot')%>">
+						<img src="http://karellodewijk.github.io/icons/dot_icon.png" />
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="recticle" data-toggle="tooltip" title="<%=l('Crosshair')%>">
+						<img src="http://karellodewijk.github.io/icons/recticle_icon.png" />
+					</button>
+				</div>
 				
 				</div>
-				</div>		
+				
 				
 				<div id='remove_context'>			
 
@@ -621,7 +639,7 @@
 						</button>
 						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_note" data-toggle="tooltip" title="<%=l('Clear all notes')%>">
 							<img src="http://karellodewijk.github.io/icons/clear_note.png" />
-						</button>						
+						</button>				
 					</div>
 				
 				</div>
@@ -726,21 +744,48 @@
 				</button>
 				</div>
 				<% } %>	
-				
+					
 			</div>
+			
 			<%if (game != 'blitz') { %>	
 			<div class="right_column">
 				<h4><%=l('User list')%> (<span id="user_count"></span>)</h4>
 				<p>
 				<div class="btn-group-vertical btn-group-xs" role="group" id="userlist"></div>
 			</div>
-			<% } %>	
-		</div>
+			<% } %>
+		</div>	
+			
 		<%if (game != 'blitz') { %>	
-		<div class="bottom">
-			<textarea readonly id="chat_box" rows="10" cols="60"></textarea>
-			<br />
-			<input id="chat_input" class="slider_text_input" type="text"/>
+		
+		<div class="bottom" style="width:500px;">
+			<hr>
+			<ul class="nav nav-tabs" id="bottom_tabs">
+			  <li class="active"><a data-toggle="tab" href="#chat_tab">Chat</a></li>
+			  <li id="slide_tab_button"><a data-toggle="tab" href="#slide_tab">Slides</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" style="height:150px;" id="chat_tab">
+					<textarea readonly id="chat_box" rows="10" cols="8" style="height:80%; width:100%;"></textarea>
+					<br />
+					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
+				</div>
+				<div class="tab-pane" id="slide_tab">
+					<div class="btn-group input-group dropdown" id="slide_box">
+						<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
+						<button type="button" class="btn btn-default slide_btn" id="remove_slide" data-toggle="tooltip" title="<%=l('Remove slide')%>">
+							<img src="http://karellodewijk.github.io/icons/bin.png" />
+						</button>	
+						<a class="btn btn-default slide_btn" data-toggle="dropdown">
+							<input type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />&#9660;
+						</a>					
+						<ul class="dropdown-menu" id="slide_select">
+						</ul>
+						<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
+						<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>		
+					</div>
+				</div>
+			</div>
 		</div>
 		<% } %>	
 	</div>
@@ -748,9 +793,32 @@
 <%if (game == 'blitz') { %>	
 	<div class="side_bar jumbotron">
 		<div class="bottom">
-			<textarea readonly id="chat_box" rows="10" cols="60"></textarea>
-			<br />
-			<input id="chat_input" class="slider_text_input" type="text"/>
+			<ul class="nav nav-tabs" id="bottom_tabs">
+			  <li class="active"><a data-toggle="tab" href="#chat_tab">Chat</a></li>
+			  <li id="slide_tab_button"><a data-toggle="tab" href="#slide_tab">Slides</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" style="height:150px;" id="chat_tab">
+					<textarea readonly id="chat_box" rows="10" cols="8" style="height:80%; width:100%;"></textarea>
+					<br />
+					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
+				</div>
+				<div class="tab-pane" id="slide_tab">
+					<div class="btn-group input-group dropdown" id="slide_box">
+						<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
+						<button type="button" class="btn btn-default slide_btn" id="remove_slide" data-toggle="tooltip" title="<%=l('Remove slide')%>">
+							<img src="http://karellodewijk.github.io/icons/bin.png" />
+						</button>	
+						<a class="btn btn-default slide_btn" data-toggle="dropdown">
+							<input type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />&#9660;
+						</a>					
+						<ul class="dropdown-menu" id="slide_select">
+						</ul>
+						<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
+						<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>		
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div class="side_bar jumbotron">
