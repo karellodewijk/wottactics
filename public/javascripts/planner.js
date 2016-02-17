@@ -1623,7 +1623,10 @@ function init_graphic(drawing, graphic) {
 	room_data.slides[active_slide][drawing.uid] = drawing;
 }
 
-function create_entity(entity) {	
+function create_entity(entity) {
+	if (room_data.slides[active_slide][entity.uid]) {
+		remove(entity.uid);
+	}
 	if (entity.type == 'background') {
 		set_background(entity);
 	} else if (entity.type == 'icon') {
