@@ -1,6 +1,5 @@
-wg_api_keys = {
-	eu: '13913bc2f96c6d6f52e5c20ddb6ba623'
-}
+var fs = require('fs');
+var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
 
 room_data = {} //room -> room_data map to be shared with clients
 
@@ -116,7 +115,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (identity) {
 			db.collection('users').findOne({_id:identity},{'tactics.name':1, 'tactics.date':1, 'tactics.game':1, 'tactics.uid':1}, function(err, data) {
 				if (!err) {
-					cb(data.tactics);
+					if (data.tactics) {
+						cb(data.tactics);
+					} else {
+						cb([]);
+					}
 				} else {
 					cb([]);
 				}
@@ -130,7 +133,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (room_data[room] && user.identity) { //room exists, user is logged in
 			db.collection('users').findOne({_id:user.identity, tactics:{$elemMatch:{name:name, game:game}}}, {'tactics.$':1}, function(err, result) {
 				var uid;
-				if (!err && result) {
+				if (!err && result && result.tactics) {
 					uid = result.tactics[0].uid;
 				} else {
 					uid = newUid();
@@ -229,8 +232,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	StrategyGoogle = require('passport-google-openidconnect').Strategy;
 	passport.use(new StrategyGoogle({
-		clientID:'544895630420-h9bbrnn1ndmf005on55qapanrqdidt5e.apps.googleusercontent.com',
-		clientSecret: '8jTj6l34XcZ8y_pU2cqwANjw',
+		clientID: secrets.google.client_id,
+		clientSecret: secrets.google.secret,
 		callbackURL: '/auth/google/callback',
 		passReqToCallback:true
 	  },
@@ -249,8 +252,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	FacebookStrategy = require('passport-facebook').Strategy;
 	passport.use(new FacebookStrategy({
-		clientID: '580177672120479',
-		clientSecret: 'eba898e021a070a00f60e0343450695e',
+		clientID: secrets.facebook.client_id,
+		clientSecret: secrets.facebook.secret,
 		callbackURL: "/auth/facebook/callback",
 		passReqToCallback: true
 	  },
@@ -269,8 +272,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	TwitterStrategy = require('passport-twitter').Strategy;
 	passport.use(new TwitterStrategy({
-		consumerKey: 'kyuE5HUWJipJpz1JraWrGKu0Z',
-		consumerSecret: 'qruzs2fwJG8nVMzPeFSvxWZ2ua6WzkJNpBhI5yPCSS525ivTSI',
+		consumerKey: secrets.twitter.client_id,
+		consumerSecret: secrets.twitter.secret,
 		callbackURL: "/auth/twitter/callback",
 		passReqToCallback: true
 	  },
@@ -385,6 +388,16 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 									  user: req.session.passport.user,
 									  locale: req.session.locale });
 	});
+
+	router.get('/privacypolicy.html', function(req, res, next) {
+	  if (!req.session.game) {
+		req.session.game = 'wot';
+	  }
+	  res.render('privacypolicy', { game: req.session.game, 
+									  user: req.session.passport.user,
+									  locale: req.session.locale });
+	});
+	
 	router.get('/stored_tactics.html', function(req, res, next) {
 	  if (!req.session.game) {
 		req.session.game = 'wot';
@@ -439,7 +452,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	//////////////
 	
 	function refresh_clan(req, clan_id, cb) {
-	  http.get("http://api.worldoftanks."+ req.session.passport.user.server +"/wgn/clans/info/?application_id=" + wg_api_keys[req.session.passport.user.server] + "&fields=clan_id,tag,name,members&clan_id="+clan_id, function(res) {
+	  http.get("http://api.worldoftanks."+ req.session.passport.user.server +"/wgn/clans/info/?application_id=" + secrets.wargaming[req.session.passport.user.server] + "&fields=clan_id,tag,name,members&clan_id="+clan_id, function(res) {
 		var buffer = '';
 		res.on('data', function (data) {
 		  buffer += data;
