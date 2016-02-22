@@ -2170,30 +2170,39 @@ $(document).ready(function() {
 		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		initialize_slider("icon_size", "icon_size_text", "icon_size");
 
-		$('[data-toggle="popover"]').popover({
-			container: 'body',
-			html: 'true',
-			template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-			content: function() {
-				return $('#popover-content');
+		$('html').click(function(e) {
+			if (e.target.id != 'tactic_name') {
+				$('[data-toggle="popover"]').popover('hide');
 			}
 		});
 		
-		$(document).on('click', '#store_tactic', function(){
-			var name = $(document).find('#tactic_name')[0].value;
-			if (name == "") {
-				alert("Empty name, tactic not stored");
-			} else {
-				tactic_name = name;
-				socket.emit("store", room, name);
-				$("#save").show();
-				//$('#store_tactic_popover').popover('hide');
-				$('#store_tactic_popover').popover('destroy');
-				$('#store_tactic_popover').popover('destroy');
-				alert("Tactic stored as: " + name);
+		$('[data-toggle="popover"]').popover({
+			container: 'body',
+			trigger: 'manual',
+			html: 'true',
+			template: '<div class="popover popover-medium" style="width: 300px;"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>',
+			content: function() {
+				return $('#popover-content');
 			}
-		});	
-		
+		}).click(function(e) {
+			$(this).popover('toggle');
+			document.getElementById("tactic_name").setAttribute("value", tactic_name);
+			var popover = $(this);
+			$(document).on('click', '#store_tactic', function(e) {
+				var name = $(document).find('#tactic_name')[0].value;
+				if (name == "") {
+					alert("Empty name, tactic not stored");
+				} else {
+					tactic_name = name;
+					socket.emit("store", room, name);
+					$("#save").show();
+					alert("Tactic stored as: " + name);
+					e.stopPropagation();
+				}
+			});
+			e.stopPropagation();
+		});
+	
 		$('#slide_select').on('click', 'a', function() {
 			var i = $(this).parent().index();
 			if (active_slide == i) {return;}
@@ -2457,14 +2466,12 @@ $(document).ready(function() {
 		}, 2);	
 	});
 	
-	socket.on('room_data', function(new_room_data, my_id) {
+	socket.on('room_data', function(new_room_data, my_id, new_tactic_name) {
 		room_data = new_room_data;
 		active_slide = room_data.active_slide;
 		is_room_locked = room_data.locked;
 		my_user_id = my_id;
-		if (room_data.name) {
-			tactic_name = room_data.name;
-		}
+		tactic_name = new_tactic_name;
 		for (var user in room_data.userlist) {
 			add_user(room_data.userlist[user]);
 		}

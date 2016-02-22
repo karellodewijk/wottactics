@@ -1,0 +1,8 @@
+db.tactics.find({}).forEach(function (doc) { 
+	for (var key in doc.lost_identities) {
+		if (doc.lost_identities.hasOwnProperty(key)) {
+			doc.lost_identities[key] = {role:doc.lost_identities[key]}
+		}
+	}
+	db.tactics.update({_id:doc._id}, doc);
+});

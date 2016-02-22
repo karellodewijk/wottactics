@@ -174,5 +174,14 @@ small {
     padding: 10px;
 }
 
+.tactic_entry {
+	font-family:arial;
+	background-color: #FFFFFF;
+	margin:10px 0pt 15px;
+	font-size: 12pt;
+	width: 100%;
+	text-align: left;
+}
+
 
 
