@@ -2,6 +2,14 @@
 <html>
 <head>
 	<% include common_headers.ejs %>
+	<script type="text/javascript" src="/javascripts/index.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-treetable/3.2.0/jquery.treetable.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-treetable/3.2.0/css/jquery.treetable.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-treetable/3.2.0/css/jquery.treetable.theme.default.min.css" />
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+	
 </head>
 <body>
 	<div class="container" style='width:100%; padding-top:65px;'>
@@ -9,30 +17,207 @@
 		<% include navbar.ejs %>
 		<h2><%=l('Stored tactics')%></h2>
 		<hr>
-			<div class="container" style="text-align:left; width:90%">
-				<ul class="list-group" id="tactic_list" style="vertical-align: middle">
-				
-				<% for (var i in tactics) {%>
-					<%if (game == tactics[i].game) { %>
-						<% date = new Date(tactics[i].date); %>	
-						<li class="list-group-item row" id="<%=tactics[i].uid%>"><h5 class="col-sm-7"><%=tactics[i].name%></h5><h5 class="col-sm-3"><%=date.getFullYear()%>-<%=date.getMonth()%>-<%=date.getDate()%></h5><span class="col-md-1"><a class="btn btn-danger select_tactic_button" href="javascript:void(0);" id="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><img src="http://karellodewijk.github.io/icons/bin.png" /></a></span><a class="btn btn-primary select_tactic_button col-md-1" href="<%=game%>planner.html?restore=<%=tactics[i].uid%>" id="<%=tactics[i].uid%>" role="button">Launch&raquo;</a></li>
-					<% } %>
-				<% } %>		
-				</ul>
-				<script type="text/javascript">
-					$('#tactic_list').on('click', 'a', function () {
-						if ($(this).hasClass('btn-danger')) {
-							console.error($(this).attr('date'));
-							$.post('/remove_tactic', {id: this.id});
-							$("li[id='"+this.id+"']").remove();
-						}
-					})
-				</script>
+		
+		<table style="background-color:white;" id="tactic_list">
+			<thead> 
+				<tr>
+				  <th style="width:auto" class="header" data-toggle="tooltip" title="Tactic name"><b>Name</b></th>
+				  <th style="width:auto" class="header" data-toggle="tooltip" title="Date the tactic was last changed"><b>Last changed</b></th>
+				  <th style="width:auto" class="header" data-toggle="tooltip" title="Date the tactic was created"><b>Created</b></th>
+				  <th style="width:auto" data-toggle="tooltip" title="Click to permanently remove the tactic"><b>Remove</b></th>
+				  <th style="width:auto" data-toggle="tooltip" title="Click to launch the tactic"><b>Launch</b></th>
+				</tr>
+			</thead>
+			<tbody style="vertical-align: middle;"> 
+			<% for (var i in tactics) {%>
+				<%if (game == tactics[i].game) { %>
+					<tr class="file" style="height:36px" data-tt-id="<%=tactics[i].name%>" data-tt-parent-id="<%=tactics[i].name.substring(0,tactics[i].name.lastIndexOf("/"))%>" id="<%=tactics[i].uid%>">
+						<td><img src='http://karellodewijk.github.io/icons/map_icon.png' /><%=tactics[i].name.substring(tactics[i].name.lastIndexOf("/")+1)%></td>
+						<td class='date'><%=tactics[i].date;%></td>
+						<td class='date'><%=tactics[i].date;%></td>
+						<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" id="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><img height="14" width="14" src="http://karellodewijk.github.io/icons/bin.png" /></a></td>
+						<td><a class="btn btn-primary btn-sm" href="<%=game%>planner.html?restore=<%=tactics[i].uid%>" id="<td><%=tactics[i].uid%>" role="button">Launch&raquo;</a></td>
+					</tr>
+				<% } %>
+			<% } %>	
+			</tbody>
+		</table>
 
-
+        <div class="row">
+            <div class="col-lg-3">		
+				<div class="input-group">
+					<input type="text" id="new_form_name" class="form-control" />
+					<span class="input-group-btn"><button class='btn btn-default' id="create_folder"><%=l('Create folder')%></button></span>
+				</div>
 			</div>
 		</div>
+		
 	</div>
 	<% include footer.ejs %>
 	</div>
+	
+	<script type="text/javascript" >
+	
+		function escape(s) {
+			return ('' + s)
+				.replace(/\\/g, '\\\\')
+				.replace(/\t/g, '\\t')
+				.replace(/\n/g, '\\n')
+				.replace(/\u00A0/g, '\\u00A0')
+				.replace(/&/g, '\\x26')
+				.replace(/'/g, '\\x27')
+				.replace(/"/g, '\\x22')
+				.replace(/</g, '\\x3C')
+				.replace(/>/g, '\\x3E')
+				;
+		}
+	
+		$(document).ready(function() { 
+			$('#tactic_list').on('click', 'a', function () {
+				if ($(this).hasClass('btn-danger')) {
+					$.post('/remove_tactic', {id: this.id});
+					var node = $("#tactic_list").treetable("node", $(this).parent().parent().attr('data-tt-id'));
+					$("#tactic_list").treetable("unloadBranch", node);					
+					$("tr[id='"+this.id+"']").remove();
+				}
+			})
+			
+			$('#create_folder').click(function(){
+				var path = $('#new_form_name').val();
+				
+				var temp = $("<tr style='height:36px' class='folder' data-tt-id='' id=''><td><img src='icons/folder.png' /> " + escape(path) + "</td><td></td><td></td><td></td><td></td></tr>");
+
+				$("#tactic_list tbody").append(temp);
+				var node = $("#tactic_list tbody tr").last();
+				node.attr('data-tt-id', escape(path));
+				node.attr('id', escape(path));		
+				
+				$("#tactic_list").treetable("loadBranch", null, node);
+				
+				//var node = $('#'+path);
+				make_draggable(node);
+				make_dropable(node);				
+			})
+			
+			$(".date").each(function () {
+			  $(this).html(new Date(parseInt($(this).text())).toLocaleString()); 
+			});		
+			
+			function create_folder_if_not_exists(path, parent) {
+				if (path == "")	return;
+				var res = path.split('/');
+				var path;
+				if (parent != "") {
+					path = parent + "/" + res[0];
+				} else {
+					path = res[0];
+				}
+				if (!$("#tactic_list tbody tr[data-tt-id='" + path + "']").length) {
+					if (parent != "") {
+						$("#tactic_list tbody").append("<tr style='height:36px' class='folder' data-tt-parent-id='"+ parent +"' data-tt-id='"+ path + "'><td><img src='icons/folder.png' /> " + res[0] + "</td><td></td><td></td><td></td><td></td></tr>");
+					} else {
+						$("#tactic_list tbody").append("<tr style='height:36px' class='folder' data-tt-id='"+ path + "'><td><img src='icons/folder.png' /> " + res[0] + "</td><td></td><td></td><td></td><td></td></tr>");						
+					}
+				}
+				create_folder_if_not_exists(res.slice(1).join("/"), path);
+			}
+			
+			$("#tactic_list tbody tr").each(function(){
+				if ($(this).attr("data-tt-parent-id")) {
+					var parent_path = $(this).attr('data-tt-parent-id');
+					create_folder_if_not_exists(parent_path, "");
+				}
+			});
+			
+			function sort_nodes() {
+				var options = $("#tactic_list tbody tr").sort(function(a,b) {
+					if ( $(a).attr("data-tt-id") < $(b).attr("data-tt-id") )
+					  return -1;
+					if ( $(a).attr("data-tt-id") > $(b).attr("data-tt-id") )
+					  return 1;
+					return 0;
+				});
+				$("#tactic_list tbody").empty().append(options); //ie fix no-op			
+			}
+			
+			sort_nodes();
+			
+
+			$("#tactic_list").treetable({ expandable: true });
+
+			// Highlight selected row
+			$("#tactic_list tbody").on("mousedown", "tr", function() {
+			  $(".selected").not(this).removeClass("selected");
+			  $(this).toggleClass("selected");
+			});
+
+			function make_draggable(node) {
+				node.draggable({
+				  helper: "clone",
+				  opacity: .75,
+				  refreshPositions: true,
+				  revert: "invalid",
+				  revertDuration: 300,
+				  scroll: true
+				});
+			}
+			
+			function move(node, path) {
+				var old_path = node.attr('data-tt-id');
+				var res = old_path.split('/');
+				var file_name = res[res.length-1];
+
+				var new_path;
+				if (path != "") {
+					new_path = path + '/' + file_name;
+					
+				} else {
+					new_path = file_name;
+				}
+
+				node.attr('data-tt-id', new_path);
+				node.attr('data-tt-parent-id', path);
+				
+				if (node.hasClass('file')) {
+					$.post('/rename_tactic', {uid: node.attr('id'), new_name:new_path});
+				} else {					
+					$("#tactic_list tbody tr[data-tt-parent-id='" + old_path + "']").each(function(){
+						move($(this), new_path);
+					});
+					
+				}				
+			}
+			
+			function make_dropable(node) {
+				node.droppable({
+					accept: ".file, .folder",
+					drop: function(e, ui) {
+					  var droppedEl = ui.draggable;
+
+					  $("#tactic_list").treetable("move", droppedEl.data("ttId"), $(this).data("ttId"));
+
+					  move(droppedEl, $(this).attr('data-tt-id'));
+					  
+					},
+					hoverClass: "accept",
+					over: function(e, ui) {
+					  var droppedEl = ui.draggable;
+					  if(this != droppedEl[0] && !$(this).is(".expanded")) {
+						$("#tactic_list").treetable("expandNode", $(this).data("ttId"));
+					  }
+					}
+				});
+			}
+
+			$("#tactic_list .file, #tactic_list .folder").each( function() {
+				make_draggable($(this));
+			});
+
+			$("#tactic_list .folder").each(function() {
+				make_dropable($(this));
+			});
+
+		}); 		
+	</script>
+	
 </body>

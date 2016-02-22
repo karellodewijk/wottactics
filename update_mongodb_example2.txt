@@ -12,6 +12,12 @@ db.getCollectionNames().forEach(function(collname){
 });
 
 
+	db.getCollection("users").find({}).forEach(function (doc) {
+		for (var i in doc.tactics.)
+	});
+});
+
+
 db.getCollectionNames().forEach(function(collname){
 	//generates unique id
 	function newUid() {
