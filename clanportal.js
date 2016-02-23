@@ -127,17 +127,6 @@ router.get('/clanportal.html', function(req, res, next) {
   });
 });
 
-router.get('/save.html', function(req, res, next) {
-	for (var room in room_data) {
-		save_room(room);
-	}
-	res.send('Success');
-});
-
-router.get('/log.html', function(req, res, next) {
-	res.send("Active rooms: " + Object.keys(room_data).length);
-});
-
 router.get('/members.html', function(req, res, next) {
   req.load_members = true;
   verify_clan(req, function(clan) {

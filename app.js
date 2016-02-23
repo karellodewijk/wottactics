@@ -95,7 +95,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		setTimeout( function() {
 			if (room_data[room]) {
 				if (!io.sockets.adapter.rooms[room]) {
-					if (Date.now() - room_data[room].last_join > 5000) {
+					if (Date.now() - room_data[room].last_join > 50000) {
 						save_room(room);
 						delete room_data[room];
 					} else {
@@ -103,7 +103,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 					}
 				}
 			}
-		}, 6000);
+		}, 60000);
 	}
 	
 	function save_room(room) {
@@ -486,6 +486,26 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
 	router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
 
+	//force saves all rooms to DB, run before a restart/shutdown
+	router.get('/save.html', function(req, res, next) {
+		for (var room in room_data) {
+			save_room(room);
+		}
+		res.send('Success');
+	});
+
+	//some basic logging data
+	router.get('/log.html', function(req, res, next) {
+		res.send("Active rooms: " + Object.keys(room_data).length);
+	});
+	
+	//reloads templates, so I don't have to restart the server to add basic content
+	router.get('/refresh.html', function(req, res, next) {
+		var ejs = require('ejs')
+		ejs.clearCache();
+		res.send("Refreshed")
+	});
+	
 	//////////////
 	//clanportal//
 	//////////////
