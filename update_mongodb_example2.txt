@@ -51,6 +51,7 @@ db.getCollectionNames().forEach(function(collname){
 });
 
 db.users.find({_id:'505943778-Kalith'});
+db.users.find({_id:'502480755-aragorn2lyon'});
 
 
 
