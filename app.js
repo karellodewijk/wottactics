@@ -577,12 +577,13 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						room_data[room].last_join = Date.now();	
 						room_data[room].userlist = {};
 					} else {
-						room_data[room] = {};	
-						room_data[room].slides = [{}];
+						room_data[room] = {};
+						var slide0_uid = newUid();
+						room_data[room].slides = {};
+						room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}}
 						var background_uid = newUid();
-						room_data[room].slides[0][background_uid] = {uid:background_uid, type:'background', path:""};
-						room_data[room].active_slide = 0;
-						room_data[room].slide_names = [''];
+						room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:""};
+						room_data[room].active_slide = slide0_uid;
 						room_data[room].userlist = {};
 						room_data[room].lost_users = {};
 						room_data[room].lost_identities = {};
@@ -631,7 +632,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('create_entity', function(room, entity, slide) {
 			if (room_data[room] && entity) {
 				if (room_data[room].slides[slide]) {
-					room_data[room].slides[slide][entity.uid] = entity;
+					room_data[room].slides[slide].entities[entity.uid] = entity;
 				} else {
 					console.log("room: ",room_data[room]);
 					console.log("slide:", slide);
@@ -642,10 +643,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 		
 		socket.on('drag', function(room, uid, slide, x, y) {
-			if (room_data[room] && room_data[room].slides[slide] && room_data[room].slides[slide][uid]) {
-				room_data[room].slides[slide][uid].x = x;
-				room_data[room].slides[slide][uid].y = y;
-				socket.broadcast.to(room).emit('drag', uid, slide, x, y);
+			if (room_data[room] && room_data[room].slides[slide] && room_data[room].slides[slide].entities[uid]) {
+				room_data[room].slides[slide].entities[uid].x = x;
+				room_data[room].slides[slide].entities[uid].y = y;
+				io.to(room).emit('drag', uid, slide, x, y);
 			}
 		});
 
@@ -666,8 +667,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 		
 		socket.on('remove', function(room, uid, slide) {
-			if (room_data[room] && room_data[room].slides[slide] && room_data[room].slides[slide][uid]) {
-				delete room_data[room].slides[slide][uid];
+			if (room_data[room] && room_data[room].slides[slide] && room_data[room].slides[slide].entities[uid]) {
+				delete room_data[room].slides[slide].entities[uid];
 				socket.broadcast.to(room).emit('remove', uid, slide);
 			}
 		});
@@ -700,31 +701,113 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				socket.broadcast.to(room).emit('add_user', user);
 			}
 		});
-		
-		socket.on('change_slide', function(room, slide) {
-			room_data[room].active_slide = slide;
-			socket.broadcast.to(room).emit('change_slide', slide);
-		});
-		
-		socket.on('new_slide', function(room, slide) {
-			room_data[room].slides.splice(slide+1, 0, JSON.parse(JSON.stringify(room_data[room].slides[slide])));
-			room_data[room].slide_names.splice(slide+1, 0, "");
-			room_data[room].active_slide = slide+1;
-			socket.broadcast.to(room).emit('new_slide', slide);
-		});
 
-		socket.on('remove_slide', function(room, slide) {
-			if (room_data[room].slides.length > slide) {
-				room_data[room].slides.splice(slide, 1);
-				room_data[room].slide_names.splice(slide, 1);
-				room_data[room].active_slide = Math.max(slide-1, 0);
-				socket.broadcast.to(room).emit('remove_slide', slide);
+
+		//slide stuff, and why I don't store them in an array
+		socket.on('change_slide', function(room, uid) {
+			if (room_data[room]) {
+				if (room_data[room].slides[uid]) {
+					room_data[room].active_slide = uid;
+					io.to(room).emit('change_slide', uid); 
+				} else {
+					io.to(room).emit('change_slide', room_data[room].active_slide); 
+				}
 			}
 		});
 		
-		socket.on('rename_slide', function(room, slide, name) {
-			room_data[room].slide_names[slide] = name;
-			socket.broadcast.to(room).emit('rename_slide', slide, name);
+		function find_previous_slide(room, upper_bound) {
+			var largest = -1;
+			var uid = 0;
+			for (var key in room_data[room].slides) {
+				var order = room_data[room].slides[key].order
+				if ( order < upper_bound && order > largest) {
+					largest = order;
+					uid = key;
+				}
+			}
+			return uid;
+		}
+
+		function find_next_slide(room, lower_bound) {
+			var smallest = Number.MAX_SAFE_INTEGER;
+			var uid = 0;
+			for (var key in room_data[room].slides) {
+				var order = room_data[room].slides[key].order
+				if ( order > lower_bound && order < smallest) {
+					smallest = order;
+					uid = key;
+				}
+			}
+			return uid;
+		}
+		
+		function hash(uid) {
+			var hash = 0;
+			for (var i = 0; i < uid.length; i++) {
+				hash += uid.charCodeAt(i);
+			}
+			return hash;
+		}
+		
+		function resolve_order_conflicts(room, slide) {
+			for (var key in room_data[room].slides) {
+				if (room_data[room].slides[key].order == slide.order) {
+					var new_order;
+					if (hash(slide.uid) < hash(room_data[room].slides[key].uid)) {
+						var prev_slide = find_previous_slide(room, slide.order);
+						var last_order = 0;
+						if (prev_slide != 0) {
+							last_order = room_data[room].slides[prev_slide].order;
+						}
+						slide.order = Math.floor((slide.order - last_order) / 2);
+					} else {
+						var next_slide = find_next_slide(room, slide.order);
+						var next_order = slide.order + 4294967296;
+						if (next_slide != 0) {
+							next_order = room_data[room].slides[next_slide].order;
+						}					
+						slide.order = Math.floor((next_order - slide.order) / 2);						
+					}
+					resolve_order_conflicts(room, slide); //we do this again because it might still not be unique
+					return;
+				}
+			}
+		}
+		
+		socket.on('new_slide', function(room, slide) {
+			if (room_data[room]) {
+				resolve_order_conflicts(room, slide);
+				room_data[room].slides[slide.uid] = slide;
+				room_data[room].active_slide = slide.uid;
+				socket.broadcast.to(room).emit('new_slide', slide);
+				io.to(room).emit('change_slide', slide.uid);
+			}
+		});
+
+		socket.on('remove_slide', function(room, uid) {			
+			if (room_data[room]) {
+				if (Object.keys(room_data[room].slides).length > 1) {
+					if (uid == room_data[room].active_slide) {
+						var order = room_data[room].slides[uid].order;
+						var new_slide = find_previous_slide(room, order);
+						if (new_slide == 0) {
+							new_slide = find_next_slide(room, order);
+						}
+						room_data[room].active_slide = new_slide;
+					}
+					delete room_data[room].slides[uid];
+					socket.broadcast.to(room).emit('remove_slide', uid);
+					
+					io.to(room).emit('change_slide', room_data[room].active_slide);
+				}
+			}
+		});
+		
+		socket.on('rename_slide', function(room, uid, name) {
+			if (room_data[room] && room_data[room].slides[uid]) {
+				room_data[room].slides[uid].name = name;
+				socket.broadcast.to(room).emit('rename_slide', uid, name);
+			}
 		});	
 
 		socket.on('lock_room', function(room, is_locked) {

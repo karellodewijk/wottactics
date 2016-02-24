@@ -245,8 +245,8 @@ function resize_renderer(new_size_x, new_size_y) {
 	$("#render_frame").attr('style', 'height:' + size_y + 'px; width:' + size_x + 'px;');
 	
 	for (var i in room_data.slides[active_slide]) {
-		if (room_data.slides[active_slide][i] && room_data.slides[active_slide][i].type == 'note') {
-		    align_note_text(room_data.slides[active_slide][i]);
+		if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
+		    align_note_text(room_data.slides[active_slide].entities[i]);
 		}
 	}
 	renderer.render(stage);
@@ -317,7 +317,7 @@ function set_background(new_background) {
 		renderer.render(stage);
 	});
 	
-	room_data.slides[active_slide][new_background.uid] = new_background;
+	room_data.slides[active_slide].entities[new_background.uid] = new_background;
 	
 }
 
@@ -446,19 +446,22 @@ function on_drag_move(e) {
 }
 
 function remove(uid, keep_entity) {
-	if (room_data.slides[active_slide][uid] && room_data.slides[active_slide][uid].container) {
-		if (room_data.slides[active_slide][uid].type == "note") {
-			room_data.slides[active_slide][uid].container.menu.remove();
+	if (room_data.slides[active_slide].entities[uid] && room_data.slides[active_slide].entities[uid].container) {
+		if (room_data.slides[active_slide].entities[uid].type == "note") {
+			room_data.slides[active_slide].entities[uid].container.menu.remove();
 		}
-		objectContainer.removeChild(room_data.slides[active_slide][uid].container);
-		delete room_data.slides[active_slide][uid].container;
+		objectContainer.removeChild(room_data.slides[active_slide].entities[uid].container);
+		delete room_data.slides[active_slide].entities[uid].container;
+		
+		if (room_data.slides[active_slide].entities[uid] && room_data.slides[active_slide].entities[uid].type == "icon") {
+			var counter = $('#'+room_data.slides[active_slide].entities[uid].tank).find("span");
+			counter.text((parseInt(counter.text())-1).toString());		
+			counter = $("#icon_context").find("span").first();
+			counter.text((parseInt(counter.text())-1).toString());
+		}
 	}
-	if (room_data.slides[active_slide][uid] && room_data.slides[active_slide][uid].type == "icon") {
-		var counter = $('#'+room_data.slides[active_slide][uid].tank).find("span");
-		counter.text((parseInt(counter.text())-1).toString());		
-		counter = $("#icon_context").find("span").first();
-		counter.text((parseInt(counter.text())-1).toString());
-	}
+	
+
 	
 	//if an item is removed, remove them from selected_entities
 	var i = selected_entities.length
@@ -469,7 +472,7 @@ function remove(uid, keep_entity) {
 	}
 	
 	if (!keep_entity) {
-		delete room_data.slides[active_slide][uid];	
+		delete room_data.slides[active_slide].entities[uid];	
 	}
 	renderer.render(stage);
 }
@@ -690,7 +693,7 @@ function create_note(note) {
 	sprite.texture.on('update', function() {	
 		renderer.render(stage);
 	});
-	room_data.slides[active_slide][note.uid] = note;
+	room_data.slides[active_slide].entities[note.uid] = note;
 }
 
 function create_tracker(tracker) {
@@ -1056,11 +1059,11 @@ function on_select_end(e) {
 	var x_max = Math.max(mouse_x_abs(mouse_location.x), left_click_origin[0]);
 	var y_max = Math.max(mouse_y_abs(mouse_location.y), left_click_origin[1]);
 	
-	for (var key in room_data.slides[active_slide]) {
-		if (room_data.slides[active_slide].hasOwnProperty(key) && room_data.slides[active_slide][key].container) {
-			var box = room_data.slides[active_slide][key].container.getBounds();
+	for (var key in room_data.slides[active_slide].entities) {
+		if (room_data.slides[active_slide].hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
+			var box = room_data.slides[active_slide].entities[key].container.getBounds();
 			if (box.x > x_min && box.y > y_min && box.x + box.width < x_max && box.y + box.height < y_max) {
-				selected_entities.push(room_data.slides[active_slide][key]);
+				selected_entities.push(room_data.slides[active_slide].entities[key]);
 			}
 		}
 	}
@@ -1080,7 +1083,7 @@ function select_entities() {
 	]
 	
 	for (var i in selected_entities) {
-		room_data.slides[active_slide][selected_entities[i].uid].container.filters = [filter];
+		room_data.slides[active_slide].entities[selected_entities[i].uid].container.filters = [filter];
 	}
 }
 
@@ -1316,14 +1319,16 @@ function create_text(text_entity) {
 	objectContainer.addChild(text_entity.container);
 	renderer.render(stage);
 	
-	room_data.slides[active_slide][text_entity.uid] = text_entity;
+	room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
 }
 	
 function create_icon(icon) {
 	var counter = $('#'+icon.tank).find("span");
 	counter.text((parseInt(counter.text())+1).toString());
+	
 	counter = $("#icon_counter");
 	counter.text((parseInt(counter.text())+1).toString());
+	
 	var texture = PIXI.Texture.fromImage(image_host + icon.tank +'.png');
 	var sprite = new PIXI.Sprite(texture);
 	sprite.tint = icon.color;
@@ -1358,7 +1363,7 @@ function create_icon(icon) {
 		renderer.render(stage);
 	});
 	
-	room_data.slides[active_slide][icon.uid] = icon;
+	room_data.slides[active_slide].entities[icon.uid] = icon;
 }
 
 function make_draggable(root) {
@@ -1620,11 +1625,11 @@ function init_graphic(drawing, graphic) {
 
 	drawing.container.entity = drawing;
 	renderer.render(stage);	
-	room_data.slides[active_slide][drawing.uid] = drawing;
+	room_data.slides[active_slide].entities[drawing.uid] = drawing;
 }
 
 function create_entity(entity) {
-	if (room_data.slides[active_slide][entity.uid]) {
+	if (room_data.slides[active_slide].entities[entity.uid]) {
 		remove(entity.uid);
 	}
 	if (entity.type == 'background') {
@@ -1740,10 +1745,10 @@ function update_lock() {
 		$('.left_column').hide();
 		$('#slide_tab_button').hide();
 		for (var i in room_data.slides[active_slide]) {
-			if (room_data.slides[active_slide][i] && room_data.slides[active_slide][i].type == 'note') {
-				if (room_data.slides[active_slide][i].container) {
-					$('textarea', room_data.slides[active_slide][i].container.menu).prop('readonly', true);
-					$('button', room_data.slides[active_slide][i].container.menu).hide();
+			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
+				if (room_data.slides[active_slide].entities[i].container) {
+					$('textarea', room_data.slides[active_slide].entities[i].container.menu).prop('readonly', true);
+					$('button', room_data.slides[active_slide].entities[i].container.menu).hide();
 				}
 			}
 		}
@@ -1751,10 +1756,10 @@ function update_lock() {
 		$('.left_column').show();
 		$('#slide_tab_button').show();
 		for (var i in room_data.slides[active_slide]) {
-			if (room_data.slides[active_slide][i] && room_data.slides[active_slide][i].type == 'note') {
-				if (room_data.slides[active_slide][i].container) {
-					$('textarea', room_data.slides[active_slide][i].container.menu).prop('readonly', false);
-					$('button', room_data.slides[active_slide][i].container.menu).show();
+			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
+				if (room_data.slides[active_slide].entities[i].container) {
+					$('textarea', room_data.slides[active_slide].entities[i].container.menu).prop('readonly', false);
+					$('button', room_data.slides[active_slide].entities[i].container.menu).show();
 				}
 			}
 		}
@@ -1813,9 +1818,9 @@ function initialize_slider(slider_id, slider_text_id, variable_name) {
 //clear entities of a certain type from the map
 function clear(type) {
 	var cleared_entities = [];
-	for (var key in room_data.slides[active_slide]) {
-		if (room_data.slides[active_slide].hasOwnProperty(key) && (room_data.slides[active_slide][key].type == type || !type) && (room_data.slides[active_slide][key].type != 'background')) {
-			var entity = room_data.slides[active_slide][key];
+	for (var key in room_data.slides[active_slide].entities) {
+		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && (room_data.slides[active_slide].entities[key].type == type || !type) && (room_data.slides[active_slide].entities[key].type != 'background')) {
+			var entity = room_data.slides[active_slide].entities[key];
 			remove(key);
 			cleared_entities.push(entity)
 			socket.emit('remove', room, key, active_slide);
@@ -1841,10 +1846,10 @@ function undo() {
 				var x = action[1][i][0][0];
 				var y = action[1][i][0][1];
 				var uid = action[1][i][1].uid;
-				if (room_data.slides[active_slide][uid]) { //still exists
-					action[1][i][0][0] = room_data.slides[active_slide][uid].x;
-					action[1][i][0][1] = room_data.slides[active_slide][uid].y;
-					drag_entity(room_data.slides[active_slide][uid], x, y);
+				if (room_data.slides[active_slide].entities[uid]) { //still exists
+					action[1][i][0][0] = room_data.slides[active_slide].entities[uid].x;
+					action[1][i][0][1] = room_data.slides[active_slide].entities[uid].y;
+					drag_entity(room_data.slides[active_slide].entities[uid], x, y);
 					renderer.render(stage);
 					socket.emit('drag', room, uid, active_slide, x, y);
 				}
@@ -1891,10 +1896,10 @@ function redo() {
 				var x = action[1][i][0][0];
 				var y = action[1][i][0][1];
 				var uid = action[1][i][1].uid;
-				if (room_data.slides[active_slide][uid]) { //still exists
-					action[1][i][0][0] = room_data.slides[active_slide][uid].x;
-					action[1][i][0][1] = room_data.slides[active_slide][uid].y;
-					drag_entity(room_data.slides[active_slide][uid], x, y);
+				if (room_data.slides[active_slide].entities[uid]) { //still exists
+					action[1][i][0][0] = room_data.slides[active_slide].entities[uid].x;
+					action[1][i][0][1] = room_data.slides[active_slide].entities[uid].y;
+					drag_entity(room_data.slides[active_slide].entities[uid], x, y);
 					renderer.render(stage);
 					socket.emit('drag', room, uid, active_slide, x, y);
 				}
@@ -1952,61 +1957,127 @@ function drag_entity(entity, x, y) {
 	renderer.render(stage);	
 }
 
+function find_first_slide() {
+	var first = Number.MAX_SAFE_INTEGER;
+	var uid = 0;
+	for (var key in room_data.slides) {
+		var order = room_data.slides[key].order
+		if (order < first) {
+			first = order;
+			uid = key;
+		}
+	}
+	return uid;
+}
+
+function find_previous_slide(upper_bound) {
+	var largest = -1;
+	var uid = 0;
+	for (var key in room_data.slides) {
+		var order = room_data.slides[key].order
+		if ( order < upper_bound && order > largest) {
+			largest = order;
+			uid = key;
+		}
+	}
+	return uid;
+}
+
+function find_next_slide(lower_bound) {
+	var smallest = Number.MAX_SAFE_INTEGER;
+	var uid = 0;
+	for (var key in room_data.slides) {
+		var order = room_data.slides[key].order
+		if ( order > lower_bound && order < smallest) {
+			smallest = order;
+			uid = key;
+		}
+	}
+	return uid;
+}
+
+function hash(uid) {
+	var hash = 0;
+	for (var i = 0; i < uid.length; i++) {
+		hash += uid.charCodeAt(i);
+	}
+	return hash;
+}
+
+function resolve_order_conflicts(slide) {
+	for (var key in room_data.slides) {
+		if (room_data.slides[key].order == slide.order) {
+			var new_order;
+			if (hash(slide.uid) < hash(room_data.slides[key].uid)) {
+				var prev_slide = find_previous_slide(slide.order);
+				var last_order = 0;
+				if (prev_slide != 0) {
+					last_order = room_data.slides[prev_slide].order;
+				}
+				slide.order = Math.floor((slide.order - last_order) / 2);
+			} else {
+				var next_slide = find_next_slide(slide.order);
+				var next_order = slide.order + 4294967296;
+				if (next_slide != 0) {
+					next_order = room_data.slides[next_slide].order;
+				}					
+				slide.order = Math.floor((next_order - slide.order) / 2);						
+			}
+			resolve_order_conflicts(room, slide); //we do this again because it might still not be unique
+			return;
+		}
+	}
+}
+
 function update_slide_buttons() {
-	if (active_slide == 0) {
+	var prev_slide_uid = find_previous_slide(room_data.slides[active_slide].order);
+	var next_slide_uid = find_next_slide(room_data.slides[active_slide].order);
+	
+	if (prev_slide_uid == 0) {
 		document.getElementById("prev_slide").disabled = true;
 	} else {
 		document.getElementById("prev_slide").disabled = false;
 	}
-	if (active_slide+1 == room_data.slides.length) {
+	if (next_slide_uid == 0) {
 		document.getElementById("next_slide").disabled = true;
 	} else {
 		document.getElementById("next_slide").disabled = false;
 	}
-	if (room_data.slides.length == 1) {
+	if (Object.keys(room_data.slides).length == 1) {
 		document.getElementById("remove_slide").disabled = true;
 	} else {
 		document.getElementById("remove_slide").disabled = false;
 	}
 	
-	var name;
-	if (room_data.slide_names[active_slide] == '') {
-		name = slide_name + " " + (active_slide+1);
-	} else {
-		name = room_data.slide_names[active_slide];
-	}
+	var name = room_data.slides[active_slide].name;
 	$('#slide_name_field').val(name);
-	
 	$('#slide_select').empty();
-	for (var i = 0; i < room_data.slides.length; i++) { 
-		var name;
-		if (room_data.slide_names[i] == '') {
-			name = slide_name + " " + (i+1);
-		} else {
-			name = room_data.slide_names[i];
-		}
-		$('#slide_select').append("<li><a>" + name + "</a></li>")
-	}
+	
+	var current_slide_uid = find_first_slide();
+	do {
+		var name = room_data.slides[current_slide_uid].name;
+		$('#slide_select').append("<li><a id='" + current_slide_uid + "'>" + name + "</a></li>");
+		current_slide_uid = find_next_slide(room_data.slides[current_slide_uid].order);
+	} while (current_slide_uid != 0);
 }
 
 function transition(slide) {
 	var to_remove = [];
 	var to_add = [];
 	var to_transition = [];
-	
-	for (var key in room_data.slides[active_slide]) { 
-		if (room_data.slides[slide][key]) {
+	 
+	for (var key in room_data.slides[active_slide].entities) { 
+		if (room_data.slides[slide].entities[key]) {
 			to_transition.push(key);
 		} else {
 			to_remove.push(key);
 		}
 	}	
-	for (var key in room_data.slides[slide]) {
+	for (var key in room_data.slides[slide].entities) {
 		if (!room_data.slides[active_slide].hasOwnProperty(key)) {
 			to_add.push(key);
 		}
 	}
-	
 	for (var i in to_remove) {
 		var key = to_remove[i];
 		remove(key, true);
@@ -2015,19 +2086,19 @@ function transition(slide) {
 	for (var i in to_transition) {
 		//take over the container
 		var key = to_transition[i];
-		room_data.slides[slide][key].container = room_data.slides[active_slide][key].container;
-		delete room_data.slides[active_slide][key].container;
-		if (room_data.slides[slide][key].container) {
-			room_data.slides[slide][key].container.entity = room_data.slides[slide][key];
+		room_data.slides[slide].entities[key].container = room_data.slides[active_slide].entities[key].container;
+		delete room_data.slides[active_slide].entities[key].container;
+		if (room_data.slides[slide].entities[key].container) {
+			room_data.slides[slide].entities[key].container.entity = room_data.slides[slide].entities[key];
 		}
 
-		if (room_data.slides[slide][key].type == "background") {
+		if (room_data.slides[slide].entities[key].type == "background") {
 			to_add.push(key);
 		} else {
-			room_data.slides[slide][key].container.x += x_abs(room_data.slides[slide][key].x-room_data.slides[active_slide][key].x);
-			room_data.slides[slide][key].container.y += y_abs(room_data.slides[slide][key].y-room_data.slides[active_slide][key].y);
-			if (room_data.slides[slide][key].type == 'note') {
-				align_note_text(room_data.slides[slide][key]);
+			room_data.slides[slide].entities[key].container.x += x_abs(room_data.slides[slide].entities[key].x-room_data.slides[active_slide].entities[key].x);
+			room_data.slides[slide].entities[key].container.y += y_abs(room_data.slides[slide].entities[key].y-room_data.slides[active_slide].entities[key].y);
+			if (room_data.slides[slide].entities[key].type == 'note') {
+				align_note_text(room_data.slides[slide].entities[key]);
 			}
 		}
 	}
@@ -2036,7 +2107,7 @@ function transition(slide) {
 		
 	for (var i in to_add) {
 		var key = to_add[i];
-		create_entity(room_data.slides[slide][key]);
+		create_entity(room_data.slides[slide].entities[key]);
 	}
 		
 	renderer.render(stage);
@@ -2050,41 +2121,59 @@ function change_slide(slide) {
 	transition(slide);	
 }
 
-//add a new slide after #slide
-function new_slide(slide) {
-	deselect_all();
+//create a new slide based on slide
+function create_new_slide(slide) {	
+	var new_slide = {};
+	new_slide.uid = newUid();
 	
-	var entities = {};
-	for (var key in room_data.slides[slide]) {
-		var temp = room_data.slides[slide][key].container;
-		delete room_data.slides[slide][key].container;
-		entities[key] = JSON.parse(JSON.stringify(room_data.slides[slide][key]));
-		room_data.slides[slide][key].container = temp;
-	}	
-	room_data.slides.splice(slide+1, 0, entities);
-	room_data.slide_names.splice(slide+1, 0, "");
+	//generate a new name for the slide
+	var new_name = room_data.slides[slide].name;
+	var res = new_name.split(' ');
+	if (!isNaN(parseFloat(res[res.length-1]))) { //ends with a number
+		res[res.length-1] = '' + (parseFloat(res[res.length-1]) + 1);
+		new_name = res.join(' ');
+	} else {
+		new_name = new_name + ' 1';
+	}
+	new_slide.name = new_name;
+	new_slide.entities = {};
 	
-	transition(slide+1);
+	for (var key in room_data.slides[slide].entities) {
+		var temp = room_data.slides[slide].entities[key].container;
+		delete room_data.slides[slide].entities[key].container;
+		new_slide.entities[key] = JSON.parse(JSON.stringify(room_data.slides[slide].entities[key]));
+		room_data.slides[slide].entities[key].container = temp;
+	}
+	
+	var new_order = 0;
+	var next_slide_uid = find_next_slide(room_data.slides[slide].order);
+	if (next_slide_uid == 0) {
+		new_order = room_data.slides[slide].order + 4294967296;
+	} else {
+		new_order = Math.floor((room_data.slides[next_slide_uid].order - room_data.slides[slide].order) / 2);
+	}
+	new_slide.order = new_order;
+	return new_slide;
 }
 
-function remove_slide(slide) {
-	if (slide == active_slide) {
-		if (slide == 0) {
-			change_slide(1);
-		} else {
-			change_slide(slide-1);
+function remove_slide(uid) {
+	if (Object.keys(room_data.slides).length > 1) {
+		if (uid == active_slide) {
+			var order = room_data.slides[uid].order;
+			var new_slide = find_previous_slide(order);
+			if (new_slide == 0) {
+				new_slide = find_next_slide(order);
+			}
+			change_slide(new_slide);
+			active_slide = new_slide;
 		}
+		delete room_data.slides[uid];
 	}
-	if (room_data.slides.length > slide) {
-		room_data.slides.splice(slide, 1);
-		room_data.slide_names.splice(slide, 1);
-		active_slide = Math.max(slide-1, 0);
-		update_slide_buttons();
-	}
+	update_slide_buttons();
 }
 
 function rename_slide(slide, name) {
-	room_data.slide_names[slide] = name;
+	room_data.slides[slide].name = name;
 	update_slide_buttons();
 }
 
@@ -2204,27 +2293,37 @@ $(document).ready(function() {
 		});
 	
 		$('#slide_select').on('click', 'a', function() {
-			var i = $(this).parent().index();
-			if (active_slide == i) {return;}
-			socket.emit("change_slide", room, i);
-			change_slide(i);
+			var new_slide = $(this).attr('id');
+			if (active_slide == new_slide) {return;}
+			socket.emit("change_slide", room, new_slide);
+			change_slide(new_slide);
 		});
-		$('#prev_slide').click(function() { 
-			socket.emit("change_slide", room, active_slide-1);
-			change_slide(active_slide-1);
+		$('#prev_slide').click(function() {
+			var prev_slide_uid = find_previous_slide(room_data.slides[active_slide].order);
+			if (prev_slide_uid != 0) {
+				socket.emit("change_slide", room, prev_slide_uid);
+				change_slide(prev_slide_uid);
+			}
 		});
 		$('#next_slide').click(function() {
-			socket.emit("change_slide", room, active_slide+1);
-			change_slide(active_slide+1);
+			var next_slide_uid = find_next_slide(room_data.slides[active_slide].order);
+			if (next_slide_uid != 0) {
+				socket.emit("change_slide", room, next_slide_uid);
+				change_slide(next_slide_uid);
+			}
 		});
 		$('#new_slide').click(function() {
-			socket.emit("new_slide", room, active_slide);
-			new_slide(active_slide);
+			var new_slide = create_new_slide(active_slide);
+			socket.emit("new_slide", room, new_slide);			
+			room_data.slides[new_slide.uid] = new_slide;
+			transition(new_slide.uid);
 		});
-		$('#remove_slide').click(function() {
-			socket.emit("remove_slide", room, active_slide);
-			remove_slide(active_slide);
-		});		
+		$('#remove_slide').click(function() { //removed active_slide
+			if (Object.keys(room_data.slides).length > 1) {
+				socket.emit('remove_slide', room, active_slide);
+				remove_slide(active_slide);
+			}
+		});
 		$('#save').click(function() { 
 			if (tactic_name && tactic_name != "") {
 				socket.emit("store", room, tactic_name);
@@ -2474,36 +2573,31 @@ $(document).ready(function() {
 		tactic_name = new_tactic_name;
 		for (var user in room_data.userlist) {
 			add_user(room_data.userlist[user]);
-		}
-		for (var key in room_data.slides[active_slide]) {
-			create_entity(room_data.slides[active_slide][key]);
-		}
-		for (var i = 0; i < room_data.slides.length; i++) { 
-			var name = slide_name + " " + (i+1);
-			if (room_data.slide_names[i] != '') {
-				name = room_data.slide_names[i];
-			}
-			$('#slide_select').append("<li><a>" + name + "</a></li>")
-		}
-		
+		}		
+		for (var key in room_data.slides[active_slide].entities) {
+			create_entity(room_data.slides[active_slide].entities[key]);
+		}		
 		update_slide_buttons();
 		update_my_user();
 	});
 
 	socket.on('create_entity', function(entity, slide) {
 		if (slide != active_slide) {
-			room_data.slides[slide][entity.uid] = entity;
+			room_data.slides[slide].entities[entity.uid] = entity;
 		} else {
 			create_entity(entity);
 		}
 	});
 	
 	socket.on('drag', function(uid, slide, x, y) {
+		if (room_data.slides[slide].entities[uid].x == x && room_data.slides[slide].entities[uid].y == y) {
+			return; //ignore, it's probably an echo of what I've sent
+		}
 		if (slide != active_slide) {
-			room_data.slides[slide][uid].x = x;
-			room_data.slides[slide][uid].y = y;
+			room_data.slides[slide].entities[uid].x = x;
+			room_data.slides[slide].entities[uid].y = y;
 		} else {
-			drag_entity(room_data.slides[active_slide][uid], x, y);
+			drag_entity(room_data.slides[active_slide].entities[uid], x, y);
 		}
 	});
 
@@ -2528,7 +2622,7 @@ $(document).ready(function() {
 
 	socket.on('remove', function(uid, slide) {
 		if (slide != active_slide) {
-			delete room_data.slides[slide][uid];
+			delete room_data.slides[slide].entities[uid];
 		} else {
 			remove(uid);
 		}
@@ -2551,12 +2645,16 @@ $(document).ready(function() {
 		update_lock();
 	});
 
-	socket.on('change_slide', function(slide) {
-		change_slide(slide);
+	socket.on('change_slide', function(uid) {
+		if (uid != active_slide) {
+			change_slide(uid);
+		}
 	});
 	
 	socket.on('new_slide', function(slide) {
-		new_slide(slide);
+		resolve_order_conflicts(slide);
+		room_data.slides[slide.uid] = slide;
+		transition(slide.uid);
 	});
 	
 	socket.on('remove_slide', function(slide) {
