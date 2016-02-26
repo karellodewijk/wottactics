@@ -1,14 +1,9 @@
-<%if (game == 'wot') { %>
-<%	home = "wot.html" %>
-<%} else if (game == 'wows') { %>
-<%	home = "wows.html" %>
-<%} else if (game == 'blitz') { %>
+<%home = "/" %>
+<%if (game == 'blitz') { %>
 <%	home = "blitz.html" %>
-<%} else if (game == 'aw') { %>
-<%	home = "aw.html" %>
 <%} %>
 <nav class="navbar navbar-inverse navbar-fixed-top container-fluid">
-	<a class="navbar-brand" href=<%=home%>>
+	<a class="navbar-brand" href="<%=home%>">
 		<% if (game == 'wot') { %>
 			WOT Tactics
 		<% } else if (game == 'wows') { %>
@@ -32,10 +27,10 @@
 			  <%=l('Other Games')%><span class="caret"></span>
 			</a>
 			<ul class="dropdown-menu">
-				<li><a href="http://www.wottactic.tk">World of Tanks</a></li>
-				<li><a href="http://www.wowstactic.tk">World of Warships</a></li>
-				<li><a href="http://www.wottactic.tk/blitz.html">World of Tanks Blitz</a></li>
-				<li><a href="http://www.awtactic.tk">Armored Warfare</a></li>
+				<li><a href="http://wottactic.tk">World of Tanks</a></li>
+				<li><a href="http://wowstactic.tk">World of Warships</a></li>
+				<li><a href="http://wottactic.tk/blitz.html">World of Tanks Blitz</a></li>
+				<li><a href="http://awtactic.tk">Armored Warfare</a></li>
 			</ul>
 		</li>
 		<% include language_select.ejs %>

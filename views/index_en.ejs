@@ -3,6 +3,8 @@
 <head>
 	<% include common_headers.ejs %>
 	<script type="text/javascript" src="/javascripts/index.js"></script>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
+	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy planner.')%>">
 </head>
 <body>
 	<div class="container" style='width:100%; padding-top:65px;'>
@@ -31,23 +33,22 @@
 	<div class="row">
 	<div class="col-md-4">
 		<h2>Welcome</h2>
-		<p>This website is created to make tactical quick and easy. Just press the blue button, share the link with friends or not and get started. If you want the people you invite to be able to edit too, click on their name or the unlock button. There is more information in the getting started guide.
-		</p>
+		<p>This tool is created to make planning for your battles quick and easy. Just press the blue button, share the link with friends teammates or clanmates and get started. 
 	</div>
 	<div class="col-md-4">
 		<h2>Free and open</h2>
 		<p>This website is free of charge, free of adds and open-source and I intend to keep it that way. There is however a donation button to cover hosting fees in the future.</p>
 	</div>
 	<div class="col-md-4">
-		<h2>Looking for translators</h2>
-		<p>Thanks to some helpful people this website is already available in a few languages. If you want it available in your language too, get in touch. No technical skill required.</p>
+		<h2>Looking for Russian translator</h2>
+		<p>If you speak it and want to help, get in touch. No technical skill required.</p>
 	</div>
 	</div>
 	
 	<div class="row">
 	<div class="col-md-4">
 		<h2>Recent updates</h2>
-		<p>I just rolled out a bit of an update. The big new feature is that you can now create a tactic with different slides. It should make creating videos like this a little easier: <a href='https://www.youtube.com/watch?v=tkCWK2VDLxw'>https://www.youtube.com/watch?v=tkCWK2VDLxw</a>. Other than that, free draw should feel a bit smoother. Track cursor has a few cursor options, probably will add a few different ping options later. Text should be a little more legible, although it's not quite there yet. Improved handling of disconnects and timeouts. And quite a bit of smaller fixes. Also links to tactics will now remain available for up to a year instead of a month after they've been last visited. If you have any issues with new or existing tactics, pls let me know.
+		<p>You can now organise your stored tactics in folders if you want. Sometimes when multiple people were removing slides at the same time, the whole tactic would break, I should have that fixed now. 
 	</div>
 	<div class="col-md-4">
 		<h2>Future plans</h2>

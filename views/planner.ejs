@@ -13,6 +13,8 @@
 	<script type="text/javascript" src="/javascripts/TransparencyHitArea.js"></script>
 	<script type="text/javascript" src="/javascripts/planner.js"></script>
 	<meta id="slide_name" content=<%=l('Slide')%>>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
+	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 </head>
 <body>
 
@@ -24,13 +26,13 @@
 	<div class="navbar-header">
 		<a class="navbar-brand" style="padding-left:0px"
 			<% if (game == 'wot') { %>
-				href="/wot.html">
+				href="/">
 			<% } else if (game == 'wows') { %>
-				href="/wows.html">
+				href="/">
 			<% } else if (game == 'blitz') { %>
 				href="/blitz.html">
 			<% } else if (game == 'aw') { %>
-				href="/aw.html">
+				href="/">
 			<% } %><%=l('Home')%>
 		</a>
 	</div>
@@ -688,6 +690,7 @@
 						<option value="#0000ff"><%=l('Blue')%></option>
 						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
+						<option value="#000000"><%=l('Black')%></option>
 					</select>
 					<br/>
 					<div class="row">

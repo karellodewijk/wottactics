@@ -235,11 +235,17 @@
 	"Click to launch the tactic": "Click to launch the tactic",
 	"Launch": "Launch",
 	"Note: empty folders are removed when you refresh": "Note: empty folders are removed when you refresh",
-	"This map already exists": "This map already exists",
 	"Error: This map already exists": "Error: This map already exists",
-	"Note: A map with that name already exists in that folder": "Note: A map with that name already exists in that folder",
 	"Error: A map with that name already exists in that folder": "Error: A map with that name already exists in that folder",
-	"": "",
-	"Error: Folder can not be empty": "Error: Folder can not be empty",
-	"Error: Folder name can not be empty": "Error: Folder name can not be empty"
+	"Error: Folder name can not be empty": "Error: Folder name can not be empty",
+	"Tactics": "Tactics",
+	"Planner": "Planner",
+	"strategy planner.": "strategy planner.",
+	"strategy": "strategy",
+	"restore your stored tactics from here.": "restore your stored tactics from here.",
+	"Privacy policy": "Privacy policy",
+	"privacy policy": "privacy policy",
+	"Clanportal": "Clanportal",
+	"attend": "attend",
+	"battles": "battles"
 }
