@@ -18,7 +18,6 @@ function isEmpty(obj) {
   return true;
 }
 
-var bs = require('binarysearch');
 var compress = require('compression');
 var express = require('express');
 var path = require('path');
@@ -32,7 +31,6 @@ app.use(compress());
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -43,8 +41,9 @@ var io = require('socket.io')();
 
 //configure localization support
 var i18n = require('i18n');
+var locales = ['en', 'sr', 'rs', 'de', 'es', 'pl', 'cs'];
 i18n.configure({
-	locales: ['en', 'sr', 'rs', 'de', 'es', 'pl', 'cs'],
+	locales: locales,
 	directory: __dirname + "/locales",
 	updateFiles: true
 });
@@ -78,7 +77,7 @@ app.use(function(err, req, res, next) {
 // not pretty but oh so handy to not crash the server
 process.on('uncaughtException', function (err) {
  	console.error(err);
- 	console.trace();
+	console.trace();
 });
 
 //load mongo
@@ -193,10 +192,16 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							room_data[uid].locked = true;
 							clean_up_room(uid); //just in case nobody joins it, start the cleanup procedure
 							cb(uid);
+						} else {
+							cb(newUid());
 						}
 					});
+				} else {
+					cb(newUid());
 				}
 			});
+		} else {
+			cb(newUid());
 		}
 	}
 	
@@ -225,27 +230,67 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	// initializing session middleware
 	var Session = require('express-session');
 	var RedisStore = require('connect-redis')(Session);
-	var session = Session({ secret: 'mumnbojudqs', resave:true, saveUninitialized:false, cookie: { expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: new RedisStore()});
-	app.use(session); // session support
+	var mwCache = Object.create(null);
+	function virtualHostSession(req, res, next) {
+		var host = req.hostname.split('.');
+		if (host.length >= 2) {
+			host = '.' + host[host.length-2] + '.' + host[host.length-1];
+		} else {
+			host = host[0];
+		}		
+		var hostSession = mwCache[host];
+		if (!hostSession) {
+			hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: new RedisStore()});
+		}
+		hostSession(req, res, next);
+	}
 	
-	// Configuring Passport
-	app.use(passport.initialize());
-	app.use(passport.session());
-	app.use(function(req, res, next) { //create a default user
-		if (!req.session.passport.user) {
-			create_anonymous_user(req);		
-		}
-		if (req.query.lang) {
-			req.session.locale = req.query.lang;
-		} else if (!req.session.locale) {
-			req.session.locale = "en";
-		}
+	app.use(function(req, res, next) {
+		res.header('Access-Control-Allow-Credentials', true);
+		res.header('Access-Control-Allow-Origin', req.headers.origin);
+		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+		res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
 		next();
 	});
 	
+	app.use(virtualHostSession);
+
+	// Configuring Passport
+	app.use(passport.initialize());
+	app.use(passport.session());
+	
+	
+	//create a default user + detect language
+	app.use(function(req, res, next) { 
+		var domain = req.headers.host;
+		var subDomain = domain.split('.');	
+		if (subDomain[0] == 'www') {
+			res.redirect(301, 'http://' + subDomain.slice(1).join('.') + req.originalUrl);
+			return;
+		}
+		if (!req.session.passport.user) {
+			create_anonymous_user(req);		
+		}
+		if (subDomain.length > 2) {
+			req.session.locale = subDomain[0];
+			subDomain = subDomain.slice(1);
+		} else {
+			if (req.query.lang) {
+				req.session.locale = req.query.lang;
+			} else if (!req.session.locale) {
+				req.session.locale = "en";
+			}
+		}
+		req.fullUrl = subDomain.join('.') + req.originalUrl;
+		next();
+	});
+	
+	
 	OpenIDStrategy = require('passport-openid').Strategy;
 	passport.use(new OpenIDStrategy({
-			returnURL: function(req) { return "http://" + req.hostname + "/auth/openid/callback"; },
+			returnURL: function(req) { 
+				return "http://" + req.hostname + "/auth/openid/callback"; 
+			},
 			passReqToCallback: true
 		},
 		function(req, identifier, done) {
@@ -333,7 +378,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	// session support for socket.io
 	io.use(function(socket, next) {
-	  session(socket.handshake, {}, next);
+		socket.request.hostname = socket.handshake.headers.host;
+		virtualHostSession(socket.request, socket.request.res, next);
 	});
 	
 	// setup routes
@@ -351,32 +397,39 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		} else {
 			req.session.game = "wot";
 		}
-		res.redirect('/'+req.session.game+'.html');
+		res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl});
 	});
 	
 	router.get('/wot.html', function(req, res, next) {
 	  req.session.game = 'wot';
 	  res.render('index', { game: req.session.game, 
 							user: req.session.passport.user,
-							locale: req.session.locale });
+							locale: req.session.locale,
+							url: req.fullUrl});
 	});
 	router.get('/aw.html', function(req, res, next) {
 	  req.session.game = 'aw';
 	  res.render('index', { game: req.session.game, 
 							user: req.session.passport.user,
-							locale: req.session.locale });
+							locale: req.session.locale,
+							url: req.fullUrl});
 	});
 	router.get('/wows.html', function(req, res, next) {
 	  req.session.game = 'wows';
 	  res.render('index', { game: req.session.game, 
 							user: req.session.passport.user,
-							locale: req.session.locale });
+							locale: req.session.locale,
+							url: req.fullUrl});
 	});
 	router.get('/blitz.html', function(req, res, next) {
 	  req.session.game = 'blitz';
 	  res.render('index', { game: req.session.game, 
 							user: req.session.passport.user,
-							locale: req.session.locale });
+							locale: req.session.locale,
+							url: req.fullUrl});
 	});
 	function planner_redirect(req, res, game) {
 	  if (req.query.restore) {
@@ -390,7 +443,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		  req.session.game = game;
 		  res.render('planner', { game: req.session.game, 
 								  user: req.session.passport.user,
-								  locale: req.session.locale });
+								  locale: req.session.locale,
+								  url: req.fullUrl});
 	  }
 	}
 	router.get('/wotplanner.html', function(req, res, next) {
@@ -411,7 +465,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	  res.render('about', { game: req.session.game, 
 							user: req.session.passport.user,
-							locale: req.session.locale });
+							locale: req.session.locale,
+							url: req.fullUrl});
 	});
 	router.get('/getting_started.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -419,7 +474,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	  res.render('getting_started', { game: req.session.game, 
 									  user: req.session.passport.user,
-									  locale: req.session.locale });
+									  locale: req.session.locale,
+									  url: req.fullUrl});
 	});
 
 	router.get('/privacypolicy.html', function(req, res, next) {
@@ -428,7 +484,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	  res.render('privacypolicy', { game: req.session.game, 
 									  user: req.session.passport.user,
-									  locale: req.session.locale });
+									  locale: req.session.locale,
+									  url: req.fullUrl});
 	});
 	
 	router.get('/stored_tactics.html', function(req, res, next) {
@@ -440,12 +497,14 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		  res.render('stored_tactics', { game: req.session.game, 
 										 user: req.session.passport.user,
 										 locale: req.session.locale,
-										 tactics: tactics } );
+										 tactics: tactics,
+										 url: req.fullUrl} );
 		});
 	  } else {
 		  res.redirect('/');
 	  }
 	});
+	
 	router.post('/remove_tactic', function(req, res, next) {
 		if (req.session.passport.user.identity) {
 			remove_tactic(req.session.passport.user.identity, req.body.id);
@@ -471,7 +530,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//openid
 	router.post('/auth/openid', save_return, passport.authenticate('openid'));
-	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
 	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
 
 	//google
@@ -500,9 +558,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	
 	//reloads templates, so I don't have to restart the server to add basic content
+	var lastmod = (new Date()).toISOString().substr(0,10);
 	router.get('/refresh.html', function(req, res, next) {
 		var ejs = require('ejs')
 		ejs.clearCache();
+		lastmod = (new Date()).toISOString().substr(0,10);
 		res.send("Refreshed")
 	});
 	
@@ -517,9 +577,56 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	//////////////////
 	//end clanportal//
 	//////////////////
+
+	//generate a sitemap and robots.txt file
+	var paths = [];
+	for (var key in router.stack) {
+		if (router.stack[key].route.stack[0].method == 'get') {
+			paths.push(router.stack[key].route.path)
+		}
+	}
+
+	paths.splice(paths.indexOf('/auth/twitter/callback'), 1);
+	paths.splice(paths.indexOf('/auth/facebook/callback'), 1);
+	paths.splice(paths.indexOf('/auth/google/callback'), 1);
+	paths.splice(paths.indexOf('/auth/openid/callback'), 1);
+	paths.splice(paths.indexOf('/save.html'), 1);
+	paths.splice(paths.indexOf('/log.html'), 1);
+	paths.splice(paths.indexOf('/refresh.html'), 1);
+
+	router.get('/sitemap.xml', function(req, res, next) {
+		var sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
+		var priority = 1;
+		for (var i = 0; i < paths.length; ++i) {
+			sitemap += "<url>";
+			sitemap += "<loc>" + "http://" + req.headers.host + paths[i] + "</loc>";
+			sitemap += "<lastmod>" + lastmod + "</lastmod>";
+			sitemap += "<changefreq>daily</changefreq>"
+			sitemap += "<priority>" + priority.toFixed(2) + "</priority>";
+			for (var j = 0; j < locales.length; ++j) {
+				sitemap += '<xhtml:link rel="alternate" hreflang="' + locales[j] + '" href="' + "http://" + locales[j] + '.' + req.fullUrl.split('/')[0] + paths[i] + '" />'
+			}
+			sitemap += "</url>";
+			priority -= (0.5/paths.length);
+		}
+		sitemap += "</urlset>";
+		res.header('Content-Type', 'application/xml');
+		res.send(sitemap);
+	});
+	
+	var robots_base = "User-agent: *\n";
+	robots_base += "Disallow: /auth/twitter\n";
+	robots_base += "Disallow: /auth/facebook\n";
+	robots_base += "Disallow: /auth/google\n";
+	robots_base += "Disallow: /auth/openid\n";
+	
+	router.get('/robots.txt', function(req, res, next) {
+		res.header('Content-Type', 'text/plain');
+		res.send(robots_base + "Sitemap: " + 'http://' + req.headers.host + "/sitemap.xml");
+	});
 	
 	//add router to app
-	app.use('/', router); 
+	app.use('/', router);		
 	
 	// catch 404 and forward to error handler
 	app.use(function(req, res, next) {
@@ -530,10 +637,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	function join_room(socket, room) {
 		room_data[room].last_join = Date.now();
-		if (!socket.handshake.session.passport.user) {
+		if (!socket.request.session.passport.user) {
 			create_anonymous_user(socket.handshake);
 		}
-		var user = socket.handshake.session.passport.user;
+		var user = socket.request.session.passport.user;
 
 		if (user) {
 			if (room_data[room].userlist[user.id]) {
@@ -565,8 +672,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//socket.io callbacks
 	io.sockets.on('connection', function(socket) { 
-		if (!socket.handshake.session.passport) {
-			socket.handshake.session.passport = {};
+		if (!socket.request.session.passport) {
+			socket.request.session.passport = {};
 		}
 			
 		socket.on('join_room', function(room, game) {			
@@ -580,14 +687,14 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						room_data[room] = {};
 						var slide0_uid = newUid();
 						room_data[room].slides = {};
-						room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}}
+						room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid}
 						var background_uid = newUid();
 						room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:""};
 						room_data[room].active_slide = slide0_uid;
 						room_data[room].userlist = {};
 						room_data[room].lost_users = {};
 						room_data[room].lost_identities = {};
-						var user = socket.handshake.session.passport.user;
+						var user = socket.request.session.passport.user;
 						room_data[room].lost_users[user.id] = "owner";
 						if (user.identity) {
 							room_data[room].lost_identities[user.identity] = {role: "owner"};
@@ -606,7 +713,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 		socket.onclose = function(reason) {
 			//hijack the onclose event because otherwise we lose socket.rooms data
-			var user = socket.handshake.session.passport.user;
+			var user = socket.request.session.passport.user;
 			for (var i = 1; i < socket.rooms.length; i++) { //first room is clients own little private room so we start at 1
 				var room = socket.rooms[i];
 				if (room_data[room] && room_data[room].userlist[user.id]) {
@@ -749,11 +856,18 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			return hash;
 		}
 		
-		function resolve_order_conflicts(room, slide) {
+		//if 2 players add a slide at the same position (same .order) concurrently 
+		//then we look at a hash of their uid, if the hash of the new slide is lower
+		//we assign it a lower order (put if before the slide we know about). If it is 
+		//higher we assign it a higher order. 
+		//Clients basically resolve this the same way. The result will be that the revised
+		//order numbers will be the same regardless of the order in which slide data arrived
+		function resolve_order_conflicts(room, slide, max_recursions) {
+			if (max_recursions == 0) return; //we give up, let this tactic burn, save the server
 			for (var key in room_data[room].slides) {
 				if (room_data[room].slides[key].order == slide.order) {
 					var new_order;
-					if (hash(slide.uid) < hash(room_data[room].slides[key].uid)) {
+					if (hash(slide.uid) < hash(key)) {
 						var prev_slide = find_previous_slide(room, slide.order);
 						var last_order = 0;
 						if (prev_slide != 0) {
@@ -768,7 +882,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						}					
 						slide.order = Math.floor((next_order - slide.order) / 2);						
 					}
-					resolve_order_conflicts(room, slide); //we do this again because it might still not be unique
+					
+					resolve_order_conflicts(room, slide, max_recursions-1); //we do this again because it might still not be unique
 					return;
 				}
 			}
@@ -776,7 +891,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		
 		socket.on('new_slide', function(room, slide) {
 			if (room_data[room]) {
-				resolve_order_conflicts(room, slide);
+				resolve_order_conflicts(room, slide, 5);
 				room_data[room].slides[slide.uid] = slide;
 				room_data[room].active_slide = slide.uid;
 				socket.broadcast.to(room).emit('new_slide', slide);
@@ -818,8 +933,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 
 		socket.on('store', function(room, name) {
-			var user = socket.handshake.session.passport.user;			
-			//room_data[room].lost_identities[user.identity] = {role: room_data[room][user.id].role, tactic_name:name};
+			var user = socket.request.session.passport.user;			
 			store_tactic(user, room, name);
 		});
 	});
@@ -830,4 +944,5 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	io.attach(server);
 	server.listen(80);	
 });
+
 

@@ -123,7 +123,8 @@ router.get('/clanportal.html', function(req, res, next) {
 	res.render('clanportal', { game: req.session.game, 
 							   user: req.session.passport.user,
 							   locale: req.session.locale,
-							   clan: clan });
+							   clan: clan,
+							   url: req.fullUrl});
   });
 });
 
@@ -133,7 +134,8 @@ router.get('/members.html', function(req, res, next) {
 	res.render('clanportal_members', { game: req.session.game, 
 									   user: req.session.passport.user,
 									   locale: req.session.locale,
-									   clan: clan});
+									   clan: clan,
+									   url: req.fullUrl});
   });
 });
 
@@ -146,13 +148,15 @@ router.get('/battles.html', function(req, res, next) {
 		res.render('clanportal_battles', { game: req.session.game, 
 										 user: req.session.passport.user,
 										 locale: req.session.locale,
-										 clan: clan});
+										 clan: clan,
+										 url: req.fullUrl});
 	  });
 	} else {
 	  res.render('clanportal_battles', { game: req.session.game, 
 										 user: req.session.passport.user,
 										 locale: req.session.locale,
-										 clan: clan});			
+										 clan: clan,
+										 url: req.fullUrl});			
 	}
   });
 });
@@ -166,13 +170,15 @@ router.get('/payout.html', function(req, res, next) {
 		res.render('clanportal_payout',  { game: req.session.game, 
 										   user: req.session.passport.user,
 										   locale: req.session.locale,
-										   clan: clan});
+										   clan: clan,
+										   url: req.fullUrl});
 	  });
 	} else {
 	  res.render('clanportal_battles', { game: req.session.game, 
 										 user: req.session.passport.user,
 										 locale: req.session.locale,
-										 clan: clan});			
+										 clan: clan,
+										 url: req.fullUrl});			
 	}
   });
 });
@@ -407,7 +413,8 @@ router.get('/attend', function(req, res, next) {
 										  user: req.session.passport.user,
 										  locale: req.session.locale,
 										  clan: clan,
-										  reason: reason});
+										  reason: reason,
+										  url: req.fullUrl});
 	  });
 	  return;
 	}
@@ -415,7 +422,8 @@ router.get('/attend', function(req, res, next) {
 									  user: req.session.passport.user,
 									  locale: req.session.locale,
 									  clan: clan,
-									  reason: reason});
+									  reason: reason,
+									  url: req.fullUrl});
   });
 });
 

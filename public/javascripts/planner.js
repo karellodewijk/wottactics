@@ -244,7 +244,7 @@ function resize_renderer(new_size_x, new_size_y) {
 	
 	$("#render_frame").attr('style', 'height:' + size_y + 'px; width:' + size_x + 'px;');
 	
-	for (var i in room_data.slides[active_slide]) {
+	for (var i in room_data.slides[active_slide].entities) {
 		if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 		    align_note_text(room_data.slides[active_slide].entities[i]);
 		}
@@ -318,7 +318,6 @@ function set_background(new_background) {
 	});
 	
 	room_data.slides[active_slide].entities[new_background.uid] = new_background;
-	
 }
 
 var context_before_drag;
@@ -1744,7 +1743,7 @@ function update_lock() {
 	if (is_room_locked && !my_user.role) {
 		$('.left_column').hide();
 		$('#slide_tab_button').hide();
-		for (var i in room_data.slides[active_slide]) {
+		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 				if (room_data.slides[active_slide].entities[i].container) {
 					$('textarea', room_data.slides[active_slide].entities[i].container.menu).prop('readonly', true);
@@ -1755,7 +1754,7 @@ function update_lock() {
 	} else {
 		$('.left_column').show();
 		$('#slide_tab_button').show();
-		for (var i in room_data.slides[active_slide]) {
+		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 				if (room_data.slides[active_slide].entities[i].container) {
 					$('textarea', room_data.slides[active_slide].entities[i].container.menu).prop('readonly', false);
@@ -1958,10 +1957,12 @@ function drag_entity(entity, x, y) {
 }
 
 function find_first_slide() {
-	var first = Number.MAX_SAFE_INTEGER;
+	var first = Math.pow(2, 52);
 	var uid = 0;
 	for (var key in room_data.slides) {
 		var order = room_data.slides[key].order
+
+		
 		if (order < first) {
 			first = order;
 			uid = key;
@@ -2008,7 +2009,7 @@ function resolve_order_conflicts(slide) {
 	for (var key in room_data.slides) {
 		if (room_data.slides[key].order == slide.order) {
 			var new_order;
-			if (hash(slide.uid) < hash(room_data.slides[key].uid)) {
+			if (hash(slide.uid) < hash(key)) {
 				var prev_slide = find_previous_slide(slide.order);
 				var last_order = 0;
 				if (prev_slide != 0) {
@@ -2023,7 +2024,8 @@ function resolve_order_conflicts(slide) {
 				}					
 				slide.order = Math.floor((next_order - slide.order) / 2);						
 			}
-			resolve_order_conflicts(room, slide); //we do this again because it might still not be unique
+			
+			resolve_order_conflicts(slide); //we do this again because it might still not be unique
 			return;
 		}
 	}
@@ -2145,13 +2147,18 @@ function create_new_slide(slide) {
 		room_data.slides[slide].entities[key].container = temp;
 	}
 	
-	var new_order = 0;
+	var new_order;
 	var next_slide_uid = find_next_slide(room_data.slides[slide].order);
+		
 	if (next_slide_uid == 0) {
-		new_order = room_data.slides[slide].order + 4294967296;
+	  new_order = room_data.slides[slide].order + 4294967296;
 	} else {
-		new_order = Math.floor((room_data.slides[next_slide_uid].order - room_data.slides[slide].order) / 2);
+	  new_order = room_data.slides[slide].order + Math.floor((room_data.slides[next_slide_uid].order - room_data.slides[slide].order) / 2);
+	  if (new_name == room_data.slides[next_slide_uid].name) {
+		  new_slide.name = room_data.slides[slide].name + ' - 1';
+	  }
 	}
+
 	new_slide.order = new_order;
 	return new_slide;
 }
@@ -2175,6 +2182,12 @@ function remove_slide(uid) {
 function rename_slide(slide, name) {
 	room_data.slides[slide].name = name;
 	update_slide_buttons();
+}
+
+function add_slide(slide) {
+	resolve_order_conflicts(slide);
+	room_data.slides[slide.uid] = slide;
+	room_data.active_slide = slide.uid;
 }
 
 //connect socket.io socket
@@ -2314,8 +2327,8 @@ $(document).ready(function() {
 		});
 		$('#new_slide').click(function() {
 			var new_slide = create_new_slide(active_slide);
-			socket.emit("new_slide", room, new_slide);			
-			room_data.slides[new_slide.uid] = new_slide;
+			socket.emit("new_slide", room, new_slide);				
+			add_slide(new_slide);
 			transition(new_slide.uid);
 		});
 		$('#remove_slide').click(function() { //removed active_slide
@@ -2565,7 +2578,23 @@ $(document).ready(function() {
 		}, 2);	
 	});
 	
+	function cleanup() {
+		deselect_all();
+		undo_list = [];
+		redo_list = [];
+		if (active_slide) {
+			for (var key in room_data.slides[active_slide].entities) {
+				if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
+					var entity = room_data.slides[active_slide].entities[key];
+					remove(key);
+				}
+			}
+		}
+		room_data = {};
+	}
+	
 	socket.on('room_data', function(new_room_data, my_id, new_tactic_name) {
+		cleanup();
 		room_data = new_room_data;
 		active_slide = room_data.active_slide;
 		is_room_locked = room_data.locked;
@@ -2658,6 +2687,10 @@ $(document).ready(function() {
 	});
 	
 	socket.on('remove_slide', function(slide) {
+		if(Object.keys(room_data.slides) <= 1) {
+			socket.emit('join_room', room, game);
+			return;
+		}
 		remove_slide(slide);
 	});
 

@@ -3,6 +3,8 @@
 <head>
 	<% include common_headers.ejs %>
 	<script type="text/javascript" src="/javascripts/index.js"></script>
+	<title><%=l('Clanportal')%><%if (clan) {%> - <%=clan.name;%><%}%> - <%=l('attend')%></title>
+	<meta name="description" content="A world of tanks clan portal - attendance link">
 </head>
 <body>
 	<div class="container" style='width:100%; padding-top:65px;'>

@@ -2,28 +2,14 @@
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 		<img src="http://karellodewijk.github.io/icons/flags/<%=locale%>.png"> <%=locale%><span class="caret"></span>
 	</a>
-	
 	<ul id="language_select" class="dropdown-menu">
-		<li><a href="?lang=cs"><img src="http://karellodewijk.github.io/icons/flags/cs.png"> Čeština</a>
-		<li><a href="?lang=de"><img src="http://karellodewijk.github.io/icons/flags/de.png"> Deutsch</a>
-		<li><a href="?lang=en"><img src="http://karellodewijk.github.io/icons/flags/en.png"> English</a>
-		<li><a href="?lang=es"><img src="http://karellodewijk.github.io/icons/flags/es.png"> Español</a>
-		<li><a href="?lang=pl"><img src="http://karellodewijk.github.io/icons/flags/pl.png"> Polski</a>
-		<li><a href="?lang=sr"><img src="http://karellodewijk.github.io/icons/flags/sr.png"> Srpski</a>
+		<li><a href="http://cs.<%=url%>"><img src="http://karellodewijk.github.io/icons/flags/cs.png"> Čeština</a>
+		<li><a href="http://de.<%=url%>"><img src="http://karellodewijk.github.io/icons/flags/de.png"> Deutsch</a>
+		<li><a href="http://en.<%=url%>"><img src="http://karellodewijk.github.io/icons/flags/en.png"> English</a>
+		<li><a href="http://es.<%=url%>"><img src="http://karellodewijk.github.io/icons/flags/es.png"> Español</a>
+		<li><a href="http://pl.<%=url%>"><img src="http://karellodewijk.github.io/icons/flags/pl.png"> Polski</a>
+		<li><a href="http://sr.<%=url%>"><img src="http://karellodewijk.github.io/icons/flags/sr.png"> Srpski</a>
 	</ul>
-
 </li>
 
-<script type="text/javascript">
-	$("#language_select").on('click', 'a', function() {
-		var url = $(this).attr('href');
-		
-		if (location.search.indexOf('room=') > -1) {
-			url = url + "&room=" + location.search.split('room=')[1].split("&")[0];
-		}
-		
-		window.location = url;
-		return false;
-	})
-</script>
 

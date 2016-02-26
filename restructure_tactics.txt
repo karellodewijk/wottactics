@@ -1,4 +1,4 @@
-db.tactics.find({}).forEach(function (doc) { 
+db.stored_tactics.find({}).forEach(function (doc) { 
 	function newUid() {
 	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
 		function(c) {
@@ -7,26 +7,33 @@ db.tactics.find({}).forEach(function (doc) {
 		  return v.toString(16);
 		}).toUpperCase();
 	}
+	if (Object.keys(doc.slides).length == 0) {
+		print(doc._id)
+		var slide0_uid = newUid();
+		doc.slides = {};
+		doc.slides[slide0_uid] = {name:'1', order:0, entities:{}}
+		var background_uid = newUid();
+		doc.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:""};
+		doc.active_slide = slide0_uid;
+		db.stored_tactics.update({_id:doc._id}, doc);
+	}
+});
 
-	var new_slide_format = {};
-	var last_order = 0;
-	for (var i = 0; i < doc.slides.length; i++) {
-		var uid = newUid();
-		new_slide_format[uid] = {entities: doc.slides[i]}
-		if (doc.slide_names[i] != '') {
-			new_slide_format[uid].name = doc.slide_names[i];
-		} else {
-			new_slide_format[uid].name = ''+(i+1);
-		}
-		new_slide_format[uid].order = last_order
-		last_order += 4294967296; //2^32
-		if (doc.active_slide == i) {
-			doc.active_slide = uid;
+db.stored_tactics.find({}).forEach(function (doc) { 
+	function newUid() {
+	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+		function(c) {
+		  var r = Math.random() * 16 | 0,
+			v = c == 'x' ? r : (r & 0x3 | 0x8);
+		  return v.toString(16);
+		}).toUpperCase();
+	}
+	for (var key in doc.slides) {
+		if (doc.slides.hasOwnProperty(key)) {
+			doc.slides[key].uid = key;
 		}
 	}
-	doc.slides = new_slide_format;
-	delete doc.slide_names;
-	db.tactics.update({_id:doc._id}, doc);
+	db.stored_tactics.update({_id:doc._id}, doc);
 });
 
 db.stored_tactics.find({}).forEach(function (doc) { 
