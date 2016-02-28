@@ -47,7 +47,7 @@ if (game == "wows") { //wows
 	assets = [image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"arty.png", image_host+"td.png"];	
 }
 
-assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png");
+assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png");
 
 var loader = PIXI.loader; 
 for (var i in assets) {
@@ -131,26 +131,25 @@ $(document).on('keyup keydown', function(e) {
 	shifted = e.shiftKey;	
 	if (document.activeElement.localName != "input") {	
 		if (e.type == "keyup") {
-			(e.key)
 			if (e.ctrlKey) {
-				if (e.key == 'z') {
+				if (e.keyCode==90) {
 					undo();
-				} else if (e.key=='y') {
+				} else if (e.keyCode==89) {
 					redo();
-				} else if (e.key=='s') {
+				} else if (e.keyCode==83) {
 					if (my_user.logged_in && tactic_name && tactic_name != "" && socket) {
 						socket.emit("store", room, tactic_name);
 					}
-				} else if (e.key=='c') {
+				} else if (e.keyCode==67) {
 					copy();
-				} else if (e.key=='x') {
+				} else if (e.keyCode==88) {
 					cut();
-				} else if (e.key=='v') {
+				} else if (e.keyCode==86) {
 					paste();
 				}
-			} else if (e.key == "Delete") {
+			} else if (e.keyCode==46) {
 				clear_selected();
-			} else if (e.key == "Shift") {
+			} else if (e.keyCode==16) {
 				if (active_context == 'line_context' && new_drawing) {
 					on_line_end(e);
 				}
@@ -627,12 +626,12 @@ function start_tracking(mouse_location) {
 	setup_mouse_events(on_track_move, undefined);
 	var shape = $('#track_shape .active').attr('id');
 	var size;
-	if (shape == 'dot') {
-		size = 0.02;
+	if (shape == 'circle' || shape == 'cursor') {
+		scale = 0.25;
 	} else {
-		size = 0.05;
+		scale = 0.5;
 	}
-	my_tracker = {uid:newUid(), shape:shape, size:size, color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
+	my_tracker = {uid:newUid(), shape:shape, scale:scale, size_y:size, color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
 	last_track_position = [my_tracker.x, my_tracker.y];
 	socket.emit("track", room, my_tracker);
 	create_tracker(my_tracker);
@@ -699,11 +698,15 @@ function create_tracker(tracker) {
 	var texture = PIXI.Texture.fromImage(image_host + tracker.shape + '.png');
 	tracker.container = new PIXI.Sprite(texture);	
 	tracker.container.tint = tracker.color;
-	tracker.container.anchor.set(0.5);
+	if (tracker.shape != 'cursor') {
+		tracker.container.anchor.set(0.5);
+	}
 	tracker.container.x = x_abs(tracker.x);
 	tracker.container.y = y_abs(tracker.y);
-	tracker.container.width = x_abs(tracker.size);
-	tracker.container.height = y_abs(tracker.size);
+	var rel_x = x_rel(tracker.container.width);
+	var rel_y = y_rel(tracker.container.height);
+	tracker.container.width = x_abs(rel_x * tracker.scale);
+	tracker.container.height = y_abs(rel_y * tracker.scale);	
 	trackers[tracker.uid] = tracker;
 	objectContainer.addChild(trackers[tracker.uid].container);
 	renderer.render(stage);
@@ -1059,7 +1062,7 @@ function on_select_end(e) {
 	var y_max = Math.max(mouse_y_abs(mouse_location.y), left_click_origin[1]);
 	
 	for (var key in room_data.slides[active_slide].entities) {
-		if (room_data.slides[active_slide].hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
+		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
 			var box = room_data.slides[active_slide].entities[key].container.getBounds();
 			if (box.x > x_min && box.y > y_min && box.x + box.width < x_max && box.y + box.height < y_max) {
 				selected_entities.push(room_data.slides[active_slide].entities[key]);
@@ -1415,8 +1418,7 @@ function draw_arrow(graphic, a, b) {
 }
 
 /*computes control points given knots K, this is the brain of the operation*/
-function computeControlPoints(K)
-{
+function computeControlPoints(K) {
 	var p1=new Array();
 	var p2=new Array();
 	var n = K.length-1;
@@ -1866,7 +1868,7 @@ function undo() {
 			var new_selected_entities = [];
 			for (var i in action[2]) {
 				var entity = action[2][i];
-				if (room_data.slides[active_slide].hasOwnProperty(entity.uid)) {
+				if (room_data.slides[active_slide].entities.hasOwnProperty(entity.uid)) {
 					new_selected_entities.push(entity);
 				}
 			}
@@ -1907,7 +1909,7 @@ function redo() {
 		} else if (action[0] == "remove") {
 			for (var i in action[1]) {
 				var entity = action[1][i];
-				if (room_data.slides[active_slide].hasOwnProperty(entity.uid)) {
+				if (room_data.slides[active_slide].entities.hasOwnProperty(entity.uid)) {
 					remove(entity.uid);
 					delete entity.container;
 					socket.emit('remove', room, entity.uid, active_slide);
@@ -1918,7 +1920,7 @@ function redo() {
 			var new_selected_entities = [];
 			for (var i in action[1]) {
 				var entity = action[1][i];
-				if (room_data.slides[active_slide].hasOwnProperty(entity.uid)) {
+				if (room_data.slides[active_slide].entities.hasOwnProperty(entity.uid)) {
 					new_selected_entities.push(entity);
 				}
 			}
@@ -2063,7 +2065,7 @@ function update_slide_buttons() {
 	} while (current_slide_uid != 0);
 }
 
-function transition(slide) {
+function transition(slide) {	
 	var to_remove = [];
 	var to_add = [];
 	var to_transition = [];
@@ -2076,7 +2078,7 @@ function transition(slide) {
 		}
 	}	
 	for (var key in room_data.slides[slide].entities) {
-		if (!room_data.slides[active_slide].hasOwnProperty(key)) {
+		if (!room_data.slides[active_slide].entities.hasOwnProperty(key)) {
 			to_add.push(key);
 		}
 	}
@@ -2327,9 +2329,9 @@ $(document).ready(function() {
 		});
 		$('#new_slide').click(function() {
 			var new_slide = create_new_slide(active_slide);
-			socket.emit("new_slide", room, new_slide);				
+			socket.emit("new_slide", room, new_slide);			
 			add_slide(new_slide);
-			transition(new_slide.uid);
+			change_slide(new_slide.uid);
 		});
 		$('#remove_slide').click(function() { //removed active_slide
 			if (Object.keys(room_data.slides).length > 1) {
@@ -2395,6 +2397,62 @@ $(document).ready(function() {
 				link.click();
 				document.body.removeChild(link);
 			}
+		});
+		
+		if (is_ie) {
+			$('#backup').hide();
+		}
+		
+		$('#backup').click(function () {
+			$.getScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js", function(){
+				var data;
+				var original_slide = active_slide;
+				var new_renderer = new PIXI.CanvasRenderer(size, size,{backgroundColor : 0xBBBBBB});
+				var zip = new JSZip();
+				
+				var current_slide_uid = find_first_slide();
+				do {
+					if (active_slide != current_slide_uid) {
+						change_slide(current_slide_uid);
+					}
+					new_renderer.render(stage);
+					data = new_renderer.view.toDataURL("image/jpeg", 0.9);
+					data = data.replace("data:image/jpeg;base64,","");
+					zip.file(room_data.slides[current_slide_uid].name+".jpg", data, {base64:true});
+					current_slide_uid = find_next_slide(room_data.slides[current_slide_uid].order);
+				} while (current_slide_uid != 0);
+				
+				var container_backups = {}		
+				for (var key in room_data.slides[active_slide].entities) {
+					if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
+						if (room_data.slides[active_slide].entities[key].container) {
+							container_backups[key] = room_data.slides[active_slide].entities[key].container;
+							delete room_data.slides[active_slide].entities[key].container
+						}
+					}
+				}	
+				zip.file("tactic.json", JSON.stringify(room_data));
+				for (var key in room_data.slides[active_slide].entities) {
+					if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
+						if (container_backups[key]) {
+							room_data.slides[active_slide].entities[key].container = container_backups[key];
+						}
+					}
+				}								
+				var content = zip.generate();
+				var element = document.createElement('a');			
+				element.setAttribute('href', "data:application/zip;base64," + content);
+				element.setAttribute('download', "backup.zip");
+				element.style.display = 'none';
+				document.body.appendChild(element);
+				element.click();
+				document.body.removeChild(element);
+				
+				if (active_slide != original_slide) {
+					change_slide(original_slide);
+				}
+			});
+			renderer.render(stage);	
 		});
 		
 		$('#lock').click(function () {
@@ -2467,7 +2525,7 @@ $(document).ready(function() {
 			$(this).siblings().removeClass('active');					
 		});		
 		
-		$('#track_shape #circle').addClass('active');
+		$('#track_shape #cursor').addClass('active');
 		$('#track_shape').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');		
@@ -2605,7 +2663,10 @@ $(document).ready(function() {
 		}		
 		for (var key in room_data.slides[active_slide].entities) {
 			create_entity(room_data.slides[active_slide].entities[key]);
-		}		
+		}
+		for (var key in room_data.trackers) {
+			create_tracker(room_data.trackers[key]);
+		}
 		update_slide_buttons();
 		update_my_user();
 	});
@@ -2681,9 +2742,8 @@ $(document).ready(function() {
 	});
 	
 	socket.on('new_slide', function(slide) {
-		resolve_order_conflicts(slide);
-		room_data.slides[slide.uid] = slide;
-		transition(slide.uid);
+		add_slide(new_slide);
+		change_slide(new_slide.uid);
 	});
 	
 	socket.on('remove_slide', function(slide) {

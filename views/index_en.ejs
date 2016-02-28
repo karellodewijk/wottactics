@@ -4,7 +4,7 @@
 	<% include common_headers.ejs %>
 	<script type="text/javascript" src="/javascripts/index.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
-	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy planner.')%>">
+	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or just explore, share and discuss map tactics with your friends, team, platoon or clan.">
 </head>
 <body>
 	<div class="container" style='width:100%; padding-top:65px;'>
@@ -33,7 +33,7 @@
 	<div class="row">
 	<div class="col-md-4">
 		<h2>Welcome</h2>
-		<p>This tool is created to make planning for your battles quick and easy. Just press the blue button, share the link with friends teammates or clanmates and get started. 
+		<p>This tool is created to make planning and sharing battle tactics quick and easy. Just press the blue button, share the link and get started. <% if (game == 'wot') { %> Are you an FC trying to plan a clan war or stronghold battle and brief your players? Or are you part of team that wants to perform better in team battles or ESL? Or do you just want to discuss some details about a map with a friend? Then this tool is for you. If you are used to maptactic, give this a try. Planning has never been easier.<% } %>
 	</div>
 	<div class="col-md-4">
 		<h2>Free and open</h2>
