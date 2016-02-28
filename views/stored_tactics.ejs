@@ -82,10 +82,13 @@
 		$(document).ready(function() { 
 			$('#tactic_list').on('click', 'a', function () {
 				if ($(this).hasClass('btn-danger')) {
-					$.post('/remove_tactic', {id: this.id});
-					var node = $("#tactic_list").treetable("node", $(this).parent().parent().attr('data-tt-id'));
-					$("#tactic_list").treetable("unloadBranch", node);					
-					$("tr[id='"+this.id+"']").remove();
+					var r = confirm("Are you sure you want to remove this tactic ?");
+					if (r == true) {
+						$.post('/remove_tactic', {id: this.id});
+						var node = $("#tactic_list").treetable("node", $(this).parent().parent().attr('data-tt-id'));
+						$("#tactic_list").treetable("unloadBranch", node);					
+						$("tr[id='"+this.id+"']").remove();
+					}
 				}
 			})
 			

@@ -41,7 +41,7 @@ var io = require('socket.io')();
 
 //configure localization support
 var i18n = require('i18n');
-var locales = ['en', 'sr', 'rs', 'de', 'es', 'pl', 'cs'];
+var locales = ['en', 'sr', 'de', 'es', 'pl', 'cs'];
 i18n.configure({
 	locales: locales,
 	directory: __dirname + "/locales",
@@ -185,6 +185,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							room_data[uid].userlist = {};
 							room_data[uid].lost_users = {};
 							room_data[uid].lost_identities = {};
+							room_data[uid].trackers = {};
 							room_data[uid].lost_users[user.id] = "owner";
 							if (user.identity) {
 								room_data[uid].lost_identities[user.identity] = {role: "owner", tactic_name:header.tactics[0].name, tactic_uid:id};
@@ -386,6 +387,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var router = express.Router();
 
 	router.get('/', function(req, res, next) {
+		
+		
 		if (req.hostname) {
 			if (req.hostname.indexOf('awtactic') != -1) {
 				req.session.game = "aw";
@@ -638,7 +641,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	function join_room(socket, room) {
 		room_data[room].last_join = Date.now();
 		if (!socket.request.session.passport.user) {
-			create_anonymous_user(socket.handshake);
+			create_anonymous_user(socket.request);
 		}
 		var user = socket.request.session.passport.user;
 
@@ -683,6 +686,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						room_data[room] = result;
 						room_data[room].last_join = Date.now();	
 						room_data[room].userlist = {};
+						room_data[room].trackers = {};
 					} else {
 						room_data[room] = {};
 						var slide0_uid = newUid();
@@ -691,6 +695,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						var background_uid = newUid();
 						room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:""};
 						room_data[room].active_slide = slide0_uid;
+						room_data[room].trackers = {};
 						room_data[room].userlist = {};
 						room_data[room].lost_users = {};
 						room_data[room].lost_identities = {};
@@ -762,14 +767,18 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 
 		socket.on('track', function(room, tracker) {
+			room_data[room].trackers[tracker.uid] = tracker;
 			socket.broadcast.to(room).emit('track', tracker);
 		});
 		
 		socket.on('track_move', function(room, uid, delta_x, delta_y) {
+			room_data[room].trackers[uid].x += delta_x;
+			room_data[room].trackers[uid].x += delta_y;
 			socket.broadcast.to(room).emit('track_move', uid, delta_x, delta_y);
 		});
 		
 		socket.on('stop_track', function(room, uid) {
+			delete room_data[room].trackers[uid];
 			socket.broadcast.to(room).emit('stop_track', uid);
 		});
 		
