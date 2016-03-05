@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.9/pixi.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+		<title>demo</title>
+	</head>
+	<body>
+	</body>
+</html>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	var renderer = PIXI.autoDetectRenderer(1000,1000,{backgroundColor : 0xEEEEEE});
+	$("body").append(renderer.view);
+	var stage = new PIXI.Container();
+	
+	//set a background
+	var background_sprite = new PIXI.Sprite();
+	background_sprite.height = renderer.height;
+	background_sprite.width = renderer.width;
+	var empty_backround = new PIXI.Graphics();
+	empty_backround.beginFill(0xEEEEEE, 1);
+	empty_backround.moveTo(0, 0);
+	empty_backround.lineTo(renderer.width, 0);
+	empty_backround.lineTo(renderer.width, renderer.height);
+	empty_backround.lineTo(0, renderer.height);
+	empty_backround.lineTo(0, 0);
+	empty_backround.endFill();
+	background_sprite.texture = empty_backround.generateTexture();
+	stage.addChild(empty_backround);
+	renderer.render(stage);
+	
+	var graphic;
+	var last_x, last_y;
+	function start(e) {
+		var mouse_location = e.data.getLocalPosition(stage);
+		graphic = new PIXI.Graphics();
+		graphic.lineStyle(4, 0x000000, 1);
+		last_x = mouse_location.x, last_y = mouse_location.y;
+		graphic.moveTo(mouse_location.x, mouse_location.y);
+		stage.addChild(graphic);
+		stage.mousemove = move;
+		stage.mouseup = end;
+	}
+
+	function move(e) {
+		var mouse_location = e.data.getLocalPosition(stage);
+		graphic.moveTo(last_x, last_y);
+		graphic.lineTo(mouse_location.x, mouse_location.y);
+		last_x = mouse_location.x, last_y = mouse_location.y;
+		renderer.render(stage);
+	}
+
+	function end() {
+		stage.removeChild(graphic);
+		renderer.render(stage);
+		delete stage.mousemove;
+		delete stage.mouseup;
+	}
+
+	stage.interactive = true;
+	stage.mousedown = start;
+});
+</script>

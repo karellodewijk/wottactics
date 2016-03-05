@@ -37,11 +37,20 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
-var io = require('socket.io')();
+var io = require('socket.io')({
+  transports: [
+    'websocket', 
+    'flashsocket', 
+    'htmlfile', 
+    'xhr-polling', 
+    'jsonp-polling', 
+    'polling'
+  ]
+});
 
 //configure localization support
 var i18n = require('i18n');
-var locales = ['en', 'sr', 'de', 'es', 'pl', 'cs'];
+var locales = ['en', 'sr', 'de', 'es', 'pl', 'cs', 'fi'];
 i18n.configure({
 	locales: locales,
 	directory: __dirname + "/locales",
@@ -223,6 +232,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	function create_anonymous_user(req) {
+		req.session.passport = {};
 		req.session.passport.user = {};
 		req.session.passport.user.id = newUid();
 		req.session.passport.user.name = "Anonymous";		
@@ -272,7 +282,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (!req.session.passport.user) {
 			create_anonymous_user(req);		
 		}
-		if (subDomain.length > 2) {
+		if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
 			req.session.locale = subDomain[0];
 			subDomain = subDomain.slice(1);
 		} else {
@@ -640,9 +650,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	function join_room(socket, room) {
 		room_data[room].last_join = Date.now();
-		if (!socket.request.session.passport.user) {
-			create_anonymous_user(socket.request);
-		}
 		var user = socket.request.session.passport.user;
 
 		if (user) {
@@ -653,11 +660,16 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				room_data[room].userlist[user.id] = {name:user.name, id:user.id, role:user.role, logged_in:(user.identity) ? true : false};
 				room_data[room].userlist[user.id].count = 1;
 				if (room_data[room].lost_users[user.id]) {
+				
 					//if a user was previously connected to this room and had a role, restore that role
 					room_data[room].userlist[user.id].role = room_data[room].lost_users[user.id];
 				} else if (user.identity && room_data[room].lost_identities[user.identity] && room_data[room].lost_identities[user.identity].role) {
 					//if a user with given identity had a role, restore that role
 					room_data[room].userlist[user.id].role = room_data[room].lost_identities[user.identity].role;
+				} else {
+					console.log("Who are you ?");	
+					console.log(room_data[room].lost_users)
+					console.log(user)
 				}
 				socket.broadcast.to(room).emit('add_user', room_data[room].userlist[user.id]);			
 			}			
@@ -675,8 +687,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//socket.io callbacks
 	io.sockets.on('connection', function(socket) { 
-		if (!socket.request.session.passport) {
-			socket.request.session.passport = {};
+		if (!socket.request.session.passport || !socket.request.session.passport.user) {
+			create_anonymous_user(socket.request);
 		}
 			
 		socket.on('join_room', function(room, game) {			

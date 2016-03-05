@@ -2,7 +2,7 @@
 <html>
 <head>
 	<% include common_headers.ejs %>
-	<script type="text/javascript" src="/javascripts/index.js"></script>
+	<script defer type="text/javascript" src="/javascripts/index.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
 	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or just explore, share and discuss map tactics with your friends, team, platoon or clan.">
 </head>
@@ -36,8 +36,8 @@
 		<p>This tool is created to make planning and sharing battle tactics quick and easy. Just press the blue button, share the link and get started. <% if (game == 'wot') { %> Are you an FC trying to plan a clan war or stronghold battle and brief your players? Or are you part of team that wants to perform better in team battles or ESL? Or do you just want to discuss some details about a map with a friend? Then this tool is for you. If you are used to maptactic, give this a try. Planning has never been easier.<% } %>
 	</div>
 	<div class="col-md-4">
-		<h2>Free and open</h2>
-		<p>This website is free of charge, free of adds and open-source and I intend to keep it that way. There is however a donation button to cover hosting fees in the future.</p>
+		<h2>New video tutorial</h2>
+		<p>I've created a <a href="https://youtu.be/K-yl_WNjvwk">tutorial video</a> explaining all the tools and features of <%=url.split('/')[0]%>. It should explain to you how to use the different tools, teach you about different shortcuts you may not know about and explain some of the more advanced features. Let me know what you think about it in youtube comments.
 	</div>
 	<div class="col-md-4">
 		<h2>Looking for Russian translator</h2>
@@ -46,6 +46,10 @@
 	</div>
 	
 	<div class="row">
+	<div class="col-md-4">
+		<h2>Free and open</h2>
+		<p>This website is free of charge, free of adds and open-source and I intend to keep it that way. There is however a donation button to cover hosting fees in the future.</p>
+	</div>
 	<div class="col-md-4">
 		<h2>Recent updates</h2>
 		<p>You can now organise your stored tactics in folders if you want. Sometimes when multiple people were removing slides at the same time, the whole tactic would break, I should have that fixed now. 
