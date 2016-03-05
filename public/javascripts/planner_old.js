@@ -1,7 +1,8 @@
-var socket = io({
-	reconnect: true,
-	reconnectionDelay: 100,
-	reconnectionDelayMax: 500,
+var socket = io.connect('http://'+location.hostname, {
+	'reconnect': true,
+	'reconnection delay': 100, // defaults to 500
+	'reconnection limit': 100, // defaults to Infinity
+	'max reconnection attempts': Infinity // defaults to 10
 });
 
 //generates unique id
@@ -24,7 +25,7 @@ function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
 }
 function is_ie() {
-	return navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgent.toLowerCase().indexOf('trident') > -1;
+	return navigator.userAgent.toLowerCase().indexOf('msie') > -1;
 }
 
 var image_host;
@@ -671,10 +672,10 @@ var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d) {
   }
 
   // Draw the shaft of the arrow
-  // ctx.beginPath();
-  // ctx.moveTo(fromx,fromy);
-  // ctx.lineTo(tox,toy);
-  // ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(fromx,fromy);
+  ctx.lineTo(tox,toy);
+  ctx.stroke();
 
   // calculate the angle of the line
   var lineangle=Math.atan2(y2-y1,x2-x1);
@@ -701,7 +702,6 @@ var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d) {
   }
 }
 
-
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_draw_time;
 function on_left_click(e) {
@@ -715,7 +715,7 @@ function on_left_click(e) {
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), is_arrow:($('#draw_arrow').hasClass('active') || $('#draw_dotted_arrow').hasClass('active')), is_dotted:($('#draw_dotted').hasClass('active') || $('#draw_dotted_arrow').hasClass('active')), path:[[0, 0]]};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), is_arrow:$('#draw_arrow').hasClass('active'), path:[[0, 0]]};
 		var color = '#' + ('00000' + (new_drawing.color | 0).toString(16)).substr(-6); 
 
 		start_drawing();
@@ -724,9 +724,7 @@ function on_left_click(e) {
 		draw_context.lineWidth = new_drawing.thickness;
 		draw_context.strokeStyle = color;
 		draw_context.fillStyle = color;	
-		if (new_drawing.is_dotted) {
-			draw_context.setLineDash([10, 10]);
-		}
+		draw_context.lineCap = 'round';
 		draw_context.beginPath();
 		draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
 
@@ -734,9 +732,7 @@ function on_left_click(e) {
 		temp_draw_context.lineWidth = new_drawing.thickness;
 		temp_draw_context.strokeStyle = color;
 		temp_draw_context.fillStyle = color;	
-		if (new_drawing.is_dotted) {
-			temp_draw_context.setLineDash([10, 10]);
-		}
+		temp_draw_context.lineCap = 'round';
 
 		last_draw_time = 0;
 	} else if (active_context == 'line_context') {
@@ -1330,8 +1326,8 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index) {
 	var path_y = [];
 	
 	for (var i = 0; i < path.length; i++) {
-		path_x.push(size_x * (drawing.x + path[i][0]));
-		path_y.push(size_y * (drawing.y + path[i][1]));
+		path_x.push(x_abs(drawing.x + path[i][0]));
+		path_y.push(y_abs(drawing.y + path[i][1]));
 	}
 
 	var cx = computeControlPoints(path_x);
@@ -1347,8 +1343,7 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index) {
 		context.moveTo(path_x[start_index], path_y[start_index])
 	}
 	
-	var i = start_index;
-	for (; i < stop_index-1; i++) {
+	for (var i = start_index; i < stop_index-1; i++) {
 		context.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
 	}
 
@@ -1362,7 +1357,7 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index) {
 		}
 	}
 }
-	
+
 function on_draw_move(e) {
 	//limit updates to once ever 10ms
 	var time = Date.now();
@@ -1381,21 +1376,17 @@ function on_draw_move(e) {
 	//draw_context.lineTo(size_x*(new_x + new_drawing.x), size_y*(new_y + new_drawing.y));
 	//draw_context.stroke();
 	
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	
-	var n = 30;
-	var start_index = Math.max(new_drawing.path.length-10, 0);
-	var stop_index = new_drawing.path.length;
-	temp_draw_context.beginPath();	
+	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
 	if (new_drawing.is_arrow) {
 		if (new_drawing.path.length > 3) {
-			var i = Math.max(0, new_drawing.path.length-3);		
+			var i = Math.max(0, new_drawing.path.length-3);			
 			draw_arrow2(temp_draw_context, new_drawing);
 		}
 	}
-	//temp_draw_context.setLineDash([5, 15]);
-	temp_draw_context.closePath();
-	temp_draw_context.beginPath();
+	
+	var n = 30;
+	var start_index = Math.max(new_drawing.path.length-10, 0);
+	var stop_index = new_drawing.path.length;	
 	draw_path2(temp_draw_context, draw_context, new_drawing, 30, start_index, stop_index)
 	draw_context.stroke();
 	temp_draw_context.stroke();	
@@ -1448,18 +1439,17 @@ function createSprite(ctx, canvas) {
 }
 
 function draw_arrow2(context, drawing) {
-	var i = Math.max(0, drawing.path.length-4);
-	var size = Math.max(Math.min(6*drawing.thickness, 30), 15); //[15 < size < 30]
-	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
-	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
+	var i = Math.max(0, new_drawing.path.length-4);
+	var size = Math.min(10*new_drawing.thickness, 30);
+	var x0 = new_drawing.path[i][0] - new_drawing.path[new_drawing.path.length-1][0];
+	var y0 = new_drawing.path[i][1] - new_drawing.path[new_drawing.path.length-1][1];
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
 	x0 /= l;
 	y0 /= l;
-	start_x = size_x * (drawing.path[drawing.path.length-1][0] + drawing.x);
-	start_y = size_y * (drawing.path[drawing.path.length-1][1] + drawing.y);
-	drawArrow(context, start_x, start_y, start_x-(drawing.thickness*x0),start_y-(drawing.thickness*y0), 3, 1, Math.PI/8, size);	
+	start_x = x_abs(new_drawing.path[new_drawing.path.length-1][0] + drawing.x);
+	start_y = y_abs(new_drawing.path[new_drawing.path.length-1][1] + drawing.y);
+	drawArrow(context, start_x, start_y, start_x-(drawing.thickness * x0),start_y-(drawing.thickness * y0), 3, 1, Math.PI/8, size);		
 }
-
 
 function is_canvas_blank(canvas) {
     var blank = document.createElement('canvas');
@@ -1468,93 +1458,35 @@ function is_canvas_blank(canvas) {
     return canvas.toDataURL() == blank.toDataURL();
 }
 
-function create_drawing2(drawing) {
-	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
-	var _canvas = document.createElement("canvas");
-	_canvas.width = stage.width;
-	_canvas.height = stage.height;
-	_context = draw_canvas.getContext("2d");
-	_context.lineWidth = drawing.thickness;
-	_context.strokeStyle = color;
-	_context.fillStyle = color;	
-	if (drawing.is_dotted) {
-		_context.setLineDash([10, 10]);
-	} else {
-		_context.setLineDash([]);
-	}
-	_context.beginPath();
-	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
-	var n = drawing.path.length;
-	draw_path2(_context, undefined, drawing, n, 0, n);
-	_context.stroke();
-	if (drawing.is_arrow) {	
-		if (drawing.path.length > 3) {	
-			draw_arrow2(_context, drawing);
-			_context.fill();
-		}
-	}
-
-	var sprite = createSprite(_context, _canvas);
-	drawing.container = sprite;
-	
-	//rescale to objectContainer
-	sprite.x /= objectContainer.scale.x;
-	sprite.y /= objectContainer.scale.y;
-	sprite.height /= objectContainer.scale.x;
-	sprite.width /= objectContainer.scale.y;
-	objectContainer.addChild(sprite);
-	
-	//make draggable
-	sprite.texture.baseTexture.source.src = drawing.uid;
-	sprite.hitArea = new PIXI.TransparencyHitArea.create(sprite, false);
-	make_draggable(sprite);
-	sprite.entity = drawing;
-	
-	//send off
-	room_data.slides[active_slide].entities[drawing.uid] = drawing;
-	renderer.render(stage);	
-}
-
 function on_draw_end(e) {
 	setup_mouse_events(undefined, undefined);
-
+	
 	//make sure the last move is recorded
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	new_drawing.path.push([mouse_x_rel(mouse_location.x)-new_drawing.x,
-						   mouse_y_rel(mouse_location.y)-new_drawing.y]);
+	//last_draw_time = 0;
+	//on_draw_move(e);
 	
 	if (!is_canvas_blank(draw_canvas)) {	
-		var n = 30;
-		var start_index = Math.max(new_drawing.path.length-10, 0);
-		var stop_index = new_drawing.path.length;
-		draw_path2(draw_context, undefined, new_drawing, n, start_index, stop_index);		
-		draw_context.stroke();
+		var mouse_location = e.data.getLocalPosition(objectContainer);
 		
 		if (new_drawing.is_arrow) {	
 			if (new_drawing.path.length > 3) {	
-				//draw_context.setLineDash([1]);
 				draw_arrow2(draw_context, new_drawing);
-				draw_context.fill();
 			}
 		}
 		
 		var sprite = createSprite(draw_context, draw_canvas);
 		new_drawing.container = sprite;
-		
-		//rescale to objectContainer
 		sprite.x /= objectContainer.scale.x;
 		sprite.y /= objectContainer.scale.y;
 		sprite.height /= objectContainer.scale.x;
 		sprite.width /= objectContainer.scale.y;
 		objectContainer.addChild(sprite);
 		
-		//make draggable
 		sprite.texture.baseTexture.source.src = new_drawing.uid;
 		sprite.hitArea = new PIXI.TransparencyHitArea.create(sprite, false);
 		make_draggable(sprite);
 		sprite.entity = new_drawing;
 		
-		//send off
 		room_data.slides[active_slide].entities[new_drawing.uid] = new_drawing;
 		emit_entity(new_drawing);
 		renderer.render(stage);
@@ -1568,8 +1500,6 @@ function on_draw_end(e) {
 function start_drawing() {
 	draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	draw_context.setLineDash([]);
-	temp_draw_context.setLineDash([]);
 	$(temp_draw_canvas).show();
 	$(draw_canvas).show();	
 }
@@ -2030,7 +1960,7 @@ function create_entity(entity) {
 	} else if (entity.type == 'icon') {
 		create_icon(entity);
 	} else if (entity.type == 'drawing') {
-		create_drawing2(entity);
+		create_drawing(entity);
 	} else if (entity.type == 'curve') {
 		create_drawing(entity);
 	} else if (entity.type == 'line') {
@@ -2177,26 +2107,9 @@ function chat(message) {
 }
 
 function initialize_color_picker(slider_id, variable_name) {
-	if (is_ie()) {
-		$('#' + slider_id + ' ~ input').hide();
-	}
-	
-	var color = $('select[id="'+ slider_id + '"]').val();
 	window[variable_name] = parseInt('0x'+$('select[id="'+ slider_id + '"]').val().substring(1));
-	$('#' + slider_id + ' ~ input').attr('value', color);
-	$('#' + slider_id + ' ~ input').val(color);
-	
-	$('#' + slider_id + ' ~ input').on('change', function() {
-		var color = $(this).val();
-		window[variable_name] = parseInt('0x'+ color.substring(1));
-		$('#' + slider_id + '~ span span[data-selected=""]').removeAttr("data-selected");
-	});
-	
 	$('select[id="'+ slider_id + '"]').simplecolorpicker().on('change', function() {
-		var color = $('select[id="'+ slider_id + '"]').val();
-		window[variable_name] = parseInt('0x'+ color.substring(1));
-		$('#' + slider_id + ' ~ input').val(color);
-		
+		window[variable_name] = parseInt('0x'+$('select[id="'+ slider_id + '"]').val().substring(1));
 		if (variable_name == 'track_color') { //dirty track color switch hack
 			if (my_tracker) {
 				stop_tracking();
@@ -3024,6 +2937,8 @@ $(document).ready(function() {
 		$(renderer.view).parent().append(draw_canvas);
 		$(temp_draw_canvas).hide();
 		$(draw_canvas).hide();
+		draw_context.save();
+		temp_draw_context.save();
 			
 		var map_select_box = document.getElementById("map_select");
 		map_select_box.onchange = function() {

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.9/pixi.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+		<title>demo</title>
+	</head>
+	<body style="position:absolute;">
+	</body>
+</html>
+
+<script type="text/javascript">
+
+/*computes control points given knots K, this is the brain of the operation*/
+function computeControlPoints(K) {
+	var p1=new Array();
+	var p2=new Array();
+	var n = K.length-1;
+	
+	/*rhs vector*/
+	var a=new Array();
+	var b=new Array();
+	var c=new Array();
+	var r=new Array();
+	
+	/*left most segment*/
+	a[0]=0;
+	b[0]=2;
+	c[0]=1;
+	r[0] = K[0]+2*K[1];
+	
+	/*internal segments*/
+	for (var i = 1; i < n - 1; i++)
+	{
+		a[i]=1;
+		b[i]=4;
+		c[i]=1;
+		r[i] = 4 * K[i] + 2 * K[i+1];
+	}
+			
+	/*right segment*/
+	a[n-1]=2;
+	b[n-1]=7;
+	c[n-1]=0;
+	r[n-1] = 8*K[n-1]+K[n];
+	
+	/*solves Ax=b with the Thomas algorithm (from Wikipedia)*/
+	for (var i = 1; i < n; i++)
+	{
+		var m = a[i]/b[i-1];
+		b[i] = b[i] - m * c[i - 1];
+		r[i] = r[i] - m*r[i-1];
+	}
+ 
+	p1[n-1] = r[n-1]/b[n-1];
+	for (var i = n - 2; i >= 0; --i)
+		p1[i] = (r[i] - c[i] * p1[i+1]) / b[i];
+		
+	/*we have p1, now compute p2*/
+	for (var i=0;i<n-1;i++)
+		p2[i]=2*K[i+1]-p1[i+1];
+	
+	p2[n-1]=0.5*(K[n]+p1[n-1]);
+	
+	return {p1:p1, p2:p2};
+}
+
+$(document).ready(function() {
+	var renderer = PIXI.autoDetectRenderer(1000,1000,{backgroundColor : 0xEEEEEE});
+	$(renderer.view).attr('style', 'position:absolute; z-index:1;');
+	$("body").append(renderer.view);
+	var stage = new PIXI.Container();
+	
+	//set a background
+	var background_sprite = new PIXI.Sprite();
+	background_sprite.height = renderer.height;
+	background_sprite.width = renderer.width;
+	var empty_backround = new PIXI.Graphics();
+	empty_backround.beginFill(0xEEEEEE, 1);
+	empty_backround.moveTo(0, 0);
+	empty_backround.lineTo(renderer.width, 0);
+	empty_backround.lineTo(renderer.width, renderer.height);
+	empty_backround.lineTo(0, renderer.height);
+	empty_backround.lineTo(0, 0);
+	empty_backround.endFill();
+	background_sprite.texture = empty_backround.generateTexture();
+	stage.addChild(empty_backround);
+	renderer.render(stage);
+	
+	var full_path;
+	var canvas, context;
+	var last_draw_time;
+	function start(e) {
+		var mouse_location = e.data.getLocalPosition(stage);
+		full_path = [mouse_location];
+
+		//canvas to draw last 30 points
+		canvas = document.createElement("canvas");
+		$(canvas).attr('style', 'position:absolute; z-index:1;');
+		$(canvas).attr('id', 'temp_canvas');
+		canvas.width = renderer.width;
+		canvas.height = renderer.height;
+		context = canvas.getContext("2d");
+		context.lineWidth = 4;
+		context.strokeStyle = '#000000';
+		context.lineCap = "round";
+		context.imageSmoothingEnabled = true;
+		context.moveTo(mouse_location.x, mouse_location.y);
+		$("body").append(canvas);
+
+		//canvas to draw all the rest
+		canvas2 = document.createElement("canvas");
+		$(canvas2).attr('style', 'position:absolute; z-index:2;');
+		$(canvas2).attr('id', 'draw_canvas');
+		canvas2.width = renderer.width;
+		canvas2.height = renderer.height;
+		context2 = canvas2.getContext("2d");
+		context2.lineWidth = 4;
+		context2.strokeStyle = '#000000';
+		context2.lineCap = "round";
+		context2.imageSmoothingEnabled = true;
+		context2.moveTo(mouse_location.x, mouse_location.y);
+		context2.beginPath();
+		$("body").append(canvas2);
+
+		last_draw_time = 0;		
+		stage.mousemove = move;
+		stage.mouseup = end;
+	}
+	
+	function draw_path(context, context2, path, n, start_index, stop_index) {
+		var path = path.slice(Math.max(full_path.length-n, 0));
+	
+		var path_x = [];
+		var path_y = [];
+		
+		for (var i = 0; i < path.length; i++) {
+			path_x.push(path[i].x);
+			path_y.push(path[i].y);
+		}
+
+		var cx = computeControlPoints(path_x);
+		var cy = computeControlPoints(path_y);		
+
+		if (start_index == 0) {
+			context.moveTo(path_x[0], path_y[0]);
+			context.lineTo(path_x[1], path_y[1]);
+			start_index	= 1;
+		}
+
+		context.moveTo(path_x[start_index], path_y[start_index])
+		for (var i = start_index; i < stop_index-1; i++) {
+			context.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
+		}
+
+		if (path.length == 10) {
+			context2.moveTo(path[0].x, path[0].y);
+			context2.lineTo(path[1].x, path[1].y);			
+		} else if (path.length > 10) {
+			var i = path.length - 10;
+			context2.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
+		}
+		
+	}
+	
+	function move(e) {
+		var time = Date.now();
+		var time_diff = time - last_draw_time;
+		if (time_diff < 10) return;
+		last_draw_time = time;
+	
+		var mouse_location = e.data.getLocalPosition(stage);
+		last_x = full_path[full_path.length-1].x;
+		last_y = full_path[full_path.length-1].y;
+		
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		context.beginPath();
+		
+		full_path.push(mouse_location);
+				
+		//get the last 30 points
+		var start_index = Math.min(Math.max(0, full_path.length-10), 10);
+		var stop_index = Math.max(full_path.length, 20);
+		draw_path(context, context2, full_path, 20, start_index, stop_index);
+		context2.stroke();
+		context.stroke();
+		
+		full_path.pop();		
+		mouse_location.x = last_x + 0.3 * (mouse_location.x - last_x);
+		mouse_location.y = last_y + 0.3 * (mouse_location.y - last_y);
+		full_path.push(mouse_location);
+	}
+
+	function end(e) {
+		var mouse_location = e.data.getLocalPosition(stage);
+		full_path.push(mouse_location);
+		var start_index = Math.min(Math.max(0, full_path.length-25), 5);
+		var stop_index = Math.max(full_path.length, 30);
+		draw_path(context2, context, full_path, 30, start_index, stop_index);
+		context2.stroke();
+	
+		var foregroundTexture = PIXI.Texture.fromCanvas(canvas2);
+		var foregroundSprite = new PIXI.Sprite(foregroundTexture);
+		stage.addChild(foregroundSprite);
+		
+		$("#temp_canvas").remove();
+		$("#draw_canvas").remove();
+			
+		renderer.render(stage);
+		delete stage.mousemove;
+		delete stage.mouseup;
+	}
+
+	stage.interactive = true;
+	stage.mousedown = start;
+});
+</script>
