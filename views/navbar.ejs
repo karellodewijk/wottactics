@@ -2,6 +2,18 @@
 <%if (game == 'blitz') { %>
 <%	home = "blitz.html" %>
 <%} %>
+
+<style type="text/css" scoped>
+	.divider-vertical {
+		height: 50px;
+		width:100px;
+		margin: auto;
+		border-left: 0px solid black;
+		border-right: 0px solid white;
+		text-align:center;
+	}
+</style>
+
 <nav class="navbar navbar-inverse navbar-fixed-top container-fluid">
 	<a class="navbar-brand" href="<%=home%>">
 		<% if (game == 'wot') { %>
@@ -14,14 +26,48 @@
 			AW Tactics
 		<% } %>
 	</a>
-	<ul class="nav navbar-nav navbar-left container-fluid">
+	<ul class="collapse navbar-collapse nav navbar-nav navbar-left container-fluid">
 	    <% if (user.identity) { %>
-		    <li><a href="stored_tactics.html" class=""><%=l('Stored tactics')%></a></li>
+		    <li><a href="stored_tactics.html"><%=l('Stored tactics')%></a></li>
 		<% } %>
-		<li><a href="getting_started.html" class=""><%=l('Getting started')%></a></li>
-		<li><a href="about.html" class=""><%=l('About')%></a></li>
+		<li><a href="getting_started.html"><%=l('Getting started')%></a></li>
+		<li><a href="about.html"><%=l('About')%></a></li>
+		<li class="divider-vertical"></li>
+		<li data-toggle="tooltip" title="<%=l('Share on faceook')%>"><a id="facebook_link" href="http://www.facebook.com/sharer.php?u="><i class="fa fa-lg fa-facebook"></i></a></li>
+		<li data-toggle="tooltip" title="<%=l('Share on twitter')%>"><a id="twitter_link" href="https://twitter.com/intent/tweet?button_hashtag=wottactic&text= " data-url="http://wottactic.tk" data-dnt="true"><i class="fa fa-lg fa-twitter"></i></a></li>
+		<li data-toggle="tooltip" title="<%=l('Share on google+')%>"><a id="google_link" href="https://plus.google.com/share?url=" onclick="javascript:window.open(this.href,
+  '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-lg fa-google-plus"></i></a></li>
+
+	 <li class="navbar-form" >
+		<div class="form-group">
+			<form class="navbar-btn" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="3DJZFARS4ZG2U">
+			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
+			<img alt="" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+			</form>
+		</div>
+	</li>
+  
+		<script type="text/javascript" defer>
+			!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+			document.addEventListener("DOMContentLoaded", function(event) {
+				var link = "http://<%=url.split('/')[0]%>";				
+				var fb = document.getElementById('facebook_link');
+				fb.setAttribute("href", fb.getAttribute('href') + encodeURIComponent(link));
+				var twitter = document.getElementById('twitter_link')
+				twitter.setAttribute("href", twitter.getAttribute('href') + encodeURIComponent(link));
+				var google = document.getElementById('facebook_link')
+				google.setAttribute("href", google.getAttribute('href') + encodeURIComponent(link));							
+			});
+		</script>
 	</ul>
-	<ul class="nav navbar-nav navbar-right container-fluid">+
+
+	<ul class="nav navbar-nav navbar-right container-fluid">
+		<% include login_button.ejs %>
+	</ul>
+	
+	<ul class="collapse navbar-collapse nav navbar-nav navbar-right container-fluid">
 		<li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 			  <%=l('Other Games')%><span class="caret"></span>
@@ -34,8 +80,9 @@
 			</ul>
 		</li>
 		<% include language_select.ejs %>
-		<% include login_button.ejs %>
 	</ul>
+	
+
 <div id="result"></div>
 </nav>
 

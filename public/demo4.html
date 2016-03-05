@@ -1,0 +1,23 @@
+<canvas id="canvas"></canvas>
+
+<script>
+
+var canvas = document.getElementById("canvas"),
+    ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+function drawText() {
+    ctx.font = 'italic 20px Calibri';
+    ctx.fillText("HELLO!", 100, 100);
+}
+
+// window.addEventListener("resize", function() {
+//    canvas.width = window.innerWidth;
+//    canvas.height = window.innerHeight;
+//    drawText()
+//});
+drawText()
+
+</script>
