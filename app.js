@@ -659,17 +659,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			} else {
 				room_data[room].userlist[user.id] = {name:user.name, id:user.id, role:user.role, logged_in:(user.identity) ? true : false};
 				room_data[room].userlist[user.id].count = 1;
-				if (room_data[room].lost_users[user.id]) {
-				
+				if (room_data[room].lost_users[user.id]) {				
 					//if a user was previously connected to this room and had a role, restore that role
 					room_data[room].userlist[user.id].role = room_data[room].lost_users[user.id];
 				} else if (user.identity && room_data[room].lost_identities[user.identity] && room_data[room].lost_identities[user.identity].role) {
 					//if a user with given identity had a role, restore that role
 					room_data[room].userlist[user.id].role = room_data[room].lost_identities[user.identity].role;
-				} else {
-					console.log("Who are you ?");	
-					console.log(room_data[room].lost_users)
-					console.log(user)
 				}
 				socket.broadcast.to(room).emit('add_user', room_data[room].userlist[user.id]);			
 			}			
@@ -774,8 +769,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 
-		socket.on('ping', function(room, x, y, color) {
-			socket.broadcast.to(room).emit('ping', x, y, color);
+		socket.on('ping_marker', function(room, x, y, color) {
+			socket.broadcast.to(room).emit('ping_marker', x, y, color);
 		});
 
 		socket.on('track', function(room, tracker) {
