@@ -92,6 +92,9 @@
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="ping" data-toggle="tooltip" title="<%=l('Ping map')%>">
 						<img src="http://karellodewijk.github.io/icons/ping_icon.png" alt="ping" />
 					</button>
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
+						<img src="http://karellodewijk.github.io/icons/recticle_icon.png" alt="track" />
+					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
 						<img src="http://karellodewijk.github.io/icons/
 							<%if (game == 'wows') { %>
@@ -105,9 +108,6 @@
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
 						<img src="http://karellodewijk.github.io/icons/pencil.png" alt="draw" />
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
-						<img src="http://karellodewijk.github.io/icons/text_icon.png" alt="text" />
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="line" data-toggle="tooltip" title="<%=l('Draw line (hold left mouse)')%>">
 						<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="line" />
@@ -133,6 +133,12 @@
 					</div>
 					<br />
 					<div class="btn-group">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
+						<img src="http://karellodewijk.github.io/icons/text_icon.png" alt="text" />
+					</button>
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="background_text" data-toggle="tooltip" title="<%=l('Add Text with background')%>">
+						<img src="http://karellodewijk.github.io/icons/text_on_background.png" alt="text" />
+					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="note" data-toggle="tooltip" title="<%=l('Add a note')%>">
 						<img src="http://karellodewijk.github.io/icons/note.png" alt="note" />
 					</button>
@@ -141,9 +147,6 @@
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="remove" data-toggle="tooltip" title="<%=l('Delete (click map)/Delete menu')%>">
 						<img src="http://karellodewijk.github.io/icons/bin.png" alt="bin" />
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
-						<img src="http://karellodewijk.github.io/icons/recticle_icon.png" alt="track" />
 					</button>
 					</div>
 					<br />
@@ -752,6 +755,37 @@
 						</div>
 						<div class="col-sm-3">
 							<input id="font_size_text" class="slider_text_input" type="text"/>
+						</div>
+					</div>
+				</div>
+				</div>
+				
+				<div id='background_text_context'>
+
+				<h4><%=l('Text with background options')%></h4>
+				
+				<div class="container" style="max-width: 250px; padding:0px;">
+				<p>	
+				<small><%=l('Text')%></small> <input type="text" id="text_tool_background_text"/>
+					<p>
+					<select name="colorpicker" id="background_text_colorpicker">
+						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ff0000"><%=l('Red')%></option>
+						<option value="#00ff00"><%=l('Green')%></option>
+						<option value="#0000ff"><%=l('Blue')%></option>
+					</select>
+					<input type="color" id="html5colorpicker">
+								
+					<br />
+					<div class="row">
+						<div class="col-sm-3">
+							<small><%=l('Size')%></small>
+						</div>
+						<div class="col-sm-5">
+							<input id="background_font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="99" data-slider-step="1" data-slider-value="8"/>
+						</div>
+						<div class="col-sm-3">
+							<input id="background_font_size_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
 				</div>

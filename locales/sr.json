@@ -230,5 +230,14 @@
 	"Planner": "Planner",
 	"strategy": "strategy",
 	"restore your stored tactics from here.": "restore your stored tactics from here.",
-	"Cursor": "Cursor"
+	"Cursor": "Cursor",
+	"Download a backup": "Download a backup",
+	"Clanportal": "Clanportal",
+	"battles": "battles",
+	"members": "members",
+	"Member list": "Member list",
+	"Share on faceook": "Share on faceook",
+	"Share on twitter": "Share on twitter",
+	"Share on google+": "Share on google+",
+	"attend": "attend"
 }
