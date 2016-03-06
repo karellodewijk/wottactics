@@ -1,3 +1,5 @@
+mongodump --db wottactics --out dbackup
+
 mongorestore --batchSize=10 dbackup
 
 db.runCommand( { dropDatabase: 1 } )

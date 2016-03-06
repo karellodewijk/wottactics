@@ -21,7 +21,7 @@
 	<div class="edit_window"></div>
 	
 	
-	<div class="side_bar jumbotron" hidden>
+	<div class="side_bar jumbotron">
 <nav class="navbar navbar-inverse container-fluid navbar_planner">
 	<div class="navbar-header">
 		<a class="navbar-brand" style="padding-left:0px"
@@ -194,10 +194,12 @@
 						<% } %>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
+						<%if (game != 'aw') { %>
 						<option value="#ffff00"><%=l('Yellow')%></option>
+						<% } %>
 						<option value="#ffffff"><%=l('White')%></option>
 					</select>
-					<!--<input type="color" id="html5colorpicker">-->
+					<input type="color" id="html5colorpicker">
 
 					<div class="row">
 						<div class="col-sm-3">
@@ -235,10 +237,10 @@
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
 					<div class="row">
 						<div class="col-sm-3">
 							<small><%=l('Thickness')%></small>
@@ -278,9 +280,10 @@
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
+						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
 					<div class="row">
 						<div class="col-sm-3">
 							<small><%=l('Thickness')%></small>
@@ -300,7 +303,13 @@
 						<button type="button" class="btn btn-default" aria-label="Left Align" id="curve_arrow" data-toggle="tooltip" title="<%=l('Curved arrow')%>">
 							<img src="http://karellodewijk.github.io/icons/curved_arrow.png" alt="arrow" />
 						</button>
-					</div>				
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="curve_dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+							<img src="http://karellodewijk.github.io/icons/curved_dotted_line.png" alt="arrow" />
+						</button>
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="curve_dotted_arrow" data-toggle="tooltip" title="<%=l('Dotted arrow')%>">
+							<img src="http://karellodewijk.github.io/icons/curved_dotted_arrow.png" alt="arrow" />
+						</button>
+					</div>
 				</div>
 				</div>
 				
@@ -311,14 +320,16 @@
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
 					<h5><%=l('Outline')%></h5>
+					<div>
 					<select name="colorpicker" id="rectangle_outline_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
+					</div>
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -340,18 +351,19 @@
 						<div class="col-sm-3">
 							<input id="rectangle_outline_opacity_text" class="slider_text_input" type="text"/>
 						</div>
-					</div>	
+					</div>
 									
 					<h5><%=l('Fill')%></h5>	
+					<div>
 					<select name="colorpicker" id="rectangle_fill_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					
+					<input type="color" id="html5colorpicker">	
+					</div>
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -364,6 +376,15 @@
 							<input id="rectangle_fill_opacity_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
+					<br />
+					<div class="btn-group" role="group" id="rectangle_type">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="rectangle_line" data-toggle="tooltip" title="<%=l('Normal line')%>">
+							<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
+						</button>
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="rectangle_dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+							<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
+						</button>
+					</div>
 				</div>
 				</div>
 
@@ -374,14 +395,16 @@
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
 					<h5><%=l('Outline')%></h5>
+					<div>
 					<select name="colorpicker" id="circle_outline_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
+					</div>
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -405,15 +428,17 @@
 						</div>
 					</div>	
 									
-					<h5><%=l('Fill')%></h5>		
+					<h5><%=l('Fill')%></h5>	
+					<div>
 					<select name="colorpicker" id="circle_fill_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
+					</div>
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -426,6 +451,17 @@
 							<input id="circle_fill_opacity_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
+					
+					<br />
+					<div class="btn-group" role="group" id="circle_type">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="circle_line" data-toggle="tooltip" title="<%=l('Normal line')%>">
+							<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
+						</button>
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="circle_dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+							<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
+						</button>
+					</div>
+					
 				</div>
 				</div>
 
@@ -436,14 +472,16 @@
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
 					<h5><%=l('Outline')%></h5>
+					<div>
 					<select name="colorpicker" id="polygon_outline_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
+					</div>
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -467,15 +505,17 @@
 						</div>
 					</div>	
 									
-					<h5><%=l('Fill')%></h5>		
+					<h5><%=l('Fill')%></h5>
+					<div>
 					<select name="colorpicker" id="polygon_fill_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
+					</div>
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -488,6 +528,16 @@
 							<input id="polygon_fill_opacity_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
+					
+					<br />
+					<div class="btn-group" role="group" id="polygon_type">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="polygon_line" data-toggle="tooltip" title="<%=l('Normal line')%>">
+							<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
+						</button>
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="polygon_dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+							<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
+						</button>
+					</div>
 				</div>
 				</div>
 
@@ -498,14 +548,16 @@
 				<div class="container" style="max-width: 250px; padding:0px;">
 				<p>
 					<h5><%=l('Outline')%></h5>
+					<div>
 					<select name="colorpicker" id="area_outline_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
+					</div>
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -530,15 +582,17 @@
 						</div>
 					</div>	
 									
-					<h5><%=l('Fill')%></h5>		
+					<h5><%=l('Fill')%></h5>
+					<div>
 					<select name="colorpicker" id="area_fill_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
+					</div>
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -550,6 +604,16 @@
 						<div class="col-sm-3">
 							<input id="area_fill_opacity_text" class="slider_text_input" type="text"/>
 						</div>
+					</div>
+					
+					<br />
+					<div class="btn-group" role="group" id="area_type">
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="area_line" data-toggle="tooltip" title="<%=l('Normal line')%>">
+							<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
+						</button>
+						<button type="button" class="btn btn-default" aria-label="Left Align" id="area_dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+							<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
+						</button>
 					</div>
 				</div>
 				</div>
@@ -564,10 +628,10 @@
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
 				
 				</div>
 				</div>
@@ -582,10 +646,10 @@
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
-					</select>				
+					</select>			
+					<input type="color" id="html5colorpicker">					
 				</div>
 
 				<div class="btn-group" role="group" id="track_shape">
@@ -673,9 +737,10 @@
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
+					
 					
 					<br />
 					<div class="row">
@@ -702,10 +767,10 @@
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
+					<input type="color" id="html5colorpicker">
 					<br/>
 					<div class="row">
 						<div class="col-sm-3">
