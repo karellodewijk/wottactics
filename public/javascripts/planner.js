@@ -1,10 +1,21 @@
-var socket = io({
-	reconnect: true,
-	reconnectionDelay: 100,
-	reconnectionDelayMax: 500,
-});
+if (Modernizr.websockets) {
+	var socket = io({
+		reconnectionDelay: 100,
+		reconnectionDelayMax: 500,
+		'reconnection limit' : 1000,
+		'max reconnection attempts': Infinity
+	});	
+} else {
+	var socket = io({
+		transports: ['polling'],
+		reconnectionDelay: 100,
+		reconnectionDelayMax: 500,
+		'reconnection limit' : 1000,
+		'max reconnection attempts': Infinity
+	});	
+}
 
-//generates unique id
+//generates unique ids
 function newUid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
     function(c) {
@@ -235,13 +246,13 @@ objectContainer.addChild(background_sprite);
 //set_background({uid:newUid(), type:'background', path:""});
 
 var draw_canvas = document.createElement("canvas");
-$(draw_canvas).attr('style', 'position:absolute; z-index:'+ 2 + ';');
+$(draw_canvas).attr('style', 'position:absolute; z-index:'+ 2 + '; pointer-events:none');
 draw_canvas.width = stage.width;
 draw_canvas.height = stage.height;
 draw_context = draw_canvas.getContext("2d");
 
 var temp_draw_canvas = document.createElement("canvas");
-$(temp_draw_canvas).attr('style', 'position:absolute; z-index:'+ 3 + ';');
+$(temp_draw_canvas).attr('style', 'position:absolute; z-index:'+ 3 + '; pointer-events:none');
 temp_draw_canvas.width = stage.width;
 temp_draw_canvas.height = stage.height;
 temp_draw_context = temp_draw_canvas.getContext("2d");
@@ -718,7 +729,9 @@ function init_canvases(line_thickness, line_color, is_dotted, fill_opacity, fill
 	draw_context.strokeStyle = line_color;
 	draw_context.fillStyle = line_color;	
 	if (is_dotted) {
-		draw_context.setLineDash([10, 10]);
+		if ('setLineDash' in draw_context) {
+			draw_context.setLineDash([10, 10]);
+		}
 	}
 	draw_context.beginPath();
 
@@ -726,7 +739,9 @@ function init_canvases(line_thickness, line_color, is_dotted, fill_opacity, fill
 	temp_draw_context.strokeStyle = line_color;
 	temp_draw_context.fillStyle = line_color;	
 	if (is_dotted) {
-		temp_draw_context.setLineDash([10, 10]);
+		if ('setLineDash' in temp_draw_context) {
+			temp_draw_context.setLineDash([10, 10]);
+		}
 	}
 	
 	if (fill_opacity) {  // we assume && fill_color && outline_opacity
@@ -785,11 +800,13 @@ function on_left_click(e) {
 		}
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
-			setup_mouse_events(on_curve_move, on_curve_end);
 			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[[0, 0]], is_arrow:($('#curve_arrow').hasClass('active') || $('#curve_dotted_arrow').hasClass('active')), is_dotted:($('#curve_dotted').hasClass('active') || $('#curve_dotted_arrow').hasClass('active')) };
 
 			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.is_dotted);
-			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));			
+			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
+
+			setup_mouse_events(on_curve_move, on_curve_end);
+			
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
@@ -1018,7 +1035,7 @@ function on_area_end(e) {
 		
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
 		draw_context.beginPath();
-		draw_path2(draw_context, null, new_drawing, new_drawing.path.length, 0, new_drawing.path.length, false, true, true);
+		draw_path2(draw_context, null, new_drawing, new_drawing.path.length, 0, new_drawing.path.length, false, true);
 		draw_context.stroke();
 		draw_context.fill();
 		
@@ -1083,7 +1100,7 @@ function on_curve_end(e) {
 		last_x = 0;
 		last_y = 0;
 	}
-	
+
 	var distance_to_last_sq = (new_x - last_x) * (new_x - last_x) + (new_y - last_y) * (new_y - last_y);
 	
 	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside" || e.type == "touchstart" || e.type == "touchstartoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
@@ -1189,12 +1206,9 @@ function on_polygon_end(e) {
 	var distance_to_start_sq = x*x + y*y;
 
 	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
-
-	if ((new_drawing.path.length == 0) || x != last(new_drawing.path)[0] || y != last(new_drawing.path)[1]) {
-		new_drawing.path.push([x, y]);
-	}
 	
 	if (distance_to_start_sq < (end_circle_radius*end_circle_radius)) {
+		new_drawing.path.push([0, 0]);
 		draw_context.lineTo(size_x * new_drawing.x, size_y * new_drawing.y);
 		draw_context.stroke();
 		draw_context.fill();
@@ -1211,6 +1225,9 @@ function on_polygon_end(e) {
 		stop_drawing();
 		new_drawing = null;
 	} else {
+		if ((new_drawing.path.length == 0) || x != last(new_drawing.path)[0] || y != last(new_drawing.path)[1]) {
+			new_drawing.path.push([x, y]);
+		}
 		var a;
 		if (new_drawing.path.length == 1) {
 			a = [size_x * (new_drawing.x), size_y * (new_drawing.y)];
@@ -1504,7 +1521,6 @@ function on_draw_move(e) {
 			draw_arrow2(temp_draw_context, new_drawing, 4);
 		}
 	}
-	//temp_draw_context.setLineDash([5, 15]);
 	temp_draw_context.closePath();
 	temp_draw_context.beginPath();
 	draw_path2(temp_draw_context, draw_context, new_drawing, 30, start_index, stop_index)
@@ -1527,7 +1543,6 @@ function on_draw_end(e) {
 	
 	if (new_drawing.is_arrow) {	
 		if (new_drawing.path.length > 3) {	
-			//draw_context.setLineDash([1]);
 			draw_arrow2(draw_context, new_drawing, 4);
 			draw_context.fill();
 		}
@@ -1651,9 +1666,9 @@ function create_line2(line) {
 	_context.strokeStyle = color;
 	_context.fillStyle = color;	
 	if (line.is_dotted) {
-		_context.setLineDash([10, 10]);
-	} else {
-		_context.setLineDash([]);
+		if ('setLineDash' in _context) {
+			_context.setLineDash([10, 10]);
+		}
 	}
 	_context.beginPath();
 	_context.moveTo(size_x*(line.x), size_y*(line.y));
@@ -1691,9 +1706,9 @@ function init_shape_canvas(_context, shape) {
 	_context.strokeStyle = stroke_rgba;	
 
 	if (shape.is_dotted) {
-		_context.setLineDash([10, 10]);
-	} else {
-		_context.setLineDash([]);
+		if ('setLineDash' in _context) {
+			_context.setLineDash([10, 10]);
+		}
 	}
 }
 
@@ -1758,7 +1773,7 @@ function create_area2(area) {
 	init_shape_canvas(_context, area);
 
 	_context.beginPath();
-	draw_path2(_context, null, area, area.path.length, 0, area.path.length, false, true, true);
+	draw_path2(_context, null, area, area.path.length, 0, area.path.length, false, true);
 	_context.stroke();
 	_context.fill();	
 
@@ -1775,9 +1790,9 @@ function create_drawing2(drawing) {
 	_context.strokeStyle = color;
 	_context.fillStyle = color;	
 	if (drawing.is_dotted) {
-		_context.setLineDash([10, 10]);
-	} else {
-		_context.setLineDash([]);
+		if ('setLineDash' in _context) {
+			_context.setLineDash([10, 10]);
+		}
 	}
 	_context.beginPath();
 	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
@@ -1803,9 +1818,9 @@ function create_curve2(drawing) {
 	_context.strokeStyle = color;
 	_context.fillStyle = color;	
 	if (drawing.is_dotted) {
-		_context.setLineDash([10, 10]);
-	} else {
-		_context.setLineDash([]);
+		if ('setLineDash' in _context) {
+			_context.setLineDash([10, 10]);
+		}
 	}
 	_context.beginPath();
 	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
@@ -1820,8 +1835,8 @@ function create_curve2(drawing) {
 function start_drawing() {
 	draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	draw_context.setLineDash([]);
-	temp_draw_context.setLineDash([]);
+	draw_context.restore();
+	temp_draw_context.restore();
 	$(temp_draw_canvas).show();
 	$(draw_canvas).show();	
 }
@@ -2459,10 +2474,10 @@ function chat(message) {
 }
 
 function initialize_color_picker(slider_id, variable_name) {
-	if (is_ie()) {
-		$('#' + slider_id + ' ~ input').hide();
-	} else {
+	if (Modernizr.inputtypes.color) {
 		$('#' + slider_id + ' ~ input').show();
+	} else {
+		$('#' + slider_id + ' ~ input').hide();
 	}
 	
 	var color = $('select[id="'+ slider_id + '"]').val();
@@ -2908,7 +2923,6 @@ $(document).ready(function() {
 		$("#map_select").val("");
 	
 		$('#draw_context').hide();
-		$('#draw_context').hide();
 		$('#icon_context').hide();
 		$('#remove_context').hide();
 		$('#text_context').hide();
@@ -3333,6 +3347,8 @@ $(document).ready(function() {
 		$("#render_frame").append(renderer.view);
 		$(renderer.view).parent().append(temp_draw_canvas);
 		$(renderer.view).parent().append(draw_canvas);
+		temp_draw_context.save();
+		draw_context.save();
 		$(temp_draw_canvas).hide();
 		$(draw_canvas).hide();
 			
