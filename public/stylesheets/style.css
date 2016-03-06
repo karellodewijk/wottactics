@@ -82,10 +82,6 @@ button {
 	border: 2px solid red;
 }
 
-.btn.active, .btn:active {
-    background-color: #FFFFFFS;
-}
-
 .slider_text_input {
 	width: 30px;
 	height: 25px;
