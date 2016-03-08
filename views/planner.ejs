@@ -19,12 +19,19 @@
 </head>
 <body>
 
-	<div class="edit_window"></div>
+	<div class="edit_window">
+		<img id="map_grid" style="position:absolute; z-index:5; pointer-events:none" src="http://karellodewijk.github.io/icons/grid.png" hidden>
+	</div>
 	
 	
 	<div class="side_bar jumbotron">
-<nav class="navbar navbar-inverse container-fluid navbar_planner">
+	<nav class="navbar navbar-inverse container-fluid navbar_planner">
 	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
 		<a class="navbar-brand" style="padding-left:0px"
 			<% if (game == 'wot') { %>
 				href="/">
@@ -34,37 +41,40 @@
 				href="/blitz.html">
 			<% } else if (game == 'aw') { %>
 				href="/">
-			<% } %><%=l('Home')%>
+			<% } %><i class="fa fa-home fa-lg"></i>
 		</a>
 	</div>
-	<ul class="nav navbar-nav navbar-left container-fluid btn-group">
-		<%if (game != 'blitz') { %>	
-			<li><button id="save" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
-				<img src="http://karellodewijk.github.io/icons/save.png" alt="save">
-			</button></li>
-			<li><span title="<%=l('Save as')%>" id='store_tactic_popover' data-placement="bottom" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>"><button id="save_as" data-toggle="tooltip" title="<%=l('Save as')%>" href="javascript:void(0)" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save as')%>">
-				<img src="http://karellodewijk.github.io/icons/save_as.png" alt="save as">
-			</button></span></li>
+	<div class="collapse navbar-collapse" id="myNavbar">
+		<ul class="nav navbar-nav navbar-left container-fluid">
+			<%if (game != 'blitz') { %>	
+				<div class="btn-group">
+				<button id="save" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
+					<img src="http://karellodewijk.github.io/icons/save.png" alt="save">
+				</button>
+				<button id="save_as" id='store_tactic_popover' data-placement="bottom" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" href="javascript:void(0)" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save as')%>">
+					<img src="http://karellodewijk.github.io/icons/save_as.png" alt="save as">
+				</button>
+				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
+					<img src="http://karellodewijk.github.io/icons/lock.png" alt="lock">
+				</button>
+				<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
+					<img src="http://karellodewijk.github.io/icons/link.png" alt="link">
+				</button>
+				<% if (game == 'wot') { %>
+					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
+						<img src="http://karellodewijk.github.io/icons/grid_icon.png" alt="link">
+					</button>
+				<% } %>					
+				</div>
+			<% } %>	
+		</ul>
+		<div class="nav navbar-nav navbar-right container-fluid">
+			<% include language_select.ejs %>
+			<% include login_button.ejs %>
+		</ul>
+	</div>
 
-			<li><button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
-				<img src="http://karellodewijk.github.io/icons/lock.png" alt="lock">
-			</button></li>
-			<li><button id="export" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
-				<img src="http://karellodewijk.github.io/icons/export.png" alt="export">
-			</button></li>
-			<li><button id="backup" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Download a backup')%>">
-				<img src="http://karellodewijk.github.io/icons/archive_icon.png" alt="backup">
-			</button></li>
-			<li><button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
-				<img src="http://karellodewijk.github.io/icons/link.png" alt="link">
-			</button></li>
-		<% } %>	
-	</ul>
-	<ul class="nav navbar-nav navbar-right container-fluid">
-		<% include language_select.ejs %>
-		<% include login_button.ejs %>
-	</ul>
-</nav>
+	</nav>
 		<div class="top">
 			<div class="left_column">	
 				<h4><%=l('Map')%></h4>
@@ -83,7 +93,6 @@
 						<%} %>	
 						</select>
 					</div>
-
 				<hr>
 
 				<h4><%=l('Tools')%></h4>
@@ -880,43 +889,10 @@
 		<%if (game != 'blitz') { %>	
 		
 		<div class="bottom" style="width:500px;">
-			<hr>
 			<ul class="nav nav-tabs" id="bottom_tabs">
 			  <li class="active"><a data-toggle="tab" href="#chat_tab">Chat</a></li>
 			  <li id="slide_tab_button"><a data-toggle="tab" href="#slide_tab">Slides</a></li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active" style="height:150px;" id="chat_tab">
-					<textarea readonly id="chat_box" rows="10" cols="8" style="height:80%; width:100%;"></textarea>
-					<br />
-					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
-				</div>
-				<div class="tab-pane" id="slide_tab">
-					<div class="btn-group input-group dropdown" id="slide_box">
-						<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
-						<button type="button" class="btn btn-default slide_btn" id="remove_slide" data-toggle="tooltip" title="<%=l('Remove slide')%>">
-							<img src="http://karellodewijk.github.io/icons/bin.png" alt="remove slide" />
-						</button>	
-						<a class="btn btn-default slide_btn" data-toggle="dropdown">
-							<input type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />&#9660;
-						</a>					
-						<ul class="dropdown-menu" id="slide_select">
-						</ul>
-						<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
-						<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>		
-					</div>
-				</div>
-			</div>
-		</div>
-		<% } %>	
-	</div>
-
-<%if (game == 'blitz') { %>	
-	<div class="side_bar jumbotron">
-		<div class="bottom">
-			<ul class="nav nav-tabs" id="bottom_tabs">
-			  <li class="active"><a data-toggle="tab" href="#chat_tab">Chat</a></li>
-			  <li id="slide_tab_button"><a data-toggle="tab" href="#slide_tab">Slides</a></li>
+			  <li id="export_tab_button"><a data-toggle="tab" href="#export_tab">Export</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" style="height:150px;" id="chat_tab">
@@ -937,6 +913,60 @@
 						</ul>
 						<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
 						<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>		
+					</div>
+				</div>
+				<div class="tab-pane" id="export_tab">
+					<div class="btn-group input-group dropdown" id="export_box">
+						<button id="export" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
+							<img src="http://karellodewijk.github.io/icons/export.png" alt="export">
+						</button>
+						<button id="backup" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Download a backup')%>">
+							<img src="http://karellodewijk.github.io/icons/archive_icon.png" alt="backup">
+						</button>					
+					</div>
+				</div>
+			</div>
+		</div>
+		<% } %>	
+	</div>
+
+<%if (game == 'blitz') { %>	
+	<div class="side_bar jumbotron">
+		<div class="bottom">
+			<ul class="nav nav-tabs" id="bottom_tabs">
+			  <li class="active"><a data-toggle="tab" href="#chat_tab">Chat</a></li>
+			  <li id="slide_tab_button"><a data-toggle="tab" href="#slide_tab">Slides</a></li>
+			  <li id="export_tab_button"><a data-toggle="tab" href="#export_tab">Export</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" style="height:150px;" id="chat_tab">
+					<textarea readonly id="chat_box" rows="10" cols="8" style="height:80%; width:100%;"></textarea>
+					<br />
+					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
+				</div>
+				<div class="tab-pane" id="slide_tab">
+					<div class="btn-group input-group dropdown" id="slide_box">
+						<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
+						<button type="button" class="btn btn-default slide_btn" id="remove_slide" data-toggle="tooltip" title="<%=l('Remove slide')%>">
+							<img src="http://karellodewijk.github.io/icons/bin.png" alt="lock" />
+						</button>	
+						<a class="btn btn-default slide_btn" data-toggle="dropdown">
+							<input type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />&#9660;
+						</a>					
+						<ul class="dropdown-menu" id="slide_select">
+						</ul>
+						<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
+						<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>		
+					</div>
+				</div>
+				<div class="tab-pane" id="export_tab">
+					<div class="btn-group input-group dropdown" id="export_box">
+						<button id="export" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
+							<img src="http://karellodewijk.github.io/icons/export.png" alt="export">
+						</button>
+						<button id="backup" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Download a backup')%>">
+							<img src="http://karellodewijk.github.io/icons/archive_icon.png" alt="backup">
+						</button>					
 					</div>
 				</div>
 			</div>

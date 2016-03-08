@@ -271,6 +271,8 @@ function resize_renderer(new_size_x, new_size_y) {
 	draw_canvas.height = size_y;
 	temp_draw_canvas.width = size_x;
 	temp_draw_canvas.height = size_y;
+	$("#map_grid").attr("width", String(size_x));
+	$("#map_grid").attr("height",  String(size_y));
 	
 	$("#render_frame").attr('style', 'height:' + size_y + 'px; width:' + size_x + 'px;');
 	
@@ -1824,9 +1826,9 @@ function create_curve2(drawing) {
 	}
 	_context.beginPath();
 	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
-	
+		
 	var n = drawing.path.length;
-	draw_path2(_context, undefined, drawing, n, 0, n, true);
+	draw_path2(_context, undefined, drawing, n, 0, n, drawing.is_dotted);
 	_context.stroke();
 	
 	canvas2container(_context, _canvas, drawing);
@@ -1835,8 +1837,12 @@ function create_curve2(drawing) {
 function start_drawing() {
 	draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	draw_context.restore();
-	temp_draw_context.restore();
+	if ('setLineDash' in temp_draw_context) {
+		temp_draw_context.setLineDash([]);
+	}
+	if ('setLineDash' in draw_context) {
+		draw_context.setLineDash([]);
+	}
 	$(temp_draw_canvas).show();
 	$(draw_canvas).show();	
 }
@@ -2904,7 +2910,10 @@ function add_slide(slide) {
 }
 
 //connect socket.io socket
-$(document).ready(function() {	
+$(document).ready(function() {
+	$("#map_grid").attr("width", size_x);
+	$("#map_grid").attr("height",  size_y);
+
 	//sorts maps alphabetically, can't presort cause it depends on language
 	var options = $("#map_select option").sort(function(a,b) {
 		if ( a.innerHTML < b.innerHTML )
@@ -3179,6 +3188,10 @@ $(document).ready(function() {
 			update_lock();
 			socket.emit("lock_room", room, is_room_locked);
 		});
+		
+		$('#grid').click(function () {
+			$(map_grid).toggle();
+		});
 
 		//tool select
 		$('#contexts').on('click', 'button', function (e) {
@@ -3347,8 +3360,6 @@ $(document).ready(function() {
 		$("#render_frame").append(renderer.view);
 		$(renderer.view).parent().append(temp_draw_canvas);
 		$(renderer.view).parent().append(draw_canvas);
-		temp_draw_context.save();
-		draw_context.save();
 		$(temp_draw_canvas).hide();
 		$(draw_canvas).hide();
 			
