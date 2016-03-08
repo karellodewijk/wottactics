@@ -97,7 +97,7 @@ $(document).ready(function() {
 
 		//canvas to draw last 30 points
 		canvas = document.createElement("canvas");
-		$(canvas).attr('style', 'position:absolute; z-index:1;');
+		$(canvas).attr('style', 'position:absolute; z-index:2;  pointer-events:none');
 		$(canvas).attr('id', 'temp_canvas');
 		canvas.width = renderer.width;
 		canvas.height = renderer.height;
@@ -111,7 +111,7 @@ $(document).ready(function() {
 
 		//canvas to draw all the rest
 		canvas2 = document.createElement("canvas");
-		$(canvas2).attr('style', 'position:absolute; z-index:2;');
+		$(canvas2).attr('style', 'position:absolute; z-index:3;  pointer-events:none');
 		$(canvas2).attr('id', 'draw_canvas');
 		canvas2.width = renderer.width;
 		canvas2.height = renderer.height;
