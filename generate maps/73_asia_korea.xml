@@ -4,8 +4,8 @@
  <geometry>spaces/73_asia_korea</geometry>
  <roundLength>900</roundLength>
  <boundingBox>
-  <bottomLeft>-500.0 -500.0</bottomLeft>
-  <upperRight>500.0 500.0</upperRight>
+  <bottomLeft>-500.000000 -500.000000</bottomLeft>
+  <upperRight>500.000000 500.000000</upperRight>
  </boundingBox>
  <minimap>spaces/73_asia_korea/mmap.dds</minimap>
  <vehicleCamouflageKind>winter</vehicleCamouflageKind>
@@ -23,30 +23,16 @@
   <ctf>
    <teamBasePositions>
     <team1>
-     <position1>271.299900 252.732500</position1>
+     <position1>270.641600 264.472300</position1>
     </team1>
     <team2>
-     <position1>-270.591000 -298.516700</position1>
+     <position1>-279.217400 -299.489300</position1>
     </team2>
    </teamBasePositions>
   </ctf>
-  <domination>
-   <teamSpawnPoints>
-    <team1>
-     <position>215.372 99.746</position>
-    </team1>
-    <team2>
-     <position>-294.259 44.441</position>
-    </team2>
-   </teamSpawnPoints>
-   <teamBasePositions>
-    <team1>
-    </team1>
-    <team2>
-    </team2>
-   </teamBasePositions>
-   <controlPoint>16.409660 -269.409400</controlPoint>
-   <radius>38</radius>
-  </domination>
  </gameplayTypes>
+ <roadMap>
+ </roadMap>
+ <mapActivities>
+ </mapActivities>
 </73_asia_korea.xml>
