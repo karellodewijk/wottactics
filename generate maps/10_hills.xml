@@ -45,6 +45,7 @@
     </team2>
    </teamSpawnPoints>
    <controlPoint>258.768800 132.322500</controlPoint>
+   <radius>60</radius>
   </domination>
   <assault2>
    <roundLength>420</roundLength>
@@ -61,6 +62,7 @@
    <teamBasePositions>
     <team1>
      <position1>194.706900 -18.788850</position1>
+	 <radius1>40</radius1>
      <position2>-222.759100 -81.180310</position2>
     </team1>
    </teamBasePositions>

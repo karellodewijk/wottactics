@@ -51,6 +51,7 @@
     </team2>
    </teamBasePositions>
    <controlPoint>171.058300 16.351450</controlPoint>
+   <radius>100</radius>
    <artilleryPreparationChance>0.5</artilleryPreparationChance>
   </domination>
  </gameplayTypes>

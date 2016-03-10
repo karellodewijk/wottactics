@@ -58,6 +58,7 @@
    <teamBasePositions>
     <team1>
      <position1>-216.614000 11.042590</position1>
+	 <radius1>33.33</radius1>
      <position2>103.041000 335.699000</position2>
     </team1>
     <team2>

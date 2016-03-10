@@ -50,6 +50,7 @@
     </team2>
    </teamBasePositions>
    <controlPoint>171.058400 16.351450</controlPoint>
+   <radius>100</radius>
   </domination>
   <assault2>
    <winnerIfTimeout>1</winnerIfTimeout>

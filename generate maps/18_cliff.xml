@@ -40,6 +40,7 @@
     <team1>
      <position1>-252.066500 434.820900</position1>
      <position2>228.184700 176.506900</position2>
+	 <radius2>40</radius2>
     </team1>
     <team2>
     </team2>
