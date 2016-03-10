@@ -2,238 +2,237 @@
  <map>
   <id>1</id>
   <name>01_karelia</name>
-  <ctf>karelia.jpg</ctf>
-  <assault>karelia_assault.jpg</assault>
+  <ctf>karelia.png</ctf>
+  <assault>karelia_assault.png</assault>
  </map>
  <map>
   <id>2</id>
   <name>02_malinovka</name>
-  <ctf>malinovka.jpg</ctf>
-  <domination>malinovka_encounter.jpg</domination>
+  <ctf>malinovka.png</ctf>
+  <domination>malinovka_encounter.png</domination>
  </map>
  <map>
   <id>3</id>
   <name>04_himmelsdorf</name>
-  <ctf>himmelsdorf.jpg</ctf>
-  <domination>himmelsdorf_encounter.jpg</domination>
-  <assault2>himmelsdorf_attack_defence.jpg</assault2>
+  <ctf>himmelsdorf.png</ctf>
+  <domination>himmelsdorf_encounter.png</domination>
+  <assault2>himmelsdorf_attack_defence.png</assault2>
  </map>
  <map>
   <id>4</id>
   <name>05_prohorovka</name>
-  <ctf>phrokorovka.jpg</ctf>
-  <domination>phrokorovka_encounter.jpg</domination>
-  <assault2>phrokorovka_attac_defence.jpg</assault2>
+  <ctf>phrokorovka.png</ctf>
+  <domination>phrokorovka_encounter.png</domination>
+  <assault2>phrokorovka_attac_defence.png</assault2>
  </map>
  <map>
   <id>5</id>
   <name>07_lakeville</name>
-  <ctf>lakeville.jpg</ctf>
-  <domination>lakeville_encounter.jpg</domination>
-  <assault2>lakeville_attac_defence.jpg</assault2>
+  <ctf>lakeville.png</ctf>
+  <domination>lakeville_encounter.png</domination>
+  <assault2>lakeville_attac_defence.png</assault2>
  </map>
  <map>
   <id>6</id>
   <name>06_ensk</name>
-  <ctf>ensk.jpg</ctf>
-  <domination>ensk_encounter.jpg</domination>
+  <ctf>ensk.png</ctf>
+  <domination>ensk_encounter.png</domination>
  </map>
  <map>
   <id>7</id>
   <name>11_murovanka</name>
-  <ctf>murovanka.jpg</ctf>
-  <domination>murovanka_encounter.jpg</domination>
-  <assault2>murovanka_attac_defence.jpg</assault2>
+  <ctf>murovanka.png</ctf>
+  <domination>murovanka_encounter.png</domination>
+  <assault2>murovanka_attac_defence.png</assault2>
  </map>
  <map>
   <id>8</id>
   <name>13_erlenberg</name>
-  <ctf>erlenberg.jpg</ctf>
-  <domination>erlenberg_encounter.jpg</domination>
-  <assault>erlenberg_assault.jpg</assault>
+  <ctf>erlenberg.png</ctf>
+  <domination>erlenberg_encounter.png</domination>
+  <assault>erlenberg_assault.png</assault>
  </map>
  <map>
   <id>9</id>
   <name>10_hills</name>
-  <ctf>mines.jpg</ctf>
-  <domination>mines_encounter.jpg</domination>
-  <assault2>mines_attac_defence.jpg</assault2>  
+  <ctf>mines.png</ctf>
+  <domination>mines_encounter.png</domination>
+  <assault2>mines_attac_defence.png</assault2>  
  </map>
  <map>
   <id>11</id>
   <name>18_cliff</name>
-  <ctf>cliffs.jpg</ctf>
-  <assault2>cliff_attac_defence.jpg</assault2>  
+  <ctf>cliffs.png</ctf>
+  <assault2>cliff_attac_defence.png</assault2>  
  </map>
  <map>
   <id>12</id>
   <name>19_monastery</name>
-  <ctf>abbey.jpg</ctf>
+  <ctf>abbey.png</ctf>
  </map>
  <map>
   <id>13</id>
   <name>28_desert</name>
-  <ctf>sand_river.jpg</ctf>
-  <domination>sand_river_encounter.jpg</domination>
-  <assault>sand_river_assault.jpg</assault>
-  <assault2>sand_river_attac_defence.jpg</assault2>    
+  <ctf>sand_river.png</ctf>
+  <domination>sand_river_encounter.png</domination>
+  <assault>sand_river_assault.png</assault>
+  <assault2>sand_river_attac_defence.png</assault2>    
  </map>
  <map>
   <id>14</id>
   <name>35_steppes</name>
-  <ctf>steppes.jpg</ctf>
-  <domination>steppes_encounter.jpg</domination>
-  <assault2>steppes_attac_defence.jpg</assault2>  
+  <ctf>steppes.png</ctf>
+  <domination>steppes_encounter.png</domination>
+  <assault2>steppes_attac_defence.png</assault2>  
  </map>
  <map>
   <id>15</id>
   <name>37_caucasus</name>
-  <ctf>mountain_pass.jpg</ctf>
+  <ctf>mountain_pass.png</ctf>
  </map>
  <map>
   <id>16</id>
   <name>33_fjord</name>
-  <ctf>fjords.jpg</ctf>
+  <ctf>fjords.png</ctf>
  </map>
  <map>
   <id>17</id>
   <name>34_redshire</name>
-  <ctf>redshire.jpg</ctf>
-  <domination>redshire_encounter.jpg</domination>
+  <ctf>redshire.png</ctf>
+  <domination>redshire_encounter.png</domination>
  </map>
  <map>
   <id>18</id>
   <name>36_fishing_bay</name>
-  <ctf>fishermans_bay.jpg</ctf>
+  <ctf>fishermans_bay.png</ctf>
  </map>
  <map>
   <id>19</id>
   <name>38_mannerheim_line</name>
-  <ctf>arctic_region.jpg</ctf>
-  <assault2>arctic_attac_defence.jpg</assault2>  
+  <ctf>arctic_region.png</ctf>
+  <assault2>arctic_attac_defence.png</assault2>  
  </map>
  <map>
   <id>20</id>
   <name>08_ruinberg</name>
-  <ctf>ruinberg.jpg</ctf>
-  <domination>ruinberg_encounter.jpg</domination>
-  <assault2>ruinberg_attac_defence.jpg</assault2>   
+  <ctf>ruinberg.png</ctf>
+  <domination>ruinberg_encounter.png</domination>
+  <assault2>ruinberg_attac_defence.png</assault2>   
  </map>
  <map>
   <id>21</id>
   <name>14_siegfried_line</name>
-  <ctf>siegfried_line.jpg</ctf>
-  <domination>siegfried_line_encounter.jpg</domination>
-  <assault>siegfried_line_assault.jpg</assault>
-  <assault2>siegfried_line_attac_defence.jpg</assault2>
+  <ctf>siegfried_line.png</ctf>
+  <domination>siegfried_line_encounter.png</domination>
+  <assault>siegfried_line_assault.png</assault>
+  <assault2>siegfried_line_attac_defence.png</assault2>
  </map>
  <map>
   <id>22</id>
   <name>22_slough</name>
-  <ctf>swamp.jpg</ctf>
+  <ctf>swamp.png</ctf>
  </map>
  <map>
   <id>23</id>
   <name>23_westfeld</name>
-  <ctf>westfield.jpg</ctf>
-  <assault>westfield_assault.jpg</assault>
+  <ctf>westfield.png</ctf>
+  <assault>westfield_assault.png</assault>
  </map>
  <map>
   <id>24</id>
   <name>29_el_hallouf</name>
-  <ctf>el_halluf.jpg</ctf>
-  <domination>el_halluf_encounter.jpg</domination>
+  <ctf>el_halluf.png</ctf>
+  <domination>el_halluf_encounter.png</domination>
  </map>
  <map>
   <id>26</id>
   <name>31_airfield</name>
-  <ctf>airfield.jpg</ctf>
+  <ctf>airfield.png</ctf>
  </map>
  <map>
   <id>28</id>
   <name>17_munchen</name>
-  <ctf>widepark.jpg</ctf>
+  <ctf>widepark.png</ctf>
  </map>
  <map>
   <id>31</id>
   <name>44_north_america</name>
-  <ctf>live_oaks.jpg</ctf>
+  <ctf>live_oaks.png</ctf>
  </map>
  <map>
   <id>34</id>
   <name>45_north_america</name>
-  <ctf>highway.jpg</ctf>
+  <ctf>highway.png</ctf>
  </map>
  <map>
   <id>49</id>
   <name>47_canada_a</name>
-  <ctf>serene_coast.jpg</ctf>
+  <ctf>serene_coast.png</ctf>
  </map>
  <map>
   <id>51</id>
   <name>73_asia_korea</name>
-  <ctf>sacred_valley.jpg</ctf>
-  <domination>sacred_valley_encounter.jpg</domination>
+  <ctf>sacred_valley.png</ctf>
+  <domination>sacred_valley_encounter.png</domination>
  </map>
  <map>
   <id>55</id>
   <name>63_tundra</name>
-  <ctf>tundra.jpg</ctf>
-  <assault2>tundra_attac_defence.jpg</assault2>    
+  <ctf>tundra.png</ctf>
+  <assault2>tundra_attac_defence.png</assault2>    
  </map>
  <map>
   <id>56</id>
   <name>84_winter</name>
-  <ctf>windstorm.jpg</ctf>
+  <ctf>windstorm.png</ctf>
  </map>
  <map>
   <id>57</id>
   <name>86_himmelsdorf_winter</name>
-  <ctf>winter_himmelsdorf.jpg</ctf>
-  <domination>winter_himmelsdorf_encounter.jpg</domination>
-  <assault>winter_himmelsdorf_assault.jpg</assault>
-  <assault2>winter_himmelsdorf_attac_defence.jpg</assault2>
+  <ctf>winter_himmelsdorf.png</ctf>
+  <domination>winter_himmelsdorf_encounter.png</domination>
+  <assault>winter_himmelsdorf_assault.png</assault>
+  <assault2>winter_himmelsdorf_attac_defence.png</assault2>
  </map>
  <map>
   <id>60</id>
   <name>83_kharkiv</name>
-  <ctf>krarkov.jpg</ctf>
-  <assault2>kharkov_attac_defence.jpg</assault2>
+  <ctf>krarkov.png</ctf>
+  <assault2>kharkov_attac_defence.png</assault2>
  </map>
  <map>
   <id>62</id>
   <name>96_prohorovka_defense</name>
-  <ctf>phrokorovka.jpg</ctf>
-  <domination>phrokorovka_encounter.jpg</domination>
-  <assault2>phrokorovka_attac_defence.jpg</assault2>
+  <ctf>fiery_salient.png</ctf>
+  <domination>fiery_salient_encounter.png</domination>
  </map>
  <map>
   <id>66</id>
   <name>92_stalingrad</name>
-  <ctf>stalingrad.jpg</ctf>
+  <ctf>stalingrad.png</ctf>
  </map>
  <map>
   <id>67</id>
   <name>100_thepit</name>
-  <ctf>mittengard.jpg</ctf>
+  <ctf>mittengard.png</ctf>
  </map>
  <map>
   <id>68</id>
   <name>95_lost_city</name>
-  <ctf>ghost_town.jpg</ctf>
-  <assault2>ghost_town_attack_defence.jpg</assault2>
+  <ctf>ghost_town.png</ctf>
+  <assault2>ghost_town_attack_defence.png</assault2>
  </map>
  <map>
   <id>69</id>
   <name>103_ruinberg_winter</name>
-  <ctf>winter_ruinberg.jpg</ctf>
-  <domination>winter_ruinberg_encounter.jpg</domination>
-  <assault2>winter_ruinberg_attac_defence.jpg</assault2>
+  <ctf>winter_ruinberg.png</ctf>
+  <domination>winter_ruinberg_encounter.png</domination>
+  <assault2>winter_ruinberg_attac_defence.png</assault2>
  </map>
  <map>
   <id>70</id>
   <name>101_dday</name>
-  <ctf>overlord.jpg</ctf>
+  <ctf>overlord.png</ctf>
  </map>
  <map>
   <id>71</id>
@@ -246,6 +245,6 @@
  <map>
   <id>74</id>
   <name>114_czech</name>
-  <ctf>pilsen.jpg</ctf>
+  <ctf>pilsen.png</ctf>
  </map>
 </_list_.xml>

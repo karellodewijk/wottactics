@@ -48,6 +48,7 @@
     </team2>
    </teamBasePositions>
    <controlPoint>-195.523700 193.398700</controlPoint>
+   <radius>55</radius>
   </domination>
  </gameplayTypes>
 </29_el_hallouf.xml>
