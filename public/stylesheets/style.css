@@ -46,6 +46,7 @@ button {
 }
 
 .left_column {
+	min-width: 250px;
 	display:inline-block;
 	vertical-align:top;
 	width: auto;
@@ -55,7 +56,7 @@ button {
 }
 
 .right_column {
-	min-width: 220px;
+	min-width: 250px;
 	display:inline-block;
 	vertical-align:top;
 	width: auto;

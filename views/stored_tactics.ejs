@@ -25,6 +25,7 @@
 				  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Tactic name')%>"><b><%=l('Name')%></b></th>
 				  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Date the tactic was last changed')%>"><b><%=l('Last changed')%></b></th>
 				  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Date the tactic was created')%>"><b><%=l('Created')%></b></th>
+				  <th style="width:auto" data-toggle="tooltip" title="<%=l('Add tactic to room')%>"><b><%=l('Add to room')%></b></th>
 				  <th style="width:auto" data-toggle="tooltip" title="<%=l('Click to permanently remove the tactic')%>"><b><%=l('Remove')%></b></th>
 				  <th style="width:auto" data-toggle="tooltip" title="<%=l('Click to launch the tactic')%>"><b><%=l('Launch')%></b></th>
 				</tr>
@@ -36,6 +37,7 @@
 						<td><img src='http://karellodewijk.github.io/icons/map_icon.png' /><%=tactics[i].name.substring(tactics[i].name.lastIndexOf("/")+1)%></td>
 						<td class='date'><%=tactics[i].date;%></td>
 						<td class='date'><%=tactics[i].date;%></td>
+						<td><a type="button" id="<%=tactics[i].uid%>" class="btn btn-default btn-sm send_to_link" data-toggle="tooltip" title="<%=l('Send to room')%>"><img src="http://karellodewijk.github.io/icons/send_to_link.png" alt="send to link"></a></td>
 						<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" id="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><img height="14" width="14" src="http://karellodewijk.github.io/icons/bin.png" /></a></td>
 						<td><a class="btn btn-primary btn-sm" href="<%=game%>planner.html?restore=<%=tactics[i].uid%>" id="<td><%=tactics[i].uid%>" role="button">Launch&raquo;</a></td>
 					</tr>
@@ -59,6 +61,23 @@
 			<span><label id="notification"></label></span>
 		</div>
 
+		<!-- Modal -->
+		<div id="myModal" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+			<!-- Modal content-->
+			<div class='input-group'>
+				<span class='input-group-addon'>Room link:</span>
+				<input id="send_link" class='form-control col-lg-9' type='text'/>
+				<span class='input-group-btn'>
+					<button id='link_send' class='btn btn-default'><%=l('Send')%></button>
+				</span>
+				<span class='input-group-btn'>
+					<button id='modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
+				</span>
+			</div>
+		  </div>
+		</div>
+		
 	</div>
 	<% include footer.ejs %>
 	</div>	

@@ -12,8 +12,36 @@ function escape(s) {
 		;
 }
 
-$(document).ready(function() { 
-	$('#tactic_list').on('click', 'a', function () {
+$(document).ready(function() {
+	var link_uid;
+	
+	$('#modal_cancel').click(function (e) {
+		$('#myModal').modal('hide');
+	});
+	
+	$('#link_send').click(function (e) {
+		var link = $('#send_link').val();
+		var i = link.indexOf('room=');
+		if (i == -1) {
+			alert("No room id found in link.");
+		} else {
+			tactic_uid = link.slice(i+5).split('&')[0];
+			$.post('/add_to_room', {room: tactic_uid, tactic:link_uid}).done(function( data ) {
+				if (data != "Success") {
+					alert(data);
+				}
+		    });
+		}
+		
+		$('#myModal').modal('hide');
+	});
+	
+	$('#tactic_list').on('click', '.send_to_link', function (e) {
+		$('#myModal').modal('show');
+		link_uid = $(this).attr('id');
+	});
+	
+	$('#tactic_list').on('click', '.btn-danger', function (e) {
 		if ($(this).hasClass('btn-danger')) {
 			var r = confirm("Are you sure you want to remove this tactic ?");
 			if (r == true) {
@@ -22,6 +50,8 @@ $(document).ready(function() {
 				$("#tactic_list").treetable("unloadBranch", node);					
 				$("tr[id='"+this.id+"']").remove();
 			}
+		} else {
+			
 		}
 	})
 	
