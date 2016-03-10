@@ -252,7 +252,12 @@
 	"Share on faceook": "Share on faceook",
 	"Share on twitter": "Share on twitter",
 	"Share on google+": "Share on google+",
-	"Show grid": "Show grid",
 	"Add Text with background": "Add Text with background",
-	"Text with background options": "Text with background options"
+	"Text with background options": "Text with background options",
+	"members": "members",
+	"Show grid": "Show grid",
+	"Share:": "Share:",
+	"Donate:": "Donate:",
+	"Donate using paypal": "Donate using paypal",
+	"Become a patreon": "Become a patreon"
 }
