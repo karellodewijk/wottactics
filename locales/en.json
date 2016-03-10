@@ -248,11 +248,22 @@
 	"Clanportal": "Clanportal",
 	"attend": "attend",
 	"battles": "battles",
+	"members": "members",
 	"Cursor": "Cursor",
 	"Download a backup": "Download a backup",
 	"Share on faceook": "Share on faceook",
 	"Share on twitter": "Share on twitter",
 	"Share on google+": "Share on google+",
 	"Add Text with background": "Add Text with background",
-	"Text with background options": "Text with background options"
+	"Text with background options": "Text with background options",
+	"Show grid": "Show grid",
+	"Donate using paypal": "Donate using paypal",
+	"Become a patreon": "Become a patreon",
+	"Donate:": "Donate:",
+	"Share:": "Share:",
+	"Add tactic to room": "Add tactic to room",
+	"Add to room": "Add to room",
+	"Send to room": "Send to room",
+	"Send": "Send",
+	"Cancel": "Cancel"
 }

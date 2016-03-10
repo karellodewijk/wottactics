@@ -50,7 +50,7 @@ var io = require('socket.io')({
 
 //configure localization support
 var i18n = require('i18n');
-var locales = ['en', 'sr', 'de', 'es', 'pl', 'cs', 'fi'];
+var locales = ['en', 'sr', 'de', 'es', 'pl', 'cs', 'fi', 'ru'];
 i18n.configure({
 	locales: locales,
 	directory: __dirname + "/locales",
@@ -530,6 +530,60 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 		return;
 	});
+	router.post('/add_to_room', function(req, res, next) {
+		if (req.session.passport.user.identity) {
+			var user = req.session.passport.user;
+			
+			var room = req.body.room;
+			if (!room_data[room]) {
+				res.send("Error: room is not active or does not exist.");
+				return;
+			} else if (room_data[room].locked && !room_data[room].lost_identities[user.identity].role) {
+				res.send("Error: You don't have permission for that room.");
+				return;
+			}
+			
+			restore_tactic(req.session.passport.user, req.body.tactic, function(new_room) {	
+				if (room_data[new_room].slides) {
+					if (Object.keys(room_data[new_room].slides).length > 100) {
+						res.send("Error: too many slides");
+						delete room_data[new_room];
+						return;
+					}
+					if (Object.keys(room_data[room].slides).length > 100) {
+						res.send("Error: too many slides");
+						delete room_data[new_room];
+						return;
+					}
+					var largest_slide_order = -1;
+					for (var key in room_data[room].slides) {
+						if (room_data[room].slides.hasOwnProperty(key)) {
+							if (room_data[room].slides[key].order > largest_slide_order) {
+								largest_slide_order = room_data[room].slides[key].order;
+							}
+						}
+					}
+					largest_slide_order += 4294967296;
+					for (var key in room_data[new_room].slides) {
+						if (room_data[new_room].slides.hasOwnProperty(key)) {
+							var uid = newUid();
+							room_data[new_room].slides[key].order += largest_slide_order;
+							room_data[new_room].slides[key].uid = uid;
+							room_data[room].slides[uid] = room_data[new_room].slides[key];
+							io.to(room).emit('new_slide', room_data[room].slides[uid]);
+						}
+					}
+										
+					delete room_data[new_room];
+					res.send("Success");					
+				} else {
+					res.send("Error: unknown error");
+					return;
+				}
+
+			});
+		}
+	});
 	
 	function save_return(req, res, next) {
 		req.session.return_to = req.headers.referer;
@@ -576,7 +630,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		var ejs = require('ejs')
 		ejs.clearCache();
 		lastmod = (new Date()).toISOString().substr(0,10);
-		res.send("Refreshed")
+		res.send("Refreshed");
 	});
 	
 	//////////////
@@ -657,7 +711,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				//a user is already connected to this room in probably another tab, just increase a counter
 				room_data[room].userlist[user.id].count++;
 			} else {
-				room_data[room].userlist[user.id] = {name:user.name, id:user.id, role:user.role, logged_in:(user.identity) ? true : false};
+				room_data[room].userlist[user.id] = {name:user.name, id:user.id, role:user.role, identity:user.identity, logged_in:(user.identity) ? true : false};
 				room_data[room].userlist[user.id].count = 1;
 				if (room_data[room].lost_users[user.id]) {				
 					//if a user was previously connected to this room and had a role, restore that role
@@ -810,7 +864,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							if (!room_data[room].lost_identities[user.identity]) {
 								room_data[room].lost_identities[user.identity] = {};
 							}
-							room_data[room].lost_identities[user.identity][role] = user.role;
+							room_data[room].lost_identities[user.identity].role = user.role;
 						}
 					} else {
 						if (room_data[room].lost_users[user.id]) {
@@ -820,7 +874,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							room_data[room].lost_identities[user.identity].role = user.role;
 						}
 					}
-				}		
+				}
+				
 				socket.broadcast.to(room).emit('add_user', user);
 			}
 		});

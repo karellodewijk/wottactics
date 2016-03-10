@@ -247,14 +247,14 @@ objectContainer.addChild(background_sprite);
 
 var draw_canvas = document.createElement("canvas");
 $(draw_canvas).attr('style', 'position:absolute; z-index:'+ 2 + '; pointer-events:none');
-draw_canvas.width = stage.width;
-draw_canvas.height = stage.height;
+draw_canvas.width = size_x;
+draw_canvas.height = size_y;
 draw_context = draw_canvas.getContext("2d");
 
 var temp_draw_canvas = document.createElement("canvas");
 $(temp_draw_canvas).attr('style', 'position:absolute; z-index:'+ 3 + '; pointer-events:none');
-temp_draw_canvas.width = stage.width;
-temp_draw_canvas.height = stage.height;
+temp_draw_canvas.width = size_x;
+temp_draw_canvas.height = size_y;
 temp_draw_context = temp_draw_canvas.getContext("2d");
 
 //resize the render window
@@ -1034,8 +1034,10 @@ function on_area_end(e) {
 		setup_mouse_events(undefined, undefined);
 		
 		new_drawing.path.push([0, 0]);
-		
+
+		draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);		
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
+		
 		draw_context.beginPath();
 		draw_path2(draw_context, null, new_drawing, new_drawing.path.length, 0, new_drawing.path.length, false, true);
 		draw_context.stroke();
@@ -1056,6 +1058,15 @@ function on_area_end(e) {
 	
 	} else {
 		new_drawing.path.push([x, y]);
+		
+		if (new_drawing.path.length > 9) {
+			var n = 30;
+			var start_index = Math.max(new_drawing.path.length-10, 0);
+			var stop_index = new_drawing.path.length;
+			draw_path2(null, draw_context, new_drawing, 30, start_index, stop_index);
+			draw_context.stroke();
+		}
+		on_curve_move(e);
 	}
 }
 
@@ -1661,8 +1672,8 @@ function canvas2container(_context, _canvas, entity) {
 function create_line2(line) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = stage.width;
-	_canvas.height = stage.height;
+	_canvas.width = size_x;
+	_canvas.height = size_y;
 	_context = _canvas.getContext("2d");
 	_context.lineWidth = line.thickness;
 	_context.strokeStyle = color;
@@ -1717,8 +1728,8 @@ function init_shape_canvas(_context, shape) {
 function create_rectangle2(rectangle) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = stage.width;
-	_canvas.height = stage.height;
+	_canvas.width = size_x;
+	_canvas.height = size_y;
 	_context = _canvas.getContext("2d");
 	init_shape_canvas(_context, rectangle);
 
@@ -1731,8 +1742,8 @@ function create_rectangle2(rectangle) {
 function create_circle2(circle) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = stage.width;
-	_canvas.height = stage.height;
+	_canvas.width = size_x;
+	_canvas.height = size_y;
 	_context = _canvas.getContext("2d");
 	init_shape_canvas(_context, circle);
 
@@ -1747,8 +1758,8 @@ function create_circle2(circle) {
 function create_polygon2(polygon) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = stage.width;
-	_canvas.height = stage.height;
+	_canvas.width = size_x;
+	_canvas.height = size_y;
 	_context = _canvas.getContext("2d");
 	init_shape_canvas(_context, polygon);
 
@@ -1769,8 +1780,8 @@ function create_polygon2(polygon) {
 function create_area2(area) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = stage.width;
-	_canvas.height = stage.height;
+	_canvas.width = size_x;
+	_canvas.height = size_y;
 	_context = _canvas.getContext("2d");
 	init_shape_canvas(_context, area);
 
@@ -1785,8 +1796,8 @@ function create_area2(area) {
 function create_drawing2(drawing) {
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = stage.width;
-	_canvas.height = stage.height;
+	_canvas.width = size_x;
+	_canvas.height = size_y;
 	_context = _canvas.getContext("2d");
 	_context.lineWidth = drawing.thickness;
 	_context.strokeStyle = color;
@@ -1813,8 +1824,8 @@ function create_drawing2(drawing) {
 function create_curve2(drawing) {
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = stage.width;
-	_canvas.height = stage.height;
+	_canvas.width = size_x;
+	_canvas.height = size_y;
 	_context = _canvas.getContext("2d");
 	_context.lineWidth = drawing.thickness;
 	_context.strokeStyle = color;
@@ -2770,7 +2781,7 @@ function update_slide_buttons() {
 	var name = room_data.slides[active_slide].name;
 	$('#slide_name_field').val(name);
 	$('#slide_select').empty();
-	
+		
 	var current_slide_uid = find_first_slide();
 	do {
 		var name = room_data.slides[current_slide_uid].name;
@@ -2906,11 +2917,12 @@ function rename_slide(slide, name) {
 function add_slide(slide) {
 	resolve_order_conflicts(slide);
 	room_data.slides[slide.uid] = slide;
-	room_data.active_slide = slide.uid;
+	update_slide_buttons();
 }
 
 //connect socket.io socket
 $(document).ready(function() {
+	
 	$("#map_grid").attr("width", size_x);
 	$("#map_grid").attr("height",  size_y);
 
@@ -3195,6 +3207,13 @@ $(document).ready(function() {
 
 		//tool select
 		$('#contexts').on('click', 'button', function (e) {
+			stop_drawing();
+			setup_mouse_events(undefined, undefined);
+			new_drawing = null;
+			if (graphics) {
+				objectContainer.removeChild(graphics)
+			}
+			
 			if ( $(this).attr('id') == "undo") {
 				undo();
 				return;
@@ -3495,8 +3514,7 @@ $(document).ready(function() {
 	});
 	
 	socket.on('new_slide', function(slide) {
-		add_slide(new_slide);
-		change_slide(new_slide.uid);
+		add_slide(slide);
 	});
 	
 	socket.on('remove_slide', function(slide) {
