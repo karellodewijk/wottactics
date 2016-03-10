@@ -49,6 +49,7 @@
     </team2>
    </teamBasePositions>
    <controlPoint>258.900000 -4.200012</controlPoint>
+   <radius>60</radius>
   </domination>
   <assault2>
    <winnerIfTimeout>1</winnerIfTimeout>
@@ -65,6 +66,8 @@
     <team1>
      <position1>-265.064 -289.331</position1>
      <position2>224.682 -204.587</position2>
+     <radius1>30</radius1>
+     <radius2>30</radius2>
     </team1>
     <team2>
     </team2>

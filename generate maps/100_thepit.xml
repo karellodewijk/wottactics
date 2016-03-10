@@ -26,9 +26,11 @@
    <teamBasePositions>
     <team1>
      <position1>-34.68 -100.709</position1>
+	 <radius1>25</radius1>
     </team1>
     <team2>
      <position1>-34.68 100.709</position1>
+	 <radius1>25</radius1>
     </team2>
    </teamBasePositions>
    <teamSpawnPoints>

@@ -68,6 +68,7 @@
     </team2>
    </teamBasePositions>
    <controlPoint>-21.000050 -3.300049</controlPoint>
+   <radius>80</radius>
   </domination>
  </gameplayTypes>
 </13_erlenberg.xml>
