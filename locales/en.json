@@ -265,5 +265,8 @@
 	"Add to room": "Add to room",
 	"Send to room": "Send to room",
 	"Send": "Send",
-	"Cancel": "Cancel"
+	"Cancel": "Cancel",
+	"Chat": "Chat",
+	"Slides": "Slides",
+	"Export": "Export"
 }
