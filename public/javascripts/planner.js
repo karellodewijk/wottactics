@@ -69,6 +69,14 @@ var last = function(array) {
 	return array[array.length-1];
 };
 
+function random_darkish_color(){
+    var r = (Math.round(Math.random()* 127)).toString(16);
+    var g = (Math.round(Math.random()* 127)).toString(16);
+    var b = (Math.round(Math.random()* 127)).toString(16);
+    return '#' + r + g + b;
+}
+
+var chat_color = random_darkish_color();
 var room_data;
 var min_draw_point_distance = 0.01;
 var active_slide = 0;
@@ -2485,8 +2493,9 @@ function remove_user(user) {
 	$("#user_count").text(Object.keys(userlist).length.toString());
 }
 
-function chat(message) {
-	$("#chat_box").append(message);
+function chat(message, color) {
+	message = message.split(":")
+	$("#chat_box").append('<div class="chatmsg"><b style="color:' + color + ';">'+message[0]+'</b>: '+ message.slice(1).join(':') +'<br/></div>');
 	$("#chat_box").scrollTop($("#chat_box")[0].scrollHeight);
 }
 
@@ -3097,8 +3106,8 @@ $(document).ready(function() {
 		$("#chat_input").keyup(function (e) {
 			if (e.keyCode == 13) {
 				var message = my_user.name + ": " + $("#chat_input").val() + "\n";
-				socket.emit("chat", room, message);
-				chat(message);
+				socket.emit("chat", room, message, chat_color);
+				chat(message, chat_color);
 				$("#chat_input").val("");
 			}
 		});
@@ -3467,8 +3476,8 @@ $(document).ready(function() {
 		ping(x,y,color);
 	});
 
-	socket.on('chat', function(message) {
-		chat(message);
+	socket.on('chat', function(message, color) {
+		chat(message, color);
 	});
 
 	

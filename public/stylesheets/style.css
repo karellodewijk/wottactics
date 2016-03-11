@@ -146,6 +146,21 @@ small {
   top: 20px !important;
 }
 
+.fake_textarea {
+    -moz-appearance: textfield-multiline;
+    -webkit-appearance: textarea;
+	text-align: left;
+    border: 1px solid gray;
+    font: medium -moz-fixed;
+    font: -webkit-small-control;
+    height: 28px;
+    overflow: auto;
+    padding: 2px;
+    resize: both;
+    width: 400px;
+}
+
+
 /* Tab Navigation */
 .nav-tabs {
     margin: 0;
