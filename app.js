@@ -630,6 +630,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		var ejs = require('ejs')
 		ejs.clearCache();
 		lastmod = (new Date()).toISOString().substr(0,10);
+		i18n.configure({
+			locales: locales,
+			directory: __dirname + "/locales",
+			updateFiles: true
+		});
 		res.send("Refreshed");
 	});
 	
@@ -850,8 +855,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 
-		socket.on('chat', function(room, message) {
-			socket.broadcast.to(room).emit('chat', message);
+		socket.on('chat', function(room, message, color) {
+			socket.broadcast.to(room).emit('chat', message, color);
 		});
 		
 		socket.on('update_user', function(room, user) {
