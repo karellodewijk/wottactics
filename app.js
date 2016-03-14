@@ -832,6 +832,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			socket.broadcast.to(room).emit('ping_marker', x, y, color);
 		});
 
+		socket.on('show_grid', function(room, slide, bool) {
+			room_data[room].slides[slide].show_grid = bool;
+			socket.broadcast.to(room).emit('show_grid', slide, bool);
+		});
+		
 		socket.on('track', function(room, tracker) {
 			room_data[room].trackers[tracker.uid] = tracker;
 			socket.broadcast.to(room).emit('track', tracker);
