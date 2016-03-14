@@ -57,7 +57,7 @@ if (game == "wows") { //wows
 	assets = [image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"arty.png", image_host+"td.png"];	
 }
 
-assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png");
+assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 
 var loader = PIXI.loader; 
 for (var i in assets) {
@@ -251,7 +251,13 @@ var background_sprite = new PIXI.Sprite();
 background_sprite.height = renderer.height;
 background_sprite.width = renderer.width;
 objectContainer.addChild(background_sprite);
-//set_background({uid:newUid(), type:'background', path:""});
+
+//initialize grid layer
+var grid_layer = new PIXI.Sprite.fromImage(image_host + "grid.png");
+grid_layer.height = renderer.height;
+grid_layer.width = renderer.width;
+objectContainer.addChild(grid_layer);
+
 
 var draw_canvas = document.createElement("canvas");
 $(draw_canvas).attr('style', 'position:absolute; z-index:'+ 2 + '; pointer-events:none');
@@ -279,8 +285,6 @@ function resize_renderer(new_size_x, new_size_y) {
 	draw_canvas.height = size_y;
 	temp_draw_canvas.width = size_x;
 	temp_draw_canvas.height = size_y;
-	$("#map_grid").attr("width", String(size_x));
-	$("#map_grid").attr("height",  String(size_y));
 	
 	$("#render_frame").attr('style', 'height:' + size_y + 'px; width:' + size_x + 'px;');
 	
@@ -766,10 +770,14 @@ function init_canvases(line_thickness, line_color, is_dotted, fill_opacity, fill
 	}	
 }
 
+function can_edit() {
+	return (!is_room_locked || my_user.role);
+}
+
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_draw_time;
 function on_left_click(e) {
-	if (is_room_locked && !my_user.role) {
+	if (!can_edit()) {
 		return;
 	}
 	if (active_context == 'drag_context') {
@@ -2787,6 +2795,12 @@ function update_slide_buttons() {
 		document.getElementById("remove_slide").disabled = false;
 	}
 	
+	if (room_data.slides[active_slide].show_grid) {
+		grid_layer.visible = true;
+	} else {
+		grid_layer.visible = false;
+	}
+	
 	var name = room_data.slides[active_slide].name;
 	$('#slide_name_field').val(name);
 	$('#slide_select').empty();
@@ -2865,6 +2879,7 @@ function change_slide(slide) {
 //create a new slide based on slide
 function create_new_slide(slide) {	
 	var new_slide = {};
+	new_slide.show_grid = room_data.slides[slide].show_grid;
 	new_slide.uid = newUid();
 	
 	//generate a new name for the slide
@@ -2931,10 +2946,6 @@ function add_slide(slide) {
 
 //connect socket.io socket
 $(document).ready(function() {
-	
-	$("#map_grid").attr("width", size_x);
-	$("#map_grid").attr("height",  size_y);
-
 	//sorts maps alphabetically, can't presort cause it depends on language
 	var options = $("#map_select option").sort(function(a,b) {
 		if ( a.innerHTML < b.innerHTML )
@@ -3211,7 +3222,12 @@ $(document).ready(function() {
 		});
 		
 		$('#grid').click(function () {
-			$(map_grid).toggle();
+			grid_layer.visible = !grid_layer.visible;
+			room_data.slides[active_slide].show_grid = grid_layer.visible;
+			if (can_edit()) {
+				socket.emit("show_grid", room, active_slide, grid_layer.visible);
+			}
+			renderer.render(stage);
 		});
 
 		//tool select
@@ -3550,6 +3566,14 @@ $(document).ready(function() {
 
 	socket.on('stop_track', function(uid) {
 		remove_tracker(uid)
+	});
+	
+	socket.on('show_grid', function(slide, bool) {
+		room_data.slides[slide].show_grid = bool;
+		if (slide == active_slide) {
+			grid_layer.visible = bool;
+			renderer.render(stage);
+		}
 	});
 	
 });
