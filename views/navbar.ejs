@@ -14,6 +14,24 @@
 	}
 </style>
 
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '580177672120479',
+      xfbml      : true,
+      version    : 'v2.5'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
 <nav class="navbar navbar-inverse navbar-fixed-top container-fluid">
 	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
 		<span class="icon-bar"></span>
@@ -42,7 +60,8 @@
 			<li class="divider-vertical"></li>
 			
 			<span class="nav navbar-nav navbar-text"><%=l('Share:')%></span></li>
-			<li data-toggle="tooltip" title="<%=l('Share on faceook')%>"><a id="facebook_link" href="http://www.facebook.com/sharer.php?u="><i class="fa fa-lg fa-facebook"></i></a></li>
+			<li data-toggle="tooltip" title="<%=l('Share on faceook')%>"><a id="facebook_link" href="https://www.facebook.com/dialog/share?app_id=580177672120479&display=popup&href="><i class="fa fa-lg fa-facebook"></i></a></li>
+			
 			<li data-toggle="tooltip" title="<%=l('Share on twitter')%>"><a id="twitter_link" href="https://twitter.com/intent/tweet?button_hashtag=wottactic&text= " data-url="http://wottactic.tk" data-dnt="true"><i class="fa fa-lg fa-twitter"></i></a></li>
 			<li data-toggle="tooltip" title="<%=l('Share on google+')%>"><a id="google_link" href="https://plus.google.com/share?url=" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa fa-lg fa-google-plus"></i></a></li>
 
@@ -51,14 +70,16 @@
 			<li data-toggle="tooltip" title="<%=l('Donate using paypal')%>">
 			<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3DJZFARS4ZG2U"><i class="fa fa-paypal"></i></a>
 			</li>
-			<li data-toggle="tooltip" title="<%=l('Become a patreon')%>"><a href="https://www.patreon.com/kalith"><img src="http://karellodewijk.github.io/icons/patreon.png" alt="patreon link"></a></li>
+			<li data-toggle="tooltip" title="<%=l('Become a patreon')%>">
+			<a href="https://www.patreon.com/kalith"><i class="fa icon-patreon"></i>
+			</a></li>
 	  
 			<script type="text/javascript" defer>
 				!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
 				document.addEventListener("DOMContentLoaded", function(event) {
 					var link = "http://<%=url.split('/')[0]%>";				
 					var fb = document.getElementById('facebook_link');
-					fb.setAttribute("href", fb.getAttribute('href') + encodeURIComponent(link));
+					fb.setAttribute("href", fb.getAttribute('href') + encodeURIComponent(link) + "&redirect_uri=" + encodeURIComponent("http://wottactic.tk"));
 					var twitter = document.getElementById('twitter_link')
 					twitter.setAttribute("href", twitter.getAttribute('href') + encodeURIComponent(link));
 					var google = document.getElementById('google_link')
