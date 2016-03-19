@@ -60,7 +60,7 @@
 				<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 					<img src="http://karellodewijk.github.io/icons/link.png" alt="link">
 				</button>
-				<% if (game == 'wot') { %>
+				<% if (game == 'wot' || game == 'wows') { %>
 					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
 						<img src="http://karellodewijk.github.io/icons/grid_icon.png" alt="link">
 					</button>
@@ -200,6 +200,16 @@
 							<%include aw_icons.ejs%>
 						<%} %>					
 					<p>
+					
+					<%if (game=='wot') {%>
+						<div class="row">
+							<button id="tank_icons"><%=l('Tank icons')%><span class="caret"></span></button>
+							<div id="tank_icon_menu" style="max-height:200px; overflow-y: auto" ></div>
+							<button id="contour_icons"><%=l('Contour icons')%><span class="caret"></span></button>
+							<div id="contour_icon_menu" style="max-height:200px; overflow-y: auto" ></div>
+						</div>
+					<%}%>
+					
 					<select name="colorpicker" id="icon_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<%if (game == 'aw') { %>
@@ -230,13 +240,23 @@
 							<small><%=l('Icon size')%></small>
 						</div>	
 						<div class="col-sm-5">
-							<input id="icon_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="50" data-slider-step="1" data-slider-value=<%if (game == 'blitz') { %>"35"<%} else {%>"20"<%}%>/>
+							<input id="icon_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="50" data-slider-step="1" data-slider-value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%>/>
 						</div>	
 						<div class="col-sm-3">
 							<input id="icon_size_text" class="slider_text_input" type="text"/>
 						</div>
-					</div>						
-					
+					</div>	
+					<div class="row">
+						<div class="col-sm-3">
+							<small><%=l('Brightness')%></small>
+						</div>
+						<div class="col-sm-5">
+							<input id="icon_brightness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="-1" data-slider-max="1" data-slider-step="0.1" data-slider-value="0"/>
+						</div>
+						<div class="col-sm-3">
+							<input id="icon_brightness_text" class="slider_text_input" type="text"/>
+						</div>
+					</div>				
 				</div>
 				</div>
 

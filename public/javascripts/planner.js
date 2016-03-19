@@ -88,6 +88,7 @@ var min_track_move_distance_sq = min_track_move_distance * min_track_move_distan
 var active_context = 'ping_context';
 var userlist = {};
 var selected_icon;
+var icon_extra_scale = 1;
 var icon_color = 0xff0000;
 var draw_color = 0xff0000;
 var ping_color = 0xff0000;
@@ -135,6 +136,7 @@ var previously_selected_entities = [];
 var label_font_size = 30;
 var last_ping_time;
 var icon_scale = 0.025;
+var icon_brightness;
 var note_scale = 0.05;
 var thickness_scale = 0.0015;
 var font_scale = 0.002;
@@ -503,10 +505,12 @@ function remove(uid, keep_entity) {
 		delete room_data.slides[active_slide].entities[uid].container;
 		
 		if (room_data.slides[active_slide].entities[uid] && room_data.slides[active_slide].entities[uid].type == "icon") {
-			var counter = $('#'+room_data.slides[active_slide].entities[uid].tank).find("span");
-			counter.text((parseInt(counter.text())-1).toString());		
-			counter = $("#icon_context").find("span").first();
-			counter.text((parseInt(counter.text())-1).toString());
+			try {
+				var counter = $('#'+room_data.slides[active_slide].entities[uid].tank).find("span");
+				counter.text((parseInt(counter.text())-1).toString());		
+				counter = $("#icon_context").find("span").first();
+				counter.text((parseInt(counter.text())-1).toString());
+			} catch (e) {}
 		}
 	}
 	
@@ -1407,6 +1411,17 @@ function on_select_end(e) {
 	renderer.render(stage);
 }
 
+function brighten(sprite, brightness) {
+	var filter = new PIXI.filters.ColorMatrixFilter();
+	filter.matrix = [
+		1, 0, 0, brightness, 0,
+		0, 1, 0, brightness, 0,
+		0, 0, 1, brightness, 0,
+		0, 0, 0, 1, 0
+	]
+	sprite.filters = [filter];
+}
+
 function select_entities() {
 	var filter = new PIXI.filters.ColorMatrixFilter();
 	filter.matrix = [
@@ -1588,13 +1603,15 @@ function on_draw_end(e) {
 	new_drawing = null;
 }
 
-function createSprite(ctx, canvas) {
+function autocrop_canvas(canvas) {
+	var ctx = canvas.getContext("2d");
+	
 	//this code is for clipping
 	var w = canvas.width,
-	h = canvas.height,
-	pix = {x:[], y:[]},
-	imageData = ctx.getImageData(0,0,canvas.width,canvas.height),
-	x, y, index;
+	    h = canvas.height,
+	    pix = {x:[], y:[]},
+	    imageData = ctx.getImageData(0,0,canvas.width,canvas.height),
+	    x, y, index;
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
@@ -1619,19 +1636,25 @@ function createSprite(ctx, canvas) {
 	_canvas.height = h;
 	var _ctx = _canvas.getContext("2d");
 
-	if (!pix.x[0]) {
+	if (pix.x[0] == NaN) {
 		return null;
 	}
 	
 	var cut = ctx.getImageData(pix.x[0], pix.y[0], w, h);
 	_ctx.putImageData(cut, 0, 0);
 	
+	_canvas.x = x;
+	_canvas.y = y;
+	return _canvas;
+}
+
+function createSprite(ctx, canvas) {
+	canvas = autocrop_canvas(canvas);
 	//generate the pixi sprite and put it in the right spot
-	var texture = PIXI.Texture.fromCanvas(_canvas);
+	var texture = PIXI.Texture.fromCanvas(canvas);
 	var sprite = new PIXI.Sprite(texture);
-	sprite.x = x;
-	sprite.y = y;
-	
+	sprite.x = canvas.x;
+	sprite.y = canvas.y;
 	return sprite;
 }
 
@@ -1897,13 +1920,12 @@ function on_icon_end(e) {
 	setup_mouse_events(undefined, undefined);
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 
-	var x = mouse_x_rel(mouse_location.x) - (icon_scale/2);
-	var y = mouse_y_rel(mouse_location.y) - (icon_scale/2);
+	var x = mouse_x_rel(mouse_location.x) - (icon_scale*(icon_size/20)*icon_extra_scale/2);
+	var y = mouse_y_rel(mouse_location.y) - (icon_scale*(icon_size/20)*icon_extra_scale/2);
 	
-	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:(icon_size/20), color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Open Sans"}
+	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:icon_extra_scale*(icon_size/20), color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Open Sans", brightness:parseFloat(icon_brightness)}
 	undo_list.push(["add", [icon]]);
-	create_icon(icon);
-	snap_and_emit_entity(icon);
+	create_icon(icon, snap_and_emit_entity);
 }
 
 function on_text_end(e) {
@@ -2043,27 +2065,24 @@ function create_background_text(text_entity) {
 	
 	room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
 }
-	
-function create_icon(icon) {
-	var counter = $('#'+icon.tank).find("span");
-	counter.text((parseInt(counter.text())+1).toString());
-	
-	counter = $("#icon_counter");
-	counter.text((parseInt(counter.text())+1).toString());
-	
-	var texture = PIXI.Texture.fromImage(image_host + icon.tank +'.png');
+
+function create_icon_cont(icon, texture) {
 	var sprite = new PIXI.Sprite(texture);
 	sprite.tint = icon.color;
 
-	//sprite.width = x_abs(icon_scale);
-	sprite.height = (sprite.height/29) * y_abs(icon_scale) * icon.scale;
-	sprite.width = (sprite.width/29) * x_abs(icon_scale) * icon.scale;
-	
+	if (icon.brightness) {
+		brighten(sprite, icon.brightness);
+	}
+
+	var ratio = sprite.width / sprite.height;
+	sprite.height = x_abs(icon_scale) * icon.scale;
+	sprite.width = sprite.height * ratio;	
+
 	icon.container = new PIXI.Container();
+	icon.container.addChild(sprite);
 	icon.container.x = x_abs(icon.x);
 	icon.container.y = y_abs(icon.y);
-
-	icon.container.addChild(sprite);	
+	
 	if (icon.label && icon.label != "") {
 		var size = "bold "+icon.label_font_size*x_abs(font_scale)+"px " + icon.label_font;
 		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: (icon.label_font_size/5), stroke: "black", dropShadow:true, dropShadowDistance:1});		
@@ -2072,20 +2091,48 @@ function create_icon(icon) {
 		icon['container'].addChild(text);
 	}
 
-	icon.container.pivot = sprite.position;
 	icon.container.entity = icon; 
 	icon.container.alpha = icon.alpha;
 	
-	make_draggable(icon['container']);	
+	make_draggable(icon.container);	
 
 	objectContainer.addChild(icon['container']);
-		
-	renderer.render(stage);
-	sprite.texture.on('update', function() {	
-		renderer.render(stage);
-	});
+	renderer.render(stage);	
 	
 	room_data.slides[active_slide].entities[icon.uid] = icon;
+}
+	
+function create_icon(icon, cb_after) {
+	try {
+		var counter = $('#'+icon.tank).find("span");
+		counter.text((parseInt(counter.text())+1).toString());		
+		counter = $("#icon_counter");
+		counter.text((parseInt(counter.text())+1).toString());
+	} catch(e) {}
+	
+	var img = new Image();
+	img.crossOrigin = "anonymous";
+	img.src = image_host + icon.tank + '.png';	
+	var canvas = document.createElement("canvas");
+	var context = canvas.getContext("2d");
+
+	img.onload = function () {
+		
+	    context.drawImage(this, 0, 0); // put the image in the canvas
+	    canvas = autocrop_canvas(canvas);
+
+		var texture = PIXI.Texture.fromCanvas(canvas);
+		
+		if (texture.baseTexture.hasLoaded) {
+			create_icon_cont(icon, texture);
+			if (cb_after) cb_after(icon);
+		} else {
+			texture.baseTexture.on('loaded', function() {
+				create_icon_cont(icon, texture);
+				if (cb_after) cb_after(icon);
+			});
+		}
+	}
 }
 
 function make_draggable(root) {
@@ -3027,6 +3074,7 @@ $(document).ready(function() {
 		initialize_slider("background_font_size", "background_font_size_text", "background_font_size");
 		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		initialize_slider("icon_size", "icon_size_text", "icon_size");
+		initialize_slider("icon_brightness", "icon_brightness_text", "icon_brightness");
 
 		$('html').click(function(e) {
 			if (e.target.id != 'tactic_name') {
@@ -3208,6 +3256,25 @@ $(document).ready(function() {
 			});
 			renderer.render(stage);	
 		});
+
+		function extra_icons(link, menu, path, height, scale) {
+			$('#' + link).click(function () {
+				if (!$.trim($('#' + menu).html())) {
+					$.get(image_host + path + "/icon_list.txt", function(data) {
+						lines = data.split("\n")
+						for (var i in lines) {
+							if (lines[i] == "") continue;
+							$('#' + menu).append('<img height=' + height + ' class="tank_select" scale="' + scale + '" id="' + path + '/' + lines[i].slice(0, lines[i].length-4) + '" data-toggle="tooltip" title="'+ lines[i] +'" src=' + image_host + path + '/' + lines[i] + '></img>');
+						}
+					});
+				} else {
+					$('#' + menu).html("");
+				}
+			});	
+		}
+		
+		extra_icons("tank_icons", "tank_icon_menu", "wot-icon-set1", 60, 2);
+		extra_icons("contour_icons", "contour_icon_menu", "wot-icon-set2", 30, 1);
 		
 		$('#lock').click(function () {
 			var node = $(this).find('img');
@@ -3393,10 +3460,15 @@ $(document).ready(function() {
 		});		
 
 		//tank icon select
-		$('.tank_select').click(function() {
-			$('.selected').removeClass('selected'); // removes the previous selected class
+		$('#icon_context').on('click', '.tank_select', function() {
+			$('#icon_context').find('.selected').removeClass('selected'); // removes the previous selected class
 			$(this).addClass('selected'); // adds the class to the clicked image
 			selected_icon = $(this).attr('id');
+			if ($(this).attr('scale')) {
+				icon_extra_scale = parseFloat($(this).attr('scale'));
+			} else {
+				icon_extra_scale = 1;
+			}
 		});
 		
 		$(renderer.view).attr('style', 'z-index: 0; position: absolute;');
