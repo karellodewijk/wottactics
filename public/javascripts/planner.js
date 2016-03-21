@@ -2548,7 +2548,17 @@ function remove_user(user) {
 	$("#user_count").text(Object.keys(userlist).length.toString());
 }
 
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
 function chat(message, color) {
+	message = escapeHtml(message);
 	message = message.split(":")
 	$("#chat_box").append('<div class="chatmsg"><b style="color:' + color + ';">'+message[0]+'</b>: '+ message.slice(1).join(':') +'<br/></div>');
 	$("#chat_box").scrollTop($("#chat_box")[0].scrollHeight);
@@ -2562,7 +2572,8 @@ function initialize_color_picker(slider_id, variable_name) {
 	}
 	
 	var color = $('select[id="'+ slider_id + '"]').val();
-	window[variable_name] = parseInt('0x'+$('select[id="'+ slider_id + '"]').val().substring(1));
+	window[variable_name] = parseInt('0x'+color.substring(1));
+	
 	$('#' + slider_id + ' ~ input').attr('value', color);
 	$('#' + slider_id + ' ~ input').val(color);
 	
