@@ -5,6 +5,10 @@ body {
 	padding-right:5px;
 }
 
+nav a, nav a:active, nav a:focus {
+	outline:none;
+}
+
 .navbar_planner {
     margin-bottom: 0px;
 }
@@ -25,12 +29,6 @@ button {
 	min-height:37px;
 }
 
-.bottom {
-	padding-top: 15px;
-	padding-left: 20px;
-	padding-right: 20px;
-}
-
 .edit_window {
 	display:inline-block;
 	border: 1px solid black;
@@ -41,7 +39,6 @@ button {
 	background: #CCCCCC;
 	display:inline-block;
 	vertical-align:top;
-	width: auto;
 	border: 1px solid black;
 }
 
@@ -49,7 +46,6 @@ button {
 	min-width: 250px;
 	display:inline-block;
 	vertical-align:top;
-	width: auto;
 	padding-left: 20px;
 	padding-right: 20px;
 	padding-top: 0px;
@@ -59,6 +55,15 @@ button {
 	min-width: 250px;
 	display:inline-block;
 	vertical-align:top;
+	width: auto;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 0px;
+}
+
+.bottom {
+	min-width: 500px;
+	display:inline-block;
 	width: auto;
 	padding-left: 20px;
 	padding-right: 20px;
@@ -157,15 +162,23 @@ small {
     overflow: auto;
     padding: 2px;
     resize: both;
-    width: 400px;
+    width: 500px;
+	height: 150px;
+	position: float;
 }
 
+.chatmsg {
+	max-width: 100%;
+}
 
 /* Tab Navigation */
 .nav-tabs {
     margin: 0;
     padding: 0;
     border: 0;    
+}
+.nav-tabs > a, .nav-tabs > a:active, .nav-tabs > a:focus {
+	outline:none;
 }
 .nav-tabs > li > a {
     background: #DADADA;
@@ -177,6 +190,7 @@ small {
     background: #F5F5F5;
     box-shadow: inset 0 0 0 0 rgba(0,0,0,.4),-2px -3px 5px -2px rgba(0,0,0,.4);
 }
+
 
 /* Tab Content */
 .tab-pane {
@@ -225,6 +239,4 @@ small {
 .icon-patreon:before {
     content: "\e900";
 }
-
-
 
