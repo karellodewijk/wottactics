@@ -292,5 +292,14 @@
 	"Land of Fire": "Land of Fire",
 	"Tank icons": "Tank icons",
 	"Tank contour icons": "Tank contour icons",
-	"Contour icons": "Contour icons"
+	"Contour icons": "Contour icons",
+	"Style:": "Style:",
+	"Dashed line": "Dashed line",
+	"End:": "End:",
+	"Style": "Style",
+	"End": "End",
+	"Normal": "Normal",
+	"Normal curve": "Normal curve",
+	"Dotted curve": "Dotted curve",
+	"Dashed curve": "Dashed curve"
 }

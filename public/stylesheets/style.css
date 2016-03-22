@@ -44,7 +44,7 @@ button {
 
 .left_column {
 	min-width: 250px;
-	display:inline-block;
+	display: inline-block;
 	vertical-align:top;
 	padding-left: 20px;
 	padding-right: 20px;
@@ -59,15 +59,15 @@ button {
 	padding-left: 20px;
 	padding-right: 20px;
 	padding-top: 0px;
+	padding-bottom: 20px;
 }
 
 .bottom {
-	min-width: 500px;
+	min-width: 600px;
 	display:inline-block;
 	width: auto;
 	padding-left: 20px;
 	padding-right: 20px;
-	padding-top: 0px;
 }
 
 .tank_select {
