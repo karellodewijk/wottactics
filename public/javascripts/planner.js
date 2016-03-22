@@ -738,27 +738,41 @@ function hexToRGBA(hex, alpha) {
   return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 }
 
-function init_canvases(line_thickness, line_color, is_dotted, fill_opacity, fill_color, outline_opacity) {
+function init_canvases(line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity) {
 	var line_color = '#' + ('00000' + (line_color | 0).toString(16)).substr(-6); 
 
 	start_drawing();
 	
-	draw_context.lineWidth = line_thickness;
+	draw_context.lineWidth = line_thickness * (size_x/1000);
 	draw_context.strokeStyle = line_color;
-	draw_context.fillStyle = line_color;	
-	if (is_dotted) {
-		if ('setLineDash' in draw_context) {
+	draw_context.fillStyle = line_color;
+	
+	//draw_context.shadowBlur = 0.1;
+	//draw_context.shadowColor = line_color;
+	//draw_context.lineCap = draw_context.lineJoin = 'round';
+
+	if ('setLineDash' in draw_context) {	
+		if (style == "dashed") {
 			draw_context.setLineDash([10, 10]);
+		} else if (style == "dotted") {
+			draw_context.setLineDash([line_thickness, line_thickness]);
 		}
 	}
 	draw_context.beginPath();
 
-	temp_draw_context.lineWidth = line_thickness;
+	temp_draw_context.lineWidth = line_thickness * (size_x/1000);
 	temp_draw_context.strokeStyle = line_color;
-	temp_draw_context.fillStyle = line_color;	
-	if (is_dotted) {
-		if ('setLineDash' in temp_draw_context) {
+	temp_draw_context.fillStyle = line_color;
+	
+	//temp_draw_context.shadowBlur = 0.1;
+	//temp_draw_context.shadowColor = line_color;
+	//temp_draw_context.lineCap = temp_draw_context.lineJoin = 'round';
+	
+	if ('setLineDash' in temp_draw_context) {	
+		if (style == "dashed") {
 			temp_draw_context.setLineDash([10, 10]);
+		} else if (style == "dotted") {
+			temp_draw_context.setLineDash([line_thickness, line_thickness]);
 		}
 	}
 	
@@ -791,23 +805,23 @@ function on_left_click(e) {
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), is_arrow:($('#draw_arrow').hasClass('active') || $('#draw_dotted_arrow').hasClass('active')), is_dotted:($('#draw_dotted').hasClass('active') || $('#draw_dotted_arrow').hasClass('active')), path:[[0, 0]]};
-		init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.is_dotted);
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), end:$('#draw_end_type').find('.active').attr('data'), style:$('#draw_type').find('.active').attr('data'), path:[[0, 0]]};
+		init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
 		draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
 		last_draw_time = Date.now();
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_line_end);
-			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[[0, 0]], is_arrow:($('#arrow').hasClass('active') || $('#dotted_arrow').hasClass('active')), is_dotted:($('#dotted_line').hasClass('active') || $('#dotted_arrow').hasClass('active')) };
-			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.is_dotted);
-			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
+			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data'), style:$('#line_type').find('.active').attr('data') };
+			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
+			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));	
 		}
 	} else if (active_context == 'polygon_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_polygon_end);
-			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[[0,0]], is_dotted:$('#polygon_dotted').hasClass('active')};
+			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data')};
 
-			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.is_dotted, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
+			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
 		
 			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
@@ -822,9 +836,9 @@ function on_left_click(e) {
 		}
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
-			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[[0, 0]], is_arrow:($('#curve_arrow').hasClass('active') || $('#curve_dotted_arrow').hasClass('active')), is_dotted:($('#curve_dotted').hasClass('active') || $('#curve_dotted_arrow').hasClass('active')) };
+			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data'), style:$('#curve_type').find('.active').attr('data') };
 
-			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.is_dotted);
+			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
 			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
 
 			setup_mouse_events(on_curve_move, on_curve_end);
@@ -833,9 +847,9 @@ function on_left_click(e) {
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_curve_move, on_area_end);
-			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[[0, 0]], is_dotted:$('#area_dotted').hasClass('active')};
+			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data')};
 			
-			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.is_dotted, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
+			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
 		
 			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
@@ -866,11 +880,11 @@ function on_left_click(e) {
 	} else if (active_context == 'rectangle_context') {
 		setup_mouse_events(on_rectangle_move, on_rectangle_end);
 		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
-		init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_dotted').hasClass('active'), rectangle_fill_opacity, rectangle_fill_color, rectangle_outline_opacity);
+		init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_type').find('.active').attr('data'), rectangle_fill_opacity, rectangle_fill_color, rectangle_outline_opacity);
 	} else if (active_context == 'circle_context') {
 		setup_mouse_events(on_circle_move, on_circle_end);
 		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
-		init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_dotted').hasClass('active'), circle_fill_opacity, circle_fill_color, circle_outline_opacity);
+		init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data'), circle_fill_opacity, circle_fill_color, circle_outline_opacity);
 	} else if (active_context == 'track_context') {
 		if (my_tracker) {
 			stop_tracking();
@@ -1108,7 +1122,7 @@ function on_curve_move(e) {
 	var stop_index = new_drawing.path.length;
 
 	temp_draw_context.beginPath();
-	draw_path2(temp_draw_context, null, new_drawing, 30, start_index, stop_index, new_drawing.is_arrow);
+	draw_path2(temp_draw_context, null, new_drawing, 30, start_index, stop_index, new_drawing.end == "arrow");
 	temp_draw_context.stroke();
 	
 	new_drawing.path.pop();
@@ -1142,7 +1156,7 @@ function on_curve_end(e) {
 		draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
 
-		draw_path2(draw_context, null, new_drawing, new_drawing.path.length, 0, new_drawing.path.length, new_drawing.is_arrow);		
+		draw_path2(draw_context, null, new_drawing, new_drawing.path.length, 0, new_drawing.path.length, new_drawing.end == "arrow");		
 		draw_context.stroke();
 
 		var success = canvas2container(draw_context, draw_canvas, new_drawing);
@@ -1206,7 +1220,7 @@ function on_line_end(e) {
 	draw_context.stroke();
 	
 	if (!shifted) {
-		if (new_drawing.is_arrow) {
+		if (new_drawing.end == "arrow") {
 			draw_arrow3(draw_context, a, b, new_drawing);
 			draw_context.fill();
 		}
@@ -1313,7 +1327,7 @@ function on_circle_end(e) {
 	temp_draw_context.fill();
 	temp_draw_context.stroke();
 
-	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1, is_dotted:$('#circle_dotted').hasClass('active')};
+	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data')};
 
 	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
 	if (success) {
@@ -1348,7 +1362,7 @@ function on_rectangle_end(e) {
 	temp_draw_context.fillRect(size_x * left_x, size_y * left_y, size_x * (right_x-left_x), size_y *(right_y-left_y)); 
 	temp_draw_context.strokeRect(size_x * left_x, size_y *left_y, size_x * (right_x-left_x), size_y *(right_y-left_y));	
 
-	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1, is_dotted:$('#rectangle_dotted').hasClass('active')};
+	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data') };
 	
 	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
 	if (success) {
@@ -1559,7 +1573,7 @@ function on_draw_move(e) {
 	var start_index = Math.max(new_drawing.path.length-10, 0);
 	var stop_index = new_drawing.path.length;
 	temp_draw_context.beginPath();	
-	if (new_drawing.is_arrow) {
+	if (new_drawing.end == "arrow") {
 		if (new_drawing.path.length > 3) {
 			var i = Math.max(0, new_drawing.path.length-3);	
 			draw_arrow2(temp_draw_context, new_drawing, 4);
@@ -1585,7 +1599,7 @@ function on_draw_end(e) {
 	draw_path2(draw_context, undefined, new_drawing, n, start_index, stop_index, false, false, true);
 	draw_context.stroke();
 	
-	if (new_drawing.is_arrow) {	
+	if (new_drawing.end == "arrow") {	
 		if (new_drawing.path.length > 3) {	
 			draw_arrow2(draw_context, new_drawing, 4);
 			draw_context.fill();
@@ -1660,7 +1674,8 @@ function createSprite(ctx, canvas) {
 
 function draw_arrow2(context, drawing, i) {
 	var i = Math.max(0, drawing.path.length-i);
-	var size = Math.max(Math.min(6*drawing.thickness, 30), 15); //[15 < size < 30]
+	var size = Math.max(Math.min(7*drawing.thickness, 40), 20); //[15 < size < 30]
+	var size = size * (size_x/1000);
 	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
 	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
@@ -1672,7 +1687,8 @@ function draw_arrow2(context, drawing, i) {
 }
 
 function draw_arrow3(context, a, b, drawing) {
-	var size = Math.max(Math.min(6*drawing.thickness, 30), 15); //[15 < size < 30]
+	var size = Math.max(Math.min(7*drawing.thickness, 40), 20); //[15 < size < 30]
+	var size = size * (size_x/1000);
 	var x_diff = b[0] - a[0];
 	var y_diff = b[1] - a[1];
 	l = Math.sqrt(Math.pow(x_diff,2) + Math.pow(y_diff,2));
@@ -1714,12 +1730,14 @@ function create_line2(line) {
 	_canvas.width = size_x;
 	_canvas.height = size_y;
 	_context = _canvas.getContext("2d");
-	_context.lineWidth = line.thickness;
+	_context.lineWidth = line.thickness * (size_x/1000);
 	_context.strokeStyle = color;
 	_context.fillStyle = color;	
-	if (line.is_dotted) {
-		if ('setLineDash' in _context) {
-			_context.setLineDash([10, 10]);
+	if ('setLineDash' in _context) {
+		if (line.end == "dashed") {
+			_context.setLineDash([15, 15]);
+		} else if (line.end == "dotted") {
+			_context.setLineDash([line.thickness, line.thickness]);
 		}
 	}
 	_context.beginPath();
@@ -1732,7 +1750,7 @@ function create_line2(line) {
 	}
 	_context.stroke();
 
-	if (line.is_arrow) {	
+	if (line.end == "arrow") {	
 		var a;
 		if (line.path.length == 1) {
 			a = [size_x * (line.x), size_y * (line.y)];
@@ -1749,17 +1767,19 @@ function create_line2(line) {
 }
 
 function init_shape_canvas(_context, shape) {
-	_context.lineWidth = shape.outline_thickness;
+	_context.lineWidth = shape.outline_thickness * (size_x/1000);
 	var fill_color = '#' + ('00000' + (shape.fill_color | 0).toString(16)).substr(-6);
 	var stroke_color = '#' + ('00000' + (shape.outline_color | 0).toString(16)).substr(-6); 
 	var fill_rgba = hexToRGBA(fill_color, shape.fill_opacity);
 	var stroke_rgba = hexToRGBA(stroke_color, shape.outline_opacity);
 	_context.fillStyle = fill_rgba;
-	_context.strokeStyle = stroke_rgba;	
-
-	if (shape.is_dotted) {
-		if ('setLineDash' in _context) {
-			_context.setLineDash([10, 10]);
+	_context.strokeStyle = stroke_rgba;
+	
+	if ('setLineDash' in _context) {
+		if (shape.style == "dashed") {
+			_context.setLineDash([15, 15]);
+		} else if (shape.style == "dotted") {
+			_context.setLineDash([shape.thickness, shape.thickness]);
 		}
 	}
 }
@@ -1769,7 +1789,7 @@ function create_rectangle2(rectangle) {
 	var _canvas = document.createElement("canvas");
 	_canvas.width = size_x;
 	_canvas.height = size_y;
-	_context = _canvas.getContext("2d");
+	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, rectangle);
 
 	_context.fillRect(size_x * rectangle.x, size_y * rectangle.y, size_x * (rectangle.width), size_y * (rectangle.height)); 
@@ -1783,7 +1803,7 @@ function create_circle2(circle) {
 	var _canvas = document.createElement("canvas");
 	_canvas.width = size_x;
 	_canvas.height = size_y;
-	_context = _canvas.getContext("2d");
+	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, circle);
 
 	_context.beginPath();
@@ -1799,7 +1819,7 @@ function create_polygon2(polygon) {
 	var _canvas = document.createElement("canvas");
 	_canvas.width = size_x;
 	_canvas.height = size_y;
-	_context = _canvas.getContext("2d");
+	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, polygon);
 
 	_context.beginPath();
@@ -1821,7 +1841,7 @@ function create_area2(area) {
 	var _canvas = document.createElement("canvas");
 	_canvas.width = size_x;
 	_canvas.height = size_y;
-	_context = _canvas.getContext("2d");
+	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, area);
 
 	_context.beginPath();
@@ -1837,21 +1857,24 @@ function create_drawing2(drawing) {
 	var _canvas = document.createElement("canvas");
 	_canvas.width = size_x;
 	_canvas.height = size_y;
-	_context = _canvas.getContext("2d");
-	_context.lineWidth = drawing.thickness;
+	var _context = _canvas.getContext("2d");
+	_context.lineWidth = drawing.thickness * (size_x/1000);
 	_context.strokeStyle = color;
 	_context.fillStyle = color;	
-	if (drawing.is_dotted) {
-		if ('setLineDash' in _context) {
-			_context.setLineDash([10, 10]);
+	if ('setLineDash' in _context) {
+		if (drawing.style == "dashed") {
+			_context.setLineDash([15, 15]);
+		} else if (drawing.style == "dotted") {
+			_context.setLineDash([drawing.thickness, drawing.thickness]);
 		}
 	}
+	
 	_context.beginPath();
 	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
 	var n = drawing.path.length;
 	draw_path2(_context, undefined, drawing, n, 0, n);
 	_context.stroke();
-	if (drawing.is_arrow) {	
+	if (drawing.end == "arrow") {	
 		if (drawing.path.length > 3) {	
 			draw_arrow2(_context, drawing, 4);
 			_context.fill();
@@ -1865,20 +1888,22 @@ function create_curve2(drawing) {
 	var _canvas = document.createElement("canvas");
 	_canvas.width = size_x;
 	_canvas.height = size_y;
-	_context = _canvas.getContext("2d");
-	_context.lineWidth = drawing.thickness;
+	var _context = _canvas.getContext("2d");
+	_context.lineWidth = drawing.thickness * (size_x/1000);
 	_context.strokeStyle = color;
-	_context.fillStyle = color;	
-	if (drawing.is_dotted) {
-		if ('setLineDash' in _context) {
-			_context.setLineDash([10, 10]);
+	_context.fillStyle = color;
+	if ('setLineDash' in _context) {
+		if (drawing.style == "dashed") {
+			_context.setLineDash([15, 15]);
+		} else if (drawing.style == "dotted") {
+			_context.setLineDash([drawing.thickness, drawing.thickness]);
 		}
 	}
 	_context.beginPath();
 	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
 		
 	var n = drawing.path.length;
-	draw_path2(_context, undefined, drawing, n, 0, n, drawing.is_dotted);
+	draw_path2(_context, undefined, drawing, n, 0, n, drawing.end == "arrow");
 	_context.stroke();
 	
 	canvas2container(_context, _canvas, drawing);
@@ -1962,7 +1987,7 @@ function on_line_move(e) {
 	var b = [size_x * (mouse_x_rel(mouse_location.x)) , size_y * (mouse_y_rel(mouse_location.y))];
 	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	if (new_drawing.is_arrow) {
+	if (new_drawing.end == "arrow") {
 		draw_arrow3(temp_draw_context, a, b, new_drawing);
 	}
 	temp_draw_context.beginPath();
@@ -1999,7 +2024,7 @@ function on_line_end(e) {
 	draw_context.stroke();
 	
 	if (!shifted) {
-		if (new_drawing.is_arrow) {
+		if (new_drawing.end == "arrow") {
 			draw_arrow3(draw_context, a, b, new_drawing);
 			draw_context.fill();
 		}
@@ -2245,7 +2270,7 @@ function free_draw(graph, drawing, smooth_out) {
 		         y_abs(drawing.y + drawing.path[0][1])]
 		graph.moveTo(a[0], a[1]);
 		graph.lineTo(b[0], b[1]);
-		if (drawing.is_arrow) {
+		if (drawing.end == "arrow") {
 			draw_arrow(graph, a, b);
 		}
 		
@@ -2286,7 +2311,7 @@ function free_draw(graph, drawing, smooth_out) {
 			graph.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
 		}
 		
-		if (drawing.is_arrow) {
+		if (drawing.end == "arrow") {
 			if (drawing.type == "drawing") {
 				draw_arrow(graph, [path_x[path_x.length-3], path_y[path_y.length-3]], [path_x[path_x.length-1], path_y[path_y.length-1]]);
 			} else {
@@ -2356,7 +2381,7 @@ function create_line(drawing) {
 		last_y = y_i;
 	}
 
-	if (drawing.is_arrow) {
+	if (drawing.end == "arrow") {
 		var a;
 		if (drawing.path.length == 1) {
 			a = [x_abs(drawing.x), y_abs(drawing.y)];
@@ -3039,6 +3064,12 @@ $(document).ready(function() {
 		var first_icon = $("#icon_context").find("button:first");
 		first_icon.addClass('selected');
 		selected_icon = first_icon.attr("id");
+		if (first_icon.attr('scale')) {
+			icon_extra_scale = parseFloat(first_icon.attr('scale'));
+		} else {
+			icon_extra_scale = 1;
+		}
+		
 		slide_name = $('#slide_name').attr('content');
 		
 		$('.nav-pills > li > a').click( function() {
@@ -3361,41 +3392,53 @@ $(document).ready(function() {
 
 		});	
 		
-		$('#rectangle_type #rectangle_line').addClass('active');	
+		$('#rectangle_type button[data="full"]').addClass('active');	
 		$('#rectangle_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#circle_type #circle_line').addClass('active');	
+		$('#circle_type button[data="full"]').addClass('active');
 		$('#circle_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#polygon_type #polygon_line').addClass('active');	
+		$('#polygon_type button[data="full"]').addClass('active');
 		$('#polygon_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 
-		$('#area_type #area_line').addClass('active');	
+		$('#area_type button[data="full"]').addClass('active');
 		$('#area_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#line_type #full_line').addClass('active');	
+		$('#line_type button[data="full"]').addClass('active');	
 		$('#line_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
+		
+		$('#line_end_type button[data="none"]').addClass('active');	
+		$('#line_end_type').on('click', 'button', function (e) {
+			$(this).addClass('active');
+			$(this).siblings().removeClass('active');					
+		});
 
-		$('#curve_type #curve_no_arrow').addClass('active');	
+		$('#curve_type button[data="full"]').addClass('active');
 		$('#curve_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
-		});		
+		});
+		
+		$('#curve_end_type button[data="none"]').addClass('active');
+		$('#curve_end_type').on('click', 'button', function (e) {
+			$(this).addClass('active');
+			$(this).siblings().removeClass('active');					
+		});	
 		
 		$('#track_shape #cursor').addClass('active');
 		$('#track_shape').on('click', 'button', function (e) {
@@ -3407,8 +3450,14 @@ $(document).ready(function() {
 			start_tracking({x:2000,y:2000});	
 		});	
 		
-		$('#draw_no_arrow').addClass('active');
+		$('#draw_type button[data="full"]').addClass('active');	
 		$('#draw_type').on('click', 'button', function (e) {
+			$(this).addClass('active');
+			$(this).siblings().removeClass('active');					
+		});
+
+		$('#draw_end_type button[data="none"]').addClass('active');	
+		$('#draw_end_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
@@ -3660,5 +3709,3 @@ $(document).ready(function() {
 	});
 	
 });
-
-setTimeout(function(){ renderer.render(stage); }, 1000);
