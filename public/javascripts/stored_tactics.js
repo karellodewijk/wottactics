@@ -26,7 +26,7 @@ $(document).ready(function() {
 			alert("No room id found in link.");
 		} else {
 			tactic_uid = link.slice(i+5).split('&')[0];
-			$.post('/add_to_room', {room: tactic_uid, tactic:link_uid}).done(function( data ) {
+			$.post('/add_to_room', {target: tactic_uid, source:link_uid}).done(function( data ) {
 				if (data != "Success") {
 					alert(data);
 				}
@@ -38,7 +38,10 @@ $(document).ready(function() {
 	
 	$('#tactic_list').on('click', '.send_to_link', function (e) {
 		$('#myModal').modal('show');
-		link_uid = $(this).attr('id');
+		link_uid = $(this).attr('id');	
+		$('#myModal').on('shown.bs.modal', function () {
+			$("#send_link").focus();
+		});
 	});
 	
 	$('#tactic_list').on('click', '.btn-danger', function (e) {
