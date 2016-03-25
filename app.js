@@ -530,58 +530,68 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 		return;
 	});
-	router.post('/add_to_room', function(req, res, next) {
-		if (req.session.passport.user.identity) {
-			var user = req.session.passport.user;
-			
-			var room = req.body.room;
-			if (!room_data[room]) {
-				res.send("Error: room is not active or does not exist.");
-				return;
-			} else if (room_data[room].locked && !room_data[room].lost_identities[user.identity].role) {
-				res.send("Error: You don't have permission for that room.");
-				return;
+	
+	function copy_slides(req, res, source, target) {
+		if (room_data[source].slides) {
+			if (Object.keys(room_data[source].slides).length > 100) {
+				res.send("Error: too many slides");
 			}
-			
-			restore_tactic(req.session.passport.user, req.body.tactic, function(new_room) {	
-				if (room_data[new_room].slides) {
-					if (Object.keys(room_data[new_room].slides).length > 100) {
-						res.send("Error: too many slides");
-						delete room_data[new_room];
-						return;
+			if (Object.keys(room_data[target].slides).length > 100) {
+				res.send("Error: too many slides");
+			}
+			var largest_slide_order = -1;
+			for (var key in room_data[target].slides) {
+				if (room_data[target].slides.hasOwnProperty(key)) {
+					if (room_data[target].slides[key].order > largest_slide_order) {
+						largest_slide_order = room_data[target].slides[key].order;
 					}
-					if (Object.keys(room_data[room].slides).length > 100) {
-						res.send("Error: too many slides");
-						delete room_data[new_room];
-						return;
-					}
-					var largest_slide_order = -1;
-					for (var key in room_data[room].slides) {
-						if (room_data[room].slides.hasOwnProperty(key)) {
-							if (room_data[room].slides[key].order > largest_slide_order) {
-								largest_slide_order = room_data[room].slides[key].order;
-							}
-						}
-					}
-					largest_slide_order += 4294967296;
-					for (var key in room_data[new_room].slides) {
-						if (room_data[new_room].slides.hasOwnProperty(key)) {
-							var uid = newUid();
-							room_data[new_room].slides[key].order += largest_slide_order;
-							room_data[new_room].slides[key].uid = uid;
-							room_data[room].slides[uid] = room_data[new_room].slides[key];
-							io.to(room).emit('new_slide', room_data[room].slides[uid]);
-						}
-					}
-										
-					delete room_data[new_room];
-					res.send("Success");					
-				} else {
-					res.send("Error: unknown error");
-					return;
 				}
+			}
+			largest_slide_order += 4294967296;
+			for (var key in room_data[source].slides) {
+				if (room_data[source].slides.hasOwnProperty(key)) {
+					var uid = newUid();
+					var new_slide = JSON.parse(JSON.stringify(room_data[source].slides[key]));
+					new_slide.order += largest_slide_order;
+					new_slide.uid = uid;
+					room_data[target].slides[uid] = new_slide;
+					io.to(target).emit('new_slide', new_slide);
+				}
+			}							
+			res.send("Success");					
+		} else {
+			res.send("Error: unknown error");
+			return;
+		}
+	}
+	
+	router.post('/add_to_room', function(req, res, next) {
+		var target = req.body.target;
+		var user = req.session.passport.user;
 
-			});
+		console.log(user)
+		console.log(room_data[target].userlist)
+		console.log(room_data[target].lost_identities)
+		
+		if (!room_data[target]) {
+			res.send("Error: room is not active or does not exist.");
+			return;
+		} else if (room_data[target].locked
+				  && (!room_data[target].userlist[user.id] || !room_data[target].userlist[user.id].role) 
+				  && (!room_data[target].lost_identities[user.identity] || !room_data[target].lost_identities[user.identity].role)) {
+			res.send("Error: You don't have permission for that room.");
+			return;
+		}
+		
+		if (req.body.source in room_data) {
+			copy_slides(req, res, req.body.source, target);
+		} else {	
+			if (req.session.passport.user.identity) {
+				restore_tactic(req.session.passport.user, req.body.source, function(source) {
+					copy_slides(req, res, source, target);
+					delete room_data[source];
+				});
+			}
 		}
 	});
 	
@@ -785,8 +795,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.onclose = function(reason) {
 			//hijack the onclose event because otherwise we lose socket.rooms data
 			var user = socket.request.session.passport.user;
-			for (var i = 1; i < socket.rooms.length; i++) { //first room is clients own little private room so we start at 1
-				var room = socket.rooms[i];
+			for (var room in socket.rooms) { //first room is clients own little private room so we start at 1
 				if (room_data[room] && room_data[room].userlist[user.id]) {
 					if (room_data[room].userlist[user.id].count == 1) {
 						socket.broadcast.to(room).emit('remove_user', user.id);
