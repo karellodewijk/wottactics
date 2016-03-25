@@ -43,7 +43,8 @@ button {
 }
 
 .left_column {
-	min-width: 250px;
+	min-width: 350px;
+	max-width: 350px;
 	display: inline-block;
 	vertical-align:top;
 	padding-left: 20px;

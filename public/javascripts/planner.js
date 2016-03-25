@@ -805,21 +805,21 @@ function on_left_click(e) {
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), end:$('#draw_end_type').find('.active').attr('data'), style:$('#draw_type').find('.active').attr('data'), path:[[0, 0]]};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]]};
 		init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
 		draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
 		last_draw_time = Date.now();
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_line_end);
-			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data'), style:$('#line_type').find('.active').attr('data') };
+			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style') };
 			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
-			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));	
+			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
 		}
 	} else if (active_context == 'polygon_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_polygon_end);
-			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data')};
+			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style')};
 
 			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
@@ -836,7 +836,7 @@ function on_left_click(e) {
 		}
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
-			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data'), style:$('#curve_type').find('.active').attr('data') };
+			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style') };
 
 			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
 			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
@@ -847,7 +847,7 @@ function on_left_click(e) {
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_curve_move, on_area_end);
-			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data')};
+			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style')};
 			
 			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
@@ -880,11 +880,11 @@ function on_left_click(e) {
 	} else if (active_context == 'rectangle_context') {
 		setup_mouse_events(on_rectangle_move, on_rectangle_end);
 		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
-		init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_type').find('.active').attr('data'), rectangle_fill_opacity, rectangle_fill_color, rectangle_outline_opacity);
+		init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_type').find('.active').attr('data-style'), rectangle_fill_opacity, rectangle_fill_color, rectangle_outline_opacity);
 	} else if (active_context == 'circle_context') {
 		setup_mouse_events(on_circle_move, on_circle_end);
 		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
-		init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data'), circle_fill_opacity, circle_fill_color, circle_outline_opacity);
+		init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data-style'), circle_fill_opacity, circle_fill_color, circle_outline_opacity);
 	} else if (active_context == 'track_context') {
 		if (my_tracker) {
 			stop_tracking();
@@ -907,10 +907,13 @@ function stop_tracking() {
 
 function start_tracking(mouse_location) {
 	setup_mouse_events(on_track_move, undefined);
-	var shape = $('#track_shape .active').attr('id');
+	var shape = $('#track_shape .active').attr('data-cursor');
 	var size;
+	var scale;
 	if (shape == 'circle' || shape == 'cursor') {
 		scale = 0.25;
+	} else if (shape == 'recticle') {
+		scale = 1;
 	} else {
 		scale = 0.5;
 	}
@@ -1327,7 +1330,7 @@ function on_circle_end(e) {
 	temp_draw_context.fill();
 	temp_draw_context.stroke();
 
-	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data')};
+	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data-style')};
 
 	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
 	if (success) {
@@ -1362,7 +1365,7 @@ function on_rectangle_end(e) {
 	temp_draw_context.fillRect(size_x * left_x, size_y * left_y, size_x * (right_x-left_x), size_y *(right_y-left_y)); 
 	temp_draw_context.strokeRect(size_x * left_x, size_y *left_y, size_x * (right_x-left_x), size_y *(right_y-left_y));	
 
-	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data') };
+	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data-style') };
 	
 	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
 	if (success) {
@@ -1734,9 +1737,9 @@ function create_line2(line) {
 	_context.strokeStyle = color;
 	_context.fillStyle = color;	
 	if ('setLineDash' in _context) {
-		if (line.end == "dashed") {
-			_context.setLineDash([15, 15]);
-		} else if (line.end == "dotted") {
+		if (line.style == "dashed") {
+			_context.setLineDash([10, 10]);
+		} else if (line.style == "dotted") {
 			_context.setLineDash([line.thickness, line.thickness]);
 		}
 	}
@@ -1777,7 +1780,7 @@ function init_shape_canvas(_context, shape) {
 	
 	if ('setLineDash' in _context) {
 		if (shape.style == "dashed") {
-			_context.setLineDash([15, 15]);
+			_context.setLineDash([10, 10]);
 		} else if (shape.style == "dotted") {
 			_context.setLineDash([shape.thickness, shape.thickness]);
 		}
@@ -1863,7 +1866,7 @@ function create_drawing2(drawing) {
 	_context.fillStyle = color;	
 	if ('setLineDash' in _context) {
 		if (drawing.style == "dashed") {
-			_context.setLineDash([15, 15]);
+			_context.setLineDash([10, 10]);
 		} else if (drawing.style == "dotted") {
 			_context.setLineDash([drawing.thickness, drawing.thickness]);
 		}
@@ -1894,7 +1897,7 @@ function create_curve2(drawing) {
 	_context.fillStyle = color;
 	if ('setLineDash' in _context) {
 		if (drawing.style == "dashed") {
-			_context.setLineDash([15, 15]);
+			_context.setLineDash([10, 10]);
 		} else if (drawing.style == "dotted") {
 			_context.setLineDash([drawing.thickness, drawing.thickness]);
 		}
@@ -2515,12 +2518,12 @@ function add_user(user) {
 //accordingly
 function update_my_user() {
 	if (my_user.logged_in) { //logged in
-		$("#save_as").show();
+		$("#store_tactic_popover").show();
 		if (tactic_name && tactic_name != "") {
 			$("#save").show();
 		}
 	} else {
-		$("#save_as").hide();
+		$("#store_tactic_popover").hide();
 		$("#save").hide();
 	}
 	update_lock();
@@ -2812,7 +2815,7 @@ function find_previous_slide(upper_bound) {
 }
 
 function find_next_slide(lower_bound) {
-	var smallest = Number.MAX_SAFE_INTEGER;
+	var smallest = 9007199254740991;	
 	var uid = 0;
 	for (var key in room_data.slides) {
 		var order = room_data.slides[key].order
@@ -3041,6 +3044,36 @@ $(document).ready(function() {
 	$("#map_select").empty().append(options); //ie fix no-op
 	
 	loader.once('complete', function () {
+		
+		$('#modal_cancel').click(function (e) {
+			$('#myModal').modal('hide');
+		});
+		
+		$('#link_send').click(function (e) {
+			var link = $('#send_link').val();
+			var i = link.indexOf('room=');
+			if (i == -1) {
+				alert("No room id found in link.");
+			} else {
+				tactic_uid = link.slice(i+5).split('&')[0];
+				$.post('/add_to_room', {target: tactic_uid, source:room}).done(function( data ) {
+					if (data != "Success") {
+						alert(data);
+					}
+				});
+			}
+			
+			$('#myModal').modal('hide');
+		});
+
+		$('#send_to_link').click(function (e) {
+			$('#myModal').modal('show');
+			$('#myModal').on('shown.bs.modal', function () {
+				$("#send_link").focus();
+			});
+		});
+		
+		
 		$("#map_select").empty();
 		$("#map_select").append(options.clone());
 		$("#map_select").focus();
@@ -3058,19 +3091,19 @@ $(document).ready(function() {
 		$('#area_context').hide();
 		$('#track_context').hide();
 		$('#background_text_context').hide();
-		$("#save_as").hide();
+		$("#store_tactic_popover").hide();
 		$("#save").hide();
 		$('#ping').addClass('active');	
 		var first_icon = $("#icon_context").find("button:first");
 		first_icon.addClass('selected');
 		selected_icon = first_icon.attr("id");
-		if (first_icon.attr('scale')) {
-			icon_extra_scale = parseFloat(first_icon.attr('scale'));
+		if (first_icon.attr('data-scale')) {
+			icon_extra_scale = parseFloat(first_icon.attr('data-scale'));
 		} else {
 			icon_extra_scale = 1;
 		}
 		
-		slide_name = $('#slide_name').attr('content');
+		slide_name = $('#slide_box').attr('slide_name');
 		
 		$('.nav-pills > li > a').click( function() {
 			$('.nav-pills > li.active').removeClass('active');
@@ -3306,7 +3339,7 @@ $(document).ready(function() {
 						lines = data.split("\n")
 						for (var i in lines) {
 							if (lines[i] == "") continue;
-							$('#' + menu).append('<img height=' + height + ' class="tank_select" scale="' + scale + '" id="' + path + '/' + lines[i].slice(0, lines[i].length-4) + '" data-toggle="tooltip" title="'+ lines[i] +'" src=' + image_host + path + '/' + lines[i] + '></img>');
+							$('#' + menu).append('<img height=' + height + ' class="tank_select" data-scale="' + scale + '" id="' + path + '/' + lines[i].slice(0, lines[i].length-4) + '" data-toggle="tooltip" title="'+ lines[i] +'" src=' + image_host + path + '/' + lines[i] + '></img>');
 						}
 					});
 				} else {
@@ -3392,55 +3425,55 @@ $(document).ready(function() {
 
 		});	
 		
-		$('#rectangle_type button[data="full"]').addClass('active');	
+		$('#rectangle_type button[data-style="full"]').addClass('active');	
 		$('#rectangle_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#circle_type button[data="full"]').addClass('active');
+		$('#circle_type button[data-style="full"]').addClass('active');
 		$('#circle_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#polygon_type button[data="full"]').addClass('active');
+		$('#polygon_type button[data-style="full"]').addClass('active');
 		$('#polygon_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 
-		$('#area_type button[data="full"]').addClass('active');
+		$('#area_type button[data-style="full"]').addClass('active');
 		$('#area_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#line_type button[data="full"]').addClass('active');	
+		$('#line_type button[data-style="full"]').addClass('active');	
 		$('#line_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#line_end_type button[data="none"]').addClass('active');	
+		$('#line_end_type button[data-end="none"]').addClass('active');	
 		$('#line_end_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 
-		$('#curve_type button[data="full"]').addClass('active');
+		$('#curve_type button[data-style="full"]').addClass('active');
 		$('#curve_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#curve_end_type button[data="none"]').addClass('active');
+		$('#curve_end_type button[data-end="none"]').addClass('active');
 		$('#curve_end_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});	
 		
-		$('#track_shape #cursor').addClass('active');
+		$('#track_shape button[data-cursor="cursor"]').addClass('active');
 		$('#track_shape').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');		
@@ -3450,13 +3483,13 @@ $(document).ready(function() {
 			start_tracking({x:2000,y:2000});	
 		});	
 		
-		$('#draw_type button[data="full"]').addClass('active');	
+		$('#draw_type button[data-style="full"]').addClass('active');	
 		$('#draw_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
 		});
 
-		$('#draw_end_type button[data="none"]').addClass('active');	
+		$('#draw_end_type button[data-end="none"]').addClass('active');	
 		$('#draw_end_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
@@ -3524,8 +3557,8 @@ $(document).ready(function() {
 			$('#icon_context').find('.selected').removeClass('selected'); // removes the previous selected class
 			$(this).addClass('selected'); // adds the class to the clicked image
 			selected_icon = $(this).attr('id');
-			if ($(this).attr('scale')) {
-				icon_extra_scale = parseFloat($(this).attr('scale'));
+			if ($(this).attr('data-scale')) {
+				icon_extra_scale = parseFloat($(this).attr('data-scale'));
 			} else {
 				icon_extra_scale = 1;
 			}

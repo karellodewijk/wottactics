@@ -277,7 +277,17 @@
 	"Artillery": "АРТ-САУ",
 	"Main battle tank": "Основной Боевой Танк",
 	"Armored fighting vehicle": "Боевая Бронированная Машина",
-	"Chat":"Чат",
-	"Slides":"Слои",
-	"Export":"Экспорт"
+	"Chat": "Чат",
+	"Slides": "Слои",
+	"Export": "Экспорт",
+	"Tank icons": "Tank icons",
+	"Contour icons": "Contour icons",
+	"Brightness": "Brightness",
+	"Style": "Style",
+	"Dashed line": "Dashed line",
+	"End": "End",
+	"Normal": "Normal",
+	"Normal curve": "Normal curve",
+	"Dotted curve": "Dotted curve",
+	"Dashed curve": "Dashed curve"
 }

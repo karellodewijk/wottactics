@@ -13,7 +13,6 @@
 	<script defer type="text/javascript" src="/javascripts/lib/TransparencyHitArea.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 	<script defer type="text/javascript" src="/javascripts/planner.js"></script>
-	<meta id="slide_name" content=<%=l('Slide')%>>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 </head>
@@ -46,12 +45,13 @@
 	</div>
 	<div class="collapse navbar-collapse" id="myNavbar">
 		<ul class="nav navbar-nav navbar-left container-fluid">
-			<%if (game != 'blitz') { %>	
+			<%if (game != 'blitz') { %>
+				<li>
 				<div class="btn-group">
-				<button id="save" href="javascript:void(0)" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
+				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<img src="http://karellodewijk.github.io/icons/save.png" alt="save">
 				</button>
-				<button id="save_as" id='store_tactic_popover' data-placement="bottom" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" href="javascript:void(0)" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save as')%>">
+				<button id='store_tactic_popover' data-placement="bottom" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<img src="http://karellodewijk.github.io/icons/save_as.png" alt="save as">
 				</button>
 				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
@@ -66,6 +66,7 @@
 					</button>
 				<% } %>					
 				</div>
+				</li>
 			<% } %>	
 		</ul>
 		<ul class="nav navbar-nav navbar-right container-fluid">
@@ -81,7 +82,7 @@
 				<p>
 					<div class="dropdown" id="map_select_container">
 						<select class="selectpicker" id="map_select">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%if (game == 'wot') { %>	
 							<%include wot_maps.ejs %>	
 						<%} else if (game == 'wows') { %>	
@@ -106,15 +107,7 @@
 						<img src="http://karellodewijk.github.io/icons/recticle_icon.png" alt="track" />
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
-						<img src="http://karellodewijk.github.io/icons/
-							<%if (game == 'wows') { %>
-								ship_icon.png
-							<%} else if (game == 'aw') { %>
-								aw_icon.png
-							<%} else { %>
-								tank_icon.png
-							<%} %>
-						" alt="icon" />
+						<img src="http://karellodewijk.github.io/icons/<%if (game == 'wows') { %>ship_icon.png<%} else if (game == 'aw') { %>aw_icon.png<%} else { %>tank_icon.png<%} %>" alt="icon" />
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
 						<img src="http://karellodewijk.github.io/icons/pencil.png" alt="draw" />
@@ -220,7 +213,7 @@
 						<% } %>
 						<option value="#ffffff"><%=l('White')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 
 					<div class="row">
 						<div class="col-sm-3">
@@ -254,7 +247,7 @@
 						<div class="col-sm-3">
 							<input id="icon_brightness_text" class="slider_text_input" type="text"/>
 						</div>
-					</div>				
+					</div>			
 				</div>
 
 				<div id='draw_context'>			
@@ -269,7 +262,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					<div class="row">
 						<div class="col-sm-3">
 							<small><%=l('Thickness')%></small>
@@ -287,13 +280,13 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
 							<td><div class="btn-group" role="group" id="draw_type">						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_line.png" alt="normal" />
 							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_dotted_line.png" alt="dotted" />
 							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_dashed_line.png" alt="dashed" />
 							</button>
 							</div></td>
@@ -302,10 +295,10 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('End')%></small></td>
 							<td><div class="btn-group" role="group" id="draw_end_type">
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="none" data-toggle="tooltip" title="<%=l('Normal')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_line.png" alt="normal line" />
 							</button>						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_arrow.png" alt="arrow" />
 							</button>
 							</div></td>
@@ -325,7 +318,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					<div class="row">
 						<div class="col-sm-3">
 							<small><%=l('Thickness')%></small>
@@ -342,13 +335,13 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
 							<td><div class="btn-group" role="group" id="curve_type">						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="full" data-toggle="tooltip" title="<%=l('Normal curve')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal curve')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_line.png" alt="normal" />
 							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dotted" data-toggle="tooltip" title="<%=l('Dotted curve')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted curve')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_dotted_line.png" alt="dotted" />
 							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dashed" data-toggle="tooltip" title="<%=l('Dashed curve')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed curve')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_dashed_line.png" alt="dashed" />
 							</button>
 							</div></td>
@@ -357,10 +350,10 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('End')%></small></td>
 							<td><div class="btn-group" role="group" id="curve_end_type">
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="none" data-toggle="tooltip" title="<%=l('Normal')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_line.png" alt="normal line" />
 							</button>						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_arrow.png" alt="arrow" />
 							</button>
 							</div></td>
@@ -381,7 +374,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -413,7 +406,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">	
+					<input type="color">	
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -431,13 +424,13 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
 							<td><div class="btn-group" role="group" id="rectangle_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
 									<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
 									<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
 									<img src="http://karellodewijk.github.io/icons/dashed_line.png" alt="dashed line" />
 								</button>
 							</div></td>
@@ -458,7 +451,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -490,7 +483,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -508,13 +501,13 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
 							<td><div class="btn-group" role="group" id="circle_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
 									<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
 									<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
 									<img src="http://karellodewijk.github.io/icons/dashed_line.png" alt="dashed line" />
 								</button>
 							</div></td>
@@ -535,7 +528,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -567,7 +560,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -585,13 +578,13 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
 							<td><div class="btn-group" role="group" id="polygon_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
 									<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
 									<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
 									<img src="http://karellodewijk.github.io/icons/dashed_line.png" alt="dashed line" />
 								</button>
 							</div></td>
@@ -612,7 +605,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -645,7 +638,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					
 					<div class="row">
 						<div class="col-sm-3">
@@ -663,13 +656,13 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
 							<td><div class="btn-group" role="group" id="area_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
 									<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
 									<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
 									<img src="http://karellodewijk.github.io/icons/dashed_line.png" alt="dashed line" />
 								</button>
 							</div></td>
@@ -689,7 +682,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 				</div>
 
 				<div id='track_context'>
@@ -704,19 +697,19 @@
 					<option value="#ffffff"><%=l('White')%></option>
 					<option value="#000000"><%=l('Black')%></option>
 				</select>			
-				<input type="color" id="html5colorpicker">					
+				<input type="color">					
 
 				<div class="btn-group" role="group" id="track_shape">
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="cursor" data-toggle="tooltip" title="<%=l('Cursor')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="cursor" data-toggle="tooltip" title="<%=l('Cursor')%>">
 						<img src="http://karellodewijk.github.io/icons/cursor_icon.png" alt="cursor" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="circle" data-toggle="tooltip" title="<%=l('Circle')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="circle" data-toggle="tooltip" title="<%=l('Circle')%>">
 						<img src="http://karellodewijk.github.io/icons/circle_icon.png" alt="circle" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="dot" data-toggle="tooltip" title="<%=l('Dot')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="dot" data-toggle="tooltip" title="<%=l('Dot')%>">
 						<img src="http://karellodewijk.github.io/icons/dot_icon.png" alt="dot" />
 					</button>
-					<button type="button" class="btn btn-default" aria-label="Left Align" id="recticle" data-toggle="tooltip" title="<%=l('Crosshair')%>">
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="recticle" data-toggle="tooltip" title="<%=l('Crosshair')%>">
 						<img src="http://karellodewijk.github.io/icons/recticle_icon.png" alt="recticle" />
 					</button>
 				</div>
@@ -788,7 +781,7 @@
 						<option value="#0000ff"><%=l('Blue')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					
 					
 					<br />
@@ -818,7 +811,7 @@
 						<option value="#00ff00"><%=l('Green')%></option>
 						<option value="#0000ff"><%=l('Blue')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 								
 					<br />
 					<div class="row">
@@ -846,7 +839,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
-					<input type="color" id="html5colorpicker">
+					<input type="color">
 					<div class="row">
 						<div class="col-sm-3">
 							<small><%=l('Thickness')%></small>
@@ -864,13 +857,13 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
 							<td><div class="btn-group" role="group" id="line_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
 									<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
 									<img src="http://karellodewijk.github.io/icons/dotted_line.png" alt="dotted line" />
 								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
 									<img src="http://karellodewijk.github.io/icons/dashed_line.png" alt="dashed line" />
 								</button>
 							</div></td>
@@ -879,10 +872,10 @@
 						<tr>
 							<td style="padding-right:10px"><small><%=l('End')%></small></td>
 							<td><div class="btn-group" role="group" id="line_end_type">
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="none" data-toggle="tooltip" title="<%=l('Normal')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
 								<img src="http://karellodewijk.github.io/icons/line_icon.png" alt="normal line" />
 							</button>						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
 								<img src="http://karellodewijk.github.io/icons/arrow.png" alt="arrow" />
 							</button>
 							</div></td>
@@ -907,17 +900,8 @@
 				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
 					<img src="http://karellodewijk.github.io/icons/lock.png" alt="lock">
 				</button>
-				<button id="export" class="btn btn-default" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
-					<img src="http://karellodewijk.github.io/icons/export.png" alt="download as image">
-				</button>
 				<button id="link" class="btn btn-default" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 					<img src="http://karellodewijk.github.io/icons/link.png" alt="link">
-				</button>
-				</div>
-				<br />
-				<div class="btn-group">
-				<button id="backup" class="btn btn-default" data-toggle="tooltip" title="<%=l('Download a backup')%>">
-					<img src="http://karellodewijk.github.io/icons/archive_icon.png" alt="backup">
 				</button>
 				</div>
 				<% } %>	
@@ -946,19 +930,27 @@
 					<div id="chat_box" class="fake_textarea"></div>
 					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
 				</div>
-				<div class="tab-pane" id="slide_tab">
-					<div class="btn-group input-group dropdown" id="slide_box">
-						<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
-						<button type="button" class="btn btn-default slide_btn" id="remove_slide" data-toggle="tooltip" title="<%=l('Remove slide')%>">
-							<img src="http://karellodewijk.github.io/icons/bin.png" alt="lock" />
-						</button>	
-						<a class="btn btn-default slide_btn" data-toggle="dropdown">
-							<input type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />&#9660;
-						</a>					
-						<ul class="dropdown-menu" id="slide_select">
-						</ul>
-						<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
-						<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>		
+				<div class="tab-pane" id="slide_tab" style="max-width:500px;">
+					<div class="input-group dropdown" id="slide_box">
+						<span class="input-group-btn">
+							<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
+						</span>
+						<span class="input-group-btn">
+							<button type="button" class="btn btn-default slide_btn" id="remove_slide" data-toggle="tooltip" title="<%=l('Remove slide')%>">
+								<img src="http://karellodewijk.github.io/icons/bin.png" alt="lock" />
+							</button>
+						</span>
+						<input class="form-control" style="height:42px" type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />
+						<div class="input-group-btn" style="position: static;">
+							<button class="btn btn-default slide_btn" data-toggle="dropdown">&#9660;</button>
+							<ul class="dropdown-menu" id="slide_select"></ul>
+						</div>
+						<span class="input-group-btn">
+							<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
+						</span>
+						<span class="input-group-btn">
+							<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>
+						</span>
 					</div>
 				</div>
 				<div class="tab-pane" id="export_tab">
@@ -968,7 +960,10 @@
 						</button>
 						<button id="backup" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Download a backup')%>">
 							<img src="http://karellodewijk.github.io/icons/archive_icon.png" alt="backup">
-						</button>					
+						</button>
+						<button id="send_to_link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Send to room')%>">
+							<img height=22 width=22 src="http://karellodewijk.github.io/icons/send_to_link.png" alt="send to link">
+						</button>
 					</div>
 				</div>
 			</div>
@@ -990,19 +985,26 @@
 					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
 				</div>
 				<div class="tab-pane" id="slide_tab">
-					<div class="btn-group input-group dropdown" id="slide_box">
+				<div class="input-group dropdown" id="slide_box">
+					<span class="input-group-btn">
 						<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
+					</span>
+					<span class="input-group-btn">
 						<button type="button" class="btn btn-default slide_btn" id="remove_slide" data-toggle="tooltip" title="<%=l('Remove slide')%>">
 							<img src="http://karellodewijk.github.io/icons/bin.png" alt="lock" />
-						</button>	
-						<a class="btn btn-default slide_btn" data-toggle="dropdown">
-							<input type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />&#9660;
-						</a>					
-						<ul class="dropdown-menu" id="slide_select">
-						</ul>
-						<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
-						<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>		
+						</button>
+					</span>
+					<input class="form-control" style="height:42px" type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />
+					<div class="input-group-btn" style="position: static;">
+						<button class="btn btn-default slide_btn" data-toggle="dropdown">&#9660;</button>
+						<ul class="dropdown-menu" id="slide_select"></ul>
 					</div>
+					<span class="input-group-btn">
+						<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
+					</span>
+					<span class="input-group-btn">
+						<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>
+					</span>
 				</div>
 				<div class="tab-pane" id="export_tab">
 					<div class="btn-group input-group dropdown" id="export_box">
@@ -1011,7 +1013,10 @@
 						</button>
 						<button id="backup" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Download a backup')%>">
 							<img src="http://karellodewijk.github.io/icons/archive_icon.png" alt="backup">
-						</button>					
+						</button>
+						<button id="send_to_link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Send to room')%>">
+							<img src="http://karellodewijk.github.io/icons/send_to_link.png" alt="send to link">
+						</button>						
 					</div>
 				</div>
 			</div>
@@ -1025,6 +1030,22 @@
 		</div>
 	</div>
 <% } %>	
-	
-	
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+	<!-- Modal content-->
+	<div class='input-group'>
+		<span class='input-group-addon'>Room link:</span>
+		<input id="send_link" class='form-control col-lg-9' type='text'/>
+		<span class='input-group-btn'>
+			<button id='link_send' class='btn btn-default'><%=l('Send')%></button>
+		</span>
+		<span class='input-group-btn'>
+			<button id='modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
+		</span>
+	</div>
+  </div>
+</div>
+
 </body>
