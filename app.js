@@ -13,11 +13,6 @@ function newUid() {
     }).toUpperCase();
 }
 
-function isEmpty(obj) {
-  for(var i in obj) { return false; }
-  return true;
-}
-
 var compress = require('compression');
 var express = require('express');
 var path = require('path');
@@ -232,7 +227,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	function create_anonymous_user(req) {
-		req.session.passport = {};
+		if (!req.session.passport) {
+			req.session.passport = {};
+		}
 		req.session.passport.user = {};
 		req.session.passport.user.id = newUid();
 		req.session.passport.user.name = "Anonymous";		
@@ -397,8 +394,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var router = express.Router();
 
 	router.get('/', function(req, res, next) {
-		
-		
 		if (req.hostname) {
 			if (req.hostname.indexOf('awtactic') != -1) {
 				req.session.game = "aw";
@@ -490,7 +485,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 									  locale: req.session.locale,
 									  url: req.fullUrl});
 	});
-
 	router.get('/privacypolicy.html', function(req, res, next) {
 	  if (!req.session.game) {
 		req.session.game = 'wot';
@@ -516,8 +510,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  } else {
 		  res.redirect('/');
 	  }
-	});
-	
+	});	
 	router.post('/remove_tactic', function(req, res, next) {
 		if (req.session.passport.user.identity) {
 			remove_tactic(req.session.passport.user.identity, req.body.id);
@@ -561,17 +554,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			res.send("Success");					
 		} else {
 			res.send("Error: unknown error");
-			return;
 		}
 	}
 	
 	router.post('/add_to_room', function(req, res, next) {
 		var target = req.body.target;
 		var user = req.session.passport.user;
-
-		console.log(user)
-		console.log(room_data[target].userlist)
-		console.log(room_data[target].lost_identities)
 		
 		if (!room_data[target]) {
 			res.send("Error: room is not active or does not exist.");
@@ -593,8 +581,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				});
 			}
 		}
-	});
-	
+	});	
 	function save_return(req, res, next) {
 		req.session.return_to = req.headers.referer;
 		next();
@@ -795,7 +782,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.onclose = function(reason) {
 			//hijack the onclose event because otherwise we lose socket.rooms data
 			var user = socket.request.session.passport.user;
-			for (var room in socket.rooms) { //first room is clients own little private room so we start at 1
+			for (var room in socket.rooms) { //first room is clients own little private room so we start at 1			
 				if (room_data[room] && room_data[room].userlist[user.id]) {
 					if (room_data[room].userlist[user.id].count == 1) {
 						socket.broadcast.to(room).emit('remove_user', user.id);
@@ -803,8 +790,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 					} else {
 						room_data[room].userlist[user.id].count--;
 					}
-				}				
-				if (Object.keys(io.sockets.adapter.rooms[room]).length <= 1) {	//we're the last one in the room and we're leaving
+				}	
+				if (io.sockets.adapter.rooms[room].length <= 1) {	//we're the last one in the room and we're leaving
 					clean_up_room(room);
 				}
 			}	
@@ -852,9 +839,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 		
 		socket.on('track_move', function(room, uid, delta_x, delta_y) {
-			room_data[room].trackers[uid].x += delta_x;
-			room_data[room].trackers[uid].x += delta_y;
-			socket.broadcast.to(room).emit('track_move', uid, delta_x, delta_y);
+			if (room_data[room] && room_data[room].trackers[uid]) {
+				room_data[room].trackers[uid].x += delta_x;
+				room_data[room].trackers[uid].x += delta_y;
+				socket.broadcast.to(room).emit('track_move', uid, delta_x, delta_y);
+			}
 		});
 		
 		socket.on('stop_track', function(room, uid) {

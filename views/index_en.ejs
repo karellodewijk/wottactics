@@ -32,6 +32,10 @@
 
 	<div class="row">
 	<div class="col-md-4">
+		<h2>Your input matters</h2>
+		<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
+	</div>
+	<div class="col-md-4">
 		<h2>Welcome</h2>
 		<p>This tool is created to make planning and sharing battle tactics quick and easy. Just press the blue button, share the link and get started. <% if (game == 'wot') { %> Are you an FC trying to plan a clan war or stronghold battle and brief your players? Or are you part of team that wants to perform better in team battles or ESL? Or do you just want to discuss some details about a map with a friend? Then this tool is for you. If you are used to maptactic, give this a try. Planning has never been easier.<% } %>
 	</div>
@@ -39,20 +43,27 @@
 		<h2>New video tutorial</h2>
 		<p>I've created a <a href="https://youtu.be/K-yl_WNjvwk">tutorial video</a> explaining all the tools and features of <%=url.split('/')[0]%>. It should explain to you how to use the different tools, teach you about different shortcuts you may not know about and explain some of the more advanced features. Let me know what you think about it in youtube comments.
 	</div>
-	<div class="col-md-4">
-		<h2>Now available in Russian</h2>
-		<p>Андрей is now working on a Russian translation, take a look. If you want this website available in your language, contact me. No technical skill required.</p>
-	</div>
+
 	</div>
 	
 	<div class="row">
 	<div class="col-md-4">
-		<h2>Free and open</h2>
-		<p>This website is free of charge, free of adds and open-source and I intend to keep it that way. There is however a donation button to cover hosting fees.</p>
+		<h2><%=url.split('/')[0]%> in numbers</h2>
+		<p>I want to tank everybody for your trust, <%=url.split('/')[0]%> has a grown a lot lately, more than I ever expected. It's only at the start of this month I started monitoring traffic and I was amazed. The last month 46,936 unique users have visited the site 193,829 times, opening 363,073 pages. Around 8,000 visits and 6,000 users a day. 
+		
+		<p>
+		The overwelming majority use it for wot (98%). 78% of users come from Europe excluding Russia, 12% from the Americas and 6% from Asia. Although wot is huge in Russia, it accounts for only 2% of visitors. 
+		Most traffic is between 19u30-22u CET with <a href="http://karellodewijk.github.io/active_users.png">peaks</a> of 1,000 symultanious users just before CW start. With a smaller peak around 01u-05u CET during NA cw time.
+
+		<p>
+		During peak times, Cpu usage on the amazon T2 micro VM i host it on, hovers around 20%, so still plenty of room to expand even without spending extra.
+		
+		<p>
+		For those interested in the sources and more details, here is a <a href="http://karellodewijk.github.io/wottactic_stats.pdf">google analytics reports</a> for March and an <a href="http://karellodewijk.github.io/hourly.pdf">hourly breakdown</a>.
 	</div>
 	<div class="col-md-4">
-		<h2>Recent updates</h2>
-		<p>The maps have been updated, based on the hd mini-maps from locastan and ShuraBB, yes the ones from the hd mini-map mod. I've also done round and updated the AW and WOWS maps, they're not quite as nice, but at least they should be all there, better check if wot 9.14 has any map changes. Other than that, I've added the option under stored tactic to add the slides of a tactic to an already open room.  
+		<h2>Now available in Russian</h2>
+		<p>Андрей is now working on a Russian translation, take a look. If you want this website available in your language, contact me. No technical skill required.</p>
 	</div>
 	<div class="col-md-4">
 		<h2>Suggestions</h2>
