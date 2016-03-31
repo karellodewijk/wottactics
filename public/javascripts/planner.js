@@ -192,7 +192,7 @@ function copy() {
 	clipboard = [];
 	for (var i in selected_entities) {
 		var temp = selected_entities[i].container;
-		delete selected_entities[i].container;
+		selected_entities[i].container = null;
 		clipboard.push(JSON.parse(JSON.stringify(selected_entities[i])));
 		selected_entities[i].container = temp;
 	}	
@@ -215,6 +215,15 @@ function paste() {
 		top = Math.min(top, clipboard[i].y);
 		left = Math.min(left, clipboard[i].x);
 	}
+
+	//selection filter
+	var select_filter = new PIXI.filters.ColorMatrixFilter();
+	select_filter.matrix = [
+		1, 0, 0, 0, 0,
+		0, 1, 0, 0, 0,
+		0, 0, 1, 0, 0,
+		0, 0, 0, 0.5, 0
+	]
 	
 	var new_entities = [];
 	for (var i in clipboard) {
@@ -222,15 +231,24 @@ function paste() {
 		entity.uid = newUid();
 		entity.x = mouse_x + (entity.x - left);
 		entity.y = mouse_y + (entity.y - top);
-		new_entities.push(entity);
-		create_entity(entity);
-		snap_and_emit_entity(entity);
+		new_entities.push(entity);		
+		if (entity.type == "icon") {
+			create_icon(entity, function(entity) {
+				snap_and_emit_entity(entity);
+				entity.container.filters = [select_filter];
+				renderer.render(stage);
+			});
+		} else {
+			create_entity(entity);
+			snap_and_emit_entity(entity);
+			entity.container.filters = [select_filter];
+			renderer.render(stage);
+		}
 		selected_entities.push(entity);
 	}
 	
 	undo_list.push(["add", new_entities]);	
-	select_entities();
-	renderer.render(stage);
+
 }
 
 //start pixi renderer
@@ -1653,11 +1671,11 @@ function autocrop_canvas(canvas) {
 	_canvas.height = h;
 	var _ctx = _canvas.getContext("2d");
 
-	if (pix.x[0] == NaN) {
+	if (isNaN(x) || isNaN(y) || isNaN(w) || isNaN(h)) {
 		return null;
 	}
 	
-	var cut = ctx.getImageData(pix.x[0], pix.y[0], w, h);
+	var cut = ctx.getImageData(x, y, w, h);
 	_ctx.putImageData(cut, 0, 0);
 	
 	_canvas.x = x;
@@ -1668,11 +1686,16 @@ function autocrop_canvas(canvas) {
 function createSprite(ctx, canvas) {
 	canvas = autocrop_canvas(canvas);
 	//generate the pixi sprite and put it in the right spot
-	var texture = PIXI.Texture.fromCanvas(canvas);
-	var sprite = new PIXI.Sprite(texture);
-	sprite.x = canvas.x;
-	sprite.y = canvas.y;
-	return sprite;
+	
+	if (canvas) {
+		var texture = PIXI.Texture.fromCanvas(canvas);
+		var sprite = new PIXI.Sprite(texture);
+		sprite.x = canvas.x;
+		sprite.y = canvas.y;
+		return sprite;
+	} else {
+		return null;
+	}
 }
 
 function draw_arrow2(context, drawing, i) {
@@ -3349,7 +3372,7 @@ $(document).ready(function() {
 		}
 		
 		extra_icons("tank_icons", "tank_icon_menu", "wot-icon-set1", 60, 2);
-		extra_icons("contour_icons", "contour_icon_menu", "wot-icon-set2", 30, 1);
+		extra_icons("contour_icons", "contour_icon_menu", "wot-icon-set3", 30, 1);
 		
 		$('#lock').click(function () {
 			var node = $(this).find('img');
@@ -3631,6 +3654,12 @@ $(document).ready(function() {
 		}
 		update_slide_buttons();
 		update_my_user();
+		
+		console.log("I'm back baby")
+		if (my_tracker) {
+			stop_tracking();
+			start_tracking({x:2000,y:2000});
+		}
 	});
 
 	socket.on('create_entity', function(entity, slide) {
@@ -3720,9 +3749,10 @@ $(document).ready(function() {
 	});
 	
 	socket.on('track', function(tracker) {
-		if (!trackers[tracker.uid]) {
-			create_tracker(tracker);
+		if (trackers[tracker.uid]) {
+			remove_tracker(uid);
 		}
+		create_tracker(tracker);
 	});
 	
 	socket.on('track_move', function(uid, delta_x, delta_y) {

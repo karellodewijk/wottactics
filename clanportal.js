@@ -1,4 +1,4 @@
-//this code is run within the wottactic app
+	//this code is run within the wottactic app
 //it's pretty much for an entirely different app
 
 function refresh_clan(req, clan_id, cb) {
@@ -99,7 +99,7 @@ function verify_clan(req, cb) {
 		  buffer += data;
 		}).on('end', function (data) {
 		  var result = JSON.parse(buffer);
-		  if (result.data[req.session.passport.user.wg_account_id]) {
+		  if (result.data && result.data[req.session.passport.user.wg_account_id]) {
 			req.session.passport.user.clan_id = result.data[req.session.passport.user.wg_account_id].clan_id;
 			load_clan(req, req.session.passport.user.clan_id, cb);
 		  } else {
