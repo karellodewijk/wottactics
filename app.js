@@ -1,5 +1,6 @@
 var fs = require('fs');
 var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
+var http = require('http');
 
 room_data = {} //room -> room_data map to be shared with clients
 
@@ -80,8 +81,8 @@ app.use(function(err, req, res, next) {
 
 // not pretty but oh so handy to not crash the server
 process.on('uncaughtException', function (err) {
- 	console.error(err);
-	console.trace();
+ 	console.log(err);
+	console.log(err.stack);	
 });
 
 //load mongo
@@ -376,6 +377,44 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	));	
 
+	var SteamWebAPI = require('steam-web');
+	var steam = new SteamWebAPI({ apiKey: secrets.steam.api_key, format: 'json' });
+	passport.use('steam', new OpenIDStrategy({
+			returnURL: function(req) { 
+				return "http://" + req.hostname + "/auth/steam/callback"; 
+			},
+			realm: function(req) { 
+				return "http://" + req.hostname; 
+			},
+			provider: 'steam',
+			name:'steam',
+			profile:false,
+			providerURL: 'http://steamcommunity.com/openid/id/',
+			passReqToCallback: true,
+			stateless: true
+		},
+		function(req, identifier, done) {
+			var user = {};
+			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+				user.id = req.session.passport.user.id;
+			} else {
+				user.id = newUid();		
+			}
+			steam.getPlayerSummaries({
+				steamids: [ identifier ],
+				callback: function(err, result) {
+					if (!err) {
+						user.identity = result.response.players[0].steamid,
+						user.name = result.response.players[0].personaname
+					}
+					done(null, user);
+				}
+			});			
+		}
+	));
+	
+
+	
 	passport.serializeUser(function(user, done) {
 		done(null, user);
 	});
@@ -608,6 +647,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
 	router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
 
+	//steam
+	router.post('/auth/steam', save_return, passport.authenticate('steam'));
+	router.get('/auth/steam/callback', passport.authenticate('steam'), redirect_return);
+	
 	//force saves all rooms to DB, run before a restart/shutdown
 	router.get('/save.html', function(req, res, next) {
 		for (var room in room_data) {
@@ -639,9 +682,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	//clanportal//
 	//////////////
 
-	//this is a really dirty way to put something in another file, someone should shoot me
-	//anyway probabtly gonna abandon the whole clanportal thing anyway or make it a new app.
-	eval(fs.readFileSync('clanportal.js')+'');
+	var cp = require(__dirname + "/clanportal.js");
+	cp.load(router, http, secrets, db);
 
 	//////////////////
 	//end clanportal//
@@ -659,6 +701,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	paths.splice(paths.indexOf('/auth/facebook/callback'), 1);
 	paths.splice(paths.indexOf('/auth/google/callback'), 1);
 	paths.splice(paths.indexOf('/auth/openid/callback'), 1);
+	paths.splice(paths.indexOf('/auth/steam/callback'), 1);
 	paths.splice(paths.indexOf('/save.html'), 1);
 	paths.splice(paths.indexOf('/log.html'), 1);
 	paths.splice(paths.indexOf('/refresh.html'), 1);
@@ -807,12 +850,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (room_data[room] && entity) {
 				if (room_data[room].slides[slide]) {
 					room_data[room].slides[slide].entities[entity.uid] = entity;
-				} else {
-					console.log("room: ",room_data[room]);
-					console.log("slide:", slide);
-					console.log("entity:", entity);
+					socket.broadcast.to(room).emit('create_entity', entity, slide);
 				}
-				socket.broadcast.to(room).emit('create_entity', entity, slide);
 			}
 		});
 		
@@ -1018,10 +1057,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	
 	//create server
-	var http = require('http');
 	var server = http.createServer(app);
 	io.attach(server);
-	server.listen(80);	
+	server.listen(80);
 });
 
 
