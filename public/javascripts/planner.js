@@ -3370,7 +3370,8 @@ $(document).ready(function() {
 				}
 			});	
 		}
-		
+
+		extra_icons("extra_icons", "extra_icons_menu", "wot_icon_set4", 30, 2);		
 		extra_icons("tank_icons", "tank_icon_menu", "wot-icon-set1", 60, 2);
 		extra_icons("contour_icons", "contour_icon_menu", "wot-icon-set3", 30, 1);
 		
@@ -3655,7 +3656,6 @@ $(document).ready(function() {
 		update_slide_buttons();
 		update_my_user();
 		
-		console.log("I'm back baby")
 		if (my_tracker) {
 			stop_tracking();
 			start_tracking({x:2000,y:2000});

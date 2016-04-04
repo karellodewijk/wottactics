@@ -1,0 +1,3 @@
+explosion1.png
+explosion2.png
+warning.png
