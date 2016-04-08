@@ -51,7 +51,7 @@
 				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<img src="http://karellodewijk.github.io/icons/save.png" alt="save">
 				</button>
-				<button id='store_tactic_popover' data-placement="bottom" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
+				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<img src="http://karellodewijk.github.io/icons/save_as.png" alt="save as">
 				</button>
 				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
@@ -209,7 +209,7 @@
 						<option value="#70c5ea"><%=l('Cyan')%></option>
 						<% } %>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<%if (game != 'aw') { %>
 						<option value="#ffff00"><%=l('Yellow')%></option>
 						<% } %>
@@ -260,9 +260,9 @@
 					<select name="colorpicker" id="draw_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					<div class="row">
@@ -303,6 +303,9 @@
 							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_arrow.png" alt="arrow" />
 							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
+								<img src="http://karellodewijk.github.io/icons/curve_T.png" alt="T" />
+							</button>
 							</div></td>
 						</tr>
 					</table>					
@@ -316,9 +319,9 @@
 					<select name="colorpicker" id="curve_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					<div class="row">
@@ -358,6 +361,9 @@
 							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
 								<img src="http://karellodewijk.github.io/icons/curved_arrow.png" alt="arrow" />
 							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
+								<img src="http://karellodewijk.github.io/icons/curve_T.png" alt="T" />
+							</button>
 							</div></td>
 						</tr>
 					</table>
@@ -372,9 +378,9 @@
 					<select name="colorpicker" id="rectangle_outline_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					
@@ -404,9 +410,9 @@
 					<select name="colorpicker" id="rectangle_fill_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">	
 					
@@ -449,9 +455,9 @@
 					<select name="colorpicker" id="circle_outline_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					
@@ -481,9 +487,9 @@
 					<select name="colorpicker" id="circle_fill_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					
@@ -526,9 +532,9 @@
 					<select name="colorpicker" id="polygon_outline_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					
@@ -558,9 +564,9 @@
 					<select name="colorpicker" id="polygon_fill_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					
@@ -603,9 +609,9 @@
 					<select name="colorpicker" id="area_outline_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					
@@ -636,9 +642,9 @@
 					<select name="colorpicker" id="area_fill_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					
@@ -680,9 +686,9 @@
 					<select name="colorpicker" id="ping_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 				</div>
@@ -695,9 +701,9 @@
 				<select name="colorpicker" id="track_colorpicker">
 					<option value="#ff0000"><%=l('Red')%></option>
 					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#0000ff"><%=l('Blue')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
 					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#000000"><%=l('Black')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
 				</select>			
 				<input type="color">					
 
@@ -780,7 +786,7 @@
 						<option value="#ffffff"><%=l('White')%></option>
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#000000"><%=l('Black')%></option>
 					</select>
 					<input type="color">
@@ -811,7 +817,7 @@
 						<option value="#000000"><%=l('Black')%></option>
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 					</select>
 					<input type="color">
 								
@@ -837,9 +843,9 @@
 					<select name="colorpicker" id="line_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#0000ff"><%=l('Blue')%></option>
+						<option value="#87CEFA"><%=l('Blue')%></option>
 						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#000000"><%=l('Black')%></option>
+						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
 					<div class="row">
@@ -879,6 +885,9 @@
 							</button>						
 							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
 								<img src="http://karellodewijk.github.io/icons/arrow.png" alt="arrow" />
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
+								<img src="http://karellodewijk.github.io/icons/line_T.png" alt="T" />
 							</button>
 							</div></td>
 						</tr>
@@ -1034,7 +1043,26 @@
 	</div>
 <% } %>	
 
-<!-- Modal -->
+<div id="download_modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div id="link_div" class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Backup link</h4>
+      </div>
+      <div class="modal-body">
+        <p>Your download link is ready <span id="download_link"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="download_close_button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 	<!-- Modal content-->
