@@ -1,44 +1,9 @@
-if (Modernizr.websockets) {
-	var socket = io({
-		reconnectionDelay: 100,
-		reconnectionDelayMax: 500,
-		'reconnection limit' : 1000,
-		'max reconnection attempts': Infinity
-	});	
-} else {
-	var socket = io({
-		transports: ['polling'],
-		reconnectionDelay: 100,
-		reconnectionDelayMax: 500,
-		'reconnection limit' : 1000,
-		'max reconnection attempts': Infinity
-	});	
-}
+var image_host;
 
-//generates unique ids
-function newUid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
-    function(c) {
-      r = Math.random() * 16 | 0,
-        v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    }).toUpperCase();
-}
-
-function is_chrome() {
-	return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
-}
-function is_firefox() {
-	return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-}
 function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
 }
-function is_ie() {
-	return navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgent.toLowerCase().indexOf('trident') > -1;
-}
 
-var image_host;
 if (is_safari()) {
 	image_host = 'http://'+location.host+'/icons/'; //enable for local image hosting
 } else {
@@ -64,6 +29,44 @@ for (var i in assets) {
 	loader.add(assets[i], assets[i]);
 }
 loader.load();
+
+var socket;
+if (Modernizr.websockets) {
+	socket = io({
+		reconnectionDelay: 100,
+		reconnectionDelayMax: 500,
+		'reconnection limit' : 1000,
+		'max reconnection attempts': Infinity
+	});	
+} else {
+	socket = io({
+		transports: ['polling'],
+		reconnectionDelay: 100,
+		reconnectionDelayMax: 500,
+		'reconnection limit' : 1000,
+		'max reconnection attempts': Infinity
+	});	
+}
+
+//generates unique ids
+function newUid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+    function(c) {
+      r = Math.random() * 16 | 0,
+        v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    }).toUpperCase();
+}
+
+function is_chrome() {
+	return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+}
+function is_firefox() {
+	return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+}
+function is_ie() {
+	return navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgent.toLowerCase().indexOf('trident') > -1;
+}
 
 var last = function(array) {
 	return array[array.length-1];
@@ -150,6 +153,7 @@ var clipboard = [];
 var slide_name;
 var assets_loaded = false;
 var select_alpha = 0.6;
+var resources_loading = 0;
 
 var mouse_down_interrupted;
 document.body.onmouseup = function() {
@@ -601,19 +605,39 @@ function move_track_recursive(uid, step_x, step_y, count) {
 	}, 20);
 }
 
-function fade(sprite, steps, alpha) {
-	if (steps == 0) {
-		objectContainer.removeChild(sprite);
+function ping(x, y, color) {
+	var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
+	var sprite = new PIXI.Sprite(texture);
+
+	sprite.tint = color;
+	sprite.anchor.set(0.5);
+	sprite.width = x_abs(0.075);
+	sprite.height = x_abs(0.075);
+	sprite.scale.x = 0.05;
+	sprite.scale.y = 0.05;
+	sprite.alpha = 1;
+	sprite.x = x_abs(x);
+	sprite.y = y_abs(y);
+	
+	objectContainer.addChild(sprite);
+	sprite.texture.on('update', function() {	
+		renderer.render(stage);
+	});
+	
+	var steps = 10;
+	var loop = setInterval(function() {
+		sprite.scale.x += 0.03;
+		sprite.scale.y += 0.03;
+		sprite.alpha -= 0.06;
+		
 		renderer.render(stage);	
-		return;
-	}
-	setTimeout( function() {
-		sprite.alpha = alpha;
-		sprite.scale.x *= 0.85;
-		sprite.scale.y *= 0.85;
-		renderer.render(stage);	
-		fade(sprite, steps-1, alpha-0.01);		
-	}, 50);	
+		steps--;
+		if (steps <= 0) {
+			clearInterval(loop)
+			objectContainer.removeChild(sprite);
+			renderer.render(stage);				
+		}
+	}, 50);
 }
 
 function setup_mouse_events(on_move, on_release) {
@@ -1054,26 +1078,6 @@ function remove_tracker(uid) {
 	delete trackers[uid];
 }
 
-function ping(x, y, color) {
-	var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
-	var sprite = new PIXI.Sprite(texture);
-
-	sprite.tint = color;
-	sprite.anchor.set(0.5);
-	sprite.width = x_abs(0.075);
-	sprite.height = x_abs(0.075);
-	sprite.alpha = 1;
-	sprite.x = x_abs(x);
-	sprite.y = y_abs(y);
-	
-	objectContainer.addChild(sprite);
-	sprite.texture.on('update', function() {	
-		renderer.render(stage);
-	});
-	
-	fade(sprite, 10, 0.5);
-}
-
 var last_track_update = Date.now();
 function on_track_move(e) {
 	var mouse_location = e.data.getLocalPosition(objectContainer);	
@@ -1433,7 +1437,7 @@ function on_rectangle_end(e) {
 function on_ping_move(e) {
 	var time = new Date();
 	var timeDiff = time - last_ping_time;
-	if (timeDiff > 120) {		
+	if (timeDiff > 80) {		
 		var mouse_location = e.data.getLocalPosition(objectContainer);
 		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
@@ -2254,6 +2258,8 @@ function create_icon(icon, cb_after) {
 	var canvas = document.createElement("canvas");
 	var context = canvas.getContext("2d");
 
+	resources_loading++;
+	
 	img.onload = function () {
 		
 	    context.drawImage(this, 0, 0); // put the image in the canvas
@@ -2264,10 +2270,12 @@ function create_icon(icon, cb_after) {
 		if (texture.baseTexture.hasLoaded) {
 			create_icon_cont(icon, texture);
 			if (cb_after) cb_after(icon);
+			resources_loading--;
 		} else {
 			texture.baseTexture.on('loaded', function() {
 				create_icon_cont(icon, texture);
 				if (cb_after) cb_after(icon);
+				resources_loading--;
 			});
 		}
 	}
@@ -2640,13 +2648,12 @@ function update_my_user() {
 }
 
 function update_lock() {
-	var node = $('#lock').find('img');
-	var path = node.attr('src').substring(0, node.attr('src').lastIndexOf("/"));
-	
+	var node = $('#lock div');
+
 	if (is_room_locked) {
-		node.attr('src', path + "/lock.png");
+		node.removeClass('icon-unlock').addClass('icon-lock');
 	} else {
-		node.attr('src', path + "/unlock.png");
+		node.removeClass('icon-lock').addClass('icon-unlock');
 	}
 	
 	if (is_room_locked && !my_user.role) {
@@ -3390,77 +3397,69 @@ $(document).ready(function() {
 			}
 		});
 		
-		if (is_ie()) {
-			$('#backup').hide();
-		}
-
-		function sleep(milliSeconds){
-			var startTime = new Date().getTime(); // get the current time
-			while (new Date().getTime() < startTime + milliSeconds); // hog cpu
-		}
 		
 		$('#backup').click(function () {
 			$.getScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js", function(){
 				var original_slide = active_slide;
-				var zip = new JSZip();			
-				var current_slide_uid = find_first_slide();
-				n = 1
-				do {
-					(function(slide_uid) {
-						setTimeout(function () {		
-							change_slide(slide_uid);
-							setTimeout(function () {
-								var new_renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
-								new_renderer.render(stage);
-								var data;
-								data = new_renderer.view.toDataURL("image/jpeg", 0.9);
-								data = data.replace("data:image/jpeg;base64,","");
-								zip.file(room_data.slides[slide_uid].name+".jpg", data, {base64:true});
+				var zip = new JSZip();
+				var new_renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
+				var first_slide_uid = find_first_slide();
+				
+				//this code is a synchronous loop with asynchronous calls
+				var loop = function(slide_uid) {
+					change_slide(slide_uid);
+					var it = setInterval(function() {
+						if (resources_loading == 0) {
+							//loop
+							new_renderer.render(stage);
+							var data = new_renderer.view.toDataURL("image/jpeg", 0.9);
+							data = data.replace("data:image/jpeg;base64,","");
+							zip.file(room_data.slides[slide_uid].name+".jpg", data, {base64:true});
+							next_slide_uid = find_next_slide(room_data.slides[slide_uid].order);
+							if (next_slide_uid != 0) {						
+								loop(next_slide_uid);
+							} else { //loop ended
 								new_renderer.destroy();
-							}, 800);
+								
+								var container_backups = {}		
+								for (var key in room_data.slides[active_slide].entities) {
+									if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
+										if (room_data.slides[active_slide].entities[key].container) {
+											container_backups[key] = room_data.slides[active_slide].entities[key].container;
+											delete room_data.slides[active_slide].entities[key].container
+										}
+									}
+								}
+
+								zip.file("tactic.json", JSON.stringify(room_data));
+								
+								
+								for (var key in room_data.slides[active_slide].entities) {
+									if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
+										if (container_backups[key]) {
+											room_data.slides[active_slide].entities[key].container = container_backups[key];
+										}
+									}
+								}
+
+								$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function(){
+									var blob = zip.generate({type:"blob"});
+									if (tactic_name && tactic_name != "") {
+										saveAs(blob, tactic_name + ".zip");
+									} else {
+										saveAs(blob, "backup.zip");
+									}						
+								});
 							
-						}, n*1000);
-					})(current_slide_uid);
-					n++
-					current_slide_uid = find_next_slide(room_data.slides[current_slide_uid].order);
-				} while (current_slide_uid != 0);
-
-				var container_backups = {}		
-				for (var key in room_data.slides[active_slide].entities) {
-					if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
-						if (room_data.slides[active_slide].entities[key].container) {
-							container_backups[key] = room_data.slides[active_slide].entities[key].container;
-							delete room_data.slides[active_slide].entities[key].container
+								change_slide(original_slide);
+								renderer.render(stage);	
+							}	
 						}
-					}
-				}	
-				zip.file("tactic.json", JSON.stringify(room_data));
-				for (var key in room_data.slides[active_slide].entities) {
-					if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
-						if (container_backups[key]) {
-							room_data.slides[active_slide].entities[key].container = container_backups[key];
-						}
-					}
-				}
-
-				
-				setTimeout(function () {
-					$.getScript("https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function(){
-						var blob = zip.generate({type:"blob"});
-						if (!tactic_name || tactic_name != "") {
-							saveAs(blob, "backup.zip");
-						} else {
-							saveAs(blob, tactic_name + ".zip");
-						}						
-					});
-				
-					change_slide(original_slide);
-					renderer.render(stage);	
-					
-				}, n*1000);
-
+					}, 50);
+				};
+				loop(first_slide_uid);
 			});
-			renderer.render(stage);	
+			
 		});
 
 
@@ -3480,14 +3479,13 @@ $(document).ready(function() {
 			});	
 		}
 
-		extra_icons("extra_icons", "extra_icons_menu", "wot_icon_set4", 30, 2);		
+		extra_icons("extra_icons", "extra_icons_menu", "wot_icon_set4", 30, 1.5);		
 		extra_icons("tank_icons", "tank_icon_menu", "wot-icon-set1", 60, 2);
 		extra_icons("contour_icons", "contour_icon_menu", "wot-icon-set3", 30, 1);
 		
 		$('#lock').click(function () {
-			var node = $(this).find('img');
-			var file = node.attr('src').substring(node.attr('src').lastIndexOf("/")+1);
-			if (file == "lock.png") {
+			var node = $(this).find('div');
+			if (node.hasClass('icon-lock')) {
 				is_room_locked = false;				
 			} else {
 				is_room_locked = true;
@@ -3762,6 +3760,7 @@ $(document).ready(function() {
 		for (var key in room_data.trackers) {
 			create_tracker(room_data.trackers[key]);
 		}
+		delete room_data.trackers;
 		update_slide_buttons();
 		update_my_user();
 		

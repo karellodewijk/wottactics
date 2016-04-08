@@ -1,3 +1,8 @@
+battle.png
+danger.png
+defend.png
 explosion1.png
 explosion2.png
+focus.png
+spot.png
 warning.png
