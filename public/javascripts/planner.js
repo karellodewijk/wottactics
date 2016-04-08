@@ -615,14 +615,11 @@ function ping(x, y, color) {
 	sprite.height = x_abs(0.075);
 	sprite.scale.x = 0.05;
 	sprite.scale.y = 0.05;
-	sprite.alpha = 1;
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
 	
 	objectContainer.addChild(sprite);
-	sprite.texture.on('update', function() {	
-		renderer.render(stage);
-	});
+	renderer.render(stage);
 	
 	var steps = 10;
 	var loop = setInterval(function() {
