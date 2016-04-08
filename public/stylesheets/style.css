@@ -211,6 +211,14 @@ small {
 	text-align: left;
 }
 
+.stored_tactics_table tr {
+	height: 37px;
+}
+
+.stored_tactics_table td {
+	border: 1px solid #AAAAAA;
+}
+
 @font-face {
     font-family: 'icomoon';
     src:    url('fonts/icomoon.eot?ucz8ur');

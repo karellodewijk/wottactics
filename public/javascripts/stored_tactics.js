@@ -78,7 +78,7 @@ $(document).ready(function() {
 			return;
 		}
 		
-		var temp = $("<tr style='height:36px' class='folder' data-tt-id=''><td><img src='icons/folder.png' /> " + escape(path) + "</td><td></td><td></td><td></td><td></td></tr>");
+		var temp = $("<tr class='folder' data-tt-id=''><td><img src='icons/folder.png' /> " + escape(path) + "</td><td></td><td></td><td></td><td></td></tr>");
 
 		$("#tactic_list tbody").append(temp);
 		var node = $("#tactic_list tbody tr").last();
@@ -89,7 +89,7 @@ $(document).ready(function() {
 		//var node = $('#'+path);
 		make_draggable(node);
 		make_dropable(node);
-
+		
 		notify("<%=l('Note: empty folders are removed when you refresh')%>");
 	})
 	
@@ -108,9 +108,9 @@ $(document).ready(function() {
 		}
 		if (!$("#tactic_list tbody tr[data-tt-id='" + path + "']").length) {
 			if (parent != "") {
-				$("#tactic_list tbody").append("<tr style='height:36px' class='folder' data-tt-parent-id='"+ parent +"' data-tt-id='"+ path + "'><td><img src='icons/folder.png' /> " + res[0] + "</td><td></td><td></td><td></td><td></td></tr>");
+				$("#tactic_list tbody").append("<tr class='folder' data-tt-parent-id='"+ parent +"' data-tt-id='"+ path + "'><td><img src='icons/folder.png' />" + res[0] + "</td><td></td><td></td><td></td><td></td></tr>");
 			} else {
-				$("#tactic_list tbody").append("<tr style='height:36px' class='folder' data-tt-id='"+ path + "'><td><img src='icons/folder.png' /> " + res[0] + "</td><td></td><td></td><td></td><td></td></tr>");						
+				$("#tactic_list tbody").append("<tr class='folder' data-tt-id='"+ path + "'><td><img src='icons/folder.png' /> " + res[0] + "</td><td></td><td></td><td></td><td></td></tr>");						
 			}
 		}
 		create_folder_if_not_exists(res.slice(1).join("/"), path);
@@ -135,8 +135,6 @@ $(document).ready(function() {
 	}
 	
 	sort_nodes();
-	
-
 	$("#tactic_list").treetable({ expandable: true });
 
 	// Highlight selected row
@@ -189,7 +187,7 @@ $(document).ready(function() {
 		tree[new_path].id = new_path;
 		tree[new_path].parentId = path;
 		tree[new_path].row.data("ttId", new_path);
--				delete tree[old_path];	
+-		delete tree[old_path];	
 	}
 
 	function make_dropable(node) {
@@ -237,5 +235,4 @@ $(document).ready(function() {
 	$("#tactic_list .folder").each(function() {
 		make_dropable($(this));
 	});
-
 }); 	
