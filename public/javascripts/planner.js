@@ -149,6 +149,12 @@ var my_user_id;
 var clipboard = [];
 var slide_name;
 var assets_loaded = false;
+var select_alpha = 0.6;
+
+var mouse_down_interrupted;
+document.body.onmouseup = function() {
+  mouse_down_interrupted = true;
+}
 
 //keyboard shortcuts
 var shifted; //need to know if the shift key is pressed
@@ -235,13 +241,13 @@ function paste() {
 		if (entity.type == "icon") {
 			create_icon(entity, function(entity) {
 				snap_and_emit_entity(entity);
-				entity.container.filters = [select_filter];
+				entity.container.alpha = select_alpha;
 				renderer.render(stage);
 			});
 		} else {
 			create_entity(entity);
 			snap_and_emit_entity(entity);
-			entity.container.filters = [select_filter];
+			entity.container.alpha = select_alpha;
 			renderer.render(stage);
 		}
 		selected_entities.push(entity);
@@ -257,8 +263,9 @@ var size = Math.min(window.innerHeight, window.innerWidth) - border;
 var size_x = size;
 var size_y = size;
 
-var renderer = PIXI.autoDetectRenderer(size, size,{backgroundColor : 0xBBBBBB});
+//var renderer = PIXI.autoDetectRenderer(size, size, {backgroundColor : 0xBBBBBB});
 
+var renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
 var useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
 // create the root of the scene graph
@@ -390,53 +397,78 @@ function set_background(new_background) {
 	room_data.slides[active_slide].entities[new_background.uid] = new_background;
 }
 
+
+
 var context_before_drag;
 var last_mouse_location;
 var move_selected;
+var drag_timeout;
 function on_drag_start(e) {
-	if (is_room_locked && !my_user.role) {
-		if (this.entity.type == 'note') {
-			this.mouseup = toggle_note;
-			this.touchend = toggle_note;
-			this.mouseupoutside = toggle_note;
-			this.touchendoutside = toggle_note;
-		}
-		return;
+	if (drag_timeout) {
+		clearTimeout(drag_timeout);
 	}
-	if (active_context != 'drag_context') {
-		context_before_drag = active_context;
-	}
-	active_context = "drag_context";
+	_this = this;
 	last_mouse_location = [mouse_x_abs(e.data.getLocalPosition(objectContainer).x), mouse_y_abs(e.data.getLocalPosition(objectContainer).y)];
-	renderer.render(stage);
-	
-	this.mouseup = on_drag_end;
-	this.touchend = on_drag_end;
-	this.mouseupoutside = on_drag_end;
-	this.touchendoutside = on_drag_end;
-	this.mousemove = on_drag_move;
-	this.touchmove = on_drag_move;
-
-	move_selected = false;
-	for (var i in selected_entities) {
-		if (selected_entities[i].uid == this.entity.uid) {
-			move_selected = true;
-			break;
+	mouse_down_interrupted = false;
+	var delay = 0;
+	if (active_context == "ping_context") {
+		delay = 300;
+	} else {
+		if (active_context != 'drag_context') {
+			context_before_drag = active_context;
 		}
+		active_context = "drag_context";
 	}
+	drag_timeout = setTimeout(function() {
+		if (mouse_down_interrupted) {
+			return;
+		}
+		if (is_room_locked && !my_user.role) {
+			if (_this.entity.type == 'note') {
+				_this.mouseup = toggle_note;
+				_this.touchend = toggle_note;
+				_this.mouseupoutside = toggle_note;
+				_this.touchendoutside = toggle_note;
+			}
+			return;
+		}
+
+		if (active_context != 'drag_context') {
+			context_before_drag = active_context;
+		}
+		active_context = "drag_context";
+		
+		renderer.render(stage);
+		
+		_this.mouseup = on_drag_end;
+		_this.touchend = on_drag_end;
+		_this.mouseupoutside = on_drag_end;
+		_this.touchendoutside = on_drag_end;
+		_this.mousemove = on_drag_move;
+		_this.touchmove = on_drag_move;
+
+		move_selected = false;
+		for (var i in selected_entities) {
+			if (selected_entities[i].uid == _this.entity.uid) {
+				move_selected = true;
+				break;
+			}
+		}
+		
+		if (!move_selected) {
+			deselect_all();
+			selected_entities = [_this.entity];
+			select_entities();
+		}
+		
+		for (var i in selected_entities) {
+			selected_entities[i].origin_x = selected_entities[i].x;
+			selected_entities[i].origin_y = selected_entities[i].y;
+		}
+		_this.origin_x = _this.entity.x;
+		_this.origin_y = _this.entity.y;
 	
-	if (!move_selected) {
-		deselect_all();
-		selected_entities = [this.entity];
-		select_entities();
-	}
-	
-	for (var i in selected_entities) {
-		selected_entities[i].origin_x = selected_entities[i].x;
-		selected_entities[i].origin_y = selected_entities[i].y;
-	}
-	this.origin_x = this.entity.x;
-	this.origin_y = this.entity.y;
+	}, delay);
 }
 
 function toggle_note(e) {
@@ -462,7 +494,6 @@ function on_drag_end(e) {
 	} else {
 		var origin_entity_map = [];
 		for (var i in selected_entities) {
-			selected_entities[i].container.alpha = 1;
 			origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
 			origin_entity_map.push([origin, selected_entities[i]]);
 			delete selected_entities[i].origin_x;
@@ -477,7 +508,8 @@ function on_drag_end(e) {
 	this.touchendoutside = undefined;
 	this.mousemove = undefined;
 	this.touchmove = undefined;
-	active_context = context_before_drag;	
+	active_context = context_before_drag;
+	
 	renderer.render(stage);
 }
 
@@ -1143,7 +1175,7 @@ function on_curve_move(e) {
 	var stop_index = new_drawing.path.length;
 
 	temp_draw_context.beginPath();
-	draw_path2(temp_draw_context, null, new_drawing, 30, start_index, stop_index, new_drawing.end == "arrow");
+	draw_path2(temp_draw_context, null, new_drawing, 30, start_index, stop_index, new_drawing.end);
 	temp_draw_context.stroke();
 	
 	new_drawing.path.pop();
@@ -1177,7 +1209,7 @@ function on_curve_end(e) {
 		draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
 
-		draw_path2(draw_context, null, new_drawing, new_drawing.path.length, 0, new_drawing.path.length, new_drawing.end == "arrow");		
+		draw_path2(draw_context, null, new_drawing, new_drawing.path.length, 0, new_drawing.path.length, new_drawing.end);		
 		draw_context.stroke();
 
 		var success = canvas2container(draw_context, draw_canvas, new_drawing);
@@ -1244,6 +1276,9 @@ function on_line_end(e) {
 		if (new_drawing.end == "arrow") {
 			draw_arrow3(draw_context, a, b, new_drawing);
 			draw_context.fill();
+		} else if (new_drawing.end == "T") {
+			draw_T3(draw_context, a, b, new_drawing);
+			draw_context.stroke();			
 		}
 
 		var success = canvas2container(draw_context, draw_canvas, new_drawing);
@@ -1458,23 +1493,17 @@ function brighten(sprite, brightness) {
 }
 
 function select_entities() {
-	var filter = new PIXI.filters.ColorMatrixFilter();
-	filter.matrix = [
-		1, 0, 0, 0, 0,
-		0, 1, 0, 0, 0,
-		0, 0, 1, 0, 0,
-		0, 0, 0, 0.5, 0
-	]
-	
 	for (var i in selected_entities) {
-		room_data.slides[active_slide].entities[selected_entities[i].uid].container.filters = [filter];
+		room_data.slides[active_slide].entities[selected_entities[i].uid].container.alpha = select_alpha;
 	}
+	renderer.render(stage);
 }
 
 function deselect_all() {
 	previously_selected_entities = selected_entities;
 	for (var entity in selected_entities) {
 		selected_entities[entity].container.filters = undefined;
+		selected_entities[entity].container.alpha = selected_entities[entity].alpha;
 	}
 	selected_entities = [];
 }
@@ -1505,7 +1534,7 @@ function draw_path(graphic, path, start_index, stop_index) {
 	graphic.graphicsData[graphic.graphicsData.length-1].shape.closed = false;	
 }
 
-function draw_path2(context, context2, drawing, n, start_index, stop_index, add_arrow, smooth_out, skip_move) {	
+function draw_path2(context, context2, drawing, n, start_index, stop_index, end, smooth_out, skip_move) {	
 	var i = Math.max(drawing.path.length-n, 0);
 	var path = drawing.path.slice(i);
 	stop_index -= i;
@@ -1532,12 +1561,20 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index, add_
 	var cx = computeControlPoints(path_x);
 	var cy = computeControlPoints(path_y);		
 
-	if (add_arrow) {
+	if (end == "arrow") {
 		if (stop_index - start_index > 2) {
 			draw_arrow3(context, [cx.p1[cx.p1.length-1], cy.p1[cy.p1.length-1]], [path_x[path_x.length-1], path_y[path_y.length-1]], drawing);
 		} else {
 			draw_arrow3(context, [path_x[path_x.length-2], path_y[path_y.length-2]], [path_x[path_x.length-1], path_y[path_y.length-1]], drawing);
 		}
+		context.beginPath();
+	} else if (end == "T") {
+		if (stop_index - start_index > 2) {
+			draw_T3(context, [cx.p1[cx.p1.length-1], cy.p1[cy.p1.length-1]], [path_x[path_x.length-1], path_y[path_y.length-1]], drawing);
+		} else {
+			draw_T3(context, [path_x[path_x.length-2], path_y[path_y.length-2]], [path_x[path_x.length-1], path_y[path_y.length-1]], drawing);
+		}
+		context.stroke();
 		context.beginPath();
 	}
 	
@@ -1593,11 +1630,15 @@ function on_draw_move(e) {
 	var n = 30;
 	var start_index = Math.max(new_drawing.path.length-10, 0);
 	var stop_index = new_drawing.path.length;
-	temp_draw_context.beginPath();	
-	if (new_drawing.end == "arrow") {
-		if (new_drawing.path.length > 3) {
+	temp_draw_context.beginPath();
+	if (new_drawing.path.length > 3) {
+		if (new_drawing.end == "arrow") {
 			var i = Math.max(0, new_drawing.path.length-3);	
 			draw_arrow2(temp_draw_context, new_drawing, 4);
+		} else if (new_drawing.end == "T") {
+			var i = Math.max(0, new_drawing.path.length-3);	
+			draw_T2(temp_draw_context, new_drawing, 4);	
+			temp_draw_context.stroke();			
 		}
 	}
 	temp_draw_context.closePath();
@@ -1620,10 +1661,13 @@ function on_draw_end(e) {
 	draw_path2(draw_context, undefined, new_drawing, n, start_index, stop_index, false, false, true);
 	draw_context.stroke();
 	
-	if (new_drawing.end == "arrow") {	
-		if (new_drawing.path.length > 3) {	
+	if (new_drawing.path.length > 3) {	
+		if (new_drawing.end == "arrow") {		
 			draw_arrow2(draw_context, new_drawing, 4);
 			draw_context.fill();
+		} else if (new_drawing.end == "T") {
+			draw_T2(draw_context, new_drawing, 4);
+			draw_context.stroke();			
 		}
 	}
 	
@@ -1723,6 +1767,37 @@ function draw_arrow3(context, a, b, drawing) {
 	drawArrow(context, b[0], b[1], b[0]+(drawing.thickness*x_diff), b[1]+(drawing.thickness*y_diff), 3, 1, Math.PI/8, size);	
 }
 
+function draw_T2(context, drawing, i) {
+	var i = Math.max(0, drawing.path.length-i);
+	var size = Math.max(Math.min(7*drawing.thickness, 40), 20); //[15 < size < 30]
+	var size = size * (size_x/1000);
+	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
+	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
+	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
+	x0 /= l;
+	y0 /= l;
+	start_x = size_x * (drawing.path[drawing.path.length-1][0] + drawing.x);
+	start_y = size_y * (drawing.path[drawing.path.length-1][1] + drawing.y);	
+	var x_ort = - y0;
+	var y_ort = x0;
+	context.moveTo(start_x - size * x_ort, start_y - size * y_ort);
+	context.lineTo(start_x + size * x_ort, start_y + size * y_ort);	
+}
+
+function draw_T3(context, a, b, drawing) {
+	var size = Math.max(Math.min(7*drawing.thickness, 40), 20); //[15 < size < 30]
+	var size = size * (size_x/1000);
+	var x_diff = b[0] - a[0];
+	var y_diff = b[1] - a[1];
+	l = Math.sqrt(Math.pow(x_diff,2) + Math.pow(y_diff,2));
+	x_diff /= l;
+	y_diff /= l;
+	var x_ort = - y_diff;
+	var y_ort = x_diff;
+	context.moveTo(b[0] - size * x_ort, b[1] - size * y_ort);
+	context.lineTo(b[0] + size * x_ort, b[1] + size * y_ort);
+}
+
 function canvas2container(_context, _canvas, entity) {
 	var sprite = createSprite(_context, _canvas);	
 	if (sprite) {
@@ -1775,18 +1850,21 @@ function create_line2(line) {
 		_context.lineTo(x,y);
 	}
 	_context.stroke();
-
+	
+	var a;
+	if (line.path.length == 1) {
+		a = [size_x * (line.x), size_y * (line.y)];
+	} else {
+		a = [size_x * (line.path[line.path.length-2][0] + line.x),
+			 size_y * (line.path[line.path.length-2][1] + line.y)];
+	}
+	var b = [size_x * (last(line.path)[0] + line.x), size_y * (last(line.path)[1] + line.y)];
 	if (line.end == "arrow") {	
-		var a;
-		if (line.path.length == 1) {
-			a = [size_x * (line.x), size_y * (line.y)];
-		} else {
-			a = [size_x * (line.path[line.path.length-2][0] + line.x),
-				 size_y * (line.path[line.path.length-2][1] + line.y)];
-		}
-		var b = [size_x * (last(line.path)[0] + line.x), size_y * (last(line.path)[1] + line.y)];
 		draw_arrow3(_context, a, b, line);
 		_context.fill();
+	} else if (line.end == "T") {
+		draw_T3(_context, a, b, line);
+		_context.stroke();			
 	}
 	
 	canvas2container(_context, _canvas, line);
@@ -1900,10 +1978,13 @@ function create_drawing2(drawing) {
 	var n = drawing.path.length;
 	draw_path2(_context, undefined, drawing, n, 0, n);
 	_context.stroke();
-	if (drawing.end == "arrow") {	
-		if (drawing.path.length > 3) {	
+	if (drawing.path.length > 3) {	
+		if (drawing.end == "arrow") {	
 			draw_arrow2(_context, drawing, 4);
 			_context.fill();
+		} else if (drawing.end == "T") {
+			draw_T2(_context, drawing, 4);
+			_context.stroke();
 		}
 	}
 	canvas2container(_context, _canvas, drawing);
@@ -1929,7 +2010,7 @@ function create_curve2(drawing) {
 	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
 		
 	var n = drawing.path.length;
-	draw_path2(_context, undefined, drawing, n, 0, n, drawing.end == "arrow");
+	draw_path2(_context, undefined, drawing, n, 0, n, drawing.end);
 	_context.stroke();
 	
 	canvas2container(_context, _canvas, drawing);
@@ -2012,9 +2093,12 @@ function on_line_move(e) {
 	}
 	var b = [size_x * (mouse_x_rel(mouse_location.x)) , size_y * (mouse_y_rel(mouse_location.y))];
 	
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
 	if (new_drawing.end == "arrow") {
 		draw_arrow3(temp_draw_context, a, b, new_drawing);
+	} else if (new_drawing.end == "T") {
+		draw_T3(temp_draw_context, a, b, new_drawing);
+		temp_draw_context.stroke();
 	}
 	temp_draw_context.beginPath();
 	temp_draw_context.moveTo(a[0], a[1]);		
@@ -2053,6 +2137,9 @@ function on_line_end(e) {
 		if (new_drawing.end == "arrow") {
 			draw_arrow3(draw_context, a, b, new_drawing);
 			draw_context.fill();
+		} else if (new_drawing.end == "T") {
+			draw_T3(draw_context, a, b, new_drawing);
+			draw_context.stroke();			
 		}
 
 		var success = canvas2container(draw_context, draw_canvas, new_drawing);
@@ -2128,7 +2215,7 @@ function create_icon_cont(icon, texture) {
 	var ratio = sprite.width / sprite.height;
 	sprite.height = x_abs(icon_scale) * icon.scale;
 	sprite.width = sprite.height * ratio;	
-
+	
 	icon.container = new PIXI.Container();
 	icon.container.addChild(sprite);
 	icon.container.x = x_abs(icon.x);
@@ -2796,6 +2883,9 @@ function clear_selected() {
 	}
 	selected_entities = [];
 	undo_list.push(["remove", cleared_entities]);
+	if (active_context == "drag_context") {
+		active_context = context_before_drag;
+	}
 }
 
 function drag_entity(entity, x, y) {
@@ -3303,24 +3393,38 @@ $(document).ready(function() {
 		if (is_ie()) {
 			$('#backup').hide();
 		}
+
+		function sleep(milliSeconds){
+			var startTime = new Date().getTime(); // get the current time
+			while (new Date().getTime() < startTime + milliSeconds); // hog cpu
+		}
 		
 		$('#backup').click(function () {
 			$.getScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js", function(){
-				var data;
 				var original_slide = active_slide;
-				var new_renderer = new PIXI.CanvasRenderer(size, size,{backgroundColor : 0xBBBBBB});
-				var zip = new JSZip();
-				
+				var zip = new JSZip();			
 				var current_slide_uid = find_first_slide();
+				n = 1
 				do {
-					change_slide(current_slide_uid);
-					new_renderer.render(stage);
-					data = new_renderer.view.toDataURL("image/jpeg", 0.9);
-					data = data.replace("data:image/jpeg;base64,","");
-					zip.file(room_data.slides[current_slide_uid].name+".jpg", data, {base64:true});
+					(function(slide_uid) {
+						setTimeout(function () {		
+							change_slide(slide_uid);
+							setTimeout(function () {
+								var new_renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
+								new_renderer.render(stage);
+								var data;
+								data = new_renderer.view.toDataURL("image/jpeg", 0.9);
+								data = data.replace("data:image/jpeg;base64,","");
+								zip.file(room_data.slides[slide_uid].name+".jpg", data, {base64:true});
+								new_renderer.destroy();
+							}, 800);
+							
+						}, n*1000);
+					})(current_slide_uid);
+					n++
 					current_slide_uid = find_next_slide(room_data.slides[current_slide_uid].order);
 				} while (current_slide_uid != 0);
-				
+
 				var container_backups = {}		
 				for (var key in room_data.slides[active_slide].entities) {
 					if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
@@ -3337,23 +3441,28 @@ $(document).ready(function() {
 							room_data.slides[active_slide].entities[key].container = container_backups[key];
 						}
 					}
-				}								
-				var content = zip.generate();
-				var element = document.createElement('a');			
-				element.setAttribute('href', "data:application/zip;base64," + content);
-				element.setAttribute('download', "backup.zip");
-				element.style.display = 'none';
-				document.body.appendChild(element);
-				element.click();
-				document.body.removeChild(element);
+				}
+
 				
-				change_slide(original_slide);
+				setTimeout(function () {
+					$.getScript("https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function(){
+						var blob = zip.generate({type:"blob"});
+						if (!tactic_name || tactic_name != "") {
+							saveAs(blob, "backup.zip");
+						} else {
+							saveAs(blob, tactic_name + ".zip");
+						}						
+					});
 				
-				new_renderer.destroy();
+					change_slide(original_slide);
+					renderer.render(stage);	
+					
+				}, n*1000);
 
 			});
 			renderer.render(stage);	
 		});
+
 
 		function extra_icons(link, menu, path, height, scale) {
 			$('#' + link).click(function () {
@@ -3479,7 +3588,7 @@ $(document).ready(function() {
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#line_end_type button[data-end="none"]').addClass('active');	
+		$('#line_end_type button[data-end="arrow"]').addClass('active');	
 		$('#line_end_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
@@ -3491,7 +3600,7 @@ $(document).ready(function() {
 			$(this).siblings().removeClass('active');					
 		});
 		
-		$('#curve_end_type button[data-end="none"]').addClass('active');
+		$('#curve_end_type button[data-end="arrow"]').addClass('active');
 		$('#curve_end_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
@@ -3513,7 +3622,7 @@ $(document).ready(function() {
 			$(this).siblings().removeClass('active');					
 		});
 
-		$('#draw_end_type button[data-end="none"]').addClass('active');	
+		$('#draw_end_type button[data-end="arrow"]').addClass('active');	
 		$('#draw_end_type').on('click', 'button', function (e) {
 			$(this).addClass('active');
 			$(this).siblings().removeClass('active');					
