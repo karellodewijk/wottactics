@@ -26,6 +26,12 @@ http://pl.wowstactic.tk
 http://ru.wottactic.tk
 http://ru.awtactic.tk
 http://ru.wowstactic.tk
+http://cs.wottactic.tk
+http://cs.awtactic.tk
+http://cs.wowstactic.tk
+http://fi.wottactic.tk
+http://fi.awtactic.tk
+http://fi.wowstactic.tk
 
 http://localhost/auth/google/callback
 http://wottactic.tk/auth/google/callback
@@ -55,3 +61,9 @@ http://pl.wowstactic.tk/auth/google/callback
 http://ru.wottactic.tk/auth/google/callback
 http://ru.awtactic.tk/auth/google/callback
 http://ru.wowstactic.tk/auth/google/callback
+http://cs.wottactic.tk/auth/google/callback
+http://cs.awtactic.tk/auth/google/callback
+http://cs.wowstactic.tk/auth/google/callback
+http://fi.wottactic.tk/auth/google/callback
+http://fi.awtactic.tk/auth/google/callback
+http://fi.wowstactic.tk/auth/google/callback
