@@ -379,6 +379,14 @@ function set_background(new_background) {
 	
 	if (background.path != "") {
 		background_sprite.texture = PIXI.Texture.fromImage(background.path);
+		if (!background_sprite.texture.baseTexture.hasLoaded) {
+			resources_loading++;
+			background_sprite.texture.baseTexture.on('loaded', function() {
+				resources_loading--;
+				renderer.render(stage);
+			});
+		}
+		
 	} else {
 		var empty_backround = new PIXI.Graphics();
 		empty_backround.beginFill(0xFFFFFF, 1);
@@ -393,11 +401,7 @@ function set_background(new_background) {
 
 	history[background.uid] = background;
 	$("#map_select").val(background.path).change();	
-	renderer.render(stage);
-	background_sprite.texture.on('update', function() {	
-		renderer.render(stage);
-	});
-	
+	renderer.render(stage);	
 	room_data.slides[active_slide].entities[new_background.uid] = new_background;
 }
 
@@ -3408,6 +3412,7 @@ $(document).ready(function() {
 				var zip = new JSZip();
 				var new_renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
 				var first_slide_uid = find_first_slide();
+				var n = 1;
 				
 				//this code is a synchronous loop with asynchronous calls
 				var loop = function(slide_uid) {
@@ -3417,7 +3422,8 @@ $(document).ready(function() {
 							new_renderer.render(stage);
 							var data = new_renderer.view.toDataURL("image/jpeg", 0.9);
 							data = data.replace("data:image/jpeg;base64,","");
-							zip.file(room_data.slides[slide_uid].name+".jpg", data, {base64:true});
+							zip.file(n.toString() + '-' + room_data.slides[slide_uid].name + ".jpg", data, {base64:true});
+							n++;
 							next_slide_uid = find_next_slide(room_data.slides[slide_uid].order);
 							if (next_slide_uid != 0) {
 								clearInterval(it);
