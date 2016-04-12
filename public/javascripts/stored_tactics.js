@@ -70,11 +70,11 @@ $(document).ready(function() {
 		var path = $('#new_form_name').val();
 		
 		if (path == "") {
-			notify("<font color='red'><%=l('Error: Folder name can not be empty')%></font>")
+			notify("<font color='red'>" + $('#extra_data').attr('data-error_empty_folder') + "</font>")
 			return;					
 		}			
 		if ($("#tactic_list tbody tr[data-tt-id='" + path + "']").length) {
-			notify("<font color='red'><%=l('Error: This map already exists')%></font>")
+			notify("<font color='red'>" + $('#extra_data').attr('data-error_map_exist') + "</font>")
 			return;
 		}
 		
@@ -90,7 +90,7 @@ $(document).ready(function() {
 		make_draggable(node);
 		make_dropable(node);
 		
-		notify("<%=l('Note: empty folders are removed when you refresh')%>");
+		notify($('#extra_data').attr('data-warning_empty_folter'));
 	})
 	
 	$(".date").each(function () {
@@ -209,7 +209,7 @@ $(document).ready(function() {
 				}
 				
 				if ($("#tactic_list tbody tr[data-tt-id='" + new_path + "']").length) {
-					notify("<font color='red'><%=l('Error: A map with that name already exists in that folder')%></font>");
+					notify("<font color='red'>" + $('#extra_data').attr('data-error_map_exists') + "</font>");
 					return;
 				}
 			  
