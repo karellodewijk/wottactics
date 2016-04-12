@@ -140,6 +140,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		db.collection('users').update({_id:user.identity}, {$push:{tactics:{name:name, date:Date.now(), game:room_data[room].game, uid:uid}}}, {upsert: true});		
 		//store the tactic in the stored_tactics list
 		var data = JSON.parse(JSON.stringify(room_data[room]));
+		data.name = name;
 		delete data.userlist;
 		delete data.lost_users;
 		delete data.lost_identities;
@@ -771,6 +772,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			var tactic_name;
 			if (room_data[room].lost_identities[user.identity] && room_data[room].lost_identities[user.identity].tactic_name) {
 				tactic_name = room_data[room].lost_identities[user.identity].tactic_name;
+			} else if (room_data[room].name) {
+				tactic_name = room_data[room].name;
 			} else {
 				tactic_name = "";
 			}
