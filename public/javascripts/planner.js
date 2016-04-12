@@ -138,7 +138,7 @@ var selected_entities = [];
 var previously_selected_entities = [];
 var label_font_size = 30;
 var last_ping_time;
-var icon_scale = 0.025;
+var icon_scale = 0.025/20;
 var icon_brightness;
 var note_scale = 0.05;
 var thickness_scale = 0.0015;
@@ -1884,7 +1884,11 @@ function init_shape_canvas(_context, shape) {
 		if (shape.style == "dashed") {
 			_context.setLineDash([10, 10]);
 		} else if (shape.style == "dotted") {
-			_context.setLineDash([shape.thickness, shape.thickness]);
+			if (shape.thickness) {
+				_context.setLineDash([shape.thickness, shape.thickness]);
+			} else if (shape.outline_thickness) {
+				_context.setLineDash([shape.outline_thickness, shape.outline_thickness]);
+			}
 		}
 	}
 }
@@ -2053,10 +2057,11 @@ function on_icon_end(e) {
 	setup_mouse_events(undefined, undefined);
 	var mouse_location = e.data.getLocalPosition(objectContainer);
 
-	var x = mouse_x_rel(mouse_location.x) - (icon_scale*(icon_size/20)*icon_extra_scale/2);
-	var y = mouse_y_rel(mouse_location.y) - (icon_scale*(icon_size/20)*icon_extra_scale/2);
+	var size = icon_size*icon_extra_scale*icon_scale;
+	var x = mouse_x_rel(mouse_location.x) - (size/2);
+	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
-	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, scale:icon_extra_scale*(icon_size/20), color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Open Sans", brightness:parseFloat(icon_brightness)}
+	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Open Sans", brightness:parseFloat(icon_brightness)}
 	undo_list.push(["add", [icon]]);
 	create_icon(icon, snap_and_emit_entity);
 }
@@ -2214,8 +2219,8 @@ function create_icon_cont(icon, texture) {
 	}
 
 	var ratio = sprite.width / sprite.height;
-	sprite.height = x_abs(icon_scale) * icon.scale;
-	sprite.width = sprite.height * ratio;	
+	sprite.height = x_abs(icon.size);
+	sprite.width = x_abs(icon.size) * ratio;	
 	
 	icon.container = new PIXI.Container();
 	icon.container.addChild(sprite);
@@ -3288,10 +3293,12 @@ $(document).ready(function() {
 			var popover = $(this);
 			$(document).on('click', '#store_tactic', function(e) {
 				var name = $(document).find('#tactic_name')[0].value;
+				name = escapeHtml(name);
 				if (name == "") {
 					alert("Empty name, tactic not stored");
 				} else {
 					tactic_name = name;
+					document.title = "Tactic - " + tactic_name;
 					socket.emit("store", room, name);
 					$("#save").show();
 					alert("Tactic stored as: " + name);
@@ -3407,15 +3414,16 @@ $(document).ready(function() {
 					change_slide(slide_uid);
 					var it = setInterval(function() {
 						if (resources_loading == 0) {
-							//loop
 							new_renderer.render(stage);
 							var data = new_renderer.view.toDataURL("image/jpeg", 0.9);
 							data = data.replace("data:image/jpeg;base64,","");
 							zip.file(room_data.slides[slide_uid].name+".jpg", data, {base64:true});
 							next_slide_uid = find_next_slide(room_data.slides[slide_uid].order);
-							if (next_slide_uid != 0) {						
+							if (next_slide_uid != 0) {
+								clearInterval(it);
 								loop(next_slide_uid);
 							} else { //loop ended
+								clearInterval(it);
 								new_renderer.destroy();
 								
 								var container_backups = {}		
@@ -3428,7 +3436,7 @@ $(document).ready(function() {
 									}
 								}
 
-								zip.file("tactic.json", JSON.stringify(room_data));
+								zip.file("tactic.json", JSON.stringify(room_data, null, 2));
 								
 								
 								for (var key in room_data.slides[active_slide].entities) {
@@ -3450,7 +3458,8 @@ $(document).ready(function() {
 							
 								change_slide(original_slide);
 								renderer.render(stage);	
-							}	
+							}
+							
 						}
 					}, 50);
 				};
@@ -3748,6 +3757,9 @@ $(document).ready(function() {
 		is_room_locked = room_data.locked;
 		my_user_id = my_id;
 		tactic_name = new_tactic_name;
+		if (tactic_name && tactic_name != "") {
+			document.title = "Tactic - " +  tactic_name;
+		}
 		for (var user in room_data.userlist) {
 			add_user(room_data.userlist[user]);
 		}		
