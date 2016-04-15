@@ -13,8 +13,19 @@ function escape(s) {
 }
 
 $(document).ready(function() {
-	var link_uid;
+
+	$('#tactic_list').on('click', '.share_tactic', function (e) {
+		console.log("Clicking")
+		var textArea = document.createElement("textarea");
+		var link_text = $(this).attr('data-link');
+		textArea.value = link_text;
+		document.body.appendChild(textArea);
+		//textArea.select();
+		window.prompt("Share tactic link:", link_text);
+		document.body.removeChild(textArea);
+	});
 	
+	var link_uid;
 	$('#modal_cancel').click(function (e) {
 		$('#myModal').modal('hide');
 	});
@@ -38,7 +49,15 @@ $(document).ready(function() {
 	
 	$('#tactic_list').on('click', '.send_to_link', function (e) {
 		$('#myModal').modal('show');
-		link_uid = $(this).attr('id');	
+		link_uid = $(this).attr('data-uid');	
+		$('#myModal').on('shown.bs.modal', function () {
+			$("#send_link").focus();
+		});
+	});
+	
+	$('#tactic_list').on('click', '.share_link', function (e) {
+		$('#myModal').modal('show');
+		link_uid = $(this).attr('data-uid');	
 		$('#myModal').on('shown.bs.modal', function () {
 			$("#send_link").focus();
 		});
@@ -48,13 +67,12 @@ $(document).ready(function() {
 		if ($(this).hasClass('btn-danger')) {
 			var r = confirm("Are you sure you want to remove this tactic ?");
 			if (r == true) {
-				$.post('/remove_tactic', {id: this.id});
+				$.post('/remove_tactic', {id: $(this).attr('data-uid')});
 				var node = $("#tactic_list").treetable("node", $(this).parent().parent().attr('data-tt-id'));
-				$("#tactic_list").treetable("unloadBranch", node);					
-				$("tr[id='"+this.id+"']").remove();
+				$("#tactic_list").treetable("unloadBranch", node);
+				console.log("tr[id='" + $(this).attr('data-uid') + "']")
+				$("tr[id='" + $(this).attr('data-uid') + "']").remove();
 			}
-		} else {
-			
 		}
 	})
 	
@@ -78,7 +96,7 @@ $(document).ready(function() {
 			return;
 		}
 		
-		var temp = $("<tr class='folder' data-tt-id=''><td><img src='icons/folder.png' /> " + escape(path) + "</td><td></td><td></td><td></td><td></td></tr>");
+		var temp = $("<tr class='folder' data-tt-id=''><td><img src='icons/folder.png' /> " + escape(path) + "</td><td></td><td></td><td></td><td></td><td></td></tr>");
 
 		$("#tactic_list tbody").append(temp);
 		var node = $("#tactic_list tbody tr").last();
@@ -108,9 +126,9 @@ $(document).ready(function() {
 		}
 		if (!$("#tactic_list tbody tr[data-tt-id='" + path + "']").length) {
 			if (parent != "") {
-				$("#tactic_list tbody").append("<tr class='folder' data-tt-parent-id='"+ parent +"' data-tt-id='"+ path + "'><td><img src='icons/folder.png' />" + res[0] + "</td><td></td><td></td><td></td><td></td></tr>");
+				$("#tactic_list tbody").append("<tr class='folder' data-tt-parent-id='"+ parent +"' data-tt-id='"+ path + "'><td><img src='icons/folder.png' />" + res[0] + "</td><td></td><td></td><td></td><td></td><td></td></tr>");
 			} else {
-				$("#tactic_list tbody").append("<tr class='folder' data-tt-id='"+ path + "'><td><img src='icons/folder.png' /> " + res[0] + "</td><td></td><td></td><td></td><td></td></tr>");						
+				$("#tactic_list tbody").append("<tr class='folder' data-tt-id='"+ path + "'><td><img src='icons/folder.png' /> " + res[0] + "</td><td></td><td></td><td></td><td></td><td></td></tr>");						
 			}
 		}
 		create_folder_if_not_exists(res.slice(1).join("/"), path);

@@ -1,6 +1,6 @@
 //this code is run within the wottactic app
 //it's pretty much for an entirely different app
-module.exports.load = function(router, http, secrets, db) {
+module.exports.load = function(router, http, secrets, db, escaper) {
 	function refresh_clan(req, clan_id, cb) {
 	  http.get("http://api.worldoftanks."+ req.session.passport.user.server +"/wgn/clans/info/?application_id=" + secrets.wargaming[req.session.passport.user.server] + "&fields=clan_id,tag,name,members&clan_id="+clan_id, function(res) {
 		var buffer = '';
@@ -400,13 +400,14 @@ module.exports.load = function(router, http, secrets, db) {
 
 	router.get('/attend', function(req, res, next) {
 	  req.load_members = false;
+	  var id = escaper.escape(req.query.id);
 	  verify_clan(req, function(clan) {
 		var reason = "";
-		if (!req.query.id) { 
+		if (!id) { 
 		  reason = "No id in link";
 		} else if (!clan) {
 		  reason = "Not logged in";
-		} else if (req.query.id != clan.attendance_link.id) {
+		} else if (id != clan.attendance_link.id) {
 		  reason = "This link is no longer valid";
 		} else if (clan.attendance_link.valid_until - (new Date()) < 0) {
 		  reason = "This link has expired";

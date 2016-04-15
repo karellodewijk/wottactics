@@ -267,9 +267,13 @@ var size = Math.min(window.innerHeight, window.innerWidth) - border;
 var size_x = size;
 var size_y = size;
 
-//var renderer = PIXI.autoDetectRenderer(size, size, {backgroundColor : 0xBBBBBB});
+var renderer;
+if (Modernizr.webgl) {
+	renderer = PIXI.autoDetectRenderer(size, size, {backgroundColor : 0xBBBBBB});
+} else {
+	renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
+}
 
-var renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
 var useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
 // create the root of the scene graph
