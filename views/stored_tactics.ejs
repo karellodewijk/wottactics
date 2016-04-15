@@ -32,6 +32,7 @@
 				  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Tactic name')%>"><b><%=l('Name')%></b></th>
 				  <th style="width:100px" data-toggle="tooltip" title="<%=l('Click to launch the tactic')%>"><b><%=l('Launch')%></b></th>
 				  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Date the tactic was last changed')%>"><b><%=l('Last changed')%></b></th>
+				  <th style="width:50px" data-toggle="tooltip" title="<%=l('Share')%>"><b><%=l('Share')%></b></th>
 				  <th style="width:50px" data-toggle="tooltip" title="<%=l('Add tactic to room')%>"><b><%=l('Add to room')%></b></th>
 				  <th style="width:50px" data-toggle="tooltip" title="<%=l('Click to permanently remove the tactic')%>"><b><%=l('Remove')%></b></th>
 				</tr>
@@ -43,15 +44,20 @@
 						<td><img src='http://karellodewijk.github.io/icons/map_icon.png' /><%=tactics[i].name.substring(tactics[i].name.lastIndexOf("/")+1)%></td>
 						<td><a class="btn btn-primary btn-sm" href="<%=game%>planner.html?restore=<%=tactics[i].uid%>" id="<%=tactics[i].uid%>" role="button">Launch&raquo;</a></td>
 						<td class='date'><%=tactics[i].date;%></td>
-						<td><a type="button" id="<%=tactics[i].uid%>" class="btn btn-default btn-sm send_to_link" data-toggle="tooltip" title="<%=l('Send to room')%>"><img src="http://karellodewijk.github.io/icons/send_to_link.png" alt="send to link"></a></td>
-						<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" id="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><img height="14" width="14" src="http://karellodewijk.github.io/icons/bin.png" /></a></td>
+						
+						<td><button class="btn btn-default btn-sm share_tactic" data-toggle="tooltip" title="<%=l('Share this tactic')%>"
+									data-link="http://<%=url.split('/')[0]%>/share_tactic.html?name=<%=encodeURIComponent(tactics[i].name)%>&game=<%=encodeURIComponent(tactics[i].game)%>&uid=<%=encodeURIComponent(tactics[i].uid)%>">
+							<img src="http://karellodewijk.github.io/icons/share.png"></img>
+						</button></td>
+
+						<td><a type="button" data-uid="<%=tactics[i].uid%>" class="btn btn-default btn-sm send_to_link" data-toggle="tooltip" title="<%=l('Send to room')%>"><img src="http://karellodewijk.github.io/icons/send_to_link.png" alt="send to link"></a></td>
+						<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" data-uid="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><img height="14" width="14" src="http://karellodewijk.github.io/icons/bin.png" /></a></td>
 					</tr>
 				<% } %>
 			<% } %>	
 			</tbody>
-
 		</table>
-		
+
         <div class="row">
             <div class="col-lg-3">		
 				<div class="input-group">
@@ -65,6 +71,13 @@
 		<div class="input-group" id="notification_box" style="visibility:hidden;">
 			<span><label id="notification"></label></span>
 		</div>
+		
+		<h3><%=l('Last visited')%></h3>
+		<ul class="list-group">
+			<% for (var i = rooms.length-1; i >= 0; i--) { %>
+				<li class="list-group-item"><a href=<%=rooms[i]%>><%=rooms[i]%></a></li>
+			<% } %>
+		</ul>
 
 		<!-- Modal -->
 		<div id="myModal" class="modal fade" role="dialog">

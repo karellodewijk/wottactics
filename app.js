@@ -1,6 +1,7 @@
 var fs = require('fs');
 var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
 var http = require('http');
+var escaper = require('mongo-key-escape');
 
 room_data = {} //room -> room_data map to be shared with clients
 
@@ -118,19 +119,26 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	function get_tactics(identity, game, cb) {
 		if (identity) {
-			db.collection('users').findOne({_id:identity},{'tactics':1}, function(err, data) {
+			db.collection('users').findOne({_id:identity},{'tactics':1, 'rooms':1}, function(err, data) {
 				if (!err) {
-					if (data && data.tactics) {
-						cb(data.tactics);
+					if (data) {
+						var tactics = [], rooms = [];
+						if (data.tactics) {
+							tactics = data.tactics;
+						}
+						if (data.rooms) {
+							rooms = data.rooms;
+						}
+						cb(tactics, rooms);
 					} else {
-						cb([]);
+						cb([],[]);
 					}
 				} else {
-					cb([]);
+					cb([],[]);
 				}
 			});
 		} else {
-			cb([]);
+			cb([],[]);
 		}
 	}	
 	
@@ -214,7 +222,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	function remove_tactic(identity, id) {
 		db.collection('users').update({_id:identity}, {$pull: {tactics:{uid:id}}});
-		db.collection('stored_tactics').remove({_id:id});
 	}
 	
 	function rename_tactic(user, uid, new_name) {
@@ -311,6 +318,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				user.id = newUid();		
 			}
 			user.server = identifier.split('://')[1].split(".wargaming")[0];
+			user.identity_provider = "wargaming";
 			user.identity = identifier.split('/id/')[1].split("/")[0];
 			user.wg_account_id = user.identity.split('-')[0];
 			user.name = user.identity.split('-')[1];
@@ -333,6 +341,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.id = newUid();
 		}
 		user.identity = profile.id;
+		user.identity_provider = "google";
 		user.name = profile.displayName;
 		done(null, user);
 	  }
@@ -353,6 +362,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.id = newUid();
 		}
 		user.identity = profile.id;
+		user.identity_provider = "facebook";
 		user.name = profile.displayName;
 		done(null, user);
 	  }
@@ -373,6 +383,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.id = newUid();
 		}
 		user.identity = profile.id;
+		user.identity_provider = "twitter";
 		user.name = profile.displayName;
 		done(null, user);
 	  }
@@ -405,18 +416,22 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				steamids: [ identifier ],
 				callback: function(err, result) {
 					if (!err) {
-						user.identity = result.response.players[0].steamid,
-						user.name = result.response.players[0].personaname
+						user.identity = result.response.players[0].steamid;
+						user.identity_provider = "steam";
+						user.name = result.response.players[0].personaname;
 					}
 					done(null, user);
 				}
 			});			
 		}
 	));
-	
 
-	
 	passport.serializeUser(function(user, done) {
+		if (user.wg_account_id) {
+			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider, server:user.server, wg_id:user.wg_account_id}}, {upsert:true});
+		} else {
+			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+		}
 		done(null, user);
 	});
 
@@ -484,6 +499,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		var uid = newUid();
 		restore_tactic(req.session.passport.user, req.query.restore, function (uid) {
 			res.redirect(game+'planner.html?room='+uid);
+			
+			
 		});
 	  } else if (!req.query.room) {
 		  res.redirect(game+'planner.html?room='+newUid());
@@ -493,6 +510,20 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								  user: req.session.passport.user,
 								  locale: req.session.locale,
 								  url: req.fullUrl});
+								  
+		  if (req.session.passport.user.identity) {
+			  setImmediate(function() {
+				  var link = "http://" + req.fullUrl.split('/')[0] + "/" + req.session.game + 'planner.html?room=' + req.query.room;
+				  db.collection('users').update(
+				  	  { _id:req.session.passport.user.identity },
+					  { "$pull": { "rooms": link } }
+				  )
+				  db.collection('users').update(
+				  	  { _id:req.session.passport.user.identity },
+					  { "$push": { "rooms": { "$each": [link], "$slice": -10 } } }
+				  )
+			  });
+		  }					  
 	  }
 	}
 	router.get('/wotplanner.html', function(req, res, next) {
@@ -540,11 +571,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		req.session.game = 'wot';
 	  }
 	  if (req.session.passport.user.identity) {
-		get_tactics(req.session.passport.user.identity, req.session.game, function(tactics) {
+		get_tactics(req.session.passport.user.identity, req.session.game, function(tactics, last_rooms) {
 		  res.render('stored_tactics', { game: req.session.game, 
 										 user: req.session.passport.user,
 										 locale: req.session.locale,
 										 tactics: tactics,
+										 rooms: last_rooms,
 										 url: req.fullUrl} );
 		});
 	  } else {
@@ -560,6 +592,27 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.post('/rename_tactic', function(req, res, next) {
 		if (req.session.passport.user.identity) {
 			rename_tactic(req.session.passport.user, req.body.uid, req.body.new_name);
+		}
+		return;
+	});
+	router.get('/share_tactic.html', function(req, res, next) {
+		if (req.session.passport.user.identity) {
+			var uid = escaper.escape(decodeURIComponent(req.query.uid));
+			var name = escaper.escape(decodeURIComponent(req.query.name));
+			var game = escaper.escape(decodeURIComponent(req.query.game));
+			
+			db.collection('users').findOne({_id:req.session.passport.user.identity, tactics:{$elemMatch:{name:name}}}, {'tactics.$':1}, function(err, result) { 					
+				if (!err && result && result.tactics) {
+					res.send("Error: A tactic with name: " + name + " already exists.");
+					return;
+				} else {
+					db.collection('users').update({_id:req.session.passport.user.identity}, {$push:{tactics:{name:name, date:Date.now(), game:game, uid:uid}}}, {upsert: true});
+					res.redirect("stored_tactics.html");
+				}
+			});
+		} else {
+			res.send("First log in and try again");
+			return;
 		}
 		return;
 	});
@@ -684,7 +737,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	//////////////
 
 	var cp = require(__dirname + "/clanportal.js");
-	cp.load(router, http, secrets, db);
+	cp.load(router, http, secrets, db, escaper);
 
 	//////////////////
 	//end clanportal//
@@ -788,7 +841,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			create_anonymous_user(socket.request);
 		}
 			
-		socket.on('join_room', function(room, game) {			
+		socket.on('join_room', function(room, game) {
 			if (!(room in room_data)) {
 				db.collection('tactics').findOne({_id:room}, function(err, result) {
 					if (!err && result) { 
