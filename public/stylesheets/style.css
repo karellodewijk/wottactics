@@ -90,11 +90,6 @@ button {
 	border: 2px solid red;
 }
 
-.slider_text_input {
-	width: 22px;
-	height: 25px;
-}
-
 h5 {
 	font-size:16px;
 }
@@ -125,8 +120,9 @@ h4 {
 	width:180px;
 }
 
-.my_sliders {
-	width:100px;
+.slider_text_input {
+	width: 40px;
+	height: 25px;
 }
 
 small {

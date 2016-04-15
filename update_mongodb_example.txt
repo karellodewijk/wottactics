@@ -1,5 +1,7 @@
 db.getCollectionNames().forEach(function(collname) {
-	if (collname != 'sessions' && collname != 'system.indexes') {
-		db[collname].update({game:null}, {$set:{game:'wot'}}, {multi:true});
+	if (collname != 'tactics' && collname != 'users' && collname != 'stored_tactics' && collname != 'clans' && collname != 'system.indexes' && collname != 'battles' && collname.indexOf('clan-') == -1) {
+		if (db[collname]) {
+			db[collname].drop();
+		}
 	}
 });
