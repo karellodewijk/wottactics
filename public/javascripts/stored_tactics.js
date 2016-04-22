@@ -36,8 +36,33 @@ $(document).ready(function() {
 		if (i == -1) {
 			alert("No room id found in link.");
 		} else {
+			function hashstring(str) {
+				var sum = 0;
+				for (i = 0; i < str.length; i++) {
+					sum += str.charCodeAt(i);
+				}
+				return (sum % 3);
+			}
 			tactic_uid = link.slice(i+5).split('&')[0];
-			$.post('/add_to_room', {target: tactic_uid, source:link_uid}).done(function( data ) {
+			var nr = hashstring(tactic_uid);
+			var target = "127.0.0.1";
+			if (nr == 0) {
+				target = "52.28.202.223"
+			} else if (nr == 1) {
+				target = "52.29.3.249"
+			} else if (nr == 2) {
+				target = "52.58.127.207"
+			}
+			
+			function parse_domain(domain) {
+				var subDomain = domain.split('.');	
+				if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
+					subDomain = subDomain.slice(1);
+				}
+				return '.' + subDomain.join('.')
+			}
+
+			$.post('http://'+target+'/add_to_room', {target: tactic_uid, source:link_uid, session_id:$("#sid").attr("data-sid"), host:parse_domain(location.hostname), stored:"true"}).done(function( data ) {
 				if (data != "Success") {
 					alert(data);
 				}
@@ -96,7 +121,7 @@ $(document).ready(function() {
 			return;
 		}
 		
-		var temp = $("<tr class='folder' data-tt-id=''><td><img src='icons/folder.png' /> " + escape(path) + "</td><td></td><td></td><td></td><td></td><td></td></tr>");
+		var temp = $("<tr class='folder' data-tt-id=''><td><div class='inline icon icon-folder'></div>&nbsp;" + escape(path) + "</td><td></td><td></td><td></td><td></td><td></td></tr>");
 
 		$("#tactic_list tbody").append(temp);
 		var node = $("#tactic_list tbody tr").last();
@@ -126,9 +151,9 @@ $(document).ready(function() {
 		}
 		if (!$("#tactic_list tbody tr[data-tt-id='" + path + "']").length) {
 			if (parent != "") {
-				$("#tactic_list tbody").append("<tr class='folder' data-tt-parent-id='"+ parent +"' data-tt-id='"+ path + "'><td><img src='icons/folder.png' />" + res[0] + "</td><td></td><td></td><td></td><td></td><td></td></tr>");
+				$("#tactic_list tbody").append("<tr class='folder' data-tt-parent-id='"+ parent +"' data-tt-id='"+ path + "'><td><div class='inline icon icon-folder'></div>&nbsp;" + res[0] + "</td><td></td><td></td><td></td><td></td><td></td></tr>");
 			} else {
-				$("#tactic_list tbody").append("<tr class='folder' data-tt-id='"+ path + "'><td><img src='icons/folder.png' /> " + res[0] + "</td><td></td><td></td><td></td><td></td><td></td></tr>");						
+				$("#tactic_list tbody").append("<tr class='folder' data-tt-id='"+ path + "'><td><div class='inline icon icon-folder'></div>&nbsp;" + res[0] + "</td><td></td><td></td><td></td><td></td><td></td></tr>");						
 			}
 		}
 		create_folder_if_not_exists(res.slice(1).join("/"), path);

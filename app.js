@@ -87,9 +87,15 @@ process.on('uncaughtException', function (err) {
 });
 
 //load mongo
-connection_string = '127.0.0.1:27017/wottactics';
+connection_string =  secrets.mongodb_string;
+
+console.log("Connecting to: ", connection_string)
+
 MongoClient = require('mongodb').MongoClient;
 MongoClient.connect('mongodb://'+connection_string, function(err, db) {
+	if(err) throw err;	
+	
+	db.authenticate(secrets.mongodb_username, secrets.mongodb_password, function(err, result) {	
 	if(err) throw err;	
 	
 	db.createCollection('tactics');
@@ -101,8 +107,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (room_data[room]) {
 				if (!io.sockets.adapter.rooms[room]) {
 					if (Date.now() - room_data[room].last_join > 50000) {
-						save_room(room);
-						delete room_data[room];
+						save_room(room, function() {
+							delete room_data[room];
+						});
 					} else {
 						clean_up_room(room); //try again
 					}
@@ -111,10 +118,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}, 60000);
 	}
 	
-	function save_room(room) {
-		var data = room_data[room];
-		data._id = room;
-		db.collection('tactics').update({_id:room}, data, {upsert: true});
+	function save_room(room, cb) {
+		room_data[room]._id = room;
+		db.collection('tactics').update({_id:room}, room_data[room], {upsert: true}, function (err, result) {
+		  cb();
+		});
 	}
 	
 	function get_tactics(identity, game, cb) {
@@ -205,7 +213,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								room_data[uid].lost_identities[user.identity] = {role: "owner", tactic_name:header.tactics[0].name, tactic_uid:id};
 							}
 							room_data[uid].locked = true;
-							clean_up_room(uid); //just in case nobody joins it, start the cleanup procedure
 							cb(uid);
 						} else {
 							cb(newUid());
@@ -253,11 +260,13 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (host.length >= 2) {
 			host = '.' + host[host.length-2] + '.' + host[host.length-1];
 		} else {
-			host = host[0];
+			host = '.' + host[0];
 		}		
 		var hostSession = mwCache[host];
 		if (!hostSession) {
-			hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: new RedisStore()});
+			var store = new RedisStore(secrets.redis_options);
+			hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: store});
+			mwCache[host].store = store;
 		}
 		hostSession(req, res, next);
 	}
@@ -275,7 +284,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	// Configuring Passport
 	app.use(passport.initialize());
 	app.use(passport.session());
-	
 	
 	//create a default user + detect language
 	app.use(function(req, res, next) { 
@@ -308,7 +316,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			returnURL: function(req) { 
 				return "http://" + req.hostname + "/auth/openid/callback"; 
 			},
-			passReqToCallback: true
+			passReqToCallback: true,
+			stateless: true
 		},
 		function(req, identifier, done) {
 			var user = {};
@@ -331,7 +340,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		clientID: secrets.google.client_id,
 		clientSecret: secrets.google.secret,
 		callbackURL: '/auth/google/callback',
-		passReqToCallback:true
+		passReqToCallback:true,
+		stateless: true
 	  },
 	  function(req, iss, sub, profile, accessToken, refreshToken, done) {
 		var user = {};
@@ -352,7 +362,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		clientID: secrets.facebook.client_id,
 		clientSecret: secrets.facebook.secret,
 		callbackURL: "/auth/facebook/callback",
-		passReqToCallback: true
+		passReqToCallback: true,
+		stateless: true
 	  },
 	  function(req, accessToken, refreshToken, profile, done) {
 		var user = {};
@@ -373,7 +384,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		consumerKey: secrets.twitter.client_id,
 		consumerSecret: secrets.twitter.secret,
 		callbackURL: "/auth/twitter/callback",
-		passReqToCallback: true
+		passReqToCallback: true,
+		stateless: true
 	  },
 	  function(req, token, tokenSecret, profile, done) {
 		var user = {};
@@ -393,10 +405,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var steam = new SteamWebAPI({ apiKey: secrets.steam.api_key, format: 'json' });
 	passport.use('steam', new OpenIDStrategy({
 			returnURL: function(req) { 
-				return "http://" + req.hostname + "/auth/steam/callback"; 
+				return "http://karellodewijk.github.io/steam_redirect_callback.html?dest=" + "http://" + req.hostname + "/auth/steam/callback";
 			},
 			realm: function(req) { 
-				return "http://" + req.hostname; 
+				return "http://karellodewijk.github.io"; 
 			},
 			provider: 'steam',
 			name:'steam',
@@ -440,9 +452,35 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 
 	// session support for socket.io
+	
+	function session_from_sessionid_host(sessionId, host, cb) {
+		if (sessionId && mwCache[host]) {
+			mwCache[host].store.get(sessionId, function(err, data) {
+				if (!err) {
+					cb(data);
+				} else {
+					cb();
+				}
+			});
+		} else {
+			cb();
+		}
+		
+	}
+	
 	io.use(function(socket, next) {
-		socket.request.hostname = socket.handshake.headers.host;
-		virtualHostSession(socket.request, socket.request.res, next);
+		// pretend we have the cookie
+		var sessionId = socket.request._query.connect_sid;
+		var host = socket.request._query.host;
+		session_from_sessionid_host(sessionId, host, function(session) {
+			if (session) {
+				socket.request.session = session;
+			} else {
+				socket.request.hostname = socket.handshake.headers.host;
+				virtualHostSession(socket.request, socket.request.res, next);					
+			}
+			next()
+		});
 	});
 	
 	// setup routes
@@ -494,22 +532,29 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							locale: req.session.locale,
 							url: req.fullUrl});
 	});
+	router.get('/health_check.html', function(req, res, next) {
+	  res.sendStatus(200);
+	});
+	
 	function planner_redirect(req, res, game) {
 	  if (req.query.restore) {
 		var uid = newUid();
-		restore_tactic(req.session.passport.user, req.query.restore, function (uid) {
-			res.redirect(game+'planner.html?room='+uid);
-			
-			
+		restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
+			save_room(uid, function() {
+			  delete room_data[uid];
+			  res.redirect(game+'planner.html?room='+uid);
+			});
 		});
 	  } else if (!req.query.room) {
 		  res.redirect(game+'planner.html?room='+newUid());
 	  }	else {
+		  res.cookie('room',req.query.room , { maxAge: 30 * 86400 * 1000 });
 		  req.session.game = game;
 		  res.render('planner', { game: req.session.game, 
 								  user: req.session.passport.user,
 								  locale: req.session.locale,
-								  url: req.fullUrl});
+								  url: req.fullUrl,
+								  sid: req.sessionID });
 								  
 		  if (req.session.passport.user.identity) {
 			  setImmediate(function() {
@@ -577,7 +622,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 										 locale: req.session.locale,
 										 tactics: tactics,
 										 rooms: last_rooms,
-										 url: req.fullUrl} );
+										 url: req.fullUrl,
+										 sid: req.sessionID });
 		});
 	  } else {
 		  res.redirect('/');
@@ -617,9 +663,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		return;
 	});
 	
-	function copy_slides(req, res, source, target) {
-		if (room_data[source].slides) {
-			if (Object.keys(room_data[source].slides).length > 100) {
+	function copy_slides(source, target, res) {
+		if (source.slides) {
+			if (Object.keys(source.slides).length > 100) {
 				res.send("Error: too many slides");
 			}
 			if (Object.keys(room_data[target].slides).length > 100) {
@@ -634,47 +680,54 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				}
 			}
 			largest_slide_order += 4294967296;
-			for (var key in room_data[source].slides) {
-				if (room_data[source].slides.hasOwnProperty(key)) {
+			for (var key in source.slides) {
+				if (source.slides.hasOwnProperty(key)) {
 					var uid = newUid();
-					var new_slide = JSON.parse(JSON.stringify(room_data[source].slides[key]));
+					var new_slide = JSON.parse(JSON.stringify(source.slides[key]));
 					new_slide.order += largest_slide_order;
 					new_slide.uid = uid;
 					room_data[target].slides[uid] = new_slide;
 					io.to(target).emit('new_slide', new_slide);
 				}
 			}							
-			res.send("Success");					
-		} else {
-			res.send("Error: unknown error");
 		}
 	}
 	
 	router.post('/add_to_room', function(req, res, next) {
-		var target = req.body.target;
-		var user = req.session.passport.user;
+		var sessionId = req.body.session_id;
+		var host = req.body.host;
 		
-		if (!room_data[target]) {
-			res.send("Error: room is not active or does not exist.");
-			return;
-		} else if (room_data[target].locked
-				  && (!room_data[target].userlist[user.id] || !room_data[target].userlist[user.id].role) 
-				  && (!room_data[target].lost_identities[user.identity] || !room_data[target].lost_identities[user.identity].role)) {
-			res.send("Error: You don't have permission for that room.");
-			return;
-		}
-		
-		if (req.body.source in room_data) {
-			copy_slides(req, res, req.body.source, target);
-		} else {	
-			if (req.session.passport.user.identity) {
-				restore_tactic(req.session.passport.user, req.body.source, function(source) {
-					copy_slides(req, res, source, target);
-					delete room_data[source];
-				});
+		session_from_sessionid_host(sessionId, host, function(session) {			
+			var target = req.body.target;
+			var user = session.passport.user;
+						
+			if (!room_data[target]) {
+				res.send("Error: room is not active or does not exist.");
+				return;
+			} else if (room_data[target].locked
+					  && (!room_data[target].userlist[user.id] || !room_data[target].userlist[user.id].role) 
+					  && (!room_data[target].lost_identities[user.identity] || !room_data[target].lost_identities[user.identity].role)) {
+				res.send("Error: You don't have permission for that room.");
+				return;
 			}
-		}
-	});	
+			
+			var source = req.body.source;
+			if (req.body.stored == "true") {
+				db.collection('stored_tactics').findOne({_id:source}, function(err, result) {
+					if (!err && result) { 
+						copy_slides(result, target, res);
+					}
+				});
+			} else {
+				db.collection('tactics').findOne({_id:source}, function(err, result) {
+					if (!err && result) { 
+						copy_slides(result, target, res);
+					}
+				});				
+			}
+		});
+	});
+	
 	function save_return(req, res, next) {
 		req.session.return_to = req.headers.referer;
 		next();
@@ -708,7 +761,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	//force saves all rooms to DB, run before a restart/shutdown
 	router.get('/save.html', function(req, res, next) {
 		for (var room in room_data) {
-			save_room(room);
+			save_room(room, function(){});
 		}
 		res.send('Success');
 	});
@@ -1110,12 +1163,21 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			var user = socket.request.session.passport.user;			
 			store_tactic(user, room, name);
 		});
+
+		socket.on('save_room', function(room, name) {
+			save_room(room, function(){});
+		});		
+		
+		
+	});
+	
+	
 	});
 	
 	//create server
-	var server = http.createServer(app);
+	var server = http.createServer(app);	
 	io.attach(server);
-	server.listen(80);
+	server.listen(secrets.port);
 });
 
 
