@@ -26,3 +26,10 @@ http://pl.wowstactic.tk/auth/facebook/callback
 http://ru.wottactic.tk/auth/facebook/callback
 http://ru.awtactic.tk/auth/facebook/callback
 http://ru.wowstactic.tk/auth/facebook/callback
+http://cs.wottactic.tk/auth/facebook/callback
+http://cs.awtactic.tk/auth/facebook/callback
+http://cs.wowstactic.tk/auth/facebook/callback
+http://fi.wottactic.tk/auth/facebook/callback
+http://fi.awtactic.tk/auth/facebook/callback
+http://fi.wowstactic.tk/auth/facebook/callback
+

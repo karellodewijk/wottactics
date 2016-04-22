@@ -11,6 +11,7 @@
 	<script defer type="text/javascript" src="/javascripts/stored_tactics.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Stored tactics')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy planner.')%>, <%=l('restore your stored tactics from here.')%>">
+	<script id="sid" data-sid="<%=sid%>"></script>
 </head>
 
 <body>
@@ -41,17 +42,17 @@
 			<% for (var i in tactics) {%>
 				<%if (game == tactics[i].game) { %>
 					<tr class="file" data-tt-id="<%=tactics[i].name%>" data-tt-parent-id="<%=tactics[i].name.substring(0,tactics[i].name.lastIndexOf("/"))%>" id="<%=tactics[i].uid%>">
-						<td><img src='http://karellodewijk.github.io/icons/map_icon.png' /><%=tactics[i].name.substring(tactics[i].name.lastIndexOf("/")+1)%></td>
+						<td><div class="inline icon icon-map_icon"></div><%=tactics[i].name.substring(tactics[i].name.lastIndexOf("/")+1)%></td>
 						<td><a class="btn btn-primary btn-sm" href="<%=game%>planner.html?restore=<%=tactics[i].uid%>" id="<%=tactics[i].uid%>" role="button">Launch&raquo;</a></td>
 						<td class='date'><%=tactics[i].date;%></td>
 						
 						<td><button class="btn btn-default btn-sm share_tactic" data-toggle="tooltip" title="<%=l('Share this tactic')%>"
 									data-link="http://<%=url.split('/')[0]%>/share_tactic.html?name=<%=encodeURIComponent(tactics[i].name)%>&game=<%=encodeURIComponent(tactics[i].game)%>&uid=<%=encodeURIComponent(tactics[i].uid)%>">
-							<img src="http://karellodewijk.github.io/icons/share.png"></img>
+							<div class="icon icon-share"></div>
 						</button></td>
 
-						<td><a type="button" data-uid="<%=tactics[i].uid%>" class="btn btn-default btn-sm send_to_link" data-toggle="tooltip" title="<%=l('Send to room')%>"><img src="http://karellodewijk.github.io/icons/send_to_link.png" alt="send to link"></a></td>
-						<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" data-uid="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><img height="14" width="14" src="http://karellodewijk.github.io/icons/bin.png" /></a></td>
+						<td><a type="button" data-uid="<%=tactics[i].uid%>" class="btn btn-default btn-sm send_to_link" data-toggle="tooltip" title="<%=l('Send to room')%>"><div class="icon icon-send_to_link"></div></a></td>
+						<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" data-uid="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><i style="color:#000; font-size: 18px;" class="fa fa-trash"></i></a></td>
 					</tr>
 				<% } %>
 			<% } %>	

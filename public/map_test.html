@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+</head>
+<body>
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+</body>
+
+<script type="text/javascript">
+	function handleFileSelect(evt) {
+		files = evt.target.files; // FileList object
+		// files is a FileList of File objects. List some properties.
+		output = [];		
+		for (i = 0; i < files.length; i++) {
+			f = files[i];
+			output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',	f.size, ' bytes, last modified: ', f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a', '</li>');
+		}
+		document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';		
+		for (i = 0; i < files.length; i++) {
+			parse_map_file(files[i])
+		}
+	}
+	
+	//simple replay-header-> json, replay file format from: http://wiki.vbaddict.net/pages/File_Replays
+	function parse_map_file(file) {
+		console.log("reading file");
+		
+		$.getScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js", function() {
+			var hr = new FileReader();
+			hr.readAsArrayBuffer(file);
+			hr.onload = function(e) {
+				console.log(e)
+				var zip = new JSZip(e.target.result);
+				console.log(zip.files);				
+			}
+		});
+		/*
+		var hr = new FileReader();
+		hr.readAsArrayBuffer(file.slice(0,12));
+		hr.onload = function(e) {
+			var dv = new DataView(e.target.result);
+			var nr_of_blocks = dv.getUint32(4, true);
+			var block1_size = dv.getUint32(8, true);
+			var fr = new FileReader();
+			if (nr_of_blocks >= 1) { 
+				fr.readAsText(file.slice(12, 12 + block1_size));
+				fr.onload = function(e2) { 
+					var json1 = JSON.parse(e2.target.result);
+					if (nr_of_blocks >= 2) { //(complete replay)
+						var hr2 = new FileReader();
+						hr2.readAsArrayBuffer(file.slice(12 + block1_size, 16 + block1_size));
+						hr2.onload = function(e3) {
+							var dv2 = new DataView(e3.target.result);
+							var block2_size = dv2.getUint32(0, true);
+							var fr2 = new FileReader();
+							fr2.readAsText(file.slice(16 + block1_size, 16 + block1_size + block2_size));
+							fr2.onload = function(e4) { 
+								var json2 = JSON.parse(e4.target.result);
+								cb(json1, json2); 
+							};
+						}						
+					} else { //(incomplete replay)
+						cb(json1);
+					}
+				};
+			}
+		};
+		*/
+	}
+	
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	
+</script>
