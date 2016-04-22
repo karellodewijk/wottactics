@@ -1,3 +1,4 @@
+
 var image_host;
 
 function is_safari() {
@@ -9,7 +10,7 @@ if (is_safari()) {
 } else {
 	image_host = "http://karellodewijk.github.io/icons/";
 }
-	
+
 var assets;
 var game = $('meta[name=game]').attr("content");
 if (game == "wows") { //wows
@@ -30,21 +31,53 @@ for (var i in assets) {
 }
 loader.load();
 
+var room = location.search.split('room=')[1].split("&")[0];	
+
+function hashstring(str) {
+	var sum = 0;
+	for (i = 0; i < str.length; i++) {
+		sum += str.charCodeAt(i);
+	}
+	return (sum % 3);
+}
+
+var nr = hashstring(room);
+var server = "127.0.0.1";
+if (nr == 0) {
+	server = "52.28.202.223"
+} else if (nr == 1) {
+	server = "52.29.3.249"
+} else if (nr == 2) {
+	server = "52.58.127.207"
+}
+
+console.log("connecting to server: ", server)
+
+function parse_domain(domain) {
+	var subDomain = domain.split('.');	
+	if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
+		subDomain = subDomain.slice(1);
+	}
+	return '.' + subDomain.join('.')
+}
+
 var socket;
 if (Modernizr.websockets) {
-	socket = io({
+	socket = io.connect(server, {
 		reconnectionDelay: 100,
 		reconnectionDelayMax: 500,
 		'reconnection limit' : 1000,
-		'max reconnection attempts': Infinity
+		'max reconnection attempts': Infinity,
+		query: "connect_sid="+$("#sid").attr("data-sid")+"&host="+parse_domain(location.hostname)
 	});	
 } else {
-	socket = io({
+	socket = io.connect(server, {
 		transports: ['polling'],
 		reconnectionDelay: 100,
 		reconnectionDelayMax: 500,
 		'reconnection limit' : 1000,
-		'max reconnection attempts': Infinity
+		'max reconnection attempts': Infinity,
+		query: "connect_sid="+$("#sid").attr("data-sid")+"&host="+parse_domain(location.hostname)
 	});	
 }
 
@@ -66,6 +99,9 @@ function is_firefox() {
 }
 function is_ie() {
 	return navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgent.toLowerCase().indexOf('trident') > -1;
+}
+function is_edge() {
+	return navigator.userAgent.toLowerCase().indexOf('edge') > -1;
 }
 
 var last = function(array) {
@@ -108,7 +144,6 @@ var polygon_outline_color = 0xff0000;
 var polygon_fill_color = 0xff0000;
 var area_outline_color = 0xff0000;
 var area_fill_color = 0xff0000;
-var room;
 var background;
 var draw_thickness;
 var curve_thickness;
@@ -3186,7 +3221,16 @@ $(document).ready(function() {
 				alert("No room id found in link.");
 			} else {
 				tactic_uid = link.slice(i+5).split('&')[0];
-				$.post('/add_to_room', {target: tactic_uid, source:room}).done(function( data ) {
+				var nr = hashstring(tactic_uid);
+				var target = "127.0.0.1";
+				if (nr == 0) {
+					target = "52.28.202.223"
+				} else if (nr == 1) {
+					target = "52.29.3.249"
+				} else if (nr == 2) {
+					target = "52.58.127.207"
+				}
+				$.post('http://'+target+'/add_to_room', {target: tactic_uid, source:room, session_id:$("#sid").attr("data-sid"), host:parse_domain(location.hostname), stored:"false"}).done(function( data ) {
 					if (data != "Success") {
 						alert(data);
 					}
@@ -3197,6 +3241,7 @@ $(document).ready(function() {
 		});
 
 		$('#send_to_link').click(function (e) {
+			socket.emit("save_room", room);
 			$('#myModal').modal('show');
 			$('#myModal').on('shown.bs.modal', function () {
 				$("#send_link").focus();
@@ -3380,33 +3425,37 @@ $(document).ready(function() {
 
 		$('#export').click(function () {
 			renderer.render(stage);	
-			var data;
-			if (!is_safari()) {
-				data = renderer.view.toDataURL("image/jpeg", 0.9);
-			} else {
-				var new_renderer = new PIXI.CanvasRenderer(size, size,{backgroundColor : 0xBBBBBB});
-				new_renderer.render(stage);			
-				data = new_renderer.view.toDataURL("image/jpeg", 0.9);
-				new_renderer.destroy();
-			}
+			var new_renderer = new PIXI.CanvasRenderer(size, size,{backgroundColor : 0xBBBBBB});
+			new_renderer.render(stage);			
+
+			$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function() {
+				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.3.0/js/canvas-to-blob.min.js", function() {
+					new_renderer.view.toBlob(function(blob){
+						if (tactic_name && tactic_name != "") {
+							saveAs(blob, tactic_name + ".jpg");
+						} else {
+							saveAs(blob, "map.jpg");
+						}	
+					});
+				});					
+			});
 			
-			if (is_ie()) {
-				var win=window.open();
-				win.document.write("<img src='" + data + "'/>");
-			} else {			
-				var link = document.createElement("a");
-				link.setAttribute("target","_blank");
-				if(Blob !== undefined) {
-					var blob = new Blob([data], {type: "image/jpeg"});
-					link.setAttribute("href", data);
-				} else {
-					link.setAttribute("href", data);
-				}
-				link.setAttribute("download", "map.jpg");
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-			}
+			// if (is_ie() || is_edge()) {
+				// var win=window.open();
+				// win.document.write("<img src='" + data + "'/>");
+			// } else {
+				// var link = document.createElement("a");
+				// link.setAttribute("target","_blank");
+				// link.setAttribute("href", data);
+				// if (tactic_name && tactic_name != "") {
+					// link.setAttribute("download", tactic_name + ".jpg");
+				// } else {
+					// link.setAttribute("download", "map.jpg");
+				// }
+				// document.body.appendChild(link);
+				// link.click();
+				// document.body.removeChild(link);
+			// }
 		});
 		
 		
@@ -3734,8 +3783,6 @@ $(document).ready(function() {
 	});
 	
 	//network data responses
-
-	room = location.search.split('room=')[1].split("&")[0];		
 	socket.on('connect',function() { 
 		var timer = setInterval(function() {
 			if (assets_loaded) {

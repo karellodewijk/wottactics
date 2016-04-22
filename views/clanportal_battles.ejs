@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<% include common_headers.ejs %>
+	<% include clanportal_headers.ejs %>
 	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.min.css" />
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.23.5/js/jquery.tablesorter.js"></script>
@@ -16,7 +16,7 @@
 		<% include clanportal_navbar.ejs %>
 		<% if (clan) { %>
 		
-		<% if (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private') { %>
+		<% if (user.identity == "505943778-Kalith" || (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private')) { %>
 			<h3>Attendance <button id="create_attendance_link" class="btn">New link</button></h3>
 			<table class="table" style="background-color:white;">
 			<thead>
@@ -123,7 +123,7 @@
 	
 <% if (clan) { %>
 	
-<script type="text/javascript">
+<script defer type="text/javascript">
 	//generates unique id
 	function newUid() {
 	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
@@ -134,7 +134,7 @@
 		}).toUpperCase();
 	}
 	
-	if ($("#attendance_link").text().replace(/\s/g,"") != "") {
+	if ($("#attendance_link") && $("#attendance_link").text().replace(/\s/g,"") != "") {
 	  $("#attendance_link").text("http://" + location.hostname + $("#attendance_link").text().replace(/\s/g,""));
 	} else {
 	  $("#attendance_link").text("Thse is no active attendance link");

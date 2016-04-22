@@ -1,5 +1,8 @@
 //this code is run within the wottactic app
 //it's pretty much for an entirely different app
+
+var bs = require('binarysearch');
+
 module.exports.load = function(router, http, secrets, db, escaper) {
 	function refresh_clan(req, clan_id, cb) {
 	  http.get("http://api.worldoftanks."+ req.session.passport.user.server +"/wgn/clans/info/?application_id=" + secrets.wargaming[req.session.passport.user.server] + "&fields=clan_id,tag,name,members&clan_id="+clan_id, function(res) {
@@ -195,9 +198,9 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 	  req.load_members = true;
 	  refresh_clan(req, req.session.passport.user.clan_id, function(clan) {
 		get_battles(clan._id, function(old_battles) {
-		  if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
+		  if (!verify_access(req)) {
 			return;
-		  }  
+		  } 
 		  var battles = req.body.battles;
 		  for (var i in battles) {
 			if (!old_battles[i]) {
@@ -263,13 +266,24 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 		});
 	  });
 	});	
+	
+	function verify_access(req) {
+		console.log(req.session.passport.user.identity)
+		if (req.session.passport.user.identity == "505943778-Kalith") { //special access, can't test this without
+			return true;
+		}
+		if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
+			return false;
+		} 
+		return true;
+	}
 
 	router.post('/recalculate.html', function(req, res, next) {
 		req.load_members = false;
 		verify_clan(req, function(clan) {
-			if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
+			if (!verify_access(req)) {
 				return;
-			}  
+			} 
 			clan.treasury = req.body.treasury;
 			clan.multipliers = req.body.multipliers;
 			db.collection('clans').update({_id:clan._id}, {$set: {multipliers:clan.multipliers, treasury:clan.treasury}}, {upsert: true}, function() {
@@ -283,7 +297,7 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 	  req.load_members = true;
 	  verify_clan(req, function(clan) {
 		get_battles(clan._id, function(battles) {
-		  if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {			
+		  if (!verify_access(req)) {
 			return;
 		  } 
 		  for (var i in clan.members) {
@@ -322,9 +336,9 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 	  req.load_members = true;
 	  verify_clan(req, function(clan) {
 		get_battles(clan._id, function(battles) {
-		  if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
+		  if (!verify_access(req)) {
 			return;
-		  }
+		  } 
 		  if (battles[req.body.uid]) {
 			var battle = battles[req.body.uid];
 			var w = battle.win; 
@@ -386,9 +400,9 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 	router.post('/create_attendance_link.html', function(req, res, next) {
 	  req.load_members = false;
 	  verify_clan(req, function(clan) {
-		if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
-		  return;
-		}
+		if (!verify_access(req)) {
+			return;
+		} 
 		var valid_until = new Date();
 		valid_until.setHours(valid_until.getHours() + 12);
 		clan.attendance_link = {id:newUid(), valid_until:valid_until, players:{}};
@@ -400,12 +414,15 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 
 	router.get('/attend', function(req, res, next) {
 	  req.load_members = false;
-	  var id = escaper.escape(req.query.id);
+      var reason = "";
+	  var id;
+	  if (!req.query.id) { 
+	    reason = "No id in link";
+	  } else {
+		id = escaper.escape(req.query.id);
+	  }
 	  verify_clan(req, function(clan) {
-		var reason = "";
-		if (!id) { 
-		  reason = "No id in link";
-		} else if (!clan) {
+		if (!clan) {
 		  reason = "Not logged in";
 		} else if (id != clan.attendance_link.id) {
 		  reason = "This link is no longer valid";
@@ -439,8 +456,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 	router.post('/remove_attend', function(req, res, next) {
 	  req.load_members = false;
 	  verify_clan(req, function(clan) {
-		if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {
-		  return;
+		if (!verify_access(req)) {
+			return;
 		}
 		delete clan.attendance_link.players[req.body.player];
 		var members = {}; 
