@@ -6,9 +6,10 @@ If you want to run this yourself, make sure node.js, redis and mongodb are insta
 
 1. Start a mongodb database with default settings ("mongod --dbpath some_path")
 2. Start redis with default options ("redis-server dir some_path").
-3. install dependencies with npm ("npm install" in project directory)
-4. run "node app.js" or "sudo node app.js" (sudo because default port 80 requires elevated privileges)
+3. Install dependencies with npm ("npm install" in project directory)
+4. Fill in the server/servers you are hosting on the top of public/javascript/planner.js, public/javascript/stored_tactics.js. If it's just for testing use 'localhost'.
+5. run "node app.js" or "sudo node app.js" (sudo because default port 80 requires elevated privileges)
 
-If you want facebook/google/twitter/wg login to work, you need to fill in the "secrets.txt" files with secrets/ids generated when you register the app at their respecive services. And you need to whitelist callback urls to http://hostname/auth/facebook/callback, http://hostname/auth/google/callback for fb and google login.
+If you want facebook/google/twitter/wg login to work, you need to fill in the "secrets.txt" files with secrets/ids generated when you register the app at their respecive services. And you need to whitelist callback urls to http://hostname/auth/facebook/callback, http://hostname/auth/google/callback for fb and google login. secrets.txt also has option to run on different ports/connect to remote db and probably more.
 
 The interesting parts of this project are the server ("app.js") and the clientside javascript that makes the editor tick, ("public/javascripts/planner.js").
