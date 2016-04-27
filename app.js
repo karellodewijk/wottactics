@@ -405,10 +405,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var steam = new SteamWebAPI({ apiKey: secrets.steam.api_key, format: 'json' });
 	passport.use('steam', new OpenIDStrategy({
 			returnURL: function(req) { 
-				return "http://karellodewijk.github.io/steam_redirect_callback.html?dest=" + "http://" + req.hostname + "/auth/steam/callback";
+				return "http://wottactic.com/steam_redirect.html?dest=" + "http://" + req.hostname + "/auth/steam/callback";
 			},
 			realm: function(req) { 
-				return "http://karellodewijk.github.io"; 
+				return "http://wottactic.com"; 
 			},
 			provider: 'steam',
 			name:'steam',
@@ -534,8 +534,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	router.get('/health_check.html', function(req, res, next) {
 	  res.sendStatus(200);
-	});
-	
+	});	
 	function planner_redirect(req, res, game) {
 	  if (req.query.restore) {
 		var uid = newUid();
@@ -661,15 +660,22 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			return;
 		}
 		return;
+	});	
+	app.get('/logout', function(req, res) {
+	  var return_to = req.headers.referer;
+	  req.logout();
+	  res.redirect(return_to);
 	});
 	
 	function copy_slides(source, target, res) {
 		if (source.slides) {
 			if (Object.keys(source.slides).length > 100) {
 				res.send("Error: too many slides");
+				return;
 			}
 			if (Object.keys(room_data[target].slides).length > 100) {
 				res.send("Error: too many slides");
+				return;
 			}
 			var largest_slide_order = -1;
 			for (var key in room_data[target].slides) {
@@ -689,7 +695,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 					room_data[target].slides[uid] = new_slide;
 					io.to(target).emit('new_slide', new_slide);
 				}
-			}							
+			}
+			res.send("Success");
 		}
 	}
 	
@@ -716,12 +723,16 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				db.collection('stored_tactics').findOne({_id:source}, function(err, result) {
 					if (!err && result) { 
 						copy_slides(result, target, res);
+					} else {
+						res.send("Error: tactic not found");
 					}
 				});
 			} else {
 				db.collection('tactics').findOne({_id:source}, function(err, result) {
 					if (!err && result) { 
 						copy_slides(result, target, res);
+					} else {
+						res.send("Error: tactic not found");
 					}
 				});				
 			}
@@ -1050,7 +1061,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 		
 		function find_previous_slide(room, upper_bound) {
-			var largest = -1;
+			var largest = -9007199254740990;
 			var uid = 0;
 			for (var key in room_data[room].slides) {
 				var order = room_data[room].slides[key].order
@@ -1063,7 +1074,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 
 		function find_next_slide(room, lower_bound) {
-			var smallest = Number.MAX_SAFE_INTEGER;
+			var smallest = 9007199254740991;
 			var uid = 0;
 			for (var key in room_data[room].slides) {
 				var order = room_data[room].slides[key].order
@@ -1151,6 +1162,13 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				socket.broadcast.to(room).emit('rename_slide', uid, name);
 			}
 		});	
+		
+		socket.on('change_slide_order', function(room, uid, order) {
+			if (room_data[room] && room_data[room].slides[uid]) {
+				room_data[room].slides[uid].order = order;
+				socket.broadcast.to(room).emit('change_slide_order', uid, order);
+			}
+		});
 
 		socket.on('lock_room', function(room, is_locked) {
 			if (room_data[room]) {

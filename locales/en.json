@@ -315,5 +315,10 @@
 	"Last visited": "Last visited",
 	"Purple": "Purple",
 	"Share this tactic": "Share this tactic",
-	"payout": "payout"
+	"payout": "payout",
+	"Log out": "Log out",
+	"Draw style": "Draw style",
+	"Edge drag": "Edge drag",
+	"Radius drag": "Radius drag",
+	"Ruler": "Ruler"
 }
