@@ -253,424 +253,446 @@ div.inline { display: inline-block; vertical-align: middle; }
   background-image: url('http://karellodewijk.github.io/sprite.png');
 }
 
-.icon-bin_small {
+.icon-logout {
   background-position: -0px -0px;
   width: 16px;
   height: 16px;
 }
-.icon-facebook {
+.icon-wargaming {
   background-position: -0px -16px;
   width: 16px;
   height: 16px;
 }
-.icon-google {
+.icon-facebook {
   background-position: -0px -32px;
   width: 16px;
   height: 16px;
 }
-.icon-steam {
+.icon-twitter {
   background-position: -0px -48px;
   width: 16px;
   height: 16px;
 }
-.icon-twitter {
+.icon-google {
   background-position: -0px -64px;
   width: 16px;
   height: 16px;
 }
-.icon-wargaming {
+.icon-bin_small {
   background-position: -0px -80px;
   width: 16px;
   height: 16px;
 }
-.icon-from_link {
+.icon-steam {
   background-position: -0px -96px;
+  width: 16px;
+  height: 16px;
+}
+.icon-share {
+  background-position: -0px -112px;
   width: 18px;
   height: 18px;
 }
 .icon-send_to_link {
-  background-position: -0px -114px;
+  background-position: -0px -130px;
   width: 18px;
   height: 18px;
 }
-.icon-share {
-  background-position: -0px -132px;
+.icon-from_link {
+  background-position: -0px -148px;
   width: 18px;
   height: 18px;
 }
 .icon-grid_icon {
-  background-position: -0px -150px;
-  width: 22px;
-  height: 22px;
-}
-.icon-clear_curve {
-  background-position: -0px -172px;
+  background-position: -0px -166px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_draw {
-  background-position: -0px -194px;
+  background-position: -0px -188px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_icon {
-  background-position: -0px -216px;
+  background-position: -0px -210px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_line {
-  background-position: -0px -238px;
+  background-position: -0px -232px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_note {
-  background-position: -0px -260px;
+  background-position: -0px -254px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_polygon {
-  background-position: -0px -282px;
+  background-position: -0px -276px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_rectangle {
-  background-position: -0px -304px;
+  background-position: -0px -298px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_selected {
-  background-position: -0px -326px;
+  background-position: -0px -320px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_text {
-  background-position: -0px -348px;
+  background-position: -0px -342px;
   width: 22px;
   height: 22px;
 }
 .icon-copy {
-  background-position: -0px -370px;
+  background-position: -0px -364px;
   width: 22px;
   height: 22px;
 }
 .icon-cursor_icon {
-  background-position: -0px -392px;
+  background-position: -0px -386px;
   width: 22px;
   height: 22px;
 }
 .icon-curve {
-  background-position: -0px -414px;
+  background-position: -0px -408px;
   width: 22px;
   height: 22px;
 }
 .icon-curve_T {
-  background-position: -0px -436px;
+  background-position: -0px -430px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_arrow {
-  background-position: -0px -458px;
+  background-position: -0px -452px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_dashed_arrow {
-  background-position: -0px -480px;
+  background-position: -0px -474px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_dashed_line {
-  background-position: -0px -502px;
+  background-position: -0px -496px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_dotted_arrow {
-  background-position: -0px -524px;
+  background-position: -0px -518px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_dotted_line {
-  background-position: -0px -546px;
+  background-position: -0px -540px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_line {
-  background-position: -0px -568px;
+  background-position: -0px -562px;
   width: 22px;
   height: 22px;
 }
 .icon-cut {
-  background-position: -0px -590px;
+  background-position: -0px -584px;
   width: 22px;
   height: 22px;
 }
 .icon-dashed_arrow {
-  background-position: -0px -612px;
+  background-position: -0px -606px;
   width: 22px;
   height: 22px;
 }
 .icon-dashed_line {
-  background-position: -0px -634px;
+  background-position: -0px -628px;
   width: 22px;
   height: 22px;
 }
 .icon-dot_icon {
-  background-position: -0px -656px;
+  background-position: -0px -650px;
   width: 22px;
   height: 22px;
 }
 .icon-dotted_arrow {
-  background-position: -0px -678px;
+  background-position: -0px -672px;
   width: 22px;
   height: 22px;
 }
 .icon-dotted_line {
-  background-position: -0px -700px;
+  background-position: -0px -694px;
   width: 22px;
   height: 22px;
 }
 .icon-draw_circle_icon {
-  background-position: -0px -722px;
+  background-position: -0px -716px;
+  width: 22px;
+  height: 22px;
+}
+.icon-draw_circle_radius_icon {
+  background-position: -0px -738px;
   width: 22px;
   height: 22px;
 }
 .icon-export {
-  background-position: -0px -744px;
+  background-position: -0px -760px;
   width: 22px;
   height: 22px;
 }
 .icon-arrow {
-  background-position: -0px -766px;
+  background-position: -0px -782px;
   width: 22px;
   height: 22px;
 }
 .icon-floppy {
-  background-position: -0px -788px;
+  background-position: -0px -804px;
   width: 22px;
   height: 22px;
 }
 .icon-folder {
-  background-position: -0px -810px;
+  background-position: -0px -826px;
   width: 22px;
   height: 22px;
 }
 .icon-aw_icon {
-  background-position: -0px -832px;
+  background-position: -0px -848px;
   width: 22px;
   height: 22px;
 }
 .icon-bin {
-  background-position: -0px -854px;
+  background-position: -0px -870px;
   width: 22px;
   height: 22px;
 }
 .icon-area {
-  background-position: -0px -876px;
+  background-position: -0px -892px;
   width: 22px;
   height: 22px;
 }
 .icon-line_T {
-  background-position: -0px -898px;
+  background-position: -0px -914px;
   width: 22px;
   height: 22px;
 }
 .icon-line_icon {
-  background-position: -0px -920px;
+  background-position: -0px -936px;
   width: 22px;
   height: 22px;
 }
 .icon-link {
-  background-position: -0px -942px;
+  background-position: -0px -958px;
   width: 22px;
   height: 22px;
 }
 .icon-lock {
-  background-position: -0px -964px;
-  width: 22px;
-  height: 22px;
-}
-.icon-map_icon {
-  background-position: -0px -986px;
-  width: 22px;
-  height: 22px;
-}
-.icon-move {
-  background-position: -0px -1008px;
-  width: 22px;
-  height: 22px;
-}
-.icon-note {
-  background-position: -0px -1030px;
-  width: 22px;
-  height: 22px;
-}
-.icon-paste {
-  background-position: -0px -1052px;
-  width: 22px;
-  height: 22px;
-}
-.icon-patreon {
-  background-position: -0px -1074px;
-  width: 22px;
-  height: 22px;
-}
-.icon-paypal {
-  background-position: -0px -1096px;
-  width: 22px;
-  height: 22px;
-}
-.icon-pencil {
-  background-position: -0px -1118px;
-  width: 22px;
-  height: 22px;
-}
-.icon-ping_icon {
-  background-position: -0px -1140px;
-  width: 22px;
-  height: 22px;
-}
-.icon-polygon {
-  background-position: -0px -1162px;
-  width: 22px;
-  height: 22px;
-}
-.icon-rectangle {
-  background-position: -0px -1184px;
-  width: 22px;
-  height: 22px;
-}
-.icon-recticle_icon {
-  background-position: -0px -1206px;
-  width: 22px;
-  height: 22px;
-}
-.icon-redo {
-  background-position: -0px -1228px;
-  width: 22px;
-  height: 22px;
-}
-.icon-remove_slide {
-  background-position: -0px -1250px;
-  width: 22px;
-  height: 22px;
-}
-.icon-save {
-  background-position: -0px -1272px;
-  width: 22px;
-  height: 22px;
-}
-.icon-save_as {
-  background-position: -0px -1294px;
-  width: 22px;
-  height: 22px;
-}
-.icon-select {
-  background-position: -0px -1316px;
+  background-position: -0px -980px;
   width: 22px;
   height: 22px;
 }
 .icon-archive_icon {
-  background-position: -0px -1338px;
+  background-position: -0px -1002px;
   width: 22px;
   height: 22px;
 }
-.icon-send_to_link_22 {
-  background-position: -0px -1360px;
+.icon-map_icon {
+  background-position: -0px -1024px;
+  width: 22px;
+  height: 22px;
+}
+.icon-move {
+  background-position: -0px -1046px;
+  width: 22px;
+  height: 22px;
+}
+.icon-note {
+  background-position: -0px -1068px;
+  width: 22px;
+  height: 22px;
+}
+.icon-paste {
+  background-position: -0px -1090px;
+  width: 22px;
+  height: 22px;
+}
+.icon-patreon {
+  background-position: -0px -1112px;
+  width: 22px;
+  height: 22px;
+}
+.icon-paypal {
+  background-position: -0px -1134px;
+  width: 22px;
+  height: 22px;
+}
+.icon-pencil {
+  background-position: -0px -1156px;
+  width: 22px;
+  height: 22px;
+}
+.icon-ping_icon {
+  background-position: -0px -1178px;
+  width: 22px;
+  height: 22px;
+}
+.icon-polygon {
+  background-position: -0px -1200px;
+  width: 22px;
+  height: 22px;
+}
+.icon-rectangle {
+  background-position: -0px -1222px;
+  width: 22px;
+  height: 22px;
+}
+.icon-recticle_icon {
+  background-position: -0px -1244px;
+  width: 22px;
+  height: 22px;
+}
+.icon-redo {
+  background-position: -0px -1266px;
+  width: 22px;
+  height: 22px;
+}
+.icon-remove_slide {
+  background-position: -0px -1288px;
+  width: 22px;
+  height: 22px;
+}
+.icon-ruler_icon {
+  background-position: -0px -1310px;
+  width: 22px;
+  height: 22px;
+}
+.icon-save {
+  background-position: -0px -1332px;
+  width: 22px;
+  height: 22px;
+}
+.icon-save_as {
+  background-position: -0px -1354px;
+  width: 22px;
+  height: 22px;
+}
+.icon-select {
+  background-position: -0px -1376px;
   width: 22px;
   height: 22px;
 }
 .icon-circle_icon {
-  background-position: -0px -1382px;
+  background-position: -0px -1398px;
   width: 22px;
   height: 22px;
 }
-.icon-ship_icon {
-  background-position: -0px -1404px;
+.icon-send_to_link_22 {
+  background-position: -0px -1420px;
   width: 22px;
   height: 22px;
 }
 .icon-clear {
-  background-position: -0px -1426px;
+  background-position: -0px -1442px;
   width: 22px;
   height: 22px;
 }
-.icon-tank_icon {
-  background-position: -0px -1448px;
-  width: 22px;
-  height: 22px;
-}
-.icon-text_icon {
-  background-position: -0px -1470px;
-  width: 22px;
-  height: 22px;
-}
-.icon-text_on_background {
-  background-position: -0px -1492px;
+.icon-ship_icon {
+  background-position: -0px -1464px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_area {
-  background-position: -0px -1514px;
+  background-position: -0px -1486px;
   width: 22px;
   height: 22px;
 }
-.icon-undo {
-  background-position: -0px -1536px;
+.icon-tank_icon {
+  background-position: -0px -1508px;
   width: 22px;
   height: 22px;
 }
-.icon-unlock {
-  background-position: -0px -1558px;
+.icon-text_icon {
+  background-position: -0px -1530px;
+  width: 22px;
+  height: 22px;
+}
+.icon-text_on_background {
+  background-position: -0px -1552px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_circle {
-  background-position: -0px -1580px;
+  background-position: -0px -1574px;
+  width: 22px;
+  height: 22px;
+}
+.icon-undo {
+  background-position: -0px -1596px;
+  width: 22px;
+  height: 22px;
+}
+.icon-unlock {
+  background-position: -0px -1618px;
+  width: 22px;
+  height: 22px;
+}
+.icon-clear_curve {
+  background-position: -0px -1640px;
   width: 22px;
   height: 22px;
 }
 .icon-cs {
-  background-position: -0px -1602px;
+  background-position: -0px -1662px;
   width: 24px;
   height: 24px;
 }
 .icon-de {
-  background-position: -0px -1626px;
+  background-position: -0px -1686px;
   width: 24px;
   height: 24px;
 }
 .icon-en {
-  background-position: -0px -1650px;
+  background-position: -0px -1710px;
   width: 24px;
   height: 24px;
 }
 .icon-es {
-  background-position: -0px -1674px;
+  background-position: -0px -1734px;
   width: 24px;
   height: 24px;
 }
 .icon-fi {
-  background-position: -0px -1698px;
+  background-position: -0px -1758px;
   width: 24px;
   height: 24px;
 }
 .icon-fr {
-  background-position: -0px -1722px;
+  background-position: -0px -1782px;
   width: 24px;
   height: 24px;
 }
 .icon-pl {
-  background-position: -0px -1746px;
+  background-position: -0px -1806px;
   width: 24px;
   height: 24px;
 }
 .icon-ru {
-  background-position: -0px -1770px;
+  background-position: -0px -1830px;
   width: 24px;
   height: 24px;
 }
 .icon-sr {
-  background-position: -0px -1794px;
+  background-position: -0px -1854px;
   width: 24px;
   height: 24px;
 }
 
+.ui-sortable tr {     
+	cursor:pointer; 
+}
+
+.ui-sortable tr:hover {     
+	background:rgba(244,251,17,0.45) !important; 
+}

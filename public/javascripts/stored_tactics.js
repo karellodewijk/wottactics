@@ -1,3 +1,6 @@
+var servers = ['server1.wottactic.eu', 'server2.wottactic.eu', 'server3.wottactic.eu']
+//var servers = ['localhost']
+
 function escape(s) {
 	return ('' + s)
 		.replace(/\\/g, '\\\\')
@@ -45,18 +48,11 @@ $(document).ready(function() {
 			}
 			tactic_uid = link.slice(i+5).split('&')[0];
 			var nr = hashstring(tactic_uid);
-			var target = "127.0.0.1";
-			if (nr == 0) {
-				target = "52.28.202.223"
-			} else if (nr == 1) {
-				target = "52.29.3.249"
-			} else if (nr == 2) {
-				target = "52.58.127.207"
-			}
+			var target = servers[hashstring(tactic_uid) % servers.length];
 			
 			function parse_domain(domain) {
 				var subDomain = domain.split('.');	
-				if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
+				if (subDomain.length > 2) {
 					subDomain = subDomain.slice(1);
 				}
 				return '.' + subDomain.join('.')

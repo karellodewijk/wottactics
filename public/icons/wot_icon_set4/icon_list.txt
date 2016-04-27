@@ -6,3 +6,4 @@ explosion2.png
 focus.png
 spot.png
 warning.png
+finish.png
