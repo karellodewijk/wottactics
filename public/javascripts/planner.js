@@ -3923,13 +3923,17 @@ $(document).ready(function() {
 	});
 	
 	//network data responses
-	socket.on('connect',function() { 
-		var timer = setInterval(function() {
-			if (assets_loaded) {
-				socket.emit('join_room', room, game);
-				clearInterval(timer);
-			}
-		}, 2);	
+	socket.on('connect', function() { 
+		if (assets_loaded) {
+			socket.emit('join_room', room, game);
+		} else {
+			var timer = setInterval(function() {
+				if (assets_loaded) {
+					socket.emit('join_room', room, game);
+					clearInterval(timer);
+				}
+			}, 2);
+		}
 	});
 	
 	function cleanup() {
@@ -4089,5 +4093,4 @@ $(document).ready(function() {
 			renderer.render(stage);
 		}
 	});
-	
 });
