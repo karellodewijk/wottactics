@@ -18,7 +18,6 @@ function escape(s) {
 $(document).ready(function() {
 
 	$('#tactic_list').on('click', '.share_tactic', function (e) {
-		console.log("Clicking")
 		var textArea = document.createElement("textarea");
 		var link_text = $(this).attr('data-link');
 		textArea.value = link_text;
@@ -91,7 +90,6 @@ $(document).ready(function() {
 				$.post('/remove_tactic', {id: $(this).attr('data-uid')});
 				var node = $("#tactic_list").treetable("node", $(this).parent().parent().attr('data-tt-id'));
 				$("#tactic_list").treetable("unloadBranch", node);
-				console.log("tr[id='" + $(this).attr('data-uid') + "']")
 				$("tr[id='" + $(this).attr('data-uid') + "']").remove();
 			}
 		}

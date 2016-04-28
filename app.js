@@ -293,7 +293,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			res.redirect(301, 'http://' + subDomain.slice(1).join('.') + req.originalUrl);
 			return;
 		}
-		if (!req.session.passport.user) {
+		if (!req.session.passport || !req.session.passport.user) {
 			create_anonymous_user(req);		
 		}
 		if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
@@ -472,14 +472,15 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		// pretend we have the cookie
 		var sessionId = socket.request._query.connect_sid;
 		var host = socket.request._query.host;
+		
 		session_from_sessionid_host(sessionId, host, function(session) {
 			if (session) {
 				socket.request.session = session;
+				next();
 			} else {
 				socket.request.hostname = socket.handshake.headers.host;
 				virtualHostSession(socket.request, socket.request.res, next);					
 			}
-			next()
 		});
 	});
 	
@@ -901,37 +902,41 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//socket.io callbacks
 	io.sockets.on('connection', function(socket) { 
-		if (!socket.request.session.passport || !socket.request.session.passport.user) {
-			create_anonymous_user(socket.request);
-		}
-			
 		socket.on('join_room', function(room, game) {
+			if (!socket.request.session.passport || !socket.request.session.passport.user) {
+				create_anonymous_user(socket.request);
+			}
+			
 			if (!(room in room_data)) {
 				db.collection('tactics').findOne({_id:room}, function(err, result) {
-					if (!err && result) { 
-						room_data[room] = result;
-						room_data[room].last_join = Date.now();	
-						room_data[room].userlist = {};
-						room_data[room].trackers = {};
-					} else {
-						room_data[room] = {};
-						var slide0_uid = newUid();
-						room_data[room].slides = {};
-						room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid}
-						var background_uid = newUid();
-						room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:""};
-						room_data[room].active_slide = slide0_uid;
-						room_data[room].trackers = {};
-						room_data[room].userlist = {};
-						room_data[room].lost_users = {};
-						room_data[room].lost_identities = {};
-						var user = socket.request.session.passport.user;
-						room_data[room].lost_users[user.id] = "owner";
-						if (user.identity) {
-							room_data[room].lost_identities[user.identity] = {role: "owner"};
+					if (!err && result) {
+						if (!(room in room_data)) { //it may have been created already
+							room_data[room] = result;
+							room_data[room].last_join = Date.now();	
+							room_data[room].userlist = {};
+							room_data[room].trackers = {};
 						}
-						room_data[room].game = game;
-						room_data[room].locked = true;
+					} else {
+						if (!(room in room_data)) { //it may have been created already
+							room_data[room] = {};
+							var slide0_uid = newUid();
+							room_data[room].slides = {};
+							room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid}
+							var background_uid = newUid();
+							room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:""};
+							room_data[room].active_slide = slide0_uid;
+							room_data[room].trackers = {};
+							room_data[room].userlist = {};
+							room_data[room].lost_users = {};
+							room_data[room].lost_identities = {};
+							var user = socket.request.session.passport.user;
+							room_data[room].lost_users[user.id] = "owner";
+							if (user.identity) {
+								room_data[room].lost_identities[user.identity] = {role: "owner"};
+							}
+							room_data[room].game = game;
+							room_data[room].locked = true;
+						}
 					}
 					join_room(socket, room);
 					return;
@@ -1186,16 +1191,18 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			save_room(room, function(){});
 		});		
 		
+
+
 		
-	});
-	
-	
 	});
 	
 	//create server
 	var server = http.createServer(app);	
 	io.attach(server);
-	server.listen(secrets.port);
+	server.listen(secrets.port);	
+	
+	});
+	
 });
 
 
