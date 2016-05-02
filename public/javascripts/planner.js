@@ -546,10 +546,14 @@ function on_drag_start(e) {
 		
 		for (var i in selected_entities) {
 			selected_entities[i].origin_x = selected_entities[i].x;
-			selected_entities[i].origin_y = selected_entities[i].y;
+			selected_entities[i].origin_y = selected_entities[i].y;			
+			objectContainer.removeChild(selected_entities[i].container);
+			objectContainer.addChild(selected_entities[i].container);
 		}
 		_this.origin_x = _this.entity.x;
 		_this.origin_y = _this.entity.y;
+		
+
 		
 		drag_in_progress = false;
 	
@@ -3145,6 +3149,11 @@ function drag_entity(entity, x, y) {
 	if (entity.type == 'note') {
 		align_note_text(entity);
 	}
+	if (entity.container) {
+		objectContainer.removeChild(entity.container);
+		objectContainer.addChild(entity.container);
+	}
+	
 	renderer.render(stage);	
 }
 
@@ -4195,5 +4204,9 @@ $(document).ready(function() {
 			grid_layer.visible = bool;
 			renderer.render(stage);
 		}
+	});
+	
+	socket.on('reconnect', function() {
+		location.reload();
 	});
 });
