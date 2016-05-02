@@ -296,6 +296,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (!req.session.passport || !req.session.passport.user) {
 			create_anonymous_user(req);		
 		}
+		
 		if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
 			req.session.locale = subDomain[0];
 			subDomain = subDomain.slice(1);
