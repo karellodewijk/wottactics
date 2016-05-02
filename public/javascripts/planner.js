@@ -184,6 +184,9 @@ var assets_loaded = false;
 var select_alpha = 0.6;
 var resources_loading = 0;
 var circle_draw_style = "edge";
+var drag_in_progress = false;
+var current_text_element;
+
 
 var mouse_down_interrupted;
 document.body.onmouseup = function() {
@@ -193,14 +196,20 @@ document.body.onmouseup = function() {
 //keyboard shortcuts
 var shifted; //need to know if the shift key is pressed
 $(document).on('keyup keydown', function(e) {
+	if (!can_edit()) {
+		return;
+	}
 	shifted = e.shiftKey;	
-	if (document.activeElement.localName != "input") {	
-		if (e.type == "keyup") {
+	if (document.activeElement.localName != "input") {
+		if (e.type == "keydown") {
 			if (e.ctrlKey) {
 				if (e.keyCode==90) {
 					undo();
 				} else if (e.keyCode==89) {
 					redo();
+				} else if (e.keyCode==65) {
+					select_all();
+					e.preventDefault();
 				} else if (e.keyCode==83) {
 					if (my_user.logged_in && tactic_name && tactic_name != "" && socket) {
 						socket.emit("store", room, tactic_name);
@@ -212,7 +221,23 @@ $(document).on('keyup keydown', function(e) {
 				} else if (e.keyCode==86) {
 					paste();
 				}
-			} else if (e.keyCode==46) {
+			} else {
+				if ((active_context == "text_context" || active_context == "background_text_context") && current_text_element) {
+					remove(current_text_element.uid);
+					if(e.keyCode == 8) {
+						current_text_element.text = current_text_element.text.substring(0, current_text_element.text.length - 1);
+					} else {
+						console.log(String.fromCharCode(e.keyCode))
+						current_text_element.text += String.fromCharCode(e.keyCode);
+					}
+					
+					
+					create_entity(current_text_element);
+				}
+			}
+		}
+		if (e.type == "keyup") {
+			if (e.keyCode==46) {
 				clear_selected();
 			} else if (e.keyCode==16) {
 				if (active_context == 'line_context' && new_drawing) {
@@ -457,6 +482,7 @@ var last_mouse_location;
 var move_selected;
 var drag_timeout;
 function on_drag_start(e) {
+	drag_in_progress = true;
 	if (drag_timeout) {
 		clearTimeout(drag_timeout);
 	}
@@ -464,8 +490,10 @@ function on_drag_start(e) {
 	last_mouse_location = [mouse_x_abs(e.data.getLocalPosition(objectContainer).x), mouse_y_abs(e.data.getLocalPosition(objectContainer).y)];
 	mouse_down_interrupted = false;
 	var delay = 0;
-	if (active_context == "ping_context") {
+	if (active_context == "ping_context" && _this.entity.type != 'note') {
 		delay = 300;
+	} else if (active_context == "ruler_context") {
+		return;
 	} else {
 		if (active_context != 'drag_context') {
 			context_before_drag = active_context;
@@ -474,6 +502,8 @@ function on_drag_start(e) {
 	}
 	drag_timeout = setTimeout(function() {
 		if (mouse_down_interrupted) {
+			drag_in_progress = false;
+			deselect_all();
 			return;
 		}
 		if (is_room_locked && !my_user.role) {
@@ -520,6 +550,8 @@ function on_drag_start(e) {
 		}
 		_this.origin_x = _this.entity.x;
 		_this.origin_y = _this.entity.y;
+		
+		drag_in_progress = false;
 	
 	}, delay);
 }
@@ -927,10 +959,13 @@ function on_left_click(e) {
 	if (!can_edit()) {
 		return;
 	}
+	document.activeElement.blur();
 	if (active_context == 'drag_context') {
 		return;
 	}
-	deselect_all();
+	if (active_context != 'ping_context') {
+		deselect_all();
+	}
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
 		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]]};
@@ -998,6 +1033,10 @@ function on_left_click(e) {
 	} else if (active_context == 'icon_context') {
 		setup_mouse_events(undefined, on_icon_end);
 	} else if (active_context == 'ping_context') {
+		if (!drag_in_progress) {
+			deselect_all();
+		}
+		
 		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = new Date();
@@ -1085,7 +1124,7 @@ function create_note(note) {
 	note.container.entity = note; 
 	note.container.is_open = false;
 
-	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="top: 50%;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea style="height:400px; width:300px;" id="note_box"></textarea><br /><span id="notification_area" style="float: left;" hidden>Saved</span><div style="float:right;"><button id="save_note">save</button></div></div></div>');
+	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="top: 50%;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea style="height:400px; width:300px;" id="note_box"></textarea><br /><span id="notification_area" style="float: left;" hidden>Saved</span><div style="float:right; padding:3px;"></div></div></div>');
 	
 	$("#note_box", note.container.menu).val(note.text);
 	
@@ -1095,12 +1134,17 @@ function create_note(note) {
 	}
 	
 	$("#render_frame").append(note.container.menu);
-	$("#save_note", note.container.menu).on('click', function() {
+	
+	$("#note_box", note.container.menu).on('blur', function() {
+		if (!can_edit()) {
+			return;
+		}
 		note.text = $("#note_box", note.container.menu).val();
 		$("#notification_area", note.container.menu).show();
-		$("#notification_area", note.container.menu).fadeOut("slow");	
+		$("#notification_area", note.container.menu).fadeOut("slow");
 		snap_and_emit_entity(note);
 	});
+
 	
 	align_note_text(note);
 		
@@ -1518,8 +1562,31 @@ function on_circle_end(e) {
 	temp_draw_context.arc(size_x * center_x, size_y * center_y , Math.sqrt(size_x*size_y) * radius, 0, 2*Math.PI);
 	temp_draw_context.fill();
 	temp_draw_context.stroke();
-	
+
 	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data-style')};
+	
+	if (circle_draw_style == "radius" && background.size_x && background.size_x > 0 && background.size_y && background.size_y > 0) {
+		temp_draw_context.save();
+		temp_draw_context.lineWidth = 2 * (size_x/1000);
+		temp_draw_context.strokeStyle = "#FFFFFF";
+		temp_draw_context.fillStyle = "#FFFFFF";
+		temp_draw_context.beginPath();
+		temp_draw_context.moveTo(size_x * center_x, size_y * center_y);		
+		temp_draw_context.lineTo(size_x * mouse_x_rel(mouse_location.x), size_y * mouse_y_rel(mouse_location.y));
+		temp_draw_context.stroke();
+		var mid_line_x = (center_x + mouse_x_rel(mouse_location.x)) / 2 * size_x;
+		var mid_line_y = (center_y + mouse_y_rel(mouse_location.y)) / 2 * size_y;
+		temp_draw_context.font = "22px Arial";
+		var length = Math.sqrt(Math.pow(background.size_x * (center_x - mouse_x_rel(mouse_location.x)), 2) + Math.pow(background.size_y * 
+		(center_y - mouse_y_rel(mouse_location.y)), 2))
+		temp_draw_context.lineWidth = 0.5 * (size_x/1000);
+		temp_draw_context.strokeStyle = "#000000";
+		temp_draw_context.fillStyle = "#FFFFFF";
+		temp_draw_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
+		temp_draw_context.restore();		
+		new_shape.draw_radius = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
+	}
+	
 
 	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
 	if (success) {
@@ -1633,6 +1700,18 @@ function select_entities() {
 		room_data.slides[active_slide].entities[selected_entities[i].uid].container.alpha = select_alpha;
 	}
 	renderer.render(stage);
+}
+
+function select_all() {
+	previously_selected_entities = selected_entities;
+	selected_entities = [];
+	for (var key in room_data.slides[active_slide].entities) {
+		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
+			selected_entities.push(room_data.slides[active_slide].entities[key]);
+		}
+	}
+	select_entities();
+	undo_list.push(["select", selected_entities, previously_selected_entities]);
 }
 
 function deselect_all() {
@@ -2055,6 +2134,27 @@ function create_circle2(circle) {
 	_context.fill();
 	_context.stroke();
 	
+	if (circle.draw_radius) {
+		_context.save();
+		_context.lineWidth = 2 * (size_x/1000);
+		_context.strokeStyle = "#FFFFFF";
+		_context.fillStyle = "#FFFFFF";
+		_context.beginPath();
+		_context.moveTo(size_x * circle.x, size_y * circle.y);		
+		_context.lineTo(size_x * circle.draw_radius[0], size_y * circle.draw_radius[1]);
+		_context.stroke();
+		var mid_line_x = (circle.x + circle.draw_radius[0]) / 2 * size_x;
+		var mid_line_y = (circle.y + circle.draw_radius[1]) / 2 * size_y;
+		_context.font = "22px Arial";
+		var length = Math.sqrt(Math.pow(background.size_x * (circle.x - circle.draw_radius[0]), 2) + Math.pow(background.size_y * 
+		(circle.y - circle.draw_radius[1]), 2))
+		_context.lineWidth = 0.5 * (size_x/1000);
+		_context.strokeStyle = "#000000";
+		_context.fillStyle = "#FFFFFF";
+		_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
+		_context.restore();
+	}
+	
 	canvas2container(_context, _canvas, circle);
 }
 
@@ -2208,6 +2308,7 @@ function on_text_end(e) {
 	var y = mouse_y_rel(mouse_location.y);
 	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Open Sans'};
 	undo_list.push(["add", [text]]);
+	current_text_element = text;
 	create_text(text);
 	snap_and_emit_entity(text);
 }
@@ -3700,6 +3801,8 @@ $(document).ready(function() {
 			if (graphics) {
 				objectContainer.removeChild(graphics)
 			}
+			
+			current_text_element = undefined;
 			
 			if ( $(this).attr('id') == "undo") {
 				undo();
