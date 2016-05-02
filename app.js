@@ -669,6 +669,19 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  res.redirect(return_to);
 	});
 	
+	app.get('/disconnect', function(req, res) {
+		if (req.query.pw == secrets.mongodb_password) {
+			for (var room in room_data) {
+				save_room(room, function(){
+					io.to(room).emit('reconnect');
+				});
+			}
+			res.send('Success');
+		} else {
+			res.end('Invalid password')
+		}
+	});
+	
 	function copy_slides(source, target, res) {
 		if (source.slides) {
 			if (Object.keys(source.slides).length > 100) {
