@@ -54,6 +54,15 @@ http://cs.wottactic.eu/auth/facebook/callback
 http://cs.wottactic.com/auth/facebook/callback
 http://fi.wottactic.eu/auth/facebook/callback
 http://fi.wottactic.com/auth/facebook/callback
+http://en.wottactic.asia/auth/facebook/callback
+http://sr.wottactic.asia/auth/facebook/callback
+http://de.wottactic.asia/auth/facebook/callback
+http://es.wottactic.asia/auth/facebook/callback
+http://fr.wottactic.asia/auth/facebook/callback
+http://pl.wottactic.asia/auth/facebook/callback
+http://ru.wottactic.asia/auth/facebook/callback
+http://cs.wottactic.asia/auth/facebook/callback
+http://fi.wottactic.asia/auth/facebook/callback
 
 
 
