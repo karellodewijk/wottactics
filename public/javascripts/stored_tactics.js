@@ -1,5 +1,5 @@
-//var servers = ['server1.wottactic.eu', 'server2.wottactic.eu', 'server3.wottactic.eu']
-var servers = ['localhost']
+var servers = ['server1.wottactic.eu', 'server2.wottactic.eu', 'server3.wottactic.eu']
+//var servers = ['localhost']
 
 function escape(s) {
 	return ('' + s)
