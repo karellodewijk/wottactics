@@ -64,5 +64,16 @@ http://ru.wottactic.asia/auth/facebook/callback
 http://cs.wottactic.asia/auth/facebook/callback
 http://fi.wottactic.asia/auth/facebook/callback
 
+http://gametactic.org/auth/facebook/callback
+http://en.gametactic.org/auth/facebook/callback
+http://sr.gametactic.org/auth/facebook/callback
+http://de.gametactic.org/auth/facebook/callback
+http://es.gametactic.org/auth/facebook/callback
+http://fr.gametactic.org/auth/facebook/callback
+http://pl.gametactic.org/auth/facebook/callback
+http://ru.gametactic.org/auth/facebook/callback
+http://cs.gametactic.org/auth/facebook/callback
+http://fi.gametactic.org/auth/facebook/callback
+
 
 

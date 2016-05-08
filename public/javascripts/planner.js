@@ -1,8 +1,7 @@
-var servers = ['server1.wottactic.eu', 'server2.wottactic.eu', 'server3.wottactic.eu']
+var servers = ['server1.wottactic.eu']
 //var servers = ['localhost']
 
 var image_host;
-
 function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
 }
@@ -12,26 +11,43 @@ if (is_safari()) {
 } else {
 	image_host = "http://karellodewijk.github.io/icons/";
 }
+var asset_host = 'http://karellodewijk.github.io/';
 
-var assets;
 var game = $('meta[name=game]').attr("content");
+
+var loader = PIXI.loader;
+var assets = [];
 if (game == "wows") { //wows
-	assets = [image_host+"bb.png", image_host+"cv.png", image_host+"ca.png", image_host+"dd.png"];
+	assets.push(image_host+"bb.png", image_host+"cv.png", image_host+"ca.png", image_host+"dd.png");
+	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "blitz") {
-	assets = [image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"td.png", image_host+"arty.png"];	
+	assets.push(image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"td.png", image_host+"arty.png");	
+	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "aw") {
-	assets = [image_host+"aw_afv.png", image_host+"aw_lt.png", image_host+"aw_mbt.png", image_host+"aw_spg.png", image_host+"aw_td.png", image_host+"aw_grid.png"];
+	assets.push(image_host+"aw_afv.png", image_host+"aw_lt.png", image_host+"aw_mbt.png", image_host+"aw_spg.png", image_host+"aw_td.png", image_host+"aw_grid.png");
+	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else {
-	assets = [image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"arty.png", image_host+"td.png"];	
+	loader.add("wot_assets.png", asset_host + "wot_assets.png");
+	loader.add("wot_assets.json",  asset_host +  "wot_assets.json");
 }
 
-assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
-
-var loader = PIXI.loader; 
 for (var i in assets) {
 	loader.add(assets[i], assets[i]);
 }
-loader.load();
+
+loader.load(setup_assets);
+
+var texture_atlas;
+function setup_assets() {
+	texture_atlas = {}
+	for (var key in loader.resources) {
+		if (key.slice(-4) == "json") {
+			for (var key2 in loader.resources[key].data.tiles) {
+				texture_atlas[key2] = loader.resources[key].data.tiles[key2]; 
+			}
+		}
+	}
+}
 
 var room = location.search.split('room=')[1].split("&")[0];	
 
@@ -121,6 +137,7 @@ var min_track_move_distance_sq = min_track_move_distance * min_track_move_distan
 var active_context = 'ping_context';
 var userlist = {};
 var selected_icon;
+var selected_icon_no_color = false;
 var icon_extra_scale = 1;
 var icon_color = 0xff0000;
 var draw_color = 0xff0000;
@@ -186,7 +203,7 @@ var resources_loading = 0;
 var circle_draw_style = "edge";
 var drag_in_progress = false;
 var current_text_element;
-
+var last_mouse_location;
 
 var mouse_down_interrupted;
 document.body.onmouseup = function() {
@@ -199,7 +216,7 @@ $(document).on('keyup keydown', function(e) {
 	if (!can_edit()) {
 		return;
 	}
-	shifted = e.shiftKey;	
+	shifted = e.shiftKey;
 	if (document.activeElement.localName != "input") {
 		if (e.type == "keydown") {
 			if (e.ctrlKey) {
@@ -220,19 +237,6 @@ $(document).on('keyup keydown', function(e) {
 					cut();
 				} else if (e.keyCode==86) {
 					paste();
-				}
-			} else {
-				if ((active_context == "text_context" || active_context == "background_text_context") && current_text_element) {
-					remove(current_text_element.uid);
-					if(e.keyCode == 8) {
-						current_text_element.text = current_text_element.text.substring(0, current_text_element.text.length - 1);
-					} else {
-						console.log(String.fromCharCode(e.keyCode))
-						current_text_element.text += String.fromCharCode(e.keyCode);
-					}
-					
-					
-					create_entity(current_text_element);
 				}
 			}
 		}
@@ -269,8 +273,8 @@ function paste() {
 	}
 	deselect_all();
 	var mouse_location = renderer.plugins.interaction.mouse.global;
-	var mouse_x = mouse_x_rel(mouse_location.x);
-	var mouse_y = mouse_y_rel(mouse_location.y);
+	var mouse_x = from_x_local(mouse_location.x);
+	var mouse_y = from_y_local(mouse_location.y);
 	if (Math.abs(mouse_x) > 1 || Math.abs(mouse_y) > 1) {
 		mouse_x = mouse_y = 0;
 	}	
@@ -331,6 +335,105 @@ if (Modernizr.webgl) {
 
 var useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
+renderer.view.addEventListener("wheel", function(e) {
+	zoom(0.1, e.deltaY < 0);
+	e.preventDefault();
+});
+
+function zoom(amount, isZoomIn) {
+	direction = isZoomIn ? 1 : -1;
+	var factor = (1 + amount * direction);
+	
+	var mouse_location = renderer.plugins.interaction.mouse.global;
+	var old_scale = objectContainer.scale.x;
+	objectContainer.scale.x *= factor;
+	objectContainer.scale.y *= factor;
+	var new_scale = objectContainer.scale.x;
+
+	//pan to cursor
+	var scalechange = new_scale - old_scale;
+	objectContainer.x -= (mouse_location.x) * scalechange;
+	objectContainer.y -= (mouse_location.y) * scalechange;
+
+	correct();
+}
+
+function correct() {
+	//keep in frame
+	objectContainer.x = Math.min(0, objectContainer.x);
+	objectContainer.y = Math.min(0, objectContainer.y);
+	
+	var visible_width = (background_sprite.width * objectContainer.scale.x) + objectContainer.x;
+	if (visible_width < draw_canvas.width) {
+		objectContainer.x = Math.min(0, draw_canvas.width - (background_sprite.width * objectContainer.scale.x));
+		if (objectContainer.x == 0) {
+			objectContainer.scale.x = draw_canvas.width / background_sprite.width;		
+		}
+	}
+	
+	var visible_height = (background_sprite.height * objectContainer.scale.y) + objectContainer.y;
+	if (visible_height < draw_canvas.height) {
+		objectContainer.y = Math.min(0, draw_canvas.height - (background_sprite.height * objectContainer.scale.y));
+		if (objectContainer.y == 0) {
+			objectContainer.scale.y = draw_canvas.height / background_sprite.height;		
+		}
+	}
+	
+	//keep aspect ratio
+	if (objectContainer.scale.y != objectContainer.scale.x) {
+		objectContainer.scale.x = Math.max(objectContainer.scale.x, objectContainer.scale.y)
+		objectContainer.scale.y = Math.max(objectContainer.scale.x, objectContainer.scale.y)
+	}
+
+	for (var i in room_data.slides[active_slide].entities) {
+		if (room_data.slides[active_slide].entities[i]) {
+			if (room_data.slides[active_slide].entities[i].type == 'note') {
+				align_note_text(room_data.slides[active_slide].entities[i]);
+			} else if (room_data.slides[active_slide].entities[i].type == 'text') {
+				var entity = room_data.slides[active_slide].entities[i];
+				remove(entity.uid);
+				create_entity(entity);
+			}
+		}
+	}
+	
+	renderer.render(stage);
+}
+
+function pan() {
+	
+}
+
+var last_pan_loc;
+$(renderer.view).mousedown(function(e) {
+    if (e.which === 3 || e.which === 2) {
+		last_pan_loc = [renderer.plugins.interaction.mouse.global.x, renderer.plugins.interaction.mouse.global.y];
+        setup_mouse_events(on_pan);
+		e.preventDefault();
+    }
+});
+
+renderer.view.addEventListener('contextmenu', function(e) {
+	e.preventDefault();
+});
+
+$(renderer.view).mouseup(function(e) {
+    if (e.which === 3 || e.which === 2) {
+        setup_mouse_events(undefined, undefined);
+		e.preventDefault();
+    }
+});
+
+function on_pan(e) {
+	var mouse_location = renderer.plugins.interaction.mouse.global;
+	var diff_x = mouse_location.x - last_pan_loc[0];
+	var diff_y = mouse_location.y - last_pan_loc[1];
+	last_pan_loc = [mouse_location.x, mouse_location.y];
+	objectContainer.x += diff_x;
+	objectContainer.y += diff_y;	
+	correct();
+}
+
 // create the root of the scene graph
 var stage = new PIXI.Container();
 var objectContainer = new PIXI.Container();
@@ -356,70 +459,79 @@ objectContainer.addChild(grid_layer);
 
 var draw_canvas = document.createElement("canvas");
 $(draw_canvas).attr('style', 'position:absolute; z-index:'+ 2 + '; pointer-events:none');
-draw_canvas.width = size_x;
-draw_canvas.height = size_y;
+draw_canvas.width = renderer.view.width;
+draw_canvas.height = renderer.view.height;
 draw_context = draw_canvas.getContext("2d");
 
 var temp_draw_canvas = document.createElement("canvas");
 $(temp_draw_canvas).attr('style', 'position:absolute; z-index:'+ 3 + '; pointer-events:none');
-temp_draw_canvas.width = size_x;
-temp_draw_canvas.height = size_y;
+temp_draw_canvas.width = renderer.view.width;
+temp_draw_canvas.height = renderer.view.height;
 temp_draw_context = temp_draw_canvas.getContext("2d");
 
 //resize the render window
 function resize_renderer(new_size_x, new_size_y) {
 	var last_size_x = size_x;
 	var last_size_y = size_y;
-	size_x = new_size_x;
-	size_y = new_size_y;
-	objectContainer.scale.x *= size_x/last_size_x;
-	objectContainer.scale.y *= size_y/last_size_y;	
-	renderer.resize(size_x, size_y);
+	size_x = new_size_y;
+	size_y = new_size_y;	
+	objectContainer.scale.x *= size_y/last_size_y;
+	objectContainer.scale.y *= size_y/last_size_y;
 	
-	draw_canvas.width = size_x;
-	draw_canvas.height = size_y;
-	temp_draw_canvas.width = size_x;
-	temp_draw_canvas.height = size_y;
+	draw_canvas.width = new_size_x;
+	draw_canvas.height = new_size_y;
+	temp_draw_canvas.width = new_size_x;
+	temp_draw_canvas.height = new_size_y;
 	
-	$("#render_frame").attr('style', 'height:' + size_y + 'px; width:' + size_x + 'px;');
-	
-	for (var i in room_data.slides[active_slide].entities) {
-		if (room_data.slides[active_slide].entities[i]) {
-			if (room_data.slides[active_slide].entities[i].type == 'note') {
-				align_note_text(room_data.slides[active_slide].entities[i]);
-			} else if (room_data.slides[active_slide].entities[i].type == 'text') {
-				var entity = room_data.slides[active_slide].entities[i];
-				remove(entity.uid);
-				create_entity(entity);
-			}
-		}
+	if (background_sprite.texture) {
+		background_sprite.width = new_size_x / objectContainer.scale.x;
+		background_sprite.height = new_size_y / objectContainer.scale.y;
 	}
+	
+	renderer.resize(new_size_x, new_size_y);
+	$("#render_frame").attr('style', 'height:' + new_size_y + 'px; width:' + new_size_x + 'px;');
+	
+	zoom(0,true);
 	renderer.render(stage);
 };
 
 window.onresize = function() {
-	size = Math.min(window.innerHeight, window.innerWidth) - border;
-	if (size_x > size_y) {
-		resize_renderer(size, size * size_y / size_x);
+	var ratio = 1;
+	if (background_sprite.texture) {
+		ratio = background_sprite.texture.width /  background_sprite.texture.height;
+	}	
+	if (window.innerWidth > window.innerHeight * ratio) {
+		var size_y = window.innerHeight - 15;
+		var size_x = size_y * ratio;		
+		if (window.innerWidth - $('.side_bar').width() - 50 > window.innerHeight) {
+			if (size_x > window.innerWidth - $('.side_bar').width() - 50) {
+				size_x = window.innerWidth - $('.side_bar').width() - 50;
+				size_y = size_x / ratio;
+			}
+		}
+		resize_renderer(size_x, size_y);
 	} else {
-		resize_renderer(size * size_x / size_y, size);
+		var size_x = window.innerWidth - 15;
+		var size_y = size_x / ratio;
+		
+		resize_renderer(size_x, size_y);
 	}
 };
 
 function x_rel(x) {
-	return x*objectContainer.scale.x/size_x;
+	return x/(background_sprite.width);
 }
 
 function x_abs(x) {
-	return x*size_x/objectContainer.scale.x;
+	return x*(background_sprite.width);
 }
 
 function y_rel(y) {
-	return y*objectContainer.scale.y/size_y;
+	return y/(background_sprite.height);
 }
 
 function y_abs(y) {
-	return y*size_y/objectContainer.scale.y;
+	return y*(background_sprite.height);
 }
 
 function mouse_x_abs(x) {
@@ -431,25 +543,50 @@ function mouse_y_abs(y) {
 }
 
 function mouse_x_rel(x) {
-	return x * objectContainer.scale.x / size_x;
+	return x/(background_sprite.width / background_sprite.scale.x);
 }
 
 function mouse_y_rel(y) {
-	return y * objectContainer.scale.y / size_y;
+	return y/(background_sprite.height / background_sprite.scale.y);
+
 }
 
-function set_background(new_background) {
+function set_background(new_background, cb) {
 	background = new_background;
+	history[background.uid] = background;
+	
+	if ($("#map_select option[value='" + background.path + "']").length > 0) {
+		$("#map_select").val(background.path).change();	
+		$( "#use_wotbase" ).prop("checked", false);
+		$('#map_select_container').show();
+		$('#wotbase_map_select_container').hide();
+	} else {
+		$("#map_select_wotbase").val(background.path).change();
+		$( "#use_wotbase" ).prop("checked", true);
+		$('#map_select_container').hide();
+		$('#wotbase_map_select_container').show();
+	}
 	
 	if (background.path != "") {
-		background_sprite.texture = PIXI.Texture.fromImage(background.path);
-		if (!background_sprite.texture.baseTexture.hasLoaded) {
+		var texture = PIXI.Texture.fromImage(background.path);
+		
+		var on_loaded = function() {
+			background_sprite.texture = texture;				
+			window.onresize();
+			renderer.render(stage);	
+			room_data.slides[active_slide].entities[new_background.uid] = new_background;
+			if (cb)	cb();
+		}
+		
+		if (!texture.baseTexture.hasLoaded) {
 			resources_loading++;
-			background_sprite.texture.baseTexture.on('loaded', function() {
+			texture.baseTexture.on('loaded', function() {
 				resources_loading--;
-				renderer.render(stage);
+				on_loaded();
 			});
-		}	
+		} else {
+			on_loaded();
+		}
 		if (background.size_x && background.size_y && background.size_x > 0 && background.size_y > 0) {
 			$("#map_size").text("("+background.size_x+" x "+background.size_y+")");
 		} else {
@@ -467,18 +604,14 @@ function set_background(new_background) {
 		empty_backround.endFill();
 		background_sprite.texture = empty_backround.generateTexture();
 		$("#map_size").text("");
-	}
-
-	history[background.uid] = background;
-	$("#map_select").val(background.path).change();	
-	renderer.render(stage);	
-	room_data.slides[active_slide].entities[new_background.uid] = new_background;
+		if (cb)	cb();
+		renderer.render(stage);	
+	}	
 }
 
 
 
 var context_before_drag;
-var last_mouse_location;
 var move_selected;
 var drag_timeout;
 function on_drag_start(e) {
@@ -487,7 +620,8 @@ function on_drag_start(e) {
 		clearTimeout(drag_timeout);
 	}
 	_this = this;
-	last_mouse_location = [mouse_x_abs(e.data.getLocalPosition(objectContainer).x), mouse_y_abs(e.data.getLocalPosition(objectContainer).y)];
+	var mouse_location = e.data.getLocalPosition(background_sprite);
+	last_mouse_location = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 	mouse_down_interrupted = false;
 	var delay = 0;
 	if (active_context == "ping_context" && _this.entity.type != 'note') {
@@ -607,18 +741,18 @@ function move_entity(entity, delta_x, delta_y) {
 	var new_x = entity.container.x + x_abs(delta_x);
 	var new_y = entity.container.y + y_abs(delta_y);
 	
-	new_x = Math.max(new_x, 0);
-	new_y = Math.max(new_y, 0);
-	
-	var new_x, new_y;
-	if (entity.type == 'icon') {
+	//I don't remember why I restrict moving icons, etc like this.
+	//new_x = Math.max(new_x, 0);
+	//new_y = Math.max(new_y, 0);
+	//var new_x, new_y;
+	//if (entity.type == 'icon') {
 		//in case of icons, do not count the label as a hit box
-		new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.getChildAt(0).width)));
-		new_y = Math.min(new_y, y_abs(1 - x_rel(entity.container.getChildAt(0).height)));		
-	} else {	
-		new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.width)));
-		new_y = Math.min(new_y, y_abs(1 - y_rel(entity.container.height)));
-	}
+		//new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.getChildAt(0).width)));
+		//new_y = Math.min(new_y, y_abs(1 - x_rel(entity.container.getChildAt(0).height)));		
+	//} else {	
+		//new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.width)));
+		//new_y = Math.min(new_y, y_abs(1 - y_rel(entity.container.height)));
+	//}
 		
 	//move by relative positioning cause x on the container is the left upper corner of the bounding box
 	//and for the entity this is mostly the start point
@@ -628,9 +762,9 @@ function move_entity(entity, delta_x, delta_y) {
 
 function on_drag_move(e) {
 	//move by deltamouse
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	var delta_x = x_rel(mouse_x_abs(mouse_location.x) - last_mouse_location[0]);
-	var delta_y = y_rel(mouse_y_abs(mouse_location.y) - last_mouse_location[1]);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
+	var delta_x = mouse_x_rel(mouse_location.x) - last_mouse_location[0];
+	var delta_y = mouse_y_rel(mouse_location.y) - last_mouse_location[1];
 	if (move_selected) {
 		for (var i in selected_entities) {
 			move_entity(selected_entities[i], delta_x, delta_y);
@@ -639,7 +773,7 @@ function on_drag_move(e) {
 		move_entity(this.entity, delta_x, delta_y);
 	}
 
-	last_mouse_location = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
+	last_mouse_location = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 	renderer.render(stage);
 }
 
@@ -653,7 +787,7 @@ function remove(uid, keep_entity) {
 		
 		if (room_data.slides[active_slide].entities[uid] && room_data.slides[active_slide].entities[uid].type == "icon") {
 			try {
-				var counter = $('#'+room_data.slides[active_slide].entities[uid].tank).find("span");
+				var counter = $('button[id*="'+room_data.slides[active_slide].entities[uid].tank+'"]').find("span");
 				counter.text((parseInt(counter.text())-1).toString());		
 				counter = $("#icon_context").find("span").first();
 				counter.text((parseInt(counter.text())-1).toString());
@@ -699,25 +833,31 @@ function move_track_recursive(uid, step_x, step_y, count) {
 }
 
 function ping(x, y, color) {
-	var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
-	var sprite = new PIXI.Sprite(texture);
-
+	var sprite;
+	if (texture_atlas["circle.png"]) {
+		var img = texture_atlas["circle.png"];
+		var texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
+		sprite = new PIXI.Sprite(texture);
+	} else {
+		var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
+		sprite = new PIXI.Sprite(texture);
+	}
+	
 	sprite.tint = color;
 	sprite.anchor.set(0.5);
-	sprite.width = x_abs(0.075);
-	sprite.height = x_abs(0.075);
-	sprite.scale.x = 0.05;
-	sprite.scale.y = 0.05;
+	sprite.width = x_abs(0.012);
+	sprite.height = x_abs(0.012);
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
-	
+
 	objectContainer.addChild(sprite);
 	renderer.render(stage);
 	
 	var steps = 10;
+	var scale_step = sprite.scale.x / 2;
 	var loop = setInterval(function() {
-		sprite.scale.x += 0.03;
-		sprite.scale.y += 0.03;
+		sprite.scale.x += scale_step;
+		sprite.scale.y += scale_step;
 		sprite.alpha -= 0.06;
 		
 		renderer.render(stage);	
@@ -740,12 +880,15 @@ function setup_mouse_events(on_move, on_release) {
 }
 
 function align_note_text(entity) {
-	if (entity.container.is_open) {
-		entity.container.menu.attr('style', 'top:' + y_abs(entity.y) * objectContainer.scale.x +'px; left:' + (x_abs(entity.x) + entity.container.width)  * objectContainer.scale.y + 'px; display: block;');
-	} else {
-		entity.container.menu.attr('style', 'top:' + y_abs(entity.y) * objectContainer.scale.x +'px; left:' + (x_abs(entity.x) + entity.container.width)  * objectContainer.scale.y + 'px; display: block; visibility: hidden;');
+	if (entity.container) {
+		var x = objectContainer.x + x_abs(entity.x) * objectContainer.scale.x + x_abs(0.035) * objectContainer.scale.x;
+		var y = objectContainer.y + y_abs(entity.y) * objectContainer.scale.y;
+		if (entity.container.is_open) {
+			entity.container.menu.attr('style', 'top:' + y +'px; left:' + x + 'px; display: block;');
+		} else {
+			entity.container.menu.attr('style', 'top:' + y +'px; left:' + x + 'px; display: block; visibility: hidden;');
+		}
 	}
-
 }
 
 //borrowed from http://www.dbp-consulting.com/tutorials/canvas/CanvasArrow.html
@@ -959,7 +1102,7 @@ function can_edit() {
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_draw_time;
 function on_left_click(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 	if (!can_edit()) {
 		return;
 	}
@@ -974,7 +1117,7 @@ function on_left_click(e) {
 		setup_mouse_events(on_draw_move, on_draw_end);
 		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]]};
 		init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
-		draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
+		draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		last_draw_time = Date.now();
 	} else if (active_context == 'ruler_context') {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
@@ -986,7 +1129,7 @@ function on_left_click(e) {
 			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style') };
 			
 			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
-			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
+			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		}
 	} else if (active_context == 'polygon_context') {
 		if (!new_drawing) {
@@ -994,14 +1137,14 @@ function on_left_click(e) {
 			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style')};
 
 			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
-			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
+			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		
 			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 			
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
-			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
+			graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
+			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			
 			renderer.render(stage);
@@ -1011,10 +1154,9 @@ function on_left_click(e) {
 			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style') };
 
 			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
-			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
+			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 
 			setup_mouse_events(on_curve_move, on_curve_end);
-			
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
@@ -1022,14 +1164,14 @@ function on_left_click(e) {
 			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style')};
 			
 			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
-			draw_context.moveTo(size_x*(new_drawing.x), size_y*(new_drawing.y));
+			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		
 			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 			
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
-			graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-			graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
+			graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
+			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			
 			renderer.render(stage);
@@ -1047,7 +1189,7 @@ function on_left_click(e) {
 		setup_mouse_events(on_ping_move, on_ping_end);
 	} else if (active_context == "select_context") {
 		setup_mouse_events(on_select_move, on_select_end);
-		left_click_origin = [mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y)];
+		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 		deselect_all();
 	} else if (active_context == 'text_context') {
 		setup_mouse_events(undefined, on_text_end);
@@ -1086,15 +1228,12 @@ function start_tracking(mouse_location) {
 	setup_mouse_events(on_track_move, undefined);
 	var shape = $('#track_shape .active').attr('data-cursor');
 	var size;
-	var scale;
-	if (shape == 'circle' || shape == 'cursor') {
-		scale = 0.25;
-	} else if (shape == 'recticle') {
-		scale = 1;
+	if (shape == 'dot' || shape == 'cursor') {
+		size = 0.025;
 	} else {
-		scale = 0.5;
+		size = 0.05;
 	}
-	my_tracker = {uid:newUid(), shape:shape, scale:scale, size_y:size, color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
+	my_tracker = {uid:newUid(), shape:shape, size:size, color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
 	last_track_position = [my_tracker.x, my_tracker.y];
 	socket.emit("track", room, my_tracker);
 	create_tracker(my_tracker);
@@ -1102,7 +1241,7 @@ function start_tracking(mouse_location) {
 
 function on_note_end(e) {
 	setup_mouse_events(undefined, undefined);
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	var note = {uid:newUid(), type: 'note', x:x, y:y, scale:1, color:text_color, alpha:1, text:"", font_size:font_size, font:'Arial'};
@@ -1114,8 +1253,15 @@ function on_note_end(e) {
 }
 
 function create_note(note) {
-	var texture = PIXI.Texture.fromImage(image_host+"note.png");
-	var sprite = new PIXI.Sprite(texture);
+	var sprite;
+	if (texture_atlas["note.png"]) {
+		var img = texture_atlas["note.png"];
+		var texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
+		sprite = new PIXI.Sprite(texture);
+	} else {
+		var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
+		sprite = new PIXI.Sprite(texture);
+	}
 
 	sprite.height = (sprite.height/29) * y_abs(note_scale) * note.scale;
 	sprite.width = (sprite.width/29) * x_abs(note_scale) * note.scale;
@@ -1162,8 +1308,15 @@ function create_note(note) {
 	room_data.slides[active_slide].entities[note.uid] = note;
 }
 
-function create_tracker(tracker) {
-	var texture = PIXI.Texture.fromImage(image_host + tracker.shape + '.png');
+function create_tracker(tracker) {	
+	var texture
+	if (texture_atlas[tracker.shape + '.png']) {
+		var img = texture_atlas[tracker.shape + '.png'];
+		texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
+	} else {
+		texture = PIXI.Texture.fromImage(image_host + tracker.shape + '.png');
+	}
+	
 	tracker.container = new PIXI.Sprite(texture);	
 	tracker.container.tint = tracker.color;
 	if (tracker.shape != 'cursor') {
@@ -1171,10 +1324,11 @@ function create_tracker(tracker) {
 	}
 	tracker.container.x = x_abs(tracker.x);
 	tracker.container.y = y_abs(tracker.y);
-	var rel_x = x_rel(tracker.container.width);
-	var rel_y = y_rel(tracker.container.height);
-	tracker.container.width = x_abs(rel_x * tracker.scale);
-	tracker.container.height = y_abs(rel_y * tracker.scale);	
+		
+	var ratio = tracker.container.width/tracker.container.height;
+	tracker.container.height = y_abs(tracker.size);
+	tracker.container.width = x_abs(tracker.size * ratio);	
+		
 	trackers[tracker.uid] = tracker;
 	objectContainer.addChild(trackers[tracker.uid].container);
 	renderer.render(stage);
@@ -1188,7 +1342,7 @@ function remove_tracker(uid) {
 
 var last_track_update = Date.now();
 function on_track_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
@@ -1214,13 +1368,13 @@ function on_track_move(e) {
 
 function on_area_end(e) {
 	try {
-		var mouse_location = e.data.getLocalPosition(objectContainer);	
+		var mouse_location = e.data.getLocalPosition(background_sprite);	
 		var x = mouse_x_rel(mouse_location.x);
 		var y = mouse_y_rel(mouse_location.y);
-		x = Math.max(0, x);
-		y = Math.max(0, y);
-		x = Math.min(1, x);
-		y = Math.min(1, y);
+		//x = Math.max(0, x);
+		//y = Math.max(0, y);
+		//x = Math.min(1, x);
+		//y = Math.min(1, y);
 		x -= new_drawing.x;
 		y -= new_drawing.y;
 	} catch (e) {}
@@ -1270,13 +1424,13 @@ function on_area_end(e) {
 }
 
 function on_curve_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	x = Math.max(0, x);
-	y = Math.max(0, y);
-	x = Math.min(1, x);
-	y = Math.min(1, y);
+	//x = Math.max(0, x);
+	//y = Math.max(0, y);
+	//x = Math.min(1, x);
+	//y = Math.min(1, y);
 	var new_x = x - new_drawing.x;
 	var new_y = y - new_drawing.y;
 	new_drawing.path.push([new_x, new_y]);
@@ -1294,13 +1448,13 @@ function on_curve_move(e) {
 }
 
 function on_curve_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	x = Math.max(0, x);
-	y = Math.max(0, y);
-	x = Math.min(1, x);
-	y = Math.min(1, y);
+	//x = Math.max(0, x);
+	//y = Math.max(0, y);
+	//x = Math.min(1, x);
+	//y = Math.min(1, y);
 	var new_x = x - new_drawing.x;
 	var new_y = y - new_drawing.y;
 	
@@ -1339,10 +1493,11 @@ function on_curve_end(e) {
 	} else {
 		new_drawing.path.push([new_x, new_y]);
 		objectContainer.removeChild(graphics);
+		
 		graphics = new PIXI.Graphics();
 		graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 1);
-		graphics.moveTo(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y));
-		graphics.drawShape(new PIXI.Circle(mouse_x_abs(mouse_location.x), mouse_y_abs(mouse_location.y), x_abs(end_circle_radius)));
+		graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
+		graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 		objectContainer.addChild(graphics);
 		renderer.render(stage);
 		
@@ -1357,63 +1512,15 @@ function on_curve_end(e) {
 	}
 }
 
-function on_line_end(e) {
-	try {
-		var mouse_location = e.data.getLocalPosition(objectContainer);	
-		var x = mouse_x_rel(mouse_location.x);
-		var y = mouse_y_rel(mouse_location.y);
-		x = Math.max(0, x);
-		y = Math.max(0, y);
-		x = Math.min(1, x);
-		y = Math.min(1, y);
-		x -= new_drawing.x;
-		y -= new_drawing.y;
-		if ((new_drawing.path.length == 0) || x != last(new_drawing.path)[0] || y != last(new_drawing.path)[1]) {
-			new_drawing.path.push([x, y]);
-		}	
-	} catch (e) {}
-	var a;
-	if (new_drawing.path.length == 1) {
-		a = [size_x * (new_drawing.x), size_y * (new_drawing.y)];
-	} else {
-		a = [size_x * (new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
-			 size_y * (new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
-	}
-	var b = [size_x * (last(new_drawing.path)[0] + new_drawing.x), size_y * (last(new_drawing.path)[1] + new_drawing.y)];
-	
-	draw_context.lineTo(b[0], b[1]);
-	draw_context.stroke();
-	
-	if (!shifted) {
-		if (new_drawing.end == "arrow") {
-			draw_arrow3(draw_context, a, b, new_drawing);
-			draw_context.fill();
-		} else if (new_drawing.end == "T") {
-			draw_T3(draw_context, a, b, new_drawing);
-			draw_context.stroke();			
-		}
-
-		var success = canvas2container(draw_context, draw_canvas, new_drawing);
-		if (success) {
-			emit_entity(new_drawing);
-			undo_list.push(["add", [new_drawing]]);
-		}
-		
-		setup_mouse_events(undefined, undefined);
-		stop_drawing();
-		new_drawing = null;
-	}
-}
-
 function on_polygon_end(e) {
 	try {
-		var mouse_location = e.data.getLocalPosition(objectContainer);	
+		var mouse_location = e.data.getLocalPosition(background_sprite);	
 		var x = mouse_x_rel(mouse_location.x);
 		var y = mouse_y_rel(mouse_location.y);
-		x = Math.max(0, x);
-		y = Math.max(0, y);
-		x = Math.min(1, x);
-		y = Math.min(1, y);
+		//x = Math.max(0, x);
+		//y = Math.max(0, y);
+		//x = Math.min(1, x);
+		//y = Math.min(1, y);
 		x -= new_drawing.x;
 		y -= new_drawing.y;
 	} catch (e) {}
@@ -1424,7 +1531,7 @@ function on_polygon_end(e) {
 	
 	if (distance_to_start_sq < (end_circle_radius*end_circle_radius)) {
 		new_drawing.path.push([0, 0]);
-		draw_context.lineTo(size_x * new_drawing.x, size_y * new_drawing.y);
+		draw_context.lineTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		draw_context.stroke();
 		draw_context.fill();
 		
@@ -1445,12 +1552,12 @@ function on_polygon_end(e) {
 		}
 		var a;
 		if (new_drawing.path.length == 1) {
-			a = [size_x * (new_drawing.x), size_y * (new_drawing.y)];
+			a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
 		} else {
-			a = [size_x * (new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
-				 size_y * (new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
+			a = [to_x_local(new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
+				 to_y_local(new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
 		}
-		var b = [size_x * (last(new_drawing.path)[0] + new_drawing.x), size_y * (last(new_drawing.path)[1] + new_drawing.y)];
+		var b = [to_x_local(last(new_drawing.path)[0] + new_drawing.x), to_y_local(last(new_drawing.path)[1] + new_drawing.y)];
 
 		draw_context.lineTo(b[0], b[1]);
 		draw_context.stroke();
@@ -1467,7 +1574,7 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 }
 
 function on_ruler_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 
 	var map_size_x = background.size_x ? background.size_x : 0;
 	var map_size_y = background.size_y ? background.size_y : 0;
@@ -1479,18 +1586,22 @@ function on_ruler_move(e) {
 	temp_draw_context.strokeStyle = "#FFFFFF";
 	temp_draw_context.fillStyle = "#FFFFFF";
 	temp_draw_context.beginPath();
-	temp_draw_context.moveTo(size_x * left_click_origin[0], size_y * left_click_origin[1]);		
-	temp_draw_context.lineTo(size_x * mouse_x_rel(mouse_location.x), size_y * mouse_y_rel(mouse_location.y));
-	temp_draw_context.stroke();
-	var mid_line_x = (left_click_origin[0] + mouse_x_rel(mouse_location.x)) / 2 * size_x;
-	var mid_line_y = (left_click_origin[1] + mouse_y_rel(mouse_location.y)) / 2 * size_y;
-	temp_draw_context.font = "22px Arial";
-	var length = Math.sqrt(Math.pow(map_size_x * (left_click_origin[0] - mouse_x_rel(mouse_location.x)), 2) + Math.pow(map_size_y * 
-	(left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2))
-	temp_draw_context.lineWidth = 0.5 * (size_x/1000);
+	temp_draw_context.moveTo(to_x_local(left_click_origin[0]), to_y_local(left_click_origin[1]));		
+	temp_draw_context.lineTo(to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y)));
+	temp_draw_context.stroke();	
+	var mid_line_x = (to_x_local(left_click_origin[0]) + to_x_local(mouse_x_rel(mouse_location.x))) / 2;
+	var mid_line_y = (to_y_local(left_click_origin[1]) + to_y_local(mouse_y_rel(mouse_location.y))) / 2;
+	temp_draw_context.font = "22px Arial";		  
+	var length = Math.sqrt(Math.pow(map_size_x * (left_click_origin[0] - mouse_x_rel(mouse_location.x)), 2) 
+						 + Math.pow(map_size_y * (left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2))  
+	temp_draw_context.lineWidth = to_x_local(0.5)/1000;
 	temp_draw_context.strokeStyle = "#000000";
 	temp_draw_context.fillStyle = "#FFFFFF";
-	temp_draw_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
+	var unit = "m";
+	if (game == "lol") {
+		unit = "u";
+	}	
+	temp_draw_context.fillText(""+Math.round(10*length)/10+unit, mid_line_x, mid_line_y);
 	temp_draw_context.restore();
 	
 }
@@ -1501,25 +1612,25 @@ function on_ruler_end(e) {
 }
 
 function on_circle_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 	
 	var center_x, center_y, radius
 	if (circle_draw_style == "edge") {
 		center_x = (left_click_origin[0] + mouse_x_rel(mouse_location.x)) / 2;
 		center_y = (left_click_origin[1] + mouse_y_rel(mouse_location.y)) / 2;
-		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
+		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) +
+				           Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
 		radius /= 2;
 	} else if (circle_draw_style == "radius") {
 		center_x = left_click_origin[0];
 		center_y = left_click_origin[1];
-		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
-		
-
+		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + 
+		                   Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
 	}
 	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
 	temp_draw_context.beginPath();
-	temp_draw_context.arc(size_x * center_x, size_y * center_y , Math.sqrt(size_x*size_y) * radius, 0, 2*Math.PI);
+	temp_draw_context.arc(to_x_local(center_x), to_y_local(center_y), background_sprite.height * objectContainer.scale.y  * radius, 0, 2*Math.PI);
 	temp_draw_context.fill();
 	temp_draw_context.stroke();
 	
@@ -1529,15 +1640,15 @@ function on_circle_move(e) {
 		temp_draw_context.strokeStyle = "#FFFFFF";
 		temp_draw_context.fillStyle = "#FFFFFF";
 		temp_draw_context.beginPath();
-		temp_draw_context.moveTo(size_x * center_x, size_y * center_y);		
-		temp_draw_context.lineTo(size_x * mouse_x_rel(mouse_location.x), size_y * mouse_y_rel(mouse_location.y));
+		temp_draw_context.moveTo(to_x_local(center_x), to_y_local(center_y));		
+		temp_draw_context.lineTo(to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y)));
 		temp_draw_context.stroke();
-		var mid_line_x = (center_x + mouse_x_rel(mouse_location.x)) / 2 * size_x;
-		var mid_line_y = (center_y + mouse_y_rel(mouse_location.y)) / 2 * size_y;
+		var mid_line_x = to_x_local((center_x + mouse_x_rel(mouse_location.x)) / 2);
+		var mid_line_y = to_y_local((center_y + mouse_y_rel(mouse_location.y)) / 2);
 		temp_draw_context.font = "22px Arial";
 		var length = Math.sqrt(Math.pow(background.size_x * (center_x - mouse_x_rel(mouse_location.x)), 2) + Math.pow(background.size_y * 
 		(center_y - mouse_y_rel(mouse_location.y)), 2))
-		temp_draw_context.lineWidth = 0.5 * (size_x/1000);
+		temp_draw_context.lineWidth = to_x_local(0.5)/1000;
 		temp_draw_context.strokeStyle = "#000000";
 		temp_draw_context.fillStyle = "#FFFFFF";
 		temp_draw_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
@@ -1547,23 +1658,25 @@ function on_circle_move(e) {
 }
 
 function on_circle_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
-	
+	var mouse_location = e.data.getLocalPosition(background_sprite);
+
 	var center_x, center_y, radius
 	if (circle_draw_style == "edge") {
 		center_x = (left_click_origin[0] + mouse_x_rel(mouse_location.x)) / 2;
 		center_y = (left_click_origin[1] + mouse_y_rel(mouse_location.y)) / 2;
-		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
+		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) +
+				           Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
 		radius /= 2;
 	} else if (circle_draw_style == "radius") {
 		center_x = left_click_origin[0];
 		center_y = left_click_origin[1];
-		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
+		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + 
+		                   Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
 	}
 	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
 	temp_draw_context.beginPath();
-	temp_draw_context.arc(size_x * center_x, size_y * center_y , Math.sqrt(size_x*size_y) * radius, 0, 2*Math.PI);
+	temp_draw_context.arc(to_x_local(center_x), to_y_local(center_y), background_sprite.height * objectContainer.scale.y * radius, 0, 2*Math.PI);
 	temp_draw_context.fill();
 	temp_draw_context.stroke();
 
@@ -1575,15 +1688,15 @@ function on_circle_end(e) {
 		temp_draw_context.strokeStyle = "#FFFFFF";
 		temp_draw_context.fillStyle = "#FFFFFF";
 		temp_draw_context.beginPath();
-		temp_draw_context.moveTo(size_x * center_x, size_y * center_y);		
-		temp_draw_context.lineTo(size_x * mouse_x_rel(mouse_location.x), size_y * mouse_y_rel(mouse_location.y));
+		temp_draw_context.moveTo(to_x_local(center_x), to_y_local(center_y));		
+		temp_draw_context.lineTo(to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y)));
 		temp_draw_context.stroke();
-		var mid_line_x = (center_x + mouse_x_rel(mouse_location.x)) / 2 * size_x;
-		var mid_line_y = (center_y + mouse_y_rel(mouse_location.y)) / 2 * size_y;
+		var mid_line_x = to_x_local((center_x + mouse_x_rel(mouse_location.x)) / 2);
+		var mid_line_y = to_y_local((center_y + mouse_y_rel(mouse_location.y)) / 2);
 		temp_draw_context.font = "22px Arial";
 		var length = Math.sqrt(Math.pow(background.size_x * (center_x - mouse_x_rel(mouse_location.x)), 2) + Math.pow(background.size_y * 
 		(center_y - mouse_y_rel(mouse_location.y)), 2))
-		temp_draw_context.lineWidth = 0.5 * (size_x/1000);
+		temp_draw_context.lineWidth = to_x_local(0.5)/1000;
 		temp_draw_context.strokeStyle = "#000000";
 		temp_draw_context.fillStyle = "#FFFFFF";
 		temp_draw_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
@@ -1603,27 +1716,27 @@ function on_circle_end(e) {
 }
 
 function on_rectangle_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
 	var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
 	var right_x = Math.max(left_click_origin[0], mouse_x_rel(mouse_location.x));
 	var right_y = Math.max(left_click_origin[1], mouse_y_rel(mouse_location.y));
 
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);							
-	temp_draw_context.fillRect(size_x * left_x, size_y * left_y, size_x * (right_x-left_x), size_y *(right_y-left_y)); 
-	temp_draw_context.strokeRect(size_x * left_x, size_y *left_y, size_x * (right_x-left_x), size_y *(right_y-left_y));
+	temp_draw_context.fillRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y)); 
+	temp_draw_context.strokeRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y));
 }
 
 function on_rectangle_end(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
 	var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
 	var right_x = Math.max(left_click_origin[0], mouse_x_rel(mouse_location.x));
 	var right_y = Math.max(left_click_origin[1], mouse_y_rel(mouse_location.y));
 	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);							
-	temp_draw_context.fillRect(size_x * left_x, size_y * left_y, size_x * (right_x-left_x), size_y *(right_y-left_y)); 
-	temp_draw_context.strokeRect(size_x * left_x, size_y *left_y, size_x * (right_x-left_x), size_y *(right_y-left_y));	
+	temp_draw_context.fillRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y)); 
+	temp_draw_context.strokeRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y));
 
 	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data-style') };
 	
@@ -1641,7 +1754,7 @@ function on_ping_move(e) {
 	var time = new Date();
 	var timeDiff = time - last_ping_time;
 	if (timeDiff > 80) {		
-		var mouse_location = e.data.getLocalPosition(objectContainer);
+		var mouse_location = e.data.getLocalPosition(background_sprite);
 		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = time;
@@ -1653,12 +1766,12 @@ function on_ping_end(e) {
 }
 
 function on_select_move(e) {
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 	// draw a rounded rectangle
 	var graphic = new PIXI.Graphics();
 	graphic.lineStyle(2, 0xBBBBBB, 1);
 	graphic.beginFill(0xBBBBBB, 0.25);
-	graphic.drawRect(left_click_origin[0], left_click_origin[1], mouse_x_abs(mouse_location.x)-left_click_origin[0], mouse_y_abs(mouse_location.y)-left_click_origin[1]);
+	graphic.drawRect(x_abs(left_click_origin[0]), y_abs(left_click_origin[1]), x_abs(mouse_x_rel(mouse_location.x) - left_click_origin[0]), y_abs(mouse_y_rel(mouse_location.y) - left_click_origin[1]));
 	graphic.endFill();
 	objectContainer.addChild(graphic);
 	renderer.render(stage);
@@ -1668,16 +1781,44 @@ function on_select_move(e) {
 function on_select_end(e) {
 	setup_mouse_events(undefined, undefined);
 
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
-	var x_min = Math.min(mouse_x_abs(mouse_location.x), left_click_origin[0]);
-	var y_min = Math.min(mouse_y_abs(mouse_location.y), left_click_origin[1]);
-	var x_max = Math.max(mouse_x_abs(mouse_location.x), left_click_origin[0]);
-	var y_max = Math.max(mouse_y_abs(mouse_location.y), left_click_origin[1]);
+	var mouse_location = e.data.getLocalPosition(background_sprite);	
+	var x_min = Math.min(mouse_x_rel(mouse_location.x), left_click_origin[0]);
+	var y_min = Math.min(mouse_y_rel(mouse_location.y), left_click_origin[1]);
+	var x_max = Math.max(mouse_x_rel(mouse_location.x), left_click_origin[0]);
+	var y_max = Math.max(mouse_y_rel(mouse_location.y), left_click_origin[1]);
 	
 	for (var key in room_data.slides[active_slide].entities) {
 		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
-			var box = room_data.slides[active_slide].entities[key].container.getBounds();
-			if (box.x > x_min && box.y > y_min && box.x + box.width < x_max && box.y + box.height < y_max) {
+			
+			var box_min_x = 1000;
+			var box_max_x = -1000;
+			var box_min_y = 1000;
+			var box_max_y = -1000;
+			var entity = room_data.slides[active_slide].entities[key];			
+			box_min_x = Math.min(box_min_x, entity.x);
+			box_min_y = Math.min(box_min_y, entity.y);
+			box_max_x = Math.max(box_max_x, entity.x);
+			box_max_y = Math.max(box_max_y, entity.y);			
+			if (entity.path) {
+				for (var i in entity.path) {
+					var tempx = entity.x + entity.path[i][0];
+					var tempy = entity.y + entity.path[i][1];
+					box_min_x = Math.min(box_min_x, tempx);
+					box_min_y = Math.min(box_min_y, tempy);
+					box_max_x = Math.max(box_max_x, tempx);
+					box_max_y = Math.max(box_max_y, tempy);		
+				}
+			}
+			if (entity.width) {
+				var tempx = entity.x + entity.width;
+				var tempy = entity.y + entity.height;
+				box_min_x = Math.min(box_min_x, tempx);
+				box_min_y = Math.min(box_min_y, tempy);
+				box_max_x = Math.max(box_max_x, tempx);
+				box_max_y = Math.max(box_max_y, tempy);		
+			}
+
+			if (box_min_x > x_min && box_min_y > y_min && box_max_x < x_max && box_max_y < y_max) {
 				selected_entities.push(room_data.slides[active_slide].entities[key]);
 			}
 		}
@@ -1763,8 +1904,8 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index, end,
 	var path_y = [];
 	
 	for (var i = 0; i < path.length; i++) {
-		path_x.push(size_x * (drawing.x + path[i][0]));
-		path_y.push(size_y * (drawing.y + path[i][1]));
+		path_x.push(to_x_local(drawing.x + path[i][0]));
+		path_y.push(to_y_local(drawing.y + path[i][1]));
 	}
 	
 	//smooth out basically means push some of the end points at the beginning 
@@ -1834,7 +1975,8 @@ function on_draw_move(e) {
 	last_draw_time = time;
 		
 	//only move 0.3 in the direction of the pointer, this smooths it out
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	//var mouse_location = e.data.getLocalPosition(objectContainer)
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 	var new_x = mouse_x_rel(mouse_location.x) - new_drawing.x;
 	var new_y = mouse_y_rel(mouse_location.y) - new_drawing.y;
 	new_x = 0.7 * new_drawing.path[new_drawing.path.length-1][0] + 0.3 * new_x;
@@ -1870,7 +2012,7 @@ function on_draw_move(e) {
 
 function on_draw_end(e) {
 	//make sure the last move is recorded
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 	new_drawing.path.push([mouse_x_rel(mouse_location.x)-new_drawing.x,
 						   mouse_y_rel(mouse_location.y)-new_drawing.y]);
 		
@@ -1953,8 +2095,8 @@ function createSprite(ctx, canvas) {
 	if (canvas) {
 		var texture = PIXI.Texture.fromCanvas(canvas);
 		var sprite = new PIXI.Sprite(texture);
-		sprite.x = canvas.x;
-		sprite.y = canvas.y;
+		sprite.x = x_abs(from_x_local(canvas.x));
+		sprite.y = y_abs(from_y_local(canvas.y));
 		return sprite;
 	} else {
 		return null;
@@ -1970,8 +2112,8 @@ function draw_arrow2(context, drawing, i) {
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
 	x0 /= l;
 	y0 /= l;
-	start_x = size_x * (drawing.path[drawing.path.length-1][0] + drawing.x);
-	start_y = size_y * (drawing.path[drawing.path.length-1][1] + drawing.y);
+	start_x = to_x_local(drawing.path[drawing.path.length-1][0] + drawing.x);
+	start_y = to_y_local(drawing.path[drawing.path.length-1][1] + drawing.y);
 	drawArrow(context, start_x, start_y, start_x-(drawing.thickness*x0),start_y-(drawing.thickness*y0), 3, 1, Math.PI/8, size);	
 }
 
@@ -1995,8 +2137,8 @@ function draw_T2(context, drawing, i) {
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
 	x0 /= l;
 	y0 /= l;
-	start_x = size_x * (drawing.path[drawing.path.length-1][0] + drawing.x);
-	start_y = size_y * (drawing.path[drawing.path.length-1][1] + drawing.y);	
+	start_x = to_x_local(drawing.path[drawing.path.length-1][0] + drawing.x);
+	start_y = to_y_local(drawing.path[drawing.path.length-1][1] + drawing.y);	
 	var x_ort = - y0;
 	var y_ort = x0;
 	context.moveTo(start_x - size * x_ort, start_y - size * y_ort);
@@ -2018,12 +2160,11 @@ function draw_T3(context, a, b, drawing) {
 }
 
 function canvas2container(_context, _canvas, entity) {
-	var sprite = createSprite(_context, _canvas);	
+	var sprite = createSprite(_context, _canvas);
+		
 	if (sprite) {
 		entity.container = sprite;		
 		//rescale to objectContainer
-		sprite.x /= objectContainer.scale.x;
-		sprite.y /= objectContainer.scale.y;
 		sprite.height /= objectContainer.scale.x;
 		sprite.width /= objectContainer.scale.y;
 		objectContainer.addChild(sprite);
@@ -2047,8 +2188,8 @@ function canvas2container(_context, _canvas, entity) {
 function create_line2(line) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = size_x;
-	_canvas.height = size_y;
+	_canvas.width = renderer.view.width;
+	_canvas.height = renderer.view.height;
 	_context = _canvas.getContext("2d");
 	_context.lineWidth = line.thickness * (size_x/1000);
 	_context.strokeStyle = color;
@@ -2060,24 +2201,24 @@ function create_line2(line) {
 			_context.setLineDash([line.thickness, line.thickness]);
 		}
 	}
-	_context.beginPath();
-	_context.moveTo(size_x*(line.x), size_y*(line.y));
+	_context.moveTo(to_x_local(line.x), to_y_local(line.y));
 	
+	console.log(to_x_local(line.x), to_x_local(line.y));
 	for (var i = 0; i < line.path.length; ++i) {
-		var x = size_x * (line.path[i][0] + line.x);
-		var y = size_y * (line.path[i][1] + line.y);
+		var x = to_x_local(line.path[i][0] + line.x);
+		var y = to_y_local(line.path[i][1] + line.y);
 		_context.lineTo(x,y);
 	}
 	_context.stroke();
 	
 	var a;
 	if (line.path.length == 1) {
-		a = [size_x * (line.x), size_y * (line.y)];
+		a = [to_x_local(line.x), to_y_local(line.y)];
 	} else {
-		a = [size_x * (line.path[line.path.length-2][0] + line.x),
-			 size_y * (line.path[line.path.length-2][1] + line.y)];
+		a = [to_x_local(line.path[line.path.length-2][0] + line.x),
+			 to_y_local(line.path[line.path.length-2][1] + line.y)];
 	}
-	var b = [size_x * (last(line.path)[0] + line.x), size_y * (last(line.path)[1] + line.y)];
+	var b = [to_x_local(last(line.path)[0] + line.x), to_y_local(last(line.path)[1] + line.y)];
 	if (line.end == "arrow") {	
 		draw_arrow3(_context, a, b, line);
 		_context.fill();
@@ -2114,13 +2255,13 @@ function init_shape_canvas(_context, shape) {
 function create_rectangle2(rectangle) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = size_x;
-	_canvas.height = size_y;
+	_canvas.width = renderer.view.width;
+	_canvas.height = renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, rectangle);
 
-	_context.fillRect(size_x * rectangle.x, size_y * rectangle.y, size_x * (rectangle.width), size_y * (rectangle.height)); 
-	_context.strokeRect(size_x * rectangle.x, size_y * rectangle.y, size_x * (rectangle.width), size_y * (rectangle.height));
+	_context.fillRect(to_x_local(rectangle.x), to_y_local(rectangle.y), to_x_local(rectangle.width), to_y_local(rectangle.height)); 
+	_context.strokeRect(to_x_local(rectangle.x), to_y_local(rectangle.y), to_x_local(rectangle.width), to_y_local(rectangle.height));
 
 	canvas2container(_context, _canvas, rectangle);
 }
@@ -2128,13 +2269,14 @@ function create_rectangle2(rectangle) {
 function create_circle2(circle) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = size_x;
-	_canvas.height = size_y;
+	_canvas.width = renderer.view.width;
+	_canvas.height = renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, circle);
 
 	_context.beginPath();
-	_context.arc(size_x * circle.x, size_y * circle.y , Math.sqrt(size_x*size_y) * circle.radius, 0, 2*Math.PI);
+	
+	_context.arc(to_x_local(circle.x), to_y_local(circle.y), background_sprite.height * objectContainer.scale.y * circle.radius, 0, 2*Math.PI);
 	_context.fill();
 	_context.stroke();
 	
@@ -2144,15 +2286,15 @@ function create_circle2(circle) {
 		_context.strokeStyle = "#FFFFFF";
 		_context.fillStyle = "#FFFFFF";
 		_context.beginPath();
-		_context.moveTo(size_x * circle.x, size_y * circle.y);		
-		_context.lineTo(size_x * circle.draw_radius[0], size_y * circle.draw_radius[1]);
+		_context.moveTo(to_x_local(circle.x),to_y_local(circle.y));		
+		_context.lineTo(to_x_local(circle.draw_radius[0]), to_y_local(circle.draw_radius[1]));
 		_context.stroke();
-		var mid_line_x = (circle.x + circle.draw_radius[0]) / 2 * size_x;
-		var mid_line_y = (circle.y + circle.draw_radius[1]) / 2 * size_y;
+		var mid_line_x = to_x_local((circle.x + circle.draw_radius[0]) / 2);
+		var mid_line_y = to_y_local((circle.y + circle.draw_radius[1]) / 2);
 		_context.font = "22px Arial";
 		var length = Math.sqrt(Math.pow(background.size_x * (circle.x - circle.draw_radius[0]), 2) + Math.pow(background.size_y * 
 		(circle.y - circle.draw_radius[1]), 2))
-		_context.lineWidth = 0.5 * (size_x/1000);
+		_context.lineWidth = to_x_local(0.5)/1000;
 		_context.strokeStyle = "#000000";
 		_context.fillStyle = "#FFFFFF";
 		_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
@@ -2165,19 +2307,19 @@ function create_circle2(circle) {
 function create_polygon2(polygon) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = size_x;
-	_canvas.height = size_y;
+	_canvas.width = renderer.view.width;
+	_canvas.height = renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, polygon);
 
 	_context.beginPath();
-	_context.moveTo(size_x*(polygon.x), size_y*(polygon.y));	
+	_context.moveTo(to_x_local(polygon.x), to_y_local(polygon.y));	
 	for (var i = 0; i < polygon.path.length; ++i) {
-		var x = size_x * (polygon.path[i][0] + polygon.x);
-		var y = size_y * (polygon.path[i][1] + polygon.y);
+		var x = to_x_local(polygon.path[i][0] + polygon.x);
+		var y = to_y_local(polygon.path[i][1] + polygon.y);
 		_context.lineTo(x,y);
 	}
-	_context.lineTo(size_x*(polygon.x), size_y*(polygon.y));
+	_context.lineTo(to_x_local(polygon.x), to_y_local(polygon.y));
 	_context.stroke();
 	_context.fill();
 	
@@ -2187,8 +2329,8 @@ function create_polygon2(polygon) {
 function create_area2(area) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = size_x;
-	_canvas.height = size_y;
+	_canvas.width = renderer.view.width;
+	_canvas.height = renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, area);
 
@@ -2203,8 +2345,8 @@ function create_area2(area) {
 function create_drawing2(drawing) {
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = size_x;
-	_canvas.height = size_y;
+	_canvas.width = renderer.view.width;
+	_canvas.height = renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	_context.lineWidth = drawing.thickness * (size_x/1000);
 	_context.strokeStyle = color;
@@ -2237,8 +2379,8 @@ function create_drawing2(drawing) {
 function create_curve2(drawing) {
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = size_x;
-	_canvas.height = size_y;
+	_canvas.width = renderer.view.width;
+	_canvas.height = renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	_context.lineWidth = drawing.thickness * (size_x/1000);
 	_context.strokeStyle = color;
@@ -2289,25 +2431,33 @@ function emit_entity(entity) {
 	var container = entity.container;
 	entity.container = undefined;
 	socket.emit('create_entity', room, entity, active_slide);
+	room_data.slides[active_slide].z_top++;
+	entity.z_index = room_data.slides[active_slide].z_top;
 	entity.container = container;
 }
 
 function on_icon_end(e) {	
 	setup_mouse_events(undefined, undefined);
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 
 	var size = icon_size*icon_extra_scale*icon_scale;
 	var x = mouse_x_rel(mouse_location.x) - (size/2);
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
-	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:icon_color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Open Sans", brightness:parseFloat(icon_brightness)}
+	var color = icon_color;
+	if (selected_icon_no_color) {
+		color = 16777215; //white
+	}
+	
+ 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Open Sans", brightness:parseFloat(icon_brightness)}
+	
 	undo_list.push(["add", [icon]]);
 	create_icon(icon, snap_and_emit_entity);
 }
 
 function on_text_end(e) {
 	setup_mouse_events(undefined, undefined);
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Open Sans'};
@@ -2319,7 +2469,7 @@ function on_text_end(e) {
 
 function on_background_text_end(e) {
 	setup_mouse_events(undefined, undefined);
-	var mouse_location = e.data.getLocalPosition(objectContainer);	
+	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:1, color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size, font:'Open Sans'};
@@ -2328,16 +2478,32 @@ function on_background_text_end(e) {
 	snap_and_emit_entity(background_text);
 }
 
+function to_x_local(x) {
+	return objectContainer.x + (x * background_sprite.width) * objectContainer.scale.x;
+}
+
+function from_x_local(x) {
+	return (x - objectContainer.x) / objectContainer.scale.x / background_sprite.width;
+}
+
+function to_y_local(y) {
+	return objectContainer.y +(y * background_sprite.height) * objectContainer.scale.y;
+}
+
+function from_y_local(y) {
+	return (y - objectContainer.y) / objectContainer.scale.y / background_sprite.height;
+}
+
 function on_line_move(e) {		
-	var mouse_location = e.data.getLocalPosition(objectContainer);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 	var a;
 	if (new_drawing.path.length == 0) {
-		a = [size_x * (new_drawing.x), size_y * (new_drawing.y)];
+		a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
 	} else {
-		a = [size_x * (new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
-			 size_y * (new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
+		a = [to_x_local(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
+			 to_y_local(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
 	}
-	var b = [size_x * (mouse_x_rel(mouse_location.x)) , size_y * (mouse_y_rel(mouse_location.y))];
+	var b = [to_x_local(mouse_x_rel(mouse_location.x)) , to_y_local(mouse_y_rel(mouse_location.y))];
 	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
 	if (new_drawing.end == "arrow") {
@@ -2354,13 +2520,13 @@ function on_line_move(e) {
 
 function on_line_end(e) {
 	try {
-		var mouse_location = e.data.getLocalPosition(objectContainer);	
+		var mouse_location = e.data.getLocalPosition(background_sprite);	
 		var x = mouse_x_rel(mouse_location.x);
 		var y = mouse_y_rel(mouse_location.y);
-		x = Math.max(0, x);
-		y = Math.max(0, y);
-		x = Math.min(1, x);
-		y = Math.min(1, y);
+		//x = Math.max(0, x);
+		//y = Math.max(0, y);
+		//x = Math.min(1, x);
+		//y = Math.min(1, y);
 		x -= new_drawing.x;
 		y -= new_drawing.y;
 		if ((new_drawing.path.length == 0) || x != last(new_drawing.path)[0] || y != last(new_drawing.path)[1]) {
@@ -2369,12 +2535,12 @@ function on_line_end(e) {
 	} catch (e) {}
 	var a;
 	if (new_drawing.path.length == 1) {
-		a = [size_x * (new_drawing.x), size_y * (new_drawing.y)];
+		a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
 	} else {
-		a = [size_x * (new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
-			 size_y * (new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
+		a = [to_x_local(new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
+			 to_y_local(new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
 	}
-	var b = [size_x * (last(new_drawing.path)[0] + new_drawing.x), size_y * (last(new_drawing.path)[1] + new_drawing.y)];
+	var b = [to_x_local(last(new_drawing.path)[0] + new_drawing.x), to_y_local(last(new_drawing.path)[1] + new_drawing.y)];
 	
 	draw_context.lineTo(b[0], b[1]);
 	draw_context.stroke();
@@ -2460,7 +2626,7 @@ function create_icon_cont(icon, texture) {
 
 	var ratio = sprite.width / sprite.height;
 	sprite.height = x_abs(icon.size);
-	sprite.width = x_abs(icon.size) * ratio;	
+	sprite.width = sprite.height * ratio;	
 	
 	icon.container = new PIXI.Container();
 	icon.container.addChild(sprite);
@@ -2488,38 +2654,39 @@ function create_icon_cont(icon, texture) {
 	
 function create_icon(icon, cb_after) {
 	try {
-		var counter = $('#'+icon.tank).find("span");
+		var counter = $('button[id*="'+icon.tank+'"]').find("span");
 		counter.text((parseInt(counter.text())+1).toString());		
 		counter = $("#icon_counter");
 		counter.text((parseInt(counter.text())+1).toString());
 	} catch(e) {}
-	
-	var img = new Image();
-	img.crossOrigin = "anonymous";
-	img.src = image_host + icon.tank + '.png';	
-	var canvas = document.createElement("canvas");
-	var context = canvas.getContext("2d");
 
+	var path = icon.tank;
+	var extension = icon.tank.slice(-3);
+	if (extension  != "png" && extension != "jpg") {
+		path += ".png";
+	}
+	
+	var texture
+	if (texture_atlas[path]) {
+		var img = texture_atlas[path];
+		texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
+	} else {
+		texture = PIXI.Texture.fromImage(image_host + path);
+	}
+	
 	resources_loading++;
+	var onloaded = function() {
+		create_icon_cont(icon, texture);
+		if (cb_after) cb_after(icon);
+		resources_loading--;
+	}
 	
-	img.onload = function () {
-		
-	    context.drawImage(this, 0, 0); // put the image in the canvas
-	    canvas = autocrop_canvas(canvas);
-
-		var texture = PIXI.Texture.fromCanvas(canvas);
-		
-		if (texture.baseTexture.hasLoaded) {
-			create_icon_cont(icon, texture);
-			if (cb_after) cb_after(icon);
-			resources_loading--;
-		} else {
-			texture.baseTexture.on('loaded', function() {
-				create_icon_cont(icon, texture);
-				if (cb_after) cb_after(icon);
-				resources_loading--;
-			});
-		}
+	if (!texture.baseTexture.hasLoaded) {
+		texture.baseTexture.on('loaded', function(){
+			onloaded()
+		});
+	} else {
+		onloaded();
 	}
 }
 
@@ -2911,6 +3078,9 @@ function update_lock() {
 				}
 			}
 		}
+		if (my_tracker) {
+			stop_tracking();
+		}
 	} else {
 		$('.left_column').show();
 		$('#slide_interactive').show();
@@ -2977,7 +3147,7 @@ function initialize_color_picker(slider_id, variable_name) {
 	$('select[id="'+ slider_id + '"]').simplecolorpicker().on('change', function() {
 		var color = $('select[id="'+ slider_id + '"]').val();
 		window[variable_name] = parseInt('0x'+ color.substring(1));
-		$('#' + slider_id + ' ~ input').val(color);
+		$('#' + slider_id + ' ~ input').first().val(color);
 		
 		if (variable_name == 'track_color') { //dirty track color switch hack
 			if (my_tracker) {
@@ -3299,6 +3469,7 @@ function transition(slide) {
 		remove(key, true);
 	}
 
+	var new_background_uid;
 	for (var i in to_transition) {
 		//take over the container
 		var key = to_transition[i];
@@ -3309,7 +3480,7 @@ function transition(slide) {
 		}
 
 		if (room_data.slides[slide].entities[key].type == "background") {
-			to_add.push(key);
+			new_background_uid = key;
 		} else {
 			room_data.slides[slide].entities[key].container.x += x_abs(room_data.slides[slide].entities[key].x-room_data.slides[active_slide].entities[key].x);
 			room_data.slides[slide].entities[key].container.y += y_abs(room_data.slides[slide].entities[key].y-room_data.slides[active_slide].entities[key].y);
@@ -3320,14 +3491,29 @@ function transition(slide) {
 	}
 
 	active_slide = slide;
-		
-	for (var i in to_add) {
-		var key = to_add[i];
-		create_entity(room_data.slides[slide].entities[key]);
+	
+	var add_other_entities = function() {
+		for (var i in to_add) {
+			var key = to_add[i];
+			create_entity(room_data.slides[slide].entities[key]);
+		}
+		renderer.render(stage);
+	}
+
+	//we need to set the background first cause the canvases may need to be resized before we can draw on them
+	if (new_background_uid) {
+		set_background(room_data.slides[slide].entities[new_background_uid], function() {
+			add_other_entities();
+		});
+	} else {
+		add_other_entities();
 	}
 		
-	renderer.render(stage);
 	update_slide_buttons();
+}
+
+function add_entities(entities) {
+	
 }
 
 function change_slide(slide) {
@@ -3344,6 +3530,7 @@ function change_slide(slide) {
 function create_new_slide(slide) {	
 	var new_slide = {};
 	new_slide.show_grid = room_data.slides[slide].show_grid;
+	new_slide.z_top = room_data.slides[slide].z_top;
 	new_slide.uid = newUid();
 	
 	//generate a new name for the slide
@@ -3364,6 +3551,8 @@ function create_new_slide(slide) {
 		new_slide.entities[key] = JSON.parse(JSON.stringify(room_data.slides[slide].entities[key]));
 		room_data.slides[slide].entities[key].container = temp;
 	}
+	
+	
 	
 	var new_order;
 	var next_slide_uid = find_next_slide(room_data.slides[slide].order);
@@ -3408,10 +3597,9 @@ function add_slide(slide) {
 	update_slide_buttons();
 }
 
-//connect socket.io socket
-$(document).ready(function() {
+function initialize_map_select(map_select) {
 	//sorts maps alphabetically, can't presort cause it depends on language
-	var options = $("#map_select option").sort(function(a,b) {
+	var options = map_select.find("option").sort(function(a,b) {
 		if ( a.innerHTML < b.innerHTML )
 		  return -1;
 		if ( a.innerHTML > b.innerHTML )
@@ -3419,10 +3607,51 @@ $(document).ready(function() {
 		return 0;
 	});
 	
-	$("#map_select").empty().append(options); //ie fix no-op
+	map_select.empty().append(options); //ie fix no-op
+	map_select.val("");
+	
+	map_select.change(function() {			
+		var path = map_select.val();
+		
+		if (!background || background.path != path) {
+			var uid = background ? background.uid : newUid();
+
+			var size_x = 0;
+			var size_y = 0;
+			
+			var data_size = $('option:selected', map_select).attr('data-size');
+			if (data_size) {
+				var size = data_size.split('x');
+				size_x = parseFloat(size[0]);
+				size_y = parseFloat(size[1]);
+			}
+			
+			var new_background = {uid:uid, type:'background', path:path, size_x:size_x, size_y:size_y};
+			
+			socket.emit('create_entity', room, new_background, active_slide);
+			set_background(new_background);
+		} 
+	});	
+	
+}
+
+function activity_animation(user_id) {
+	var user_node = $("#userlist #" + user_id);
+	if (!user_node.hasClass('sheen')) {
+		user_node.addClass('sheen');
+		setTimeout(function () {
+			user_node.removeClass('sheen');
+		}, 1000)
+	}		
+}
+
+//connect socket.io socket
+$(document).ready(function() {
+	//sorts maps alphabetically, can't presort cause it depends on language
+	initialize_map_select($("#map_select"));
+	initialize_map_select($("#map_select_wotbase"));
 	
 	loader.once('complete', function () {
-
 		// Return a helper with preserved width of cells
 		var fixHelper = function(e, ui) {
 			ui.children().each(function() {
@@ -3473,6 +3702,16 @@ $(document).ready(function() {
 			$('#myModal').modal('hide');
 		});
 		
+		$('#use_wotbase').click(function() {
+			if ($(this).is(':checked')) {
+				$('#map_select_container').hide();
+				$('#wotbase_map_select_container').show();
+			} else {
+				$('#map_select_container').show();
+				$('#wotbase_map_select_container').hide();
+			}
+		});
+		
 		$('#send_to_link').click(function (e) {
 			socket.emit("save_room", room);
 			$('#myModal').modal('show');
@@ -3482,11 +3721,6 @@ $(document).ready(function() {
 		});
 		
 		
-		$("#map_select").empty();
-		$("#map_select").append(options.clone());
-		$("#map_select").focus();
-		$("#map_select").val("");
-	
 		$('#draw_context').hide();
 		$('#icon_context').hide();
 		$('#remove_context').hide();
@@ -3504,6 +3738,12 @@ $(document).ready(function() {
 		$('#ping').addClass('active');	
 		var first_icon = $("#icon_context").find("button:first");
 		first_icon.addClass('selected');
+		if (first_icon.attr('data-no_color') == 'true') {
+			selected_icon_no_color = true;
+		} else {
+			selected_icon_no_color = false;
+		}
+		
 		selected_icon = first_icon.attr("id");
 		if (first_icon.attr('data-scale')) {
 			icon_extra_scale = parseFloat(first_icon.attr('data-scale'));
@@ -3761,26 +4001,39 @@ $(document).ready(function() {
 			
 		});
 
-
-		function extra_icons(link, menu, path, height, scale) {
+		$('.icon_group').each(function () {
+			var link = this.id;
 			$('#' + link).click(function () {
-				if (!$.trim($('#' + menu).html())) {
-					$.get(image_host + path + "/icon_list.txt", function(data) {
-						lines = data.split("\n")
-						for (var i in lines) {
-							if (lines[i] == "") continue;
-							$('#' + menu).append('<img height=' + height + ' class="tank_select" data-scale="' + scale + '" id="' + path + '/' + lines[i].slice(0, lines[i].length-4) + '" data-toggle="tooltip" title="'+ lines[i] +'" src=' + image_host + path + '/' + lines[i] + '></img>');
-						}
-					});
+				var icons = $('#' + link + "_list").text().split('\n');
+				icons = icons.map(function (str) {
+				   return encodeURIComponent(str.trim());
+				});
+				icons = icons.filter(function (str) {
+				   if (str == "") return false;
+				   return true;
+				});
+				var path = $('#' + link + "_list").attr('data-path')
+				var scale = parseFloat($('#' + link + "_list").attr('data-scale'));
+				var height = parseFloat($('#' + link + "_list").attr('data-height'));
+				var no_color = $('#' + link + "_list").attr('data-no_color');
+				var style = $('#' + link + "_list").attr('data-style');
+				
+				if (!$.trim($('#' + link + '_menu').html())) {
+					if (style) {
+						for (var i in icons) {
+							$('#' + link + '_menu').append('<button class="tank_select" data-scale="' + scale + '" data-no_color="' + no_color + '" id="' + path + '/' + icons[i] + '"><div class="' + path + ' ' + path + '-' + icons[i].slice(0, -4) + ' inline"></div></button>')
+						}	
+					} else {
+						for (var i in icons) {
+							$('#' + link + '_menu').append('<img height=' + height + ' class="tank_select" data-scale="' + scale + '" data-no_color="' + no_color + '" id="' + path + '/' + icons[i] + '" data-toggle="tooltip" title="'+ icons[i] +'" src=' + image_host + path + '/' + icons[i] + '></img>');
+						}					
+					}
 				} else {
-					$('#' + menu).html("");
-				}
-			});	
-		}
+					$('#' + link + '_menu').html("");
+				}	
 
-		extra_icons("extra_icons", "extra_icons_menu", "wot_icon_set4", 30, 1.5);		
-		extra_icons("tank_icons", "tank_icon_menu", "wot-icon-set1", 60, 2);
-		extra_icons("contour_icons", "contour_icon_menu", "wot-icon-set3", 30, 1);
+			});
+		});	
 		
 		$('#lock').click(function () {
 			var node = $(this).find('div');
@@ -3918,7 +4171,7 @@ $(document).ready(function() {
 			if (my_tracker) {
 				stop_tracking();
 			}
-			start_tracking({x:2000,y:2000});	
+			start_tracking({x:2000,y:2000});
 		});	
 		
 		$('#draw_type button[data-style="full"]').addClass('active');	
@@ -3935,7 +4188,7 @@ $(document).ready(function() {
 		
 		
 		$('#userlist').on('click', 'button', function () {
-			var id = $(this).attr('id');
+			var id = $(this).attr('id');			
 			if (id == my_user.id) { return; } //you can't change your own permission level
 			if (my_user.role != "owner") { return; } //only the owner can change permission level
 			if (!userlist[id].role) { //permission toggle
@@ -3995,6 +4248,11 @@ $(document).ready(function() {
 			$('#icon_context').find('.selected').removeClass('selected'); // removes the previous selected class
 			$(this).addClass('selected'); // adds the class to the clicked image
 			selected_icon = $(this).attr('id');
+			if ($(this).attr('data-no_color') == 'true') {
+				selected_icon_no_color = true;
+			} else {
+				selected_icon_no_color = false;
+			}
 			if ($(this).attr('data-scale')) {
 				icon_extra_scale = parseFloat($(this).attr('data-scale'));
 			} else {
@@ -4009,28 +4267,7 @@ $(document).ready(function() {
 		$(renderer.view).parent().append(draw_canvas);
 		$(temp_draw_canvas).hide();
 		$(draw_canvas).hide();
-			
-		var map_select_box = document.getElementById("map_select");
-		map_select_box.onchange = function() {
-			var path = map_select_box.options[map_select_box.selectedIndex].value;
-			if (!background || background.path != path) {
-				var uid = background ? background.uid : newUid();
-
-				var size_x = 0;
-				var size_y = 0;
-				if (map_select_box.options[map_select_box.selectedIndex].getAttribute("data-size")) {
-					var size = map_select_box.options[map_select_box.selectedIndex].getAttribute("data-size").split('x');
-					size_x = parseFloat(size[0]);
-					size_y = parseFloat(size[1]);
-				}
-				
-				var new_background = {uid:uid, type:'background', path:path, size_x:size_x, size_y:size_y};
-				
-				socket.emit('create_entity', room, new_background, active_slide);
-				set_background(new_background);
-			} 
-		}
-		
+					
 		assets_loaded = true;
 	});
 	
@@ -4075,13 +4312,32 @@ $(document).ready(function() {
 		}
 		for (var user in room_data.userlist) {
 			add_user(room_data.userlist[user]);
-		}		
-		for (var key in room_data.slides[active_slide].entities) {
-			create_entity(room_data.slides[active_slide].entities[key]);
 		}
+
+		var entities = [];
+		var background_entity;
+		for (var key in room_data.slides[active_slide].entities) {
+			if (room_data.slides[active_slide].entities[key].type == 'background') {
+				background_entity = room_data.slides[active_slide].entities[key];
+			} else {
+				entities.push(room_data.slides[active_slide].entities[key])
+			}
+		}
+		if (background_entity) {
+			//we need to set the background before we add other entities
+			set_background(background_entity, function() {
+				//TODO: sort entities by z_index
+				for (var i in entities) {
+					create_entity(entities[i]);
+				}
+				renderer.render(stage);
+			});
+		}
+						
 		for (var key in room_data.trackers) {
 			create_tracker(room_data.trackers[key]);
 		}
+		
 		delete room_data.trackers;
 		update_slide_buttons();
 		update_my_user();
@@ -4090,17 +4346,23 @@ $(document).ready(function() {
 			stop_tracking();
 			start_tracking({x:2000,y:2000});
 		}
+		
 	});
+	
+	function create_entities(entities) {
 
-	socket.on('create_entity', function(entity, slide) {
+	}
+
+	socket.on('create_entity', function(entity, slide, user_id) {
 		if (slide != active_slide) {
 			room_data.slides[slide].entities[entity.uid] = entity;
 		} else {
 			create_entity(entity);
 		}
+		activity_animation(user_id)
 	});
 	
-	socket.on('drag', function(uid, slide, x, y) {
+	socket.on('drag', function(uid, slide, x, y, user_id) {
 		if (room_data.slides[slide].entities[uid].x == x && room_data.slides[slide].entities[uid].y == y) {
 			return; //ignore, it's probably an echo of what I've sent
 		}
@@ -4110,10 +4372,12 @@ $(document).ready(function() {
 		} else {
 			drag_entity(room_data.slides[active_slide].entities[uid], x, y);
 		}
+		activity_animation(user_id)
 	});
 
-	socket.on('ping_marker', function(x, y, color) {
+	socket.on('ping_marker', function(x, y, color, user_id) {
 		ping(x,y,color);
+		activity_animation(user_id)
 	});
 
 	socket.on('chat', function(message, color) {
@@ -4131,12 +4395,13 @@ $(document).ready(function() {
 		update_my_user();
 	});
 
-	socket.on('remove', function(uid, slide) {
+	socket.on('remove', function(uid, slide, user_id) {
 		if (slide != active_slide) {
 			delete room_data.slides[slide].entities[uid];
 		} else {
 			remove(uid);
 		}
+		activity_animation(user_id)
 	});
 
 	socket.on('add_user', function(user) {
@@ -4147,13 +4412,10 @@ $(document).ready(function() {
 		remove_user(user);
 	});
 
-	socket.on('update_user', function(user) {
-		update_user(user);
-	});
-
-	socket.on('lock_room', function(is_locked) {
+	socket.on('lock_room', function(is_locked, user_id) {
 		is_room_locked = is_locked;
 		update_lock();
+		activity_animation(user_id)
 	});
 
 	socket.on('change_slide', function(uid) {
@@ -4162,32 +4424,37 @@ $(document).ready(function() {
 		}
 	});
 	
-	socket.on('new_slide', function(slide) {
+	socket.on('new_slide', function(slide, user_id) {
 		add_slide(slide);
+		activity_animation(user_id)
 	});
 	
-	socket.on('remove_slide', function(slide) {
+	socket.on('remove_slide', function(slide, user_id) {
 		if(Object.keys(room_data.slides) <= 1) {
 			socket.emit('join_room', room, game);
 			return;
 		}
 		remove_slide(slide);
+		activity_animation(user_id)
 	});
 
-	socket.on('rename_slide', function(slide, name) {
+	socket.on('rename_slide', function(slide, name, user_id) {
 		rename_slide(slide, name);
+		activity_animation(user_id)
 	});
 
-	socket.on('change_slide_order', function(slide, order) {
+	socket.on('change_slide_order', function(slide, order, user_id) {
 		room_data.slides[slide].order = order;
 		update_slide_buttons();
+		activity_animation(user_id)
 	});
 	
-	socket.on('track', function(tracker) {
+	socket.on('track', function(tracker, user_id) {
 		if (trackers[tracker.uid]) {
 			remove_tracker(uid);
 		}
 		create_tracker(tracker);
+		activity_animation(user_id);
 	});
 	
 	socket.on('track_move', function(uid, delta_x, delta_y) {
@@ -4198,12 +4465,13 @@ $(document).ready(function() {
 		remove_tracker(uid)
 	});
 	
-	socket.on('show_grid', function(slide, bool) {
+	socket.on('show_grid', function(slide, bool, user_id) {
 		room_data.slides[slide].show_grid = bool;
 		if (slide == active_slide) {
 			grid_layer.visible = bool;
 			renderer.render(stage);
 		}
+		activity_animation(user_id)
 	});
 	
 	socket.on('reconnect', function() {

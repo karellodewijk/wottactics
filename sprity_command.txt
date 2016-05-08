@@ -1,1 +1,9 @@
 sprity create "./dist" "./icons/*.png" "./icons/flags/*.png" -s style.css --margin 0
+sprity create "./dist" "./wot_assets/*.png" -n wot_assets -s wot_assets.json --processor sprity-json --margin 0
+
+sprity create "./dist" "./wot_assets/*.png" -n wot_assets -s wot_assets.css --margin 0
+
+
+
+sprity create "./dist" "./public/icons/lol_champions/*" -n lol_champions -s lol_champions.json --processor sprity-json --margin 0 --prefix lol_champions
+sprity create "./dist" "./public/icons/lol_champions/*" -n lol_champions -s lol_champions.css --margin 0 --prefix lol_champions

@@ -1,6 +1,8 @@
 <%home = "/" %>
 <%if (game == 'blitz') { %>
 <%	home = "blitz.html" %>
+<%} else if (game == 'lol') { %>
+<%	home = "lol" %>
 <%} %>
 
 <style type="text/css" scoped>
@@ -47,6 +49,8 @@
 			Blitz Tactics
 		<% } else if (game == 'aw') { %>
 			AW Tactics
+		<% } else if (game == 'lol') { %>
+			Lol Tactics
 		<% } %>
 	</a>
 	
@@ -98,10 +102,11 @@
 				  <%=l('Other Games')%><span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a href="http://wottactic.tk">World of Tanks</a></li>
-					<li><a href="http://wowstactic.tk">World of Warships</a></li>
-					<li><a href="http://wottactic.tk/blitz.html">World of Tanks Blitz</a></li>
-					<li><a href="http://awtactic.tk">Armored Warfare</a></li>
+					<li><a href="http://wottactic.tk"><div class="inline icon icon-wot"></div>&nbsp; World of Tanks</a></li>
+					<li><a href="http://wowstactic.tk"><div class="inline icon icon-wows"></div>&nbsp; World of Warships</a></li>
+					<li><a href="http://wottactic.tk/blitz.html"><div class="inline icon icon-blitz"></div>&nbsp; World of Tanks Blitz</a></li>
+					<li><a href="http://awtactic.tk"><div class="inline icon icon-aw"></div>&nbsp; Armored Warfare</a></li>
+					<li><a href="http://gametactic.org/lol"><div class="inline icon icon-lol"></div>&nbsp; League of Legends</a></li>
 				</ul>
 			</li>
 			<% include language_select.ejs %>
