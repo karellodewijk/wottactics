@@ -313,9 +313,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	
 	OpenIDStrategy = require('passport-openid').Strategy;
-	passport.use(new OpenIDStrategy({
+	passport.use('openid', new OpenIDStrategy({
 			returnURL: function(req) { 
-				return "http://" + req.hostname + "/auth/openid/callback"; 
+				return "http://" + req.hostname + "/auth/openid/callback/"; 
 			},
 			passReqToCallback: true,
 			stateless: true
@@ -337,10 +337,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	));
 	
 	StrategyGoogle = require('passport-google-openidconnect').Strategy;
-	passport.use(new StrategyGoogle({
+	passport.use('google', new StrategyGoogle({
 		clientID: secrets.google.client_id,
 		clientSecret: secrets.google.secret,
-		callbackURL: '/auth/google/callback',
+		callbackURL: '/auth/google/callback/',
 		passReqToCallback:true,
 		stateless: true
 	  },
@@ -359,10 +359,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	));	
 
 	FacebookStrategy = require('passport-facebook').Strategy;
-	passport.use(new FacebookStrategy({
+	passport.use('facebook', new FacebookStrategy({
 		clientID: secrets.facebook.client_id,
 		clientSecret: secrets.facebook.secret,
-		callbackURL: "/auth/facebook/callback",
+		callbackURL: "/auth/facebook/callback/",
 		passReqToCallback: true,
 		stateless: true
 	  },
@@ -381,10 +381,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	));
 
 	TwitterStrategy = require('passport-twitter').Strategy;
-	passport.use(new TwitterStrategy({
+	passport.use('twitter', new TwitterStrategy({
 		consumerKey: secrets.twitter.client_id,
 		consumerSecret: secrets.twitter.secret,
-		callbackURL: "/auth/twitter/callback",
+		callbackURL: "/auth/twitter/callback/",
 		passReqToCallback: true,
 		stateless: true
 	  },
@@ -406,7 +406,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var steam = new SteamWebAPI({ apiKey: secrets.steam.api_key, format: 'json' });
 	passport.use('steam', new OpenIDStrategy({
 			returnURL: function(req) { 
-				return "http://wottactic.com/steam_redirect.html?dest=" + "http://" + req.hostname + "/auth/steam/callback";
+				return "http://wottactic.com/steam_redirect.html?dest=" + "http://" + req.hostname + "/auth/steam/callback/";
 			},
 			realm: function(req) { 
 				return "http://wottactic.com"; 
@@ -534,6 +534,13 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							locale: req.session.locale,
 							url: req.fullUrl});
 	});
+	router.get('/lol', function(req, res, next) {
+	  req.session.game = 'lol';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl});
+	});
 	router.get('/health_check.html', function(req, res, next) {
 	  res.sendStatus(200);
 	});	
@@ -583,6 +590,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	router.get('/blitzplanner.html', function(req, res, next) {
 	  planner_redirect(req, res, 'blitz');
+	});
+	router.get('/lolplanner.html', function(req, res, next) {
+	  planner_redirect(req, res, 'lol');
 	});
 	router.get('/about.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -669,19 +679,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  res.redirect(return_to);
 	});
 	
-	app.get('/disconnect', function(req, res) {
-		if (req.query.pw == secrets.mongodb_password) {
-			for (var room in room_data) {
-				save_room(room, function(){
-					io.to(room).emit('reconnect');
-				});
-			}
-			res.send('Success');
-		} else {
-			res.end('Invalid password')
-		}
-	});
-	
 	function copy_slides(source, target, res) {
 		if (source.slides) {
 			if (Object.keys(source.slides).length > 100) {
@@ -766,49 +763,79 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//openid
 	router.post('/auth/openid', save_return, passport.authenticate('openid'));
-	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
+	router.get('/auth/openid/callback/', passport.authenticate('openid'), redirect_return);
 
 	//google
-	router.post('/auth/google', save_return, passport.authenticate('google-openidconnect'));
-	router.get('/auth/google/callback', passport.authenticate('google-openidconnect'), redirect_return);
+	router.post('/auth/google', save_return, passport.authenticate('google'));
+	router.get('/auth/google/callback/', passport.authenticate('google'), redirect_return);
 
 	//facebook
 	router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
-	router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
+	router.get('/auth/facebook/callback/', passport.authenticate('facebook'), redirect_return);
 
 	//twitter
 	router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
-	router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
+	router.get('/auth/twitter/callback/', passport.authenticate('twitter'), redirect_return);
 
 	//steam
 	router.post('/auth/steam', save_return, passport.authenticate('steam'));
-	router.get('/auth/steam/callback', passport.authenticate('steam'), redirect_return);
+	router.get('/auth/steam/callback/', passport.authenticate('steam'), redirect_return);
 	
 	//force saves all rooms to DB, run before a restart/shutdown
-	router.get('/save.html', function(req, res, next) {
-		for (var room in room_data) {
-			save_room(room, function(){});
+	router.get('/save', function(req, res, next) {
+		if (req.query.pw == secrets.mongodb_password) {
+			var unsaved_rooms = 0;
+			for (var room in room_data) {
+				unsaved_rooms++;
+				save_room(room, function(){
+					unsaved_rooms--;
+				});
+			}
+			var timer = setInterval(function() {
+				if (unsaved_rooms == 0) {
+					clearInterval(timer);
+					res.send('Success');
+				}
+			}, 500);			
+		} else {
+			res.send('Invalid password')
 		}
-		res.send('Success');
+	});
+
+	app.get('/disconnect', function(req, res) {
+		if (req.query.pw == secrets.mongodb_password) {
+			for (var room in room_data) {
+				save_room(room, function(){
+					io.to(room).emit('reconnect');
+				});
+			}
+			res.send('Success');
+		} else {
+			res.send('Invalid password')
+		}
 	});
 
 	//some basic logging data
-	router.get('/log.html', function(req, res, next) {
+	router.get('/log', function(req, res, next) {
 		res.send("Active rooms: " + Object.keys(room_data).length);
 	});
 	
 	//reloads templates, so I don't have to restart the server to add basic content
 	var lastmod = (new Date()).toISOString().substr(0,10);
-	router.get('/refresh.html', function(req, res, next) {
-		var ejs = require('ejs')
-		ejs.clearCache();
-		lastmod = (new Date()).toISOString().substr(0,10);
-		i18n.configure({
-			locales: locales,
-			directory: __dirname + "/locales",
-			updateFiles: true
-		});
-		res.send("Refreshed");
+	router.get('/refresh', function(req, res, next) {
+		if (req.query.pw == secrets.mongodb_password) {
+			var ejs = require('ejs')
+			ejs.clearCache();
+			lastmod = (new Date()).toISOString().substr(0,10);
+			i18n.configure({
+				locales: locales,
+				directory: __dirname + "/locales",
+				updateFiles: true
+			});
+			res.send('Success');
+		} else {
+			res.send('Invalid password')
+		}
 	});
 	
 	//////////////
@@ -830,14 +857,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 	}
 
-	paths.splice(paths.indexOf('/auth/twitter/callback'), 1);
-	paths.splice(paths.indexOf('/auth/facebook/callback'), 1);
-	paths.splice(paths.indexOf('/auth/google/callback'), 1);
-	paths.splice(paths.indexOf('/auth/openid/callback'), 1);
-	paths.splice(paths.indexOf('/auth/steam/callback'), 1);
-	paths.splice(paths.indexOf('/save.html'), 1);
-	paths.splice(paths.indexOf('/log.html'), 1);
-	paths.splice(paths.indexOf('/refresh.html'), 1);
+	paths.splice(paths.indexOf('/auth/twitter/callback/'), 1);
+	paths.splice(paths.indexOf('/auth/facebook/callback/'), 1);
+	paths.splice(paths.indexOf('/auth/google/callback/'), 1);
+	paths.splice(paths.indexOf('/auth/openid/callback/'), 1);
+	paths.splice(paths.indexOf('/auth/steam/callback/'), 1);
+	paths.splice(paths.indexOf('/save'), 1);
+	paths.splice(paths.indexOf('/log'), 1);
+	paths.splice(paths.indexOf('/refresh'), 1);
+	paths.splice(paths.indexOf('/disconnect'), 1);
+	paths.splice(paths.indexOf('/health_check.html'), 1);
+	paths.splice(paths.indexOf('share_tactic.html'), 1);
 
 	router.get('/sitemap.xml', function(req, res, next) {
 		var sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
@@ -935,9 +965,15 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							room_data[room] = {};
 							var slide0_uid = newUid();
 							room_data[room].slides = {};
-							room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid}
+							room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid, z_top:0}
 							var background_uid = newUid();
-							room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:""};
+							if (game == 'lol') {
+								room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"http://karellodewijk.github.io/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
+								room_data[room].locked = false;
+							} else {
+								room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"", z_index:0};
+								room_data[room].locked = true;
+							}
 							room_data[room].active_slide = slide0_uid;
 							room_data[room].trackers = {};
 							room_data[room].userlist = {};
@@ -949,7 +985,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								room_data[room].lost_identities[user.identity] = {role: "owner"};
 							}
 							room_data[room].game = game;
-							room_data[room].locked = true;
 						}
 					}
 					join_room(socket, room);
@@ -988,8 +1023,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('create_entity', function(room, entity, slide) {
 			if (room_data[room] && entity) {
 				if (room_data[room].slides[slide]) {
+					if (room_data[room].slides[slide].z_top !== 'undefined') {
+						room_data[room].slides[slide].z_top++;
+						entity.z_index = room_data[room].slides[slide].z_top;
+					}
 					room_data[room].slides[slide].entities[entity.uid] = entity;
-					socket.broadcast.to(room).emit('create_entity', entity, slide);
+					socket.broadcast.to(room).emit('create_entity', entity, slide, socket.request.session.passport.user.id);
 				}
 			}
 		});
@@ -998,22 +1037,26 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (room_data[room] && room_data[room].slides[slide] && room_data[room].slides[slide].entities[uid]) {
 				room_data[room].slides[slide].entities[uid].x = x;
 				room_data[room].slides[slide].entities[uid].y = y;
-				io.to(room).emit('drag', uid, slide, x, y);
+				if (room_data[room].slides[slide].z_top !== 'undefined') {
+					room_data[room].slides[slide].z_top++;
+					room_data[room].slides[slide].entities[uid].z_index = room_data[room].slides[slide].z_top;
+				}
+				io.to(room).emit('drag', uid, slide, x, y, socket.request.session.passport.user.id);
 			}
 		});
 
 		socket.on('ping_marker', function(room, x, y, color) {
-			socket.broadcast.to(room).emit('ping_marker', x, y, color);
+			socket.broadcast.to(room).emit('ping_marker', x, y, color, socket.request.session.passport.user.id);
 		});
 
 		socket.on('show_grid', function(room, slide, bool) {
 			room_data[room].slides[slide].show_grid = bool;
-			socket.broadcast.to(room).emit('show_grid', slide, bool);
+			socket.broadcast.to(room).emit('show_grid', slide, bool, socket.request.session.passport.user.id);
 		});
 		
 		socket.on('track', function(room, tracker) {
 			room_data[room].trackers[tracker.uid] = tracker;
-			socket.broadcast.to(room).emit('track', tracker);
+			socket.broadcast.to(room).emit('track', tracker, socket.request.session.passport.user.id);
 		});
 		
 		socket.on('track_move', function(room, uid, delta_x, delta_y) {
@@ -1032,7 +1075,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('remove', function(room, uid, slide) {
 			if (room_data[room] && room_data[room].slides[slide] && room_data[room].slides[slide].entities[uid]) {
 				delete room_data[room].slides[slide].entities[uid];
-				socket.broadcast.to(room).emit('remove', uid, slide);
+				socket.broadcast.to(room).emit('remove', uid, slide, socket.request.session.passport.user.id);
 			}
 		});
 
@@ -1060,9 +1103,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							room_data[room].lost_identities[user.identity].role = user.role;
 						}
 					}
-				}
-				
-				socket.broadcast.to(room).emit('add_user', user);
+				}				
+				socket.broadcast.to(room).emit('add_user', user, socket.request.session.passport.user.id);
 			}
 		});
 
@@ -1074,7 +1116,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 					room_data[room].active_slide = uid;
 					io.to(room).emit('change_slide', uid); 
 				} else {
-					io.to(room).emit('change_slide', room_data[room].active_slide); 
+					io.to(room).emit('change_slide', room_data[room].active_slide, socket.request.session.passport.user.id); 
 				}
 			}
 		});
@@ -1152,7 +1194,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				room_data[room].slides[slide.uid] = slide;
 				room_data[room].active_slide = slide.uid;
 				socket.broadcast.to(room).emit('new_slide', slide);
-				io.to(room).emit('change_slide', slide.uid);
+				io.to(room).emit('change_slide', slide.uid, socket.request.session.passport.user.id);
 			}
 		});
 
@@ -1168,7 +1210,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						room_data[room].active_slide = new_slide;
 					}
 					delete room_data[room].slides[uid];
-					socket.broadcast.to(room).emit('remove_slide', uid);
+					socket.broadcast.to(room).emit('remove_slide', uid, socket.request.session.passport.user.id);
 					
 					io.to(room).emit('change_slide', room_data[room].active_slide);
 				}
@@ -1178,21 +1220,21 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('rename_slide', function(room, uid, name) {
 			if (room_data[room] && room_data[room].slides[uid]) {
 				room_data[room].slides[uid].name = name;
-				socket.broadcast.to(room).emit('rename_slide', uid, name);
+				socket.broadcast.to(room).emit('rename_slide', uid, name, socket.request.session.passport.user.id);
 			}
 		});	
 		
 		socket.on('change_slide_order', function(room, uid, order) {
 			if (room_data[room] && room_data[room].slides[uid]) {
 				room_data[room].slides[uid].order = order;
-				socket.broadcast.to(room).emit('change_slide_order', uid, order);
+				socket.broadcast.to(room).emit('change_slide_order', uid, order, socket.request.session.passport.user.id);
 			}
 		});
 
 		socket.on('lock_room', function(room, is_locked) {
 			if (room_data[room]) {
 				room_data[room].locked = is_locked;
-				socket.broadcast.to(room).emit('lock_room', is_locked);
+				socket.broadcast.to(room).emit('lock_room', is_locked, socket.request.session.passport.user.id);
 			}
 		});
 
