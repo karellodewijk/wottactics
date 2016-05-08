@@ -65,6 +65,17 @@ http://ru.wottactic.asia
 http://cs.wottactic.asia
 http://fi.wottactic.asia
 
+http://gametactic.org
+http://en.gametactic.org
+http://sr.gametactic.org
+http://de.gametactic.org
+http://es.gametactic.org
+http://fr.gametactic.org
+http://pl.gametactic.org
+http://ru.gametactic.org
+http://cs.gametactic.org
+http://fi.gametactic.org
+
 http://localhost/auth/google/callback
 http://wottactic.tk/auth/google/callback
 http://awtactic.tk/auth/google/callback
@@ -121,6 +132,7 @@ http://cs.wottactic.eu/auth/google/callback
 http://cs.wottactic.com/auth/google/callback
 http://fi.wottactic.eu/auth/google/callback
 http://fi.wottactic.com/auth/google/callback
+
 http://en.wottactic.asia/auth/google/callback
 http://sr.wottactic.asia/auth/google/callback
 http://de.wottactic.asia/auth/google/callback
@@ -130,3 +142,14 @@ http://pl.wottactic.asia/auth/google/callback
 http://ru.wottactic.asia/auth/google/callback
 http://cs.wottactic.asia/auth/google/callback
 http://fi.wottactic.asia/auth/google/callback
+
+http://gametactic.org/auth/google/callback
+http://en.gametactic.org/auth/google/callback
+http://sr.gametactic.org/auth/google/callback
+http://de.gametactic.org/auth/google/callback
+http://es.gametactic.org/auth/google/callback
+http://fr.gametactic.org/auth/google/callback
+http://pl.gametactic.org/auth/google/callback
+http://ru.gametactic.org/auth/google/callback
+http://cs.gametactic.org/auth/google/callback
+http://fi.gametactic.org/auth/google/callback

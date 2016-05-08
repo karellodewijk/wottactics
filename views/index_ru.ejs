@@ -22,10 +22,29 @@
 					World of Tanks Blitz Tactics
 				<% } else if (game == 'aw') { %>
 					Armored Warfare Tactics
+				<% } else if (game == 'lol') { %>
+					League of legends Tactics
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
 			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a></p>
+			<script type="text/javascript">
+				function newUid() {
+				  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+					function(c) {
+					  r = Math.random() * 16 | 0,
+						v = c == 'x' ? r : (r & 0x3 | 0x8);
+					  return v.toString(16);
+					}).toUpperCase();
+				}
+				window.onload = function() {
+					var el = document.getElementById('new_room');
+					el.onclick = function(e) {
+						window.location.href = el.getAttribute('href') + '?room=' + newUid();
+						e.preventDefault();
+					}
+				};
+			</script>
 		</div>
 	</div>
 

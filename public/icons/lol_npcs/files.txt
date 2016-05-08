@@ -1,0 +1,15 @@
+baron.png
+blue_sentinel.png
+canon.png
+caster.png
+dragon.png
+files.txt
+gromp.png
+krug.png
+razorback.png
+red_brambleback.png
+sentry.png
+super1.png
+super2.png
+warrior.png
+wolve.png

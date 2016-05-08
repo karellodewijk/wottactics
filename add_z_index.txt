@@ -1,44 +1,24 @@
-db.stored_tactics.find({}).forEach(function (doc) { 
-	for (var key in doc.slides) {
-		if (doc.slides.hasOwnProperty(key)) {
-			var z_index = 1;
-			for (var i in doc.slides[key].entities) {
-				if (doc.slides[key].entities[i].type == 'background') {
-					doc.slides[key].entities[i].z_index = 0;
-				} else {
-					doc.slides[key].entities[i].z_index = z_index;
-					z_index++;
-				}
-				doc.slides[key].z_top = z_index;
-			}
-		}
-	}
-	db.stored_tactics.update({_id:doc._id}, doc);
-});
-
 db.tactics.find({}).forEach(function (doc) { 
 	var modified = false;
 	for (var key in doc.slides) {
 		if (doc.slides.hasOwnProperty(key)) {
+			var z_index = 0;
 			for (var i in doc.slides[key].entities) {
-				if (doc.slides[key].entities[i].hasOwnProperty('is_arrow')) {
-					modified = true;
-					if (doc.slides[key].entities[i].is_arrow) {
-						doc.slides[key].entities[i].end = "arrow";
-					} else {
-						doc.slides[key].entities[i].end = "none";
+				if (doc.slides[key].entities.hasOwnProperty(i)) {
+					if (typeof doc.slides[key].entities[i].z_index === 'undefined') {
+						if (doc.slides[key].entities[i].type == 'background') {
+							doc.slides[key].entities[i].z_index = 0;
+						} else {
+							z_index++;
+							doc.slides[key].entities[i].z_index = z_index;
+						}
+						modified = true;
 					}
-					delete doc.slides[key].entities[i].is_arrow;
 				}
-				if (doc.slides[key].entities[i].hasOwnProperty('is_dotted')) {
-					modified = true;
-					if (doc.slides[key].entities[i].is_dotted) {
-						doc.slides[key].entities[i].style = "dashed";
-					} else {
-						doc.slides[key].entities[i].style = "full";
-					}
-					delete doc.slides[key].entities[i].is_dotted;
-				}
+			}
+			if (typeof doc.slides[key].z_top === 'undefined') {
+				doc.slides[key].z_top = z_index;
+				modified = true;
 			}
 		}
 	}
@@ -47,18 +27,3 @@ db.tactics.find({}).forEach(function (doc) {
 	}
 });
 
-db.tactics.find({}).forEach(function (doc) { 
-	var modified = false;
-	for (var key in doc.slides) {
-		if (doc.slides.hasOwnProperty(key)) {
-			for (var i in doc.slides[key].entities) {
-				if (doc.slides[key].entities[i].hasOwnProperty('is_arrow')) {
-					print("wait, what");
-				}
-				if (doc.slides[key].entities[i].hasOwnProperty('is_dotted')) {
-					print("wait, what");
-				}
-			}
-		}
-	}
-});

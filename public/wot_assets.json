@@ -1,0 +1,80 @@
+{
+  "sprites": {
+    "wot_assets.png": {
+      "width": 55,
+      "height": 380
+    }
+  },
+  "tiles": {
+    "note.png": {
+      "width": 22,
+      "height": 22,
+      "x": 0,
+      "y": 0,
+      "sprite": "wot_assets.png"
+    },
+    "arty.png": {
+      "width": 29,
+      "height": 29,
+      "x": 0,
+      "y": 22,
+      "sprite": "wot_assets.png"
+    },
+    "heavy.png": {
+      "width": 29,
+      "height": 29,
+      "x": 0,
+      "y": 51,
+      "sprite": "wot_assets.png"
+    },
+    "light.png": {
+      "width": 29,
+      "height": 29,
+      "x": 0,
+      "y": 80,
+      "sprite": "wot_assets.png"
+    },
+    "medium.png": {
+      "width": 29,
+      "height": 29,
+      "x": 0,
+      "y": 109,
+      "sprite": "wot_assets.png"
+    },
+    "td.png": {
+      "width": 29,
+      "height": 29,
+      "x": 0,
+      "y": 138,
+      "sprite": "wot_assets.png"
+    },
+    "dot.png": {
+      "width": 30,
+      "height": 30,
+      "x": 0,
+      "y": 167,
+      "sprite": "wot_assets.png"
+    },
+    "circle.png": {
+      "width": 50,
+      "height": 50,
+      "x": 0,
+      "y": 197,
+      "sprite": "wot_assets.png"
+    },
+    "recticle.png": {
+      "width": 50,
+      "height": 50,
+      "x": 0,
+      "y": 247,
+      "sprite": "wot_assets.png"
+    },
+    "cursor.png": {
+      "width": 55,
+      "height": 83,
+      "x": 0,
+      "y": 297,
+      "sprite": "wot_assets.png"
+    }
+  }
+}
