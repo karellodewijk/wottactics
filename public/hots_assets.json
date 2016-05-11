@@ -1,0 +1,94 @@
+{
+  "sprites": {
+    "hots_assets.png": {
+      "width": 200,
+      "height": 1085
+    }
+  },
+  "tiles": {
+    "note.png": {
+      "width": 22,
+      "height": 22,
+      "x": 0,
+      "y": 0,
+      "sprite": "hots_assets.png"
+    },
+    "dot.png": {
+      "width": 30,
+      "height": 30,
+      "x": 0,
+      "y": 22,
+      "sprite": "hots_assets.png"
+    },
+    "recticle.png": {
+      "width": 50,
+      "height": 50,
+      "x": 0,
+      "y": 52,
+      "sprite": "hots_assets.png"
+    },
+    "cursor.png": {
+      "width": 55,
+      "height": 83,
+      "x": 0,
+      "y": 102,
+      "sprite": "hots_assets.png"
+    },
+    "legendary.png": {
+      "width": 99,
+      "height": 100,
+      "x": 0,
+      "y": 185,
+      "sprite": "hots_assets.png"
+    },
+    "merc.png": {
+      "width": 94,
+      "height": 100,
+      "x": 0,
+      "y": 285,
+      "sprite": "hots_assets.png"
+    },
+    "support.png": {
+      "width": 91,
+      "height": 100,
+      "x": 0,
+      "y": 385,
+      "sprite": "hots_assets.png"
+    },
+    "assassin.png": {
+      "width": 91,
+      "height": 100,
+      "x": 0,
+      "y": 485,
+      "sprite": "hots_assets.png"
+    },
+    "specialist.png": {
+      "width": 91,
+      "height": 100,
+      "x": 0,
+      "y": 585,
+      "sprite": "hots_assets.png"
+    },
+    "structure.png": {
+      "width": 96,
+      "height": 100,
+      "x": 0,
+      "y": 685,
+      "sprite": "hots_assets.png"
+    },
+    "warrior.png": {
+      "width": 91,
+      "height": 100,
+      "x": 0,
+      "y": 785,
+      "sprite": "hots_assets.png"
+    },
+    "circle.png": {
+      "width": 200,
+      "height": 200,
+      "x": 0,
+      "y": 885,
+      "sprite": "hots_assets.png"
+    }
+  }
+}

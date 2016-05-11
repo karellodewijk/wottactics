@@ -26,6 +26,11 @@ if (game == "wows") { //wows
 } else if (game == "aw") {
 	assets.push(image_host+"aw_afv.png", image_host+"aw_lt.png", image_host+"aw_mbt.png", image_host+"aw_spg.png", image_host+"aw_td.png", image_host+"aw_grid.png");
 	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
+} else if (game == "lol") {
+	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
+} else if (game == "hots") {
+	loader.add("hots_assets.png", asset_host + "hots_assets.png");
+	loader.add("hots_assets.json",  asset_host +  "hots_assets.json");
 } else {
 	loader.add("wot_assets.png", asset_host + "wot_assets.png");
 	loader.add("wot_assets.json",  asset_host +  "wot_assets.json");
@@ -135,6 +140,7 @@ var min_polygon_end_distance_touch = 0.025;
 var min_track_move_distance = 0.01;
 var min_track_move_distance_sq = min_track_move_distance * min_track_move_distance;
 var active_context = 'ping_context';
+var active_menu = 'ping_context';
 var userlist = {};
 var selected_icon;
 var selected_icon_no_color = false;
@@ -204,6 +210,7 @@ var circle_draw_style = "edge";
 var drag_in_progress = false;
 var current_text_element;
 var last_mouse_location;
+var ping_texture;
 
 var mouse_down_interrupted;
 document.body.onmouseup = function() {
@@ -264,7 +271,7 @@ function copy() {
 		selected_entities[i].container = null;
 		clipboard.push(JSON.parse(JSON.stringify(selected_entities[i])));
 		selected_entities[i].container = temp;
-	}	
+	}
 }
 
 function paste() {
@@ -305,13 +312,13 @@ function paste() {
 			create_icon(entity, function(entity) {
 				snap_and_emit_entity(entity);
 				entity.container.alpha = select_alpha;
-				renderer.render(stage);
+				render_scene();
 			});
 		} else {
 			create_entity(entity);
 			snap_and_emit_entity(entity);
 			entity.container.alpha = select_alpha;
-			renderer.render(stage);
+			render_scene();
 		}
 		selected_entities.push(entity);
 	}
@@ -336,11 +343,11 @@ if (Modernizr.webgl) {
 var useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
 renderer.view.addEventListener("wheel", function(e) {
-	zoom(0.1, e.deltaY < 0);
+	zoom(0.1, e.deltaY < 0, e);
 	e.preventDefault();
 });
 
-function zoom(amount, isZoomIn) {
+function zoom(amount, isZoomIn, e) {
 	direction = isZoomIn ? 1 : -1;
 	var factor = (1 + amount * direction);
 	
@@ -351,9 +358,9 @@ function zoom(amount, isZoomIn) {
 	var new_scale = objectContainer.scale.x;
 
 	//pan to cursor
-	var scalechange = new_scale - old_scale;
-	objectContainer.x -= (mouse_location.x) * scalechange;
-	objectContainer.y -= (mouse_location.y) * scalechange;
+	var scalechange = new_scale - old_scale;	
+	objectContainer.x -= x_abs(from_x_local(mouse_location.x)) * scalechange;
+	objectContainer.y -= y_abs(from_y_local(mouse_location.y)) * scalechange;
 
 	correct();
 }
@@ -397,14 +404,16 @@ function correct() {
 		}
 	}
 	
-	renderer.render(stage);
-}
-
-function pan() {
+	if (my_tracker) {
+		on_track_move();
+	}
 	
+	render_scene();
 }
 
 var last_pan_loc;
+var panning
+var last_move_func, last_end_func;
 $(renderer.view).mousedown(function(e) {
     if (e.which === 3 || e.which === 2) {
 		last_pan_loc = [renderer.plugins.interaction.mouse.global.x, renderer.plugins.interaction.mouse.global.y];
@@ -414,15 +423,18 @@ $(renderer.view).mousedown(function(e) {
 });
 
 renderer.view.addEventListener('contextmenu', function(e) {
+    setup_mouse_events(undefined);
 	e.preventDefault();
 });
 
+
 $(renderer.view).mouseup(function(e) {
     if (e.which === 3 || e.which === 2) {
-        setup_mouse_events(undefined, undefined);
+        setup_mouse_events(undefined);
 		e.preventDefault();
     }
 });
+
 
 function on_pan(e) {
 	var mouse_location = renderer.plugins.interaction.mouse.global;
@@ -430,7 +442,7 @@ function on_pan(e) {
 	var diff_y = mouse_location.y - last_pan_loc[1];
 	last_pan_loc = [mouse_location.x, mouse_location.y];
 	objectContainer.x += diff_x;
-	objectContainer.y += diff_y;	
+	objectContainer.y += diff_y;
 	correct();
 }
 
@@ -492,7 +504,7 @@ function resize_renderer(new_size_x, new_size_y) {
 	$("#render_frame").attr('style', 'height:' + new_size_y + 'px; width:' + new_size_x + 'px;');
 	
 	zoom(0,true);
-	renderer.render(stage);
+	render_scene();
 };
 
 window.onresize = function() {
@@ -500,7 +512,7 @@ window.onresize = function() {
 	if (background_sprite.texture) {
 		ratio = background_sprite.texture.width /  background_sprite.texture.height;
 	}	
-	if (window.innerWidth > window.innerHeight * ratio) {
+	if (1.5 * window.innerWidth > window.innerHeight * ratio) {
 		var size_y = window.innerHeight - 15;
 		var size_x = size_y * ratio;		
 		if (window.innerWidth - $('.side_bar').width() - 50 > window.innerHeight) {
@@ -510,7 +522,7 @@ window.onresize = function() {
 			}
 		}
 		resize_renderer(size_x, size_y);
-	} else {
+	} else {		
 		var size_x = window.innerWidth - 15;
 		var size_y = size_x / ratio;
 		
@@ -518,20 +530,48 @@ window.onresize = function() {
 	}
 };
 
+//Absolute coordinates are coordinates pixi within objectContainer, the main screen graph
+//Relative coordinates are coordinates with the left upper corner of the backfround equal to [0,0], the height of the background exactly 1 and the width has the same scale as the hight
+//local coordinates are coordinates in px, with [0,0] the upper left corner of the renderer.view dom element. 
+
+//absolute -> relative
 function x_rel(x) {
 	return x/(background_sprite.width);
 }
 
+//relative -> absolute
 function x_abs(x) {
 	return x*(background_sprite.width);
 }
 
+//absolute -> relative
 function y_rel(y) {
 	return y/(background_sprite.height);
 }
 
+//relative -> absolute
 function y_abs(y) {
 	return y*(background_sprite.height);
+}
+
+//relative -> local
+function to_x_local(x) {
+	return objectContainer.x + (x * background_sprite.width) * objectContainer.scale.x;
+}
+
+//local -> relative
+function from_x_local(x) {
+	return (x - objectContainer.x) / objectContainer.scale.x / background_sprite.width;
+}
+
+//relative -> local
+function to_y_local(y) {
+	return objectContainer.y +(y * background_sprite.height) * objectContainer.scale.y;
+}
+
+//local -> relaive
+function from_y_local(y) {
+	return (y - objectContainer.y) / objectContainer.scale.y / background_sprite.height;
 }
 
 function mouse_x_abs(x) {
@@ -542,58 +582,95 @@ function mouse_y_abs(y) {
 	return y;
 }
 
+//translates mouse position from e.data.getLocalPosition(background_sprite) to a relative coordinate
+//TODO: consider using renderer.plugins.interaction.mouse.global and from_x_local, from_y_local instead
 function mouse_x_rel(x) {
 	return x/(background_sprite.width / background_sprite.scale.x);
 }
 
+//translates mouse position from e.data.getLocalPosition(background_sprite) to a relative coordinate
 function mouse_y_rel(y) {
 	return y/(background_sprite.height / background_sprite.scale.y);
+}
 
+// From http://stackoverflow.com/questions/14967647/ (continues on next line)
+// encode-decode-image-with-base64-breaks-image (2013-04-21)
+function fixBinary(bin) {
+	var length = bin.length;
+	var buf = "";
+	for (var i = 0; i < length; i++) {
+		var charcode = bin.charCodeAt(i) 
+
+		buf += String.fromCharCode(charcode);
+		//if (charcode > 0xFF) {
+		//	buf += String.fromCharCode((charcode & 0xFF00) >> 8);
+		//}
+	}
+	return buf;
 }
 
 function set_background(new_background, cb) {
-	background = new_background;
-	history[background.uid] = background;
-	
-	if ($("#map_select option[value='" + background.path + "']").length > 0) {
-		$("#map_select").val(background.path).change();	
-		$( "#use_wotbase" ).prop("checked", false);
-		$('#map_select_container').show();
-		$('#wotbase_map_select_container').hide();
-	} else {
-		$("#map_select_wotbase").val(background.path).change();
-		$( "#use_wotbase" ).prop("checked", true);
-		$('#map_select_container').hide();
-		$('#wotbase_map_select_container').show();
-	}
-	
-	if (background.path != "") {
-		var texture = PIXI.Texture.fromImage(background.path);
-		
+	if (new_background.path != "") {
+		resources_loading++;
+
+		var texture = PIXI.Texture.fromImage(new_background.path);
+
 		var on_loaded = function() {
+			
+			
+			background = new_background;
+			history[background.uid] = background;
+			
 			background_sprite.texture = texture;				
 			window.onresize();
-			renderer.render(stage);	
+			render_scene();	
 			room_data.slides[active_slide].entities[new_background.uid] = new_background;
-			if (cb)	cb();
+			resources_loading--;
+			
+			if ($("#map_select option[value='" + background.path + "']").length > 0) {
+				$("#map_select").val(background.path).change();	
+				$("#use_wotbase").prop("checked", false);
+				$('#map_select_container').show();
+				$('#wotbase_map_select_container').hide();
+			} else if ($("#map_select_wotbase option[value='" + background.path + "']").length > 0) {
+				$("#map_select_wotbase").val(background.path).change();
+				$("#use_wotbase").prop("checked", true);
+				$('#map_select_container').hide();
+				$('#wotbase_map_select_container').show();
+			} else {
+				add_custom_map(background.path)
+				$("#map_select").selectpicker('refresh');
+				$('#wotbase_map_select_container').hide();
+				$('#map_select_container').show();
+			}
+		
+			if (background.size_x && background.size_y && background.size_x > 0 && background.size_y > 0) {
+				$("#map_size").text("("+background.size_x+" x "+background.size_y+")");
+			} else {
+				$("#map_size").text("");
+			}
+		
+			if (cb)	cb(true);
 		}
 		
 		if (!texture.baseTexture.hasLoaded) {
-			resources_loading++;
 			texture.baseTexture.on('loaded', function() {
-				resources_loading--;
 				on_loaded();
 			});
+			texture.baseTexture.on('error', function(e) {
+				alert("Image exists, but the host does not allow embedding. Try uploading your map to a service such as http://imgur.com.");
+				resources_loading--;
+				if (cb)	cb(false);
+			});
+			
 		} else {
 			on_loaded();
 		}
-		if (background.size_x && background.size_y && background.size_x > 0 && background.size_y > 0) {
-			$("#map_size").text("("+background.size_x+" x "+background.size_y+")");
-		} else {
-			$("#map_size").text("");
-		}
 		
 	} else {
+		background = new_background;
+		history[background.uid] = background;
+		
 		var empty_backround = new PIXI.Graphics();
 		empty_backround.beginFill(0xFFFFFF, 1);
 		empty_backround.moveTo(0, 0);
@@ -604,8 +681,9 @@ function set_background(new_background, cb) {
 		empty_backround.endFill();
 		background_sprite.texture = empty_backround.generateTexture();
 		$("#map_size").text("");
-		if (cb)	cb();
-		renderer.render(stage);	
+
+		if (cb)	cb(true);
+		render_scene();	
 	}	
 }
 
@@ -614,6 +692,7 @@ function set_background(new_background, cb) {
 var context_before_drag;
 var move_selected;
 var drag_timeout;
+var last_drag_position, last_drag_update;
 function on_drag_start(e) {
 	drag_in_progress = true;
 	if (drag_timeout) {
@@ -635,6 +714,10 @@ function on_drag_start(e) {
 		active_context = "drag_context";
 	}
 	drag_timeout = setTimeout(function() {
+		var mouse_location = renderer.plugins.interaction.mouse.global;
+		last_drag_update = Date.now();
+		last_drag_position = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
+				
 		if (mouse_down_interrupted) {
 			drag_in_progress = false;
 			deselect_all();
@@ -655,7 +738,7 @@ function on_drag_start(e) {
 		}
 		active_context = "drag_context";
 		
-		renderer.render(stage);
+		render_scene();
 		
 		_this.mouseup = on_drag_end;
 		_this.touchend = on_drag_end;
@@ -687,8 +770,6 @@ function on_drag_start(e) {
 		_this.origin_x = _this.entity.x;
 		_this.origin_y = _this.entity.y;
 		
-
-		
 		drag_in_progress = false;
 	
 	}, delay);
@@ -702,6 +783,67 @@ function toggle_note(e) {
 		this.is_open = true;
 		align_note_text(this.entity);
 	}	
+}
+
+//move an entity but keep it within the bounds
+function move_entity(entity, delta_x, delta_y) {
+	var new_x = entity.container.x + x_abs(delta_x);
+	var new_y = entity.container.y + y_abs(delta_y);
+	
+	//I don't remember why I restrict moving icons, etc like this.
+	//new_x = Math.max(new_x, 0);
+	//new_y = Math.max(new_y, 0);
+	//var new_x, new_y;
+	//if (entity.type == 'icon') {
+		//in case of icons, do not count the label as a hit box
+		//new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.getChildAt(0).width)));
+		//new_y = Math.min(new_y, y_abs(1 - x_rel(entity.container.getChildAt(0).height)));		
+	//} else {	
+		//new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.width)));
+		//new_y = Math.min(new_y, y_abs(1 - y_rel(entity.container.height)));
+	//}
+		
+	//move by relative positioning cause x on the container is the left upper corner of the bounding box
+	//and for the entity this is mostly the start point
+	
+	drag_entity(entity, entity.x + x_rel(new_x - entity.container.x), entity.y + y_rel(new_y - entity.container.y));
+}
+
+//limits the amount of time f can be called to once every interval
+function limit_rate(interval, state, f) {
+	if (!state.last_trigger) {
+		state.last_trigger = Date.now();
+	}
+	var time_diff = (Date.now() - state.last_trigger);
+	clearTimeout(state.timeout);
+	if (time_diff > interval) {
+		f();
+		state.last_trigger = Date.now();
+	} else {
+		state.timeout = setTimeout(function() {
+			f();
+		}, interval + 5)		
+	}
+}
+
+var drag_state = {};
+function on_drag_move(e) {
+	_this = this;	
+	limit_rate(20, drag_state, function() {
+		var mouse_location = e.data.getLocalPosition(background_sprite);
+		//move by deltamouse	
+		var delta_x = mouse_x_rel(mouse_location.x) - last_mouse_location[0];
+		var delta_y = mouse_y_rel(mouse_location.y) - last_mouse_location[1];
+		if (move_selected) {
+			for (var i in selected_entities) {
+				move_entity(selected_entities[i], delta_x, delta_y);
+			}
+		} else {
+			move_entity(_this.entity, delta_x, delta_y);
+		}
+		last_mouse_location = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
+		render_scene();		
+	} , 20, drag_state);
 }
 
 function on_drag_end(e) {
@@ -733,48 +875,7 @@ function on_drag_end(e) {
 	this.touchmove = undefined;
 	active_context = context_before_drag;
 	
-	renderer.render(stage);
-}
-
-//move an entity but keep it within the bounds
-function move_entity(entity, delta_x, delta_y) {
-	var new_x = entity.container.x + x_abs(delta_x);
-	var new_y = entity.container.y + y_abs(delta_y);
-	
-	//I don't remember why I restrict moving icons, etc like this.
-	//new_x = Math.max(new_x, 0);
-	//new_y = Math.max(new_y, 0);
-	//var new_x, new_y;
-	//if (entity.type == 'icon') {
-		//in case of icons, do not count the label as a hit box
-		//new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.getChildAt(0).width)));
-		//new_y = Math.min(new_y, y_abs(1 - x_rel(entity.container.getChildAt(0).height)));		
-	//} else {	
-		//new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.width)));
-		//new_y = Math.min(new_y, y_abs(1 - y_rel(entity.container.height)));
-	//}
-		
-	//move by relative positioning cause x on the container is the left upper corner of the bounding box
-	//and for the entity this is mostly the start point
-	
-	drag_entity(entity, entity.x + x_rel(new_x - entity.container.x), entity.y + y_rel(new_y - entity.container.y));
-}
-
-function on_drag_move(e) {
-	//move by deltamouse
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	var delta_x = mouse_x_rel(mouse_location.x) - last_mouse_location[0];
-	var delta_y = mouse_y_rel(mouse_location.y) - last_mouse_location[1];
-	if (move_selected) {
-		for (var i in selected_entities) {
-			move_entity(selected_entities[i], delta_x, delta_y);
-		}
-	} else {
-		move_entity(this.entity, delta_x, delta_y);
-	}
-
-	last_mouse_location = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
-	renderer.render(stage);
+	render_scene();
 }
 
 function remove(uid, keep_entity) {
@@ -808,7 +909,7 @@ function remove(uid, keep_entity) {
 	if (!keep_entity) {
 		delete room_data.slides[active_slide].entities[uid];	
 	}
-	renderer.render(stage);
+	render_scene();
 }
 
 function move_tracker(uid, delta_x, delta_y) {
@@ -823,7 +924,7 @@ function move_track_recursive(uid, step_x, step_y, count) {
 			trackers[uid].y += step_y;
 			trackers[uid].container.x += x_abs(step_x);
 			trackers[uid].container.y += y_abs(step_y);
-			renderer.render(stage);
+			render_scene();
 		}
 		count--;
 		if (count == 0) {
@@ -832,42 +933,42 @@ function move_track_recursive(uid, step_x, step_y, count) {
 	}, 20);
 }
 
-function ping(x, y, color) {
-	var sprite;
-	if (texture_atlas["circle.png"]) {
-		var img = texture_atlas["circle.png"];
-		var texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
-		sprite = new PIXI.Sprite(texture);
-	} else {
-		var texture = PIXI.Texture.fromImage(image_host + 'circle.png');
-		sprite = new PIXI.Sprite(texture);
-	}
-	
+var render_state = {}
+function render_scene() {
+	limit_rate(20, render_state, function() {
+		renderer.render(stage);
+	});
+}
+
+function ping(x, y, color) {	
+	var sprite = new PIXI.Sprite(ping_texture);
+
 	sprite.tint = color;
 	sprite.anchor.set(0.5);
-	sprite.width = x_abs(0.012);
-	sprite.height = x_abs(0.012);
+	sprite.height = y_abs(0.01);
+	sprite.width = y_abs(0.01);
+		
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
 
 	objectContainer.addChild(sprite);
-	renderer.render(stage);
+	render_scene();
 	
-	var steps = 10;
-	var scale_step = sprite.scale.x / 2;
+	var steps = 25;
+	var step_size = sprite.height/5;
 	var loop = setInterval(function() {
-		sprite.scale.x += scale_step;
-		sprite.scale.y += scale_step;
-		sprite.alpha -= 0.06;
+		sprite.height += step_size;
+		sprite.width += step_size;
+		sprite.alpha -= 0.02;
+		render_scene();
 		
-		renderer.render(stage);	
 		steps--;
 		if (steps <= 0) {
 			clearInterval(loop)
 			objectContainer.removeChild(sprite);
-			renderer.render(stage);				
+			render_scene();			
 		}
-	}, 50);
+	}, 20);
 }
 
 function setup_mouse_events(on_move, on_release) {
@@ -1147,7 +1248,7 @@ function on_left_click(e) {
 			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			
-			renderer.render(stage);
+			render_scene();
 		}
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
@@ -1174,7 +1275,7 @@ function on_left_click(e) {
 			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			
-			renderer.render(stage);
+			render_scene();
 		}
 	} else if (active_context == 'icon_context') {
 		setup_mouse_events(undefined, on_icon_end);
@@ -1221,7 +1322,7 @@ function stop_tracking() {
 	socket.emit("stop_track", room, my_tracker.uid);
 	objectContainer.removeChild(my_tracker.container);
 	my_tracker = undefined;
-	renderer.render(stage);
+	render_scene();
 }
 
 function start_tracking(mouse_location) {
@@ -1233,7 +1334,7 @@ function start_tracking(mouse_location) {
 	} else {
 		size = 0.05;
 	}
-	my_tracker = {uid:newUid(), shape:shape, size:size, color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y)};
+	my_tracker = {uid:newUid(), shape:shape, size:size, color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), owner:my_user.id};
 	last_track_position = [my_tracker.x, my_tracker.y];
 	socket.emit("track", room, my_tracker);
 	create_tracker(my_tracker);
@@ -1264,7 +1365,7 @@ function create_note(note) {
 	}
 
 	sprite.height = (sprite.height/29) * y_abs(note_scale) * note.scale;
-	sprite.width = (sprite.width/29) * x_abs(note_scale) * note.scale;
+	sprite.width = (sprite.width/29) * y_abs(note_scale) * note.scale;
 	
 	//note.container = new PIXI.Container();
 	sprite.x = x_abs(note.x);
@@ -1301,9 +1402,9 @@ function create_note(note) {
 	make_draggable(note.container);	
 	objectContainer.addChild(note.container);
 		
-	renderer.render(stage);
+	render_scene();
 	sprite.texture.on('update', function() {	
-		renderer.render(stage);
+		render_scene();
 	});
 	room_data.slides[active_slide].entities[note.uid] = note;
 }
@@ -1326,43 +1427,57 @@ function create_tracker(tracker) {
 	tracker.container.y = y_abs(tracker.y);
 		
 	var ratio = tracker.container.width/tracker.container.height;
+	
 	tracker.container.height = y_abs(tracker.size);
-	tracker.container.width = x_abs(tracker.size * ratio);	
+	tracker.container.width = tracker.container.height * ratio;	
 		
 	trackers[tracker.uid] = tracker;
 	objectContainer.addChild(trackers[tracker.uid].container);
-	renderer.render(stage);
+	render_scene();
 }
 
 function remove_tracker(uid) {
 	objectContainer.removeChild(trackers[uid].container);
-	renderer.render(stage);
+	render_scene();
 	delete trackers[uid];
 }
 
 var last_track_update = Date.now();
+
+var count
+var track_timeout;
 function on_track_move(e) {
-	var mouse_location = e.data.getLocalPosition(background_sprite);	
+	clearTimeout(track_timeout);
 	
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
+	var mouse_location = renderer.plugins.interaction.mouse.global;	
+	
+	var x = from_x_local(mouse_location.x);
+	var y = from_y_local(mouse_location.y);
 	my_tracker.x = x;
 	my_tracker.y = y;
 	my_tracker.container.x = x_abs(x);
-	my_tracker.container.y = x_abs(y);
-	renderer.render(stage);
+	my_tracker.container.y = y_abs(y);
 	
 	var dist_sq = (last_track_position[0] - my_tracker.x) * (last_track_position[0] - my_tracker.x)
 			     +(last_track_position[1] - my_tracker.y) * (last_track_position[1] - my_tracker.y);
 	
 	var interval = (Date.now() - last_track_update);
-
 	if (dist_sq > min_track_move_distance_sq || interval > 200) {
 		last_track_update = Date.now();
 		if (Math.abs(my_tracker.x - last_track_position[0] + my_tracker.y - last_track_position[1]) > 0) {
 			socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
 			last_track_position = [my_tracker.x, my_tracker.y];
 		}
+		render_scene();
+	} else {
+		track_timeout = setTimeout(function() {
+			if (my_tracker) {
+				last_track_update = Date.now();
+				socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
+				last_track_position = [my_tracker.x, my_tracker.y];
+				render_scene();
+			}
+		}, 200)
 	}
 }
 
@@ -1403,7 +1518,7 @@ function on_area_end(e) {
 		}
 		
 		objectContainer.removeChild(graphics);
-		renderer.render(stage);
+		render_scene();
 		
 		stop_drawing();
 		setup_mouse_events(undefined, undefined);
@@ -1485,7 +1600,7 @@ function on_curve_end(e) {
 		}
 		
 		objectContainer.removeChild(graphics);
-		renderer.render(stage);
+		render_scene();
 		
 		stop_drawing();
 		setup_mouse_events(undefined, undefined);
@@ -1499,7 +1614,7 @@ function on_curve_end(e) {
 		graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
 		graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 		objectContainer.addChild(graphics);
-		renderer.render(stage);
+		render_scene();
 		
 		if (new_drawing.path.length > 9) {
 			var n = 30;
@@ -1542,7 +1657,7 @@ function on_polygon_end(e) {
 		}
 		
 		objectContainer.removeChild(graphics);
-		renderer.render(stage);		
+		render_scene();		
 		setup_mouse_events(undefined, undefined);
 		stop_drawing();
 		new_drawing = null;
@@ -1573,87 +1688,91 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 	return graphic;
 }
 
+var ruler_state = {}
 function on_ruler_move(e) {
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-
-	var map_size_x = background.size_x ? background.size_x : 0;
-	var map_size_y = background.size_y ? background.size_y : 0;
-	
-	temp_draw_context.save();
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	temp_draw_context.beginPath();
-	temp_draw_context.lineWidth = 2 * (size_x/1000);
-	temp_draw_context.strokeStyle = "#FFFFFF";
-	temp_draw_context.fillStyle = "#FFFFFF";
-	temp_draw_context.beginPath();
-	temp_draw_context.moveTo(to_x_local(left_click_origin[0]), to_y_local(left_click_origin[1]));		
-	temp_draw_context.lineTo(to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y)));
-	temp_draw_context.stroke();	
-	var mid_line_x = (to_x_local(left_click_origin[0]) + to_x_local(mouse_x_rel(mouse_location.x))) / 2;
-	var mid_line_y = (to_y_local(left_click_origin[1]) + to_y_local(mouse_y_rel(mouse_location.y))) / 2;
-	temp_draw_context.font = "22px Arial";		  
-	var length = Math.sqrt(Math.pow(map_size_x * (left_click_origin[0] - mouse_x_rel(mouse_location.x)), 2) 
-						 + Math.pow(map_size_y * (left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2))  
-	temp_draw_context.lineWidth = to_x_local(0.5)/1000;
-	temp_draw_context.strokeStyle = "#000000";
-	temp_draw_context.fillStyle = "#FFFFFF";
-	var unit = "m";
-	if (game == "lol") {
-		unit = "u";
-	}	
-	temp_draw_context.fillText(""+Math.round(10*length)/10+unit, mid_line_x, mid_line_y);
-	temp_draw_context.restore();
-	
-}
-
-function on_ruler_end(e) {
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	setup_mouse_events(undefined, undefined);
-}
-
-function on_circle_move(e) {
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	
-	var center_x, center_y, radius
-	if (circle_draw_style == "edge") {
-		center_x = (left_click_origin[0] + mouse_x_rel(mouse_location.x)) / 2;
-		center_y = (left_click_origin[1] + mouse_y_rel(mouse_location.y)) / 2;
-		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) +
-				           Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
-		radius /= 2;
-	} else if (circle_draw_style == "radius") {
-		center_x = left_click_origin[0];
-		center_y = left_click_origin[1];
-		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + 
-		                   Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
-	}
-	
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	temp_draw_context.beginPath();
-	temp_draw_context.arc(to_x_local(center_x), to_y_local(center_y), background_sprite.height * objectContainer.scale.y  * radius, 0, 2*Math.PI);
-	temp_draw_context.fill();
-	temp_draw_context.stroke();
-	
-	if (circle_draw_style == "radius" && background.size_x && background.size_x > 0 && background.size_y && background.size_y > 0) {
+	limit_rate(20, ruler_state, function() {
+		var mouse_location = e.data.getLocalPosition(background_sprite);
+		var map_size_x = background.size_x ? background.size_x : 0;
+		var map_size_y = background.size_y ? background.size_y : 0;
 		temp_draw_context.save();
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+		temp_draw_context.beginPath();
 		temp_draw_context.lineWidth = 2 * (size_x/1000);
 		temp_draw_context.strokeStyle = "#FFFFFF";
 		temp_draw_context.fillStyle = "#FFFFFF";
 		temp_draw_context.beginPath();
-		temp_draw_context.moveTo(to_x_local(center_x), to_y_local(center_y));		
+		temp_draw_context.moveTo(to_x_local(left_click_origin[0]), to_y_local(left_click_origin[1]));		
 		temp_draw_context.lineTo(to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y)));
-		temp_draw_context.stroke();
-		var mid_line_x = to_x_local((center_x + mouse_x_rel(mouse_location.x)) / 2);
-		var mid_line_y = to_y_local((center_y + mouse_y_rel(mouse_location.y)) / 2);
-		temp_draw_context.font = "22px Arial";
-		var length = Math.sqrt(Math.pow(background.size_x * (center_x - mouse_x_rel(mouse_location.x)), 2) + Math.pow(background.size_y * 
-		(center_y - mouse_y_rel(mouse_location.y)), 2))
+		temp_draw_context.stroke();	
+		var mid_line_x = (to_x_local(left_click_origin[0]) + to_x_local(mouse_x_rel(mouse_location.x))) / 2;
+		var mid_line_y = (to_y_local(left_click_origin[1]) + to_y_local(mouse_y_rel(mouse_location.y))) / 2;
+		temp_draw_context.font = "22px Arial";		  
+		var length = Math.sqrt(Math.pow(map_size_x * (left_click_origin[0] - mouse_x_rel(mouse_location.x)), 2) 
+							 + Math.pow(map_size_y * (left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2))  
 		temp_draw_context.lineWidth = to_x_local(0.5)/1000;
 		temp_draw_context.strokeStyle = "#000000";
 		temp_draw_context.fillStyle = "#FFFFFF";
-		temp_draw_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
+		var unit = "m";
+		if (game == "lol") {
+			unit = "u";
+		}	
+		temp_draw_context.fillText(""+Math.round(10*length)/10+unit, mid_line_x, mid_line_y);
 		temp_draw_context.restore();
-	}
+	});
+}
+
+function on_ruler_end(e) {
+	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+	temp_draw_context.fill();
+	setup_mouse_events(undefined, undefined);
+}
+
+var circle_state = {}
+function on_circle_move(e) {
+	limit_rate(20, circle_state, function() {	
+		var mouse_location = e.data.getLocalPosition(background_sprite);
+		
+		var center_x, center_y, radius
+		if (circle_draw_style == "edge") {
+			center_x = (left_click_origin[0] + mouse_x_rel(mouse_location.x)) / 2;
+			center_y = (left_click_origin[1] + mouse_y_rel(mouse_location.y)) / 2;
+			radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) +
+							   Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
+			radius /= 2;
+		} else if (circle_draw_style == "radius") {
+			center_x = left_click_origin[0];
+			center_y = left_click_origin[1];
+			radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + 
+							   Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
+		}
+		
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+		temp_draw_context.beginPath();
+		temp_draw_context.arc(to_x_local(center_x), to_y_local(center_y), background_sprite.height * objectContainer.scale.y  * radius, 0, 2*Math.PI);
+		temp_draw_context.fill();
+		temp_draw_context.stroke();
+		
+		if (circle_draw_style == "radius" && background.size_x && background.size_x > 0 && background.size_y && background.size_y > 0) {
+			temp_draw_context.save();
+			temp_draw_context.lineWidth = 2 * (size_x/1000);
+			temp_draw_context.strokeStyle = "#FFFFFF";
+			temp_draw_context.fillStyle = "#FFFFFF";
+			temp_draw_context.beginPath();
+			temp_draw_context.moveTo(to_x_local(center_x), to_y_local(center_y));		
+			temp_draw_context.lineTo(to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y)));
+			temp_draw_context.stroke();
+			var mid_line_x = to_x_local((center_x + mouse_x_rel(mouse_location.x)) / 2);
+			var mid_line_y = to_y_local((center_y + mouse_y_rel(mouse_location.y)) / 2);
+			temp_draw_context.font = "22px Arial";
+			var length = Math.sqrt(Math.pow(background.size_x * (center_x - mouse_x_rel(mouse_location.x)), 2) + Math.pow(background.size_y * 
+			(center_y - mouse_y_rel(mouse_location.y)), 2))
+			temp_draw_context.lineWidth = to_x_local(0.5)/1000;
+			temp_draw_context.strokeStyle = "#000000";
+			temp_draw_context.fillStyle = "#FFFFFF";
+			temp_draw_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
+			temp_draw_context.restore();
+		}
+	});
 	
 }
 
@@ -1715,16 +1834,19 @@ function on_circle_end(e) {
 	setup_mouse_events(undefined, undefined);
 }
 
+var rectangle_state = {}
 function on_rectangle_move(e) {
-	var mouse_location = e.data.getLocalPosition(background_sprite);	
-	var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
-	var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
-	var right_x = Math.max(left_click_origin[0], mouse_x_rel(mouse_location.x));
-	var right_y = Math.max(left_click_origin[1], mouse_y_rel(mouse_location.y));
+	limit_rate(20, rectangle_state, function() {
+		var mouse_location = e.data.getLocalPosition(background_sprite);	
+		var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
+		var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
+		var right_x = Math.max(left_click_origin[0], mouse_x_rel(mouse_location.x));
+		var right_y = Math.max(left_click_origin[1], mouse_y_rel(mouse_location.y));
 
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);							
-	temp_draw_context.fillRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y)); 
-	temp_draw_context.strokeRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y));
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);							
+		temp_draw_context.fillRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y)); 
+		temp_draw_context.strokeRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y));
+	});
 }
 
 function on_rectangle_end(e) {
@@ -1750,32 +1872,33 @@ function on_rectangle_end(e) {
 	setup_mouse_events(undefined, undefined);
 }
 
+var ping_state = {}
 function on_ping_move(e) {
-	var time = new Date();
-	var timeDiff = time - last_ping_time;
-	if (timeDiff > 80) {		
+	limit_rate(80, drag_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
-		last_ping_time = time;
-	}
+	});
 }
 
 function on_ping_end(e) {
 	setup_mouse_events(undefined, undefined);
 }
 
+var select_state = {}
 function on_select_move(e) {
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	// draw a rounded rectangle
-	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(2, 0xBBBBBB, 1);
-	graphic.beginFill(0xBBBBBB, 0.25);
-	graphic.drawRect(x_abs(left_click_origin[0]), y_abs(left_click_origin[1]), x_abs(mouse_x_rel(mouse_location.x) - left_click_origin[0]), y_abs(mouse_y_rel(mouse_location.y) - left_click_origin[1]));
-	graphic.endFill();
-	objectContainer.addChild(graphic);
-	renderer.render(stage);
-	objectContainer.removeChild(graphic);
+	limit_rate(20, select_state, function() {
+		var mouse_location = e.data.getLocalPosition(background_sprite);
+		// draw a rounded rectangle
+		var graphic = new PIXI.Graphics();
+		graphic.lineStyle(2, 0xBBBBBB, 1);
+		graphic.beginFill(0xBBBBBB, 0.25);
+		graphic.drawRect(x_abs(left_click_origin[0]), y_abs(left_click_origin[1]), x_abs(mouse_x_rel(mouse_location.x) - left_click_origin[0]), y_abs(mouse_y_rel(mouse_location.y) - left_click_origin[1]));
+		graphic.endFill();
+		objectContainer.addChild(graphic);
+		render_scene();
+		objectContainer.removeChild(graphic);
+	});
 }
 
 function on_select_end(e) {
@@ -1826,7 +1949,7 @@ function on_select_end(e) {
 	
 	select_entities();
 	undo_list.push(["select", selected_entities, previously_selected_entities]);
-	renderer.render(stage);
+	render_scene();
 }
 
 function brighten(sprite, brightness) {
@@ -1844,7 +1967,7 @@ function select_entities() {
 	for (var i in selected_entities) {
 		room_data.slides[active_slide].entities[selected_entities[i].uid].container.alpha = select_alpha;
 	}
-	renderer.render(stage);
+	render_scene();
 }
 
 function select_all() {
@@ -2177,7 +2300,7 @@ function canvas2container(_context, _canvas, entity) {
 		
 		//send off
 		room_data.slides[active_slide].entities[entity.uid] = entity;
-		renderer.render(stage);	
+		render_scene();	
 		
 		return true; //success
 	} else {
@@ -2203,7 +2326,6 @@ function create_line2(line) {
 	}
 	_context.moveTo(to_x_local(line.x), to_y_local(line.y));
 	
-	console.log(to_x_local(line.x), to_x_local(line.y));
 	for (var i = 0; i < line.path.length; ++i) {
 		var x = to_x_local(line.path[i][0] + line.x);
 		var y = to_y_local(line.path[i][1] + line.y);
@@ -2422,9 +2544,9 @@ function stop_drawing() {
 
 function snap_and_emit_entity(entity) {
 	move_entity(entity, 0, 0);
-	renderer.render(stage);
+	render_scene();
 	emit_entity(entity);
-	renderer.render(stage);
+	render_scene();
 }
 
 function emit_entity(entity) {
@@ -2439,15 +2561,17 @@ function emit_entity(entity) {
 function on_icon_end(e) {	
 	setup_mouse_events(undefined, undefined);
 	var mouse_location = e.data.getLocalPosition(background_sprite);
-
-	var size = icon_size*icon_extra_scale*icon_scale;
-	var x = mouse_x_rel(mouse_location.x) - (size/2);
-	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
 	var color = icon_color;
 	if (selected_icon_no_color) {
 		color = 16777215; //white
 	}
+	
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	var size = icon_size*icon_extra_scale*icon_scale;
+	size *= zoom_level;
+	var x = mouse_x_rel(mouse_location.x) - (size/2);
+	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
  	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Open Sans", brightness:parseFloat(icon_brightness)}
 	
@@ -2478,44 +2602,31 @@ function on_background_text_end(e) {
 	snap_and_emit_entity(background_text);
 }
 
-function to_x_local(x) {
-	return objectContainer.x + (x * background_sprite.width) * objectContainer.scale.x;
-}
-
-function from_x_local(x) {
-	return (x - objectContainer.x) / objectContainer.scale.x / background_sprite.width;
-}
-
-function to_y_local(y) {
-	return objectContainer.y +(y * background_sprite.height) * objectContainer.scale.y;
-}
-
-function from_y_local(y) {
-	return (y - objectContainer.y) / objectContainer.scale.y / background_sprite.height;
-}
-
-function on_line_move(e) {		
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	var a;
-	if (new_drawing.path.length == 0) {
-		a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
-	} else {
-		a = [to_x_local(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
-			 to_y_local(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
-	}
-	var b = [to_x_local(mouse_x_rel(mouse_location.x)) , to_y_local(mouse_y_rel(mouse_location.y))];
-	
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
-	if (new_drawing.end == "arrow") {
-		draw_arrow3(temp_draw_context, a, b, new_drawing);
-	} else if (new_drawing.end == "T") {
-		draw_T3(temp_draw_context, a, b, new_drawing);
+var line_state = {};
+function on_line_move(e) {
+	limit_rate(20, line_state, function() {
+		var mouse_location = e.data.getLocalPosition(background_sprite);
+		var a;
+		if (new_drawing.path.length == 0) {
+			a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
+		} else {
+			a = [to_x_local(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
+				 to_y_local(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
+		}
+		var b = [to_x_local(mouse_x_rel(mouse_location.x)) , to_y_local(mouse_y_rel(mouse_location.y))];
+		
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
+		if (new_drawing.end == "arrow") {
+			draw_arrow3(temp_draw_context, a, b, new_drawing);
+		} else if (new_drawing.end == "T") {
+			draw_T3(temp_draw_context, a, b, new_drawing);
+			temp_draw_context.stroke();
+		}
+		temp_draw_context.beginPath();
+		temp_draw_context.moveTo(a[0], a[1]);		
+		temp_draw_context.lineTo(b[0], b[1]);
 		temp_draw_context.stroke();
-	}
-	temp_draw_context.beginPath();
-	temp_draw_context.moveTo(a[0], a[1]);		
-	temp_draw_context.lineTo(b[0], b[1]);
-	temp_draw_context.stroke();
+	});
 }
 
 function on_line_end(e) {
@@ -2581,7 +2692,7 @@ function create_text(text_entity) {
 	
 	make_draggable(text_entity.container);	
 	objectContainer.addChild(text_entity.container);
-	renderer.render(stage);
+	render_scene();
 	
 	room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
 }
@@ -2611,7 +2722,7 @@ function create_background_text(text_entity) {
 	
 	make_draggable(text_entity.container);	
 	objectContainer.addChild(text_entity.container);
-	renderer.render(stage);
+	render_scene();
 	
 	room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
 }
@@ -2647,7 +2758,7 @@ function create_icon_cont(icon, texture) {
 	make_draggable(icon.container);	
 
 	objectContainer.addChild(icon['container']);
-	renderer.render(stage);	
+	render_scene();	
 	
 	room_data.slides[active_slide].entities[icon.uid] = icon;
 }
@@ -2947,7 +3058,7 @@ function init_graphic(drawing, graphic) {
 	make_draggable(drawing.container);
 
 	drawing.container.entity = drawing;
-	renderer.render(stage);	
+	render_scene();	
 	room_data.slides[active_slide].entities[drawing.uid] = drawing;
 }
 
@@ -3212,7 +3323,7 @@ function undo() {
 					action[1][i][0][0] = room_data.slides[active_slide].entities[uid].x;
 					action[1][i][0][1] = room_data.slides[active_slide].entities[uid].y;
 					drag_entity(room_data.slides[active_slide].entities[uid], x, y);
-					renderer.render(stage);
+					render_scene();
 					socket.emit('drag', room, uid, active_slide, x, y);
 				}
 			}
@@ -3237,7 +3348,7 @@ function undo() {
 			selected_entities = new_selected_entities;
 			select_entities();
 			redo_list.push(action);
-			renderer.render(stage);
+			render_scene();
 		}
 	}
 }
@@ -3262,7 +3373,7 @@ function redo() {
 					action[1][i][0][0] = room_data.slides[active_slide].entities[uid].x;
 					action[1][i][0][1] = room_data.slides[active_slide].entities[uid].y;
 					drag_entity(room_data.slides[active_slide].entities[uid], x, y);
-					renderer.render(stage);
+					render_scene();
 					socket.emit('drag', room, uid, active_slide, x, y);
 				}
 			}
@@ -3290,7 +3401,7 @@ function redo() {
 			selected_entities = new_selected_entities;
 			select_entities();
 			undo_list.push(action);
-			renderer.render(stage);
+			render_scene();
 		}
 	}	
 }
@@ -3324,7 +3435,7 @@ function drag_entity(entity, x, y) {
 		objectContainer.addChild(entity.container);
 	}
 	
-	renderer.render(stage);	
+	render_scene();	
 }
 
 function find_first_slide() {
@@ -3497,7 +3608,7 @@ function transition(slide) {
 			var key = to_add[i];
 			create_entity(room_data.slides[slide].entities[key]);
 		}
-		renderer.render(stage);
+		render_scene();
 	}
 
 	//we need to set the background first cause the canvases may need to be resized before we can draw on them
@@ -3610,26 +3721,10 @@ function initialize_map_select(map_select) {
 	map_select.empty().append(options); //ie fix no-op
 	map_select.val("");
 	
-	map_select.change(function() {			
+	map_select.change(function() {
 		var path = map_select.val();
-		
 		if (!background || background.path != path) {
-			var uid = background ? background.uid : newUid();
-
-			var size_x = 0;
-			var size_y = 0;
-			
-			var data_size = $('option:selected', map_select).attr('data-size');
-			if (data_size) {
-				var size = data_size.split('x');
-				size_x = parseFloat(size[0]);
-				size_y = parseFloat(size[1]);
-			}
-			
-			var new_background = {uid:uid, type:'background', path:path, size_x:size_x, size_y:size_y};
-			
-			socket.emit('create_entity', room, new_background, active_slide);
-			set_background(new_background);
+			try_select_map(map_select, path);
 		} 
 	});	
 	
@@ -3645,6 +3740,41 @@ function activity_animation(user_id) {
 	}		
 }
 
+function try_select_map(map_select, path) {
+	var uid = background ? background.uid : newUid();
+
+	var size_x = 0;
+	var size_y = 0;
+
+	var data_size = $('option[value="'+ path +'"]').attr('data-size');
+	if (data_size) {
+		var size = data_size.split('x');
+		size_x = parseFloat(size[0]);
+		size_y = parseFloat(size[1]);
+	}
+	
+	var new_background = {uid:uid, type:'background', path:path, size_x:size_x, size_y:size_y};
+		
+	set_background(new_background, function(success) {
+		if (success) {
+			socket.emit('create_entity', room, new_background, active_slide);
+		}
+	});
+}
+
+function add_custom_map(url) {
+	var map_select = $("#map_select");
+	var node = $('#map_select option[value="' + url + '"]');
+	
+	if (node.length == 0) {
+		var filename = last(url.split('/'));
+		var node = $('<option value="' + url + '">' + filename + '</option>');
+		map_select.append(node);
+	}
+	map_select.val(url);
+	map_select.selectpicker('refresh');	
+} 
+
 //connect socket.io socket
 $(document).ready(function() {
 	//sorts maps alphabetically, can't presort cause it depends on language
@@ -3652,6 +3782,13 @@ $(document).ready(function() {
 	initialize_map_select($("#map_select_wotbase"));
 	
 	loader.once('complete', function () {
+		if (texture_atlas["circle.png"]) {
+			var img = texture_atlas["circle.png"];
+			ping_texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
+		} else {
+			ping_texture = PIXI.Texture.fromImage(image_host + 'circle.png');
+		}
+		
 		// Return a helper with preserved width of cells
 		var fixHelper = function(e, ui) {
 			ui.children().each(function() {
@@ -3684,6 +3821,10 @@ $(document).ready(function() {
 			}
 		}).disableSelection();
 
+		$('#modal_cancel').click(function (e) {
+			$('#myModal').modal('hide');
+		});
+		
 		$('#link_send').click(function (e) {
 			var link = $('#send_link').val();
 			var i = link.indexOf('room=');
@@ -3719,21 +3860,41 @@ $(document).ready(function() {
 				$("#send_link").focus();
 			});
 		});
+
+		$('#custom_map').click(function (e) {
+			socket.emit("save_room", room);
+			$('#map_modal').modal('show');
+			$('#map_modal').on('shown.bs.modal', function () {
+				$("#send_link").focus();
+			});
+		});
+		
+		$('#map_modal_cancel').click(function (e) {
+			$('#map_modal').modal('hide');
+		});
+		
+		$('#set_map').click(function (e) {
+			var map = $('#map_url').val();
+			if (map && map != "") {
+				try_select_map($('#map_select'), map);
+				//add_custom_map(map);
+				//$('#map_select').trigger('change');
+			}
+			$('#map_modal').modal('hide');
+		});
+		
+		//hide all contexts
+		$('#contexts ~ div').each(function(){
+			$(this).hide();
+		})
+
+		//except this one :)
+		$('#ping_context').show();
 		
 		
-		$('#draw_context').hide();
-		$('#icon_context').hide();
-		$('#remove_context').hide();
-		$('#text_context').hide();
-		$('#line_context').hide();
-		$('#rectangle_context').hide();
-		$('#circle_context').hide();
-		$('#polygon_context').hide();
-		$('#curve_context').hide();
-		$('#area_context').hide();
-		$('#track_context').hide();
-		$('#background_text_context').hide();
 		$("#store_tactic_popover").hide();
+		
+		
 		$("#save").hide();
 		$('#ping').addClass('active');	
 		var first_icon = $("#icon_context").find("button:first");
@@ -3798,7 +3959,7 @@ $(document).ready(function() {
 		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		initialize_slider("icon_size", "icon_size_text", "icon_size");
 		initialize_slider("icon_brightness", "icon_brightness_text", "icon_brightness");
-
+		
 		$('html').click(function(e) {
 			if (e.target.id != 'tactic_name') {
 				$('[data-toggle="popover"]').popover('hide');
@@ -3898,9 +4059,9 @@ $(document).ready(function() {
 		});
 
 		$('#export').click(function () {
-			renderer.render(stage);	
+			render_scene();	
 			var new_renderer = new PIXI.CanvasRenderer(size, size,{backgroundColor : 0xBBBBBB});
-			new_renderer.render(stage);			
+			new_render_scene();			
 
 			$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function() {
 				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.3.0/js/canvas-to-blob.min.js", function() {
@@ -3946,7 +4107,7 @@ $(document).ready(function() {
 					change_slide(slide_uid);
 					var it = setInterval(function() {
 						if (resources_loading == 0) {
-							new_renderer.render(stage);
+							new_render_scene();
 							var data = new_renderer.view.toDataURL("image/jpeg", 0.9);
 							data = data.replace("data:image/jpeg;base64,","");
 							zip.file(n.toString() + '-' + room_data.slides[slide_uid].name + ".jpg", data, {base64:true});
@@ -3990,7 +4151,7 @@ $(document).ready(function() {
 								});
 							
 								change_slide(original_slide);
-								renderer.render(stage);	
+								render_scene();	
 							}
 							
 						}
@@ -4003,7 +4164,7 @@ $(document).ready(function() {
 
 		$('.icon_group').each(function () {
 			var link = this.id;
-			$('#' + link).click(function () {
+			$('#' + link).click(function () {				
 				var icons = $('#' + link + "_list").text().split('\n');
 				icons = icons.map(function (str) {
 				   return encodeURIComponent(str.trim());
@@ -4021,7 +4182,7 @@ $(document).ready(function() {
 				if (!$.trim($('#' + link + '_menu').html())) {
 					if (style) {
 						for (var i in icons) {
-							$('#' + link + '_menu').append('<button class="tank_select" data-scale="' + scale + '" data-no_color="' + no_color + '" id="' + path + '/' + icons[i] + '"><div class="' + path + ' ' + path + '-' + icons[i].slice(0, -4) + ' inline"></div></button>')
+							$('#' + link + '_menu').append('<button data-toggle="tooltip" title="'+ icons[i] + '" class="tank_select" data-scale="' + scale + '" data-no_color="' + no_color + '" id="' + path + '/' + icons[i] + '"><div class="' + path + ' ' + path + '-' + icons[i].slice(0, -4) + ' inline"></div></button>')
 						}	
 					} else {
 						for (var i in icons) {
@@ -4052,7 +4213,7 @@ $(document).ready(function() {
 			if (can_edit()) {
 				socket.emit("show_grid", room, active_slide, grid_layer.visible);
 			}
-			renderer.render(stage);
+			render_scene();
 		});
 
 		//tool select
@@ -4093,21 +4254,36 @@ $(document).ready(function() {
 			$('#contexts').find("button").removeClass('active');
 			$(this).addClass('active');			
 			var new_context = $(this).attr('id')+"_context";
+			var new_menu = $(this).attr('id')+"_context";
+			
+			if (game == 'sc2') {
+				if (new_menu.substring(0, 4) == 'icon') {
+					$('#icon_options').detach().appendTo($('#' + new_menu));
+					var label = $('#icon_label_container').detach();
+					$('#' + new_menu).find('h4').after(label);
+				}
+			}
+						
+			if ($(this).attr('data-context')) {
+				new_context = $(this).attr('data-context')+"_context";;
+			}
 			if (my_tracker) {
 				stop_tracking();
 			} 
 			if (new_context == "track_context") {
 				start_tracking({x:2000,y:2000});
-			}			
-			if (active_context == new_context) { return; } 	
+			}
+			
+			if (active_menu == new_menu) { return; } 	
 			if (new_context != "remove_context") {
 				deselect_all();
-				renderer.render(stage);
+				render_scene();
 			}
-			$('#'+active_context).hide();
-			$('#'+new_context).show();
+						
+			$('#'+active_menu).hide();
+			$('#'+new_menu).show();	
+			active_menu = new_menu;	
 			active_context = new_context;
-
 		});	
 		
 		$('#rectangle_type button[data-style="full"]').addClass('active');	
@@ -4244,10 +4420,11 @@ $(document).ready(function() {
 		});		
 
 		//tank icon select
-		$('#icon_context').on('click', '.tank_select', function() {
-			$('#icon_context').find('.selected').removeClass('selected'); // removes the previous selected class
+		$('body').on('click', '.tank_select', function() {
+			$('.tank_select.selected').removeClass('selected'); // removes the previous selected class
 			$(this).addClass('selected'); // adds the class to the clicked image
 			selected_icon = $(this).attr('id');
+			
 			if ($(this).attr('data-no_color') == 'true') {
 				selected_icon_no_color = true;
 			} else {
@@ -4330,7 +4507,7 @@ $(document).ready(function() {
 				for (var i in entities) {
 					create_entity(entities[i]);
 				}
-				renderer.render(stage);
+				render_scene();
 			});
 		}
 						
@@ -4469,7 +4646,7 @@ $(document).ready(function() {
 		room_data.slides[slide].show_grid = bool;
 		if (slide == active_slide) {
 			grid_layer.visible = bool;
-			renderer.render(stage);
+			render_scene();
 		}
 		activity_animation(user_id)
 	});

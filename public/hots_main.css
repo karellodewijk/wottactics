@@ -1,0 +1,40 @@
+
+.hots_main {
+  background-image: url('http://karellodewijk.github.io/hots_main.png');
+}
+
+.hots_main-assassin {
+  background-position: -0px -0px;
+  width: 46px;
+  height: 50px;
+}
+.hots_main-legendary {
+  background-position: -0px -50px;
+  width: 49px;
+  height: 50px;
+}
+.hots_main-merc {
+  background-position: -0px -100px;
+  width: 47px;
+  height: 50px;
+}
+.hots_main-specialist {
+  background-position: -0px -150px;
+  width: 46px;
+  height: 50px;
+}
+.hots_main-structure {
+  background-position: -0px -200px;
+  width: 48px;
+  height: 50px;
+}
+.hots_main-support {
+  background-position: -0px -250px;
+  width: 46px;
+  height: 50px;
+}
+.hots_main-warrior {
+  background-position: -0px -300px;
+  width: 46px;
+  height: 50px;
+}

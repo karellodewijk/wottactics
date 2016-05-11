@@ -315,7 +315,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	OpenIDStrategy = require('passport-openid').Strategy;
 	passport.use('openid', new OpenIDStrategy({
 			returnURL: function(req) { 
-				return "http://" + req.hostname + "/auth/openid/callback/"; 
+				return "http://" + req.hostname + "/auth/openid/callback"; 
 			},
 			passReqToCallback: true,
 			stateless: true
@@ -340,7 +340,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	passport.use('google', new StrategyGoogle({
 		clientID: secrets.google.client_id,
 		clientSecret: secrets.google.secret,
-		callbackURL: '/auth/google/callback/',
+		callbackURL: '/auth/google/callback',
 		passReqToCallback:true,
 		stateless: true
 	  },
@@ -357,12 +357,34 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		done(null, user);
 	  }
 	));	
+	
+	StrategyBnet = require('passport-bnet').Strategy;
+	passport.use('battlenet', new StrategyBnet({
+		clientID: secrets.battlenet.client_id,
+		clientSecret: secrets.battlenet.secret,
+		callbackURL:"https://karellodewijk.github.io/battlenet_redirect.html",
+		passReqToCallback:true,
+		stateless: true
+	  },
+	  function(req, accessToken, refreshToken, profile, done) {
+		var user = {};
+		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+			user.id = req.session.passport.user.id;
+		} else {
+			user.id = newUid();
+		}
+		user.identity = 'bnet-'+profile.id;
+		user.identity_provider = "bnet";
+		user.name = profile.battletag;
+		done(null, user);
+	  }
+	));	
 
 	FacebookStrategy = require('passport-facebook').Strategy;
 	passport.use('facebook', new FacebookStrategy({
 		clientID: secrets.facebook.client_id,
 		clientSecret: secrets.facebook.secret,
-		callbackURL: "/auth/facebook/callback/",
+		callbackURL: "/auth/facebook/callback",
 		passReqToCallback: true,
 		stateless: true
 	  },
@@ -384,7 +406,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	passport.use('twitter', new TwitterStrategy({
 		consumerKey: secrets.twitter.client_id,
 		consumerSecret: secrets.twitter.secret,
-		callbackURL: "/auth/twitter/callback/",
+		callbackURL: "/auth/twitter/callback",
 		passReqToCallback: true,
 		stateless: true
 	  },
@@ -541,6 +563,20 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							locale: req.session.locale,
 							url: req.fullUrl});
 	});
+	router.get('/hots', function(req, res, next) {
+	  req.session.game = 'hots';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl});
+	});
+	router.get('/sc2', function(req, res, next) {
+	  req.session.game = 'sc2';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl});
+	});
 	router.get('/health_check.html', function(req, res, next) {
 	  res.sendStatus(200);
 	});	
@@ -593,6 +629,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	router.get('/lolplanner.html', function(req, res, next) {
 	  planner_redirect(req, res, 'lol');
+	});
+	router.get('/hotsplanner.html', function(req, res, next) {
+	  planner_redirect(req, res, 'hots');
+	});
+	router.get('/sc2planner.html', function(req, res, next) {
+	  planner_redirect(req, res, 'sc2');
 	});
 	router.get('/about.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -678,6 +720,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  req.logout();
 	  res.redirect(return_to);
 	});
+
 	
 	function copy_slides(source, target, res) {
 		if (source.slides) {
@@ -763,24 +806,28 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//openid
 	router.post('/auth/openid', save_return, passport.authenticate('openid'));
-	router.get('/auth/openid/callback/', passport.authenticate('openid'), redirect_return);
+	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
 
 	//google
 	router.post('/auth/google', save_return, passport.authenticate('google'));
-	router.get('/auth/google/callback/', passport.authenticate('google'), redirect_return);
+	router.get('/auth/google/callback', passport.authenticate('google'), redirect_return);
 
 	//facebook
 	router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
-	router.get('/auth/facebook/callback/', passport.authenticate('facebook'), redirect_return);
+	router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
 
 	//twitter
 	router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
-	router.get('/auth/twitter/callback/', passport.authenticate('twitter'), redirect_return);
+	router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
 
 	//steam
 	router.post('/auth/steam', save_return, passport.authenticate('steam'));
-	router.get('/auth/steam/callback/', passport.authenticate('steam'), redirect_return);
-	
+	router.get('/auth/steam/callback', passport.authenticate('steam'), redirect_return);
+
+	//battle.net
+	router.post('/auth/battlenet', save_return, passport.authenticate('battlenet'));
+	router.get('/auth/battlenet/callback', passport.authenticate('battlenet'), redirect_return);
+
 	//force saves all rooms to DB, run before a restart/shutdown
 	router.get('/save', function(req, res, next) {
 		if (req.query.pw == secrets.mongodb_password) {
@@ -857,11 +904,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 	}
 
-	paths.splice(paths.indexOf('/auth/twitter/callback/'), 1);
-	paths.splice(paths.indexOf('/auth/facebook/callback/'), 1);
-	paths.splice(paths.indexOf('/auth/google/callback/'), 1);
-	paths.splice(paths.indexOf('/auth/openid/callback/'), 1);
-	paths.splice(paths.indexOf('/auth/steam/callback/'), 1);
+	paths.splice(paths.indexOf('/auth/twitter/callback'), 1);
+	paths.splice(paths.indexOf('/auth/facebook/callback'), 1);
+	paths.splice(paths.indexOf('/auth/google/callback'), 1);
+	paths.splice(paths.indexOf('/auth/openid/callback'), 1);
+	paths.splice(paths.indexOf('/auth/steam/callback'), 1);
 	paths.splice(paths.indexOf('/save'), 1);
 	paths.splice(paths.indexOf('/log'), 1);
 	paths.splice(paths.indexOf('/refresh'), 1);
@@ -1004,6 +1051,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 					if (room_data[room].userlist[user.id].count == 1) {
 						socket.broadcast.to(room).emit('remove_user', user.id);
 						delete room_data[room].userlist[user.id];
+						for (var key in room_data[room].trackers) {
+							if (room_data[room].trackers[key].owner == user.id) {
+								delete room_data[room].trackers[key];
+								break;
+							}
+						}
 					} else {
 						room_data[room].userlist[user.id].count--;
 					}
