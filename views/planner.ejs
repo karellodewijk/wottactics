@@ -35,8 +35,29 @@
 		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_spells.css">
 		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_wards.css">
 		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_runes.css">
+	<% } else if (game == 'hots') { %>
+		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_main.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_heroes.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_map_icons.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_abilities.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_minions.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
+	<% } else if (game == 'sc2') { %>
+		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_units_terran.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_units_zerg.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_units_protoss.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_buildings_terran.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_buildings_zerg.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_buildings_protoss.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_abilities_terran.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_abilities_zerg.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_abilities_protoss.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_upgrades_terran.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_upgrades_zerg.css">
+		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_upgrades_protoss.css">
 	<% } else if (game == 'aw') { %>
-
+		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
 	<% } %>
 </head>
 <body>
@@ -59,6 +80,10 @@
 				href="/blitz.html">
 			<% } else if (game == 'lol') { %>
 				href="/lol">
+			<% } else if (game == 'hots') { %>
+				href="/hots">
+			<% } else if (game == 'sc2') { %>
+				href="/sc2">
 			<% } else if (game == 'aw') { %>
 				href="/">
 			<% } %><i class="fa fa-home fa-lg"></i>
@@ -95,13 +120,12 @@
 			<% include login_button.ejs %>
 		</ul>
 	</div>
-	</nav>
-	
+	</nav>	
 		<div class="top">
 			<div class="left_column">	
 				<h4><%=l('Map')%>&nbsp<span id="map_size"></span></h4>
 				<p>
-					<div class="dropdown" id="map_select_container">
+					<div class="dropdown inline" id="map_select_container">
 						<select class="selectpicker" id="map_select">
 						<%if (game == 'wot') { %>
 							<%include wot_maps.ejs %>	
@@ -109,18 +133,29 @@
 							<%include wows_maps.ejs%>
 						<%} else if (game == 'lol') { %>
 							<%include lol_maps.ejs%>
+						<%} else if (game == 'hots') { %>
+							<%include hots_maps.ejs%>
+						<%} else if (game == 'sc2') { %>
+							<%include sc2_maps.ejs%>
 						<%} else if (game == 'blitz') { %>	
 							<%include blitz_maps.ejs %>	
 						<%} else if (game == 'aw') { %>	
 							<%include aw_maps.ejs %>	
 						<%} %>	
 						</select>
+
 					</div>
+					
 					<%if (game == 'wot') { %>
-						<div class="dropdown" style="display:none" id="wotbase_map_select_container">
+						<div class="dropdown inline" style="display:none" id="wotbase_map_select_container">
 							<select class="selectpicker" id="map_select_wotbase"><%include wotbase_wot_maps.ejs%></select>
 						</div>
-						<input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span>Use wotbase maps</span>
+					<%} %>
+					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
+						<div class="icon icon-link"></div>
+					</button>
+					<%if (game == 'wot') { %>
+						<br /><input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span>Use wotbase maps</span>
 					<%} %>	
 				<hr>
 
@@ -134,21 +169,43 @@
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
 						<div class="icon icon-recticle_icon"></div>
 					</button>
+					<%if (game != 'sc2') {%>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
-						<div class="icon icon-<%if (game == 'wows') { %>ship_icon<%} else if (game == 'aw') { %>aw_icon<%} else if (game == 'lol') { %>icon_icon<%} else { %>tank_icon<%} %>"></div>
+						<div class="icon icon-<%if (game == 'wows') { %>ship_icon<%} else if (game == 'aw') { %>aw_icon<%} else if (game == 'lol') { %>icon_icon<%} else if (game == 'hots') { %>hots<% } else if (game == 'sc2') { %>sc2<% } else { %>tank_icon<%} %>"></div>
 					</button>
+					<%} else {%>
+					<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_terran" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+						<div class="icon icon-terran"></div>
+					</button>
+					<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_zerg" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+						<div class="icon icon-zerg"></div>
+					</button>
+					<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_protoss" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+						<div class="icon icon-protoss"></div>
+					</button>					
+					<%}%>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
 						<div class="icon icon-pencil"></div>
 					</button>
+					
+					<%if (game == 'sc2') {%>
+					</div>
+					<br />
+					<div class="btn-group">
+					<%}%>
+					
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="line" data-toggle="tooltip" title="<%=l('Draw line (hold left mouse)')%>">
 						<div class="icon icon-line_icon"></div>
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="curve" data-toggle="tooltip" title="<%=l('Draw curve (double click to end)')%>">
 						<div class="icon icon-curve"></div>
 					</button>
+					
+					<%if (game != 'sc2') {%>
 					</div>
 					<br />
 					<div class="btn-group">
+					<%}%>
 
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="<%=l('Draw rectangle')%>">
 						<div class="icon icon-rectangle"></div>
@@ -162,15 +219,26 @@
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="area" data-toggle="tooltip" title="<%=l('Draw area')%>">
 						<div class="icon icon-area"></div>
 					</button>
+					
+					<%if (game == 'sc2') {%>
+					</div>
+					<br />
+					<div class="btn-group">
+					<%}%>
+					
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
 						<div class="icon icon-text_icon"></div>
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="background_text" data-toggle="tooltip" title="<%=l('Add Text with background')%>">
 						<div class="icon icon-text_on_background"></div>
 					</button>
+					
+					<%if (game != 'sc2') {%>
 					</div>
 					<br />
 					<div class="btn-group">
+					<%}%>
+					
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="undo" data-toggle="tooltip" title="<%=l('Undo last action')%>">
 						<div class="icon icon-undo"></div>
 					</button>
@@ -183,15 +251,25 @@
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="note" data-toggle="tooltip" title="<%=l('Add a note')%>">
 						<div class="icon icon-note"></div>
 					</button>
+					
+					<%if (game == 'sc2') {%>
+					</div>
+					<br />
+					<div class="btn-group">
+					<%}%>
+					
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
 						<div class="icon icon-select"></div>
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="ruler" data-toggle="tooltip" title="<%=l('Ruler')%>">
 						<div class="icon icon-ruler_icon"></div>
 					</button>
+					
+					<%if (game != 'sc2') {%>
 					</div>
 					<br />
 					<div class="btn-group">
+					<%}%>
 
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="cut" data-toggle="tooltip" title="<%=l('Cut (ctrl-x)')%>">
 						<div class="icon icon-cut"></div>
@@ -210,9 +288,11 @@
 				<div id='icon_context'>
 						
 				<h4><%=l('Icon options')%> (<span id="icon_counter">0</span>)</h4>
+					<div id="icon_label_container">
 					<p>	
 					<small><%=l('Label')%></small> <input type="text" id="icon_label" />
 					<p>
+					</div>
 					
 					<%if (game == 'wot') { %>
 						<%include wot_icons.ejs%>
@@ -224,8 +304,11 @@
 						<%include aw_icons.ejs%>
 					<%} else if (game == 'lol') { %>
 						<%include lol_icons.ejs%>
+					<%} else if (game == 'hots') { %>
+						<%include hots_icons.ejs%>
 					<%} %>
 					
+					<div id="icon_options">
 					<select name="colorpicker" id="icon_colorpicker">
 						<option value="#ff0000"><%=l('Red')%></option>
 						<%if (game == 'aw') { %>
@@ -240,6 +323,7 @@
 					</select>
 					<input type="color">
 
+
 					<div class="row">
 						<div class="col-sm-4">
 							<small><%=l('Label size')%></small>
@@ -251,6 +335,7 @@
 							<input id="label_font_size_text" class="slider_text_input" type="text"/>
 						</div>	
 					</div>	
+
 					<div class="row">
 						<div class="col-sm-4">
 							<small><%=l('Icon size')%></small>
@@ -272,9 +357,26 @@
 						<div class="col-sm-3">
 							<input id="icon_brightness_text" class="slider_text_input" type="text"/>
 						</div>
-					</div>			
+					</div>	
+					</div>					
 				</div>
+				
+				<%if (game == 'sc2') {%>
+				<div id="icon_terran_context">
+				<h4><%=l('Terran Icon options')%></h4>
+					<%include sc2_terran_icons.ejs%>
+				</div>
+				<div id="icon_zerg_context">
+				<h4><%=l('Zerg Icon options')%></h4>
+					<%include sc2_zerg_icons.ejs%>
+				</div>
+				<div id="icon_protoss_context">
+				<h4><%=l('Protoss Icon options')%></h4>
+					<%include sc2_protoss_icons.ejs%>
+				</div>
+				<%}%>
 
+				
 				<div id='draw_context'>			
 				
 				<h4><%=l('Draw options')%></h4>
@@ -1092,13 +1194,29 @@
   <div class="modal-dialog">
 	<!-- Modal content-->
 	<div class='input-group'>
-		<span class='input-group-addon'>Room link:</span>
+		<span class='input-group-addon'><%=l("Room link")%></span>
 		<input id="send_link" class='form-control col-lg-9' type='text'/>
 		<span class='input-group-btn'>
 			<button id='link_send' class='btn btn-default'><%=l('Send')%></button>
 		</span>
 		<span class='input-group-btn'>
 			<button id='modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
+		</span>
+	</div>
+  </div>
+</div>
+
+<div id="map_modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+	<!-- Modal content-->
+	<div class='input-group'>
+		<span class='input-group-addon'><%=l("Url")%></span>
+		<input id="map_url" class='form-control col-lg-9' type='text'/>
+		<span class='input-group-btn'>
+			<button id='set_map' class='btn btn-default'><%=l('Load')%></button>
+		</span>
+		<span class='input-group-btn'>
+			<button id='map_modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
 		</span>
 	</div>
   </div>

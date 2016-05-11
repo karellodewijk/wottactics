@@ -24,6 +24,10 @@
 					Armored Warfare Tactics
 				<% } else if (game == 'lol') { %>
 					League of legends Tactics
+				<% } else if (game == 'hots') { %>
+					Heroes of the Storm Tactics
+				<% } else if (game == 'sc2') { %>
+					Starcraft II Tactics
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
@@ -110,20 +114,21 @@
 	<div class="col-md-4">
 		<h2>Latest changes</h2>
 		<p>
-		Nothing major, but mostly small usabilty impovements: <ul>
+		Nothing major, but mostly small usabilty impovements: 
+		<ul>
+			<li>Added option to load custom map, although it's sort of picky on the host.
+			<li>Added a Starcraft 2 version, see <a href="http://gametactic.org/sc2">here</a>
+			<li>Added a Heroes of the Storm version, see <a href="http://gametactic.org/hots">here</a>
 			<li>Added a hilight of the user making changes or pinging
 			<li>Added zoom in/out with the scrollwheel and panning while holding the right or middle mouse button, give it a try
-			<li>Removed the redirect when pushing new room
-			<li>Icon packs are now fetched from spritesheets instead of download individual files. <a href="http://karellodewijk.github.io/lol_champions.jpg">"eg</a>
-			<li>Added a League of Legends version, take a <a href="http://gametactic.org/lol">look</a>
 		</ul> 
 		On the bug hunting front:
 		<ul>
+			<li>Track cursor didn't work too well while zooming and panning
 			<li>Remove tracked cursor when someone loses privileges
 			<li>Creating stuff outside the viewable area would sometimes stretch new things you added.
 			<li>Select tool would often not properly select things after the tactic window was resized
-			<li>I fixed it to work with rectangular maps
-			<li>Note tool no longer has a save button, it will just save whenever the text field loses focus
+			<li>Rectangular maps work now
 		</ul>
 		If you find anything else, however small, that is broken, pls let me know. 
 	</div>
