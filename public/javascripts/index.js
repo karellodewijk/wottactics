@@ -23,7 +23,11 @@ var general_quotes = [
 	'“Rouse him, and learn the principle of his activity or inactivity. Force him to reveal himself, so as to find out his vulnerable spots.” ― Sun Tzu, The Art of War ',
 	'“There are roads which must not be followed, armies which must not be attacked, towns which must not be besieged, positions which must not be contested, commands which must not be obeyed.” ― Sun Tzu, The Art of War ',
 	'“If your opponent is of choleric temper,  seek to irritate him.  Pretend to be weak, that he may grow arrogant.” ― Sun Tzu, The Art of War ',
-	'“The whole secret lies in confusing the enemy, so that he cannot fathom our real intent.” ― Sun Tzu, The Art of War '
+	'“The whole secret lies in confusing the enemy, so that he cannot fathom our real intent.” ― Sun Tzu, The Art of War ',
+	'HINT: You can use the scrollwheel to zoom in on maps and the right or middle mouse button to pan around.',
+	'HINT: You can hold shift to draw multi-part lines',
+	'HINT: You can hold the left mouse button to ping repeatedly',
+	'HINT: You can use keyboard shortcuts to cut(ctr+x), copy(ctr+c), paste(ctr+v), delete(del), undo(ctrl-z), redo (ctr-y) while in any mode'
 ];
 
 var tank_quotes = ['“Time for some suprise butt sex, best kind of butt sex” ― The Mighty Jingles'];

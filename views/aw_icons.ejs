@@ -16,19 +16,30 @@
 </button>
 
 <p>
-<div class="row">
-	<button class="icon_group" id="extra_icons"><%=l('Extra icons')%><span class="caret"></span></button>
-	<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" hidden>
-		battle.png
-		danger.png
-		defend.png
-		explosion1.png
-		explosion2.png
-		focus.png
-		spot.png
-		warning.png
-		finish.png
-		map_marker.png
+
+<div class='icon_tabs'>
+	<ul class="nav nav-tabs" id="bottom_tabs">
+	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	</ul>
+	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<div class="tab-pane" id="extra_tab">
+			<div class="row">
+				<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" hidden>
+					battle.png
+					danger.png
+					defend.png
+					explosion1.png
+					explosion2.png
+					focus.png
+					spot.png
+					warning.png
+					finish.png
+					map_marker.png
+				</div>
+				<div id="extra_icons_menu"></div>				
+			</div>
+		</div>
 	</div>
-	<div id="extra_icons_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
 </div>
+
+<br/>

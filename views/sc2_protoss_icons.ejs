@@ -1,269 +1,279 @@
 <p>
 
-<div class="row">
-	<button class="icon_group" id="sc2_units_protoss"><%=l('Units')%><span class="caret"></span></button>
-	<div id="sc2_units_protoss_list" data-path="sc2_units_protoss" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_units_protoss.css" hidden>
-		btn-unit-protoss-adept-purifier.png
-		btn-unit-protoss-adept.png
-		btn-unit-protoss-alarak.png
-		btn-unit-protoss-arbiter.png
-		btn-unit-protoss-archon-upgraded.png
-		btn-unit-protoss-archon.png
-		btn-unit-protoss-artanishero.png
-		btn-unit-protoss-carrier.png
-		btn-unit-protoss-carrierhero.png
-		btn-unit-protoss-colossus-purifier.png
-		btn-unit-protoss-colossus-taldarim.png
-		btn-unit-protoss-colossus-taldarimex3.png
-		btn-unit-protoss-colossus.png
-		btn-unit-protoss-corsair.png
-		btn-unit-protoss-darkarchon.png
-		btn-unit-protoss-darktemplar-aiur.png
-		btn-unit-protoss-darktemplar-nerazim.png
-		btn-unit-protoss-darktemplar-taldarim.png
-		btn-unit-protoss-darktemplar.png
-		btn-unit-protoss-disruptor.png
-		btn-unit-protoss-dragoon-void.png
-		btn-unit-protoss-fenix.png
-		btn-unit-protoss-frigate.png
-		btn-unit-protoss-hightemplar-taldarim.png
-		btn-unit-protoss-hightemplar.png
-		btn-unit-protoss-immortal-nerazim.png
-		btn-unit-protoss-immortal-taldarim.png
-		btn-unit-protoss-immortal.png
-		btn-unit-protoss-interceptor.png
-		btn-unit-protoss-karax.png
-		btn-unit-protoss-khaydarinmonolith.png
-		btn-unit-protoss-mothership-taldarim.png
-		btn-unit-protoss-mothership.png
-		btn-unit-protoss-mothershipcore.png
-		btn-unit-protoss-nullifier.png
-		btn-unit-protoss-observer.png
-		btn-unit-protoss-oracle.png
-		btn-unit-protoss-phaseprism.png
-		btn-unit-protoss-phaseprismstationary.png
-		btn-unit-protoss-phoenix-purifier.png
-		btn-unit-protoss-phoenix.png
-		btn-unit-protoss-probe.png
-		btn-unit-protoss-purifier.png
-		btn-unit-protoss-reaver.png
-		btn-unit-protoss-replicant.png
-		btn-unit-protoss-sentry-purifier.png
-		btn-unit-protoss-sentry-taldarim.png
-		btn-unit-protoss-sentry.png
-		btn-unit-protoss-stalker-purifier.png
-		btn-unit-protoss-stalker.png
-		btn-unit-protoss-stasisward.png
-		btn-unit-protoss-tempest-purifier.png
-		btn-unit-protoss-tempest.png
-		btn-unit-protoss-voidray-hero.png
-		btn-unit-protoss-voidray-nerazim.png
-		btn-unit-protoss-voidray-taldarim.png
-		btn-unit-protoss-vorazun.png
-		btn-unit-protoss-warpprism.png
-		btn-unit-protoss-warpprismstationary.png
-		btn-unit-protoss-warpray.png
-		btn-unit-protoss-zealot-aiur.png
-		btn-unit-protoss-zealot-nerazim.png
-		btn-unit-protoss-zealot-purifier.png
-		btn-unit-protoss-zealot.png
+<div class='icon_tabs'>
+	<ul class="nav nav-tabs" id="bottom_tabs">
+	  <li><a class="icon_group" id="sc2_units_protoss" data-toggle="tab" href="#sc2_units_protoss_tab"><%=l('Unit')%></a></li>
+	  <li><a class="icon_group" id="sc2_buildings_protoss" data-toggle="tab" href="#sc2_buildings_protoss_tab"><%=l('Blds')%></a></li>
+	  <li><a class="icon_group" id="sc2_upgrades_protoss" data-toggle="tab" href="#sc2_upgrades_protoss_tab"><%=l('Upgr')%></a></li>
+	  <li><a class="icon_group" id="sc2_abilities_protoss" data-toggle="tab" href="#sc2_abilitites_protoss_tab"><%=l('Ab')%></a></li>
+	  <li><a class="icon_group" id="extra_icons3" data-toggle="tab" href="#extra_protoss_tab"><%=l('Extra')%></a></li>
+	</ul>
+	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<div class="tab-pane" id="sc2_units_protoss_tab">
+			<div id="sc2_units_protoss_list" data-path="sc2_units_protoss" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_units_protoss.css" hidden>
+				btn-unit-protoss-adept-purifier.png
+				btn-unit-protoss-adept.png
+				btn-unit-protoss-alarak.png
+				btn-unit-protoss-arbiter.png
+				btn-unit-protoss-archon-upgraded.png
+				btn-unit-protoss-archon.png
+				btn-unit-protoss-artanishero.png
+				btn-unit-protoss-carrier.png
+				btn-unit-protoss-carrierhero.png
+				btn-unit-protoss-colossus-purifier.png
+				btn-unit-protoss-colossus-taldarim.png
+				btn-unit-protoss-colossus-taldarimex3.png
+				btn-unit-protoss-colossus.png
+				btn-unit-protoss-corsair.png
+				btn-unit-protoss-darkarchon.png
+				btn-unit-protoss-darktemplar-aiur.png
+				btn-unit-protoss-darktemplar-nerazim.png
+				btn-unit-protoss-darktemplar-taldarim.png
+				btn-unit-protoss-darktemplar.png
+				btn-unit-protoss-disruptor.png
+				btn-unit-protoss-dragoon-void.png
+				btn-unit-protoss-fenix.png
+				btn-unit-protoss-frigate.png
+				btn-unit-protoss-hightemplar-taldarim.png
+				btn-unit-protoss-hightemplar.png
+				btn-unit-protoss-immortal-nerazim.png
+				btn-unit-protoss-immortal-taldarim.png
+				btn-unit-protoss-immortal.png
+				btn-unit-protoss-interceptor.png
+				btn-unit-protoss-karax.png
+				btn-unit-protoss-khaydarinmonolith.png
+				btn-unit-protoss-mothership-taldarim.png
+				btn-unit-protoss-mothership.png
+				btn-unit-protoss-mothershipcore.png
+				btn-unit-protoss-nullifier.png
+				btn-unit-protoss-observer.png
+				btn-unit-protoss-oracle.png
+				btn-unit-protoss-phaseprism.png
+				btn-unit-protoss-phaseprismstationary.png
+				btn-unit-protoss-phoenix-purifier.png
+				btn-unit-protoss-phoenix.png
+				btn-unit-protoss-probe.png
+				btn-unit-protoss-purifier.png
+				btn-unit-protoss-reaver.png
+				btn-unit-protoss-replicant.png
+				btn-unit-protoss-sentry-purifier.png
+				btn-unit-protoss-sentry-taldarim.png
+				btn-unit-protoss-sentry.png
+				btn-unit-protoss-stalker-purifier.png
+				btn-unit-protoss-stalker.png
+				btn-unit-protoss-stasisward.png
+				btn-unit-protoss-tempest-purifier.png
+				btn-unit-protoss-tempest.png
+				btn-unit-protoss-voidray-hero.png
+				btn-unit-protoss-voidray-nerazim.png
+				btn-unit-protoss-voidray-taldarim.png
+				btn-unit-protoss-vorazun.png
+				btn-unit-protoss-warpprism.png
+				btn-unit-protoss-warpprismstationary.png
+				btn-unit-protoss-warpray.png
+				btn-unit-protoss-zealot-aiur.png
+				btn-unit-protoss-zealot-nerazim.png
+				btn-unit-protoss-zealot-purifier.png
+				btn-unit-protoss-zealot.png
+			</div>
+			<div id="sc2_units_protoss_menu"></div>
+		</div>
+		<div class="tab-pane" id="sc2_buildings_protoss_tab">
+			<div class="row">
+				<div id="sc2_buildings_protoss_list" data-path="sc2_buildings_protoss" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_buildings_protoss.css" hidden>
+					btn-building-protoss-assimilator.png
+					btn-building-protoss-cyberneticscore.png
+					btn-building-protoss-darkshrine.png
+					btn-building-protoss-energycrystal.png
+					btn-building-protoss-eyeofadun.png
+					btn-building-protoss-fleetbeacon.png
+					btn-building-protoss-forge.png
+					btn-building-protoss-gateway.png
+					btn-building-protoss-nexus.png
+					btn-building-protoss-obelisk.png
+					btn-building-protoss-phasecannon.png
+					btn-building-protoss-photoncannon.png
+					btn-building-protoss-pylon.png
+					btn-building-protoss-roboticsfacility.png
+					btn-building-protoss-roboticssupportbay.png
+					btn-building-protoss-roboticswarpfacility.png
+					btn-building-protoss-shieldbattery.png
+					btn-building-protoss-solarforge.png
+					btn-building-protoss-stargate.png
+					btn-building-protoss-starwarpgate.png
+					btn-building-protoss-templararchives.png
+					btn-building-protoss-twilightcouncil.png
+					btn-building-protoss-warpgate.png
+				</div>
+				<div id="sc2_buildings_protoss_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="sc2_upgrades_protoss_tab">
+			<div class="row">
+				<div id="sc2_upgrades_protoss_list" data-path="sc2_upgrades_protoss" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_upgrades_protoss.css" hidden>
+					btn-upgrade-protoss-adeptshieldupgrade.png
+					btn-upgrade-protoss-airarmorlevel0.png
+					btn-upgrade-protoss-airarmorlevel1.png
+					btn-upgrade-protoss-airarmorlevel2.png
+					btn-upgrade-protoss-airarmorlevel3.png
+					btn-upgrade-protoss-airweaponslevel0.png
+					btn-upgrade-protoss-airweaponslevel1.png
+					btn-upgrade-protoss-airweaponslevel2.png
+					btn-upgrade-protoss-airweaponslevel3.png
+					btn-upgrade-protoss-extendedthermallance.png
+					btn-upgrade-protoss-fluxvanes.png
+					btn-upgrade-protoss-graviticbooster.png
+					btn-upgrade-protoss-graviticdrive.png
+					btn-upgrade-protoss-gravitoncatapult.png
+					btn-upgrade-protoss-groundarmorlevel0.png
+					btn-upgrade-protoss-groundarmorlevel1.png
+					btn-upgrade-protoss-groundarmorlevel2.png
+					btn-upgrade-protoss-groundarmorlevel3.png
+					btn-upgrade-protoss-groundweaponslevel0.png
+					btn-upgrade-protoss-groundweaponslevel1.png
+					btn-upgrade-protoss-groundweaponslevel2.png
+					btn-upgrade-protoss-groundweaponslevel3.png
+					btn-upgrade-protoss-khaydarinamulet.png
+					btn-upgrade-protoss-phoenixrange.png
+					btn-upgrade-protoss-researchbosoniccore.png
+					btn-upgrade-protoss-researchgravitysling.png
+					btn-upgrade-protoss-resonatingglaives.png
+					btn-upgrade-protoss-shieldslevel0.png
+					btn-upgrade-protoss-shieldslevel1.png
+					btn-upgrade-protoss-shieldslevel2.png
+					btn-upgrade-protoss-shieldslevel3.png
+				</div>
+				<div id="sc2_upgrades_protoss_menu"></div>					
+			</div>
+		</div>
+		<div class="tab-pane" id="sc2_abilitites_protoss_tab">
+			<div class="row">
+				<div id="sc2_abilities_protoss_list" data-path="sc2_abilities_protoss" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_abilities_protoss.css" hidden>
+					btn-ability-protoss-adept-spiritform.png
+					btn-ability-protoss-amoncloud.png
+					btn-ability-protoss-arcshield.png
+					btn-ability-protoss-astralwind.png
+					btn-ability-protoss-barrier-upgraded.png
+					btn-ability-protoss-beambounce.png
+					btn-ability-protoss-blackhole-color.png
+					btn-ability-protoss-blackhole-redcolor.png
+					btn-ability-protoss-blink-color.png
+					btn-ability-protoss-blinkcharges.png
+					btn-ability-protoss-blinkshieldrestore.png
+					btn-ability-protoss-carrierrepairdrones.png
+					btn-ability-protoss-charge-color.png
+					btn-ability-protoss-chargedblast.png
+					btn-ability-protoss-chronobeam.png
+					btn-ability-protoss-cliffwalk-color.png
+					btn-ability-protoss-cloakfield-color.png
+					btn-ability-protoss-confusion.png
+					btn-ability-protoss-deadlycharge.png
+					btn-ability-protoss-destructionwave.png
+					btn-ability-protoss-disintegration.png
+					btn-ability-protoss-disruptionweb.png
+					btn-ability-protoss-doubleshieldrecharge.png
+					btn-ability-protoss-dragoonchassis.png
+					btn-ability-protoss-dualgravitonbeam.png
+					btn-ability-protoss-energize.png
+					btn-ability-protoss-energizermobilemode.png
+					btn-ability-protoss-energizerphasingmode.png
+					btn-ability-protoss-entomb.png
+					btn-ability-protoss-envision.png
+					btn-ability-protoss-feedback-color.png
+					btn-ability-protoss-firebeam.png
+					btn-ability-protoss-forcefield-color.png
+					btn-ability-protoss-forcefield-red.png
+					btn-ability-protoss-forceofwill.png
+					btn-ability-protoss-gravitonbeam-color.png
+					btn-ability-protoss-hallucination-color.png
+					btn-ability-protoss-hardenedshields-color.png
+					btn-ability-protoss-invulnerabilityshield.png
+					btn-ability-protoss-lightningdash.png
+					btn-ability-protoss-massrecall.png
+					btn-ability-protoss-mindblast.png
+					btn-ability-protoss-mindcontrol.png
+					btn-ability-protoss-oracle-stasiscalibration.png
+					btn-ability-protoss-oracle-stasisward.png
+					btn-ability-protoss-oraclepulsarcannonoff.png
+					btn-ability-protoss-oraclepulsarcannonon.png
+					btn-ability-protoss-permanentlycloaked-darktemplar-color.png
+					btn-ability-protoss-permanentlycloaked-observer-color.png
+					btn-ability-protoss-phasecannon.png
+					btn-ability-protoss-phasedisruptor.png
+					btn-ability-protoss-phaseshift2.png
+					btn-ability-protoss-phasingarmor.png
+					btn-ability-protoss-preordain.png
+					btn-ability-protoss-prismaticbeam-color.png
+					btn-ability-protoss-prismaticrange.png
+					btn-ability-protoss-prodigalengineer.png
+					btn-ability-protoss-protoncharge-color.png
+					btn-ability-protoss-psionicorb.png
+					btn-ability-protoss-psionictransfer.png
+					btn-ability-protoss-psistorm-color.png
+					btn-ability-protoss-purificationnova.png
+					btn-ability-protoss-purifierstasis.png
+					btn-ability-protoss-purifierstasisending.png
+					btn-ability-protoss-purify.png
+					btn-ability-protoss-recall.png
+					btn-ability-protoss-recallondeath.png
+					btn-ability-protoss-reclamation.png
+					btn-ability-protoss-reconstruction.png
+					btn-ability-protoss-replicate.png
+					btn-ability-protoss-resurgence.png
+					btn-ability-protoss-sacrifice.png
+					btn-ability-protoss-scarabshot.png
+					btn-ability-protoss-scattercannon.png
+					btn-ability-protoss-shadow-charge.png
+					btn-ability-protoss-shadowblade.png
+					btn-ability-protoss-shadowcannon.png
+					btn-ability-protoss-shadowcharge.png
+					btn-ability-protoss-shadowdash.png
+					btn-ability-protoss-shadowdashvorazun.png
+					btn-ability-protoss-shadowfury.png
+					btn-ability-protoss-shieldbattery-color.png
+					btn-ability-protoss-shieldcapacitor.png
+					btn-ability-protoss-shieldrecharge.png
+					btn-ability-protoss-soulabsorbtion.png
+					btn-ability-protoss-soulabsorption.png
+					btn-ability-protoss-squadsight.png
+					btn-ability-protoss-stasisfield.png
+					btn-ability-protoss-stasistrap.png
+					btn-ability-protoss-stealth-blink.png
+					btn-ability-protoss-targetlock.png
+					btn-ability-protoss-thermallance.png
+					btn-ability-protoss-thunderouscharge.png
+					btn-ability-protoss-timewarp.png
+					btn-ability-protoss-veilofshadowsvorazun.png
+					btn-ability-protoss-voidarmor.png
+					btn-ability-protoss-voidrayprismaticalignment.png
+					btn-ability-protoss-voidstasis.png
+					btn-ability-protoss-whirlwind.png
+					btn-ability-protoss-whirlwindfenix.png
+					btn-ability-protoss-wormholetransit-color.png
+				</div>
+				<div id="sc2_abilities_protoss_menu"></div>					
+			</div>
+		</div>
+		<div class="tab-pane" id="extra_protoss_tab">
+			<div class="row">
+				<div id="extra_icons3_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" hidden>
+					battle.png
+					danger.png
+					defend.png
+					explosion1.png
+					explosion2.png
+					focus.png
+					spot.png
+					warning.png
+					finish.png
+					map_marker.png
+				</div>
+				<div id="extra_icons3_menu"></div>				
+			</div>
+		</div>
 	</div>
-	<div id="sc2_units_protoss_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
 </div>
 
-<div class="row">
-	<button class="icon_group" id="sc2_buildings_protoss"><%=l('Buildings')%><span class="caret"></span></button>
-	<div id="sc2_buildings_protoss_list" data-path="sc2_buildings_protoss" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_buildings_protoss.css" hidden>
-		btn-building-protoss-assimilator.png
-		btn-building-protoss-cyberneticscore.png
-		btn-building-protoss-darkshrine.png
-		btn-building-protoss-energycrystal.png
-		btn-building-protoss-eyeofadun.png
-		btn-building-protoss-fleetbeacon.png
-		btn-building-protoss-forge.png
-		btn-building-protoss-gateway.png
-		btn-building-protoss-nexus.png
-		btn-building-protoss-obelisk.png
-		btn-building-protoss-phasecannon.png
-		btn-building-protoss-photoncannon.png
-		btn-building-protoss-pylon.png
-		btn-building-protoss-roboticsfacility.png
-		btn-building-protoss-roboticssupportbay.png
-		btn-building-protoss-roboticswarpfacility.png
-		btn-building-protoss-shieldbattery.png
-		btn-building-protoss-solarforge.png
-		btn-building-protoss-stargate.png
-		btn-building-protoss-starwarpgate.png
-		btn-building-protoss-templararchives.png
-		btn-building-protoss-twilightcouncil.png
-		btn-building-protoss-warpgate.png
-	</div>
-	<div id="sc2_buildings_protoss_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
-</div>
-
-<div class="row">
-	<button class="icon_group" id="sc2_upgrades_protoss"><%=l('Upgrades')%><span class="caret"></span></button>
-	<div id="sc2_upgrades_protoss_list" data-path="sc2_upgrades_protoss" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_upgrades_protoss.css" hidden>
-		btn-upgrade-protoss-adeptshieldupgrade.png
-		btn-upgrade-protoss-airarmorlevel0.png
-		btn-upgrade-protoss-airarmorlevel1.png
-		btn-upgrade-protoss-airarmorlevel2.png
-		btn-upgrade-protoss-airarmorlevel3.png
-		btn-upgrade-protoss-airweaponslevel0.png
-		btn-upgrade-protoss-airweaponslevel1.png
-		btn-upgrade-protoss-airweaponslevel2.png
-		btn-upgrade-protoss-airweaponslevel3.png
-		btn-upgrade-protoss-extendedthermallance.png
-		btn-upgrade-protoss-fluxvanes.png
-		btn-upgrade-protoss-graviticbooster.png
-		btn-upgrade-protoss-graviticdrive.png
-		btn-upgrade-protoss-gravitoncatapult.png
-		btn-upgrade-protoss-groundarmorlevel0.png
-		btn-upgrade-protoss-groundarmorlevel1.png
-		btn-upgrade-protoss-groundarmorlevel2.png
-		btn-upgrade-protoss-groundarmorlevel3.png
-		btn-upgrade-protoss-groundweaponslevel0.png
-		btn-upgrade-protoss-groundweaponslevel1.png
-		btn-upgrade-protoss-groundweaponslevel2.png
-		btn-upgrade-protoss-groundweaponslevel3.png
-		btn-upgrade-protoss-khaydarinamulet.png
-		btn-upgrade-protoss-phoenixrange.png
-		btn-upgrade-protoss-researchbosoniccore.png
-		btn-upgrade-protoss-researchgravitysling.png
-		btn-upgrade-protoss-resonatingglaives.png
-		btn-upgrade-protoss-shieldslevel0.png
-		btn-upgrade-protoss-shieldslevel1.png
-		btn-upgrade-protoss-shieldslevel2.png
-		btn-upgrade-protoss-shieldslevel3.png
-	</div>
-	<div id="sc2_upgrades_protoss_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
-</div>
-
-<div class="row">
-	<button class="icon_group" id="sc2_abilities_protoss"><%=l('Abilities')%><span class="caret"></span></button>
-	<div id="sc2_abilities_protoss_list" data-path="sc2_abilities_protoss" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_abilities_protoss.css" hidden>
-		btn-ability-protoss-adept-spiritform.png
-		btn-ability-protoss-amoncloud.png
-		btn-ability-protoss-arcshield.png
-		btn-ability-protoss-astralwind.png
-		btn-ability-protoss-barrier-upgraded.png
-		btn-ability-protoss-beambounce.png
-		btn-ability-protoss-blackhole-color.png
-		btn-ability-protoss-blackhole-redcolor.png
-		btn-ability-protoss-blink-color.png
-		btn-ability-protoss-blinkcharges.png
-		btn-ability-protoss-blinkshieldrestore.png
-		btn-ability-protoss-carrierrepairdrones.png
-		btn-ability-protoss-charge-color.png
-		btn-ability-protoss-chargedblast.png
-		btn-ability-protoss-chronobeam.png
-		btn-ability-protoss-cliffwalk-color.png
-		btn-ability-protoss-cloakfield-color.png
-		btn-ability-protoss-confusion.png
-		btn-ability-protoss-deadlycharge.png
-		btn-ability-protoss-destructionwave.png
-		btn-ability-protoss-disintegration.png
-		btn-ability-protoss-disruptionweb.png
-		btn-ability-protoss-doubleshieldrecharge.png
-		btn-ability-protoss-dragoonchassis.png
-		btn-ability-protoss-dualgravitonbeam.png
-		btn-ability-protoss-energize.png
-		btn-ability-protoss-energizermobilemode.png
-		btn-ability-protoss-energizerphasingmode.png
-		btn-ability-protoss-entomb.png
-		btn-ability-protoss-envision.png
-		btn-ability-protoss-feedback-color.png
-		btn-ability-protoss-firebeam.png
-		btn-ability-protoss-forcefield-color.png
-		btn-ability-protoss-forcefield-red.png
-		btn-ability-protoss-forceofwill.png
-		btn-ability-protoss-gravitonbeam-color.png
-		btn-ability-protoss-hallucination-color.png
-		btn-ability-protoss-hardenedshields-color.png
-		btn-ability-protoss-invulnerabilityshield.png
-		btn-ability-protoss-lightningdash.png
-		btn-ability-protoss-massrecall.png
-		btn-ability-protoss-mindblast.png
-		btn-ability-protoss-mindcontrol.png
-		btn-ability-protoss-oracle-stasiscalibration.png
-		btn-ability-protoss-oracle-stasisward.png
-		btn-ability-protoss-oraclepulsarcannonoff.png
-		btn-ability-protoss-oraclepulsarcannonon.png
-		btn-ability-protoss-permanentlycloaked-darktemplar-color.png
-		btn-ability-protoss-permanentlycloaked-observer-color.png
-		btn-ability-protoss-phasecannon.png
-		btn-ability-protoss-phasedisruptor.png
-		btn-ability-protoss-phaseshift2.png
-		btn-ability-protoss-phasingarmor.png
-		btn-ability-protoss-preordain.png
-		btn-ability-protoss-prismaticbeam-color.png
-		btn-ability-protoss-prismaticrange.png
-		btn-ability-protoss-prodigalengineer.png
-		btn-ability-protoss-protoncharge-color.png
-		btn-ability-protoss-psionicorb.png
-		btn-ability-protoss-psionictransfer.png
-		btn-ability-protoss-psistorm-color.png
-		btn-ability-protoss-purificationnova.png
-		btn-ability-protoss-purifierstasis.png
-		btn-ability-protoss-purifierstasisending.png
-		btn-ability-protoss-purify.png
-		btn-ability-protoss-recall.png
-		btn-ability-protoss-recallondeath.png
-		btn-ability-protoss-reclamation.png
-		btn-ability-protoss-reconstruction.png
-		btn-ability-protoss-replicate.png
-		btn-ability-protoss-resurgence.png
-		btn-ability-protoss-sacrifice.png
-		btn-ability-protoss-scarabshot.png
-		btn-ability-protoss-scattercannon.png
-		btn-ability-protoss-shadow-charge.png
-		btn-ability-protoss-shadowblade.png
-		btn-ability-protoss-shadowcannon.png
-		btn-ability-protoss-shadowcharge.png
-		btn-ability-protoss-shadowdash.png
-		btn-ability-protoss-shadowdashvorazun.png
-		btn-ability-protoss-shadowfury.png
-		btn-ability-protoss-shieldbattery-color.png
-		btn-ability-protoss-shieldcapacitor.png
-		btn-ability-protoss-shieldrecharge.png
-		btn-ability-protoss-soulabsorbtion.png
-		btn-ability-protoss-soulabsorption.png
-		btn-ability-protoss-squadsight.png
-		btn-ability-protoss-stasisfield.png
-		btn-ability-protoss-stasistrap.png
-		btn-ability-protoss-stealth-blink.png
-		btn-ability-protoss-targetlock.png
-		btn-ability-protoss-thermallance.png
-		btn-ability-protoss-thunderouscharge.png
-		btn-ability-protoss-timewarp.png
-		btn-ability-protoss-veilofshadowsvorazun.png
-		btn-ability-protoss-voidarmor.png
-		btn-ability-protoss-voidrayprismaticalignment.png
-		btn-ability-protoss-voidstasis.png
-		btn-ability-protoss-whirlwind.png
-		btn-ability-protoss-whirlwindfenix.png
-		btn-ability-protoss-wormholetransit-color.png
-	</div>
-	<div id="sc2_abilities_protoss_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
-</div>
-
-
-<div class="row">
-	<button class="icon_group" id="extra_icons3"><%=l('Extra icons')%><span class="caret"></span></button>
-	<div id="extra_icons3_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" hidden>
-		battle.png
-		danger.png
-		defend.png
-		explosion1.png
-		explosion2.png
-		focus.png
-		spot.png
-		warning.png
-		finish.png
-		map_marker.png
-	</div>
-	<div id="extra_icons3_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
-</div>
 
 
 
