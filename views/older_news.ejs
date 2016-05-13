@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<% include common_headers.ejs %>
+	<title><%=game.toUpperCase()%> <%=l('News')%></title>
+	<meta name="description" content="Older news from <%=game.toUpperCase()%>.">
+</head>
+<body>
+	<div class="container" style='width:100%; padding-top:65px;'>
+		<% include navbar.ejs %>	
+		<div class="col-md-4">
+			<h2><%=url.split('/')[0]%> in numbers</h2>
+			<p>I want to tank everybody for your trust, <%=url.split('/')[0]%> has a grown a lot lately, more than I ever expected. It's only at the start of this month I started monitoring traffic and I was amazed. The last month 46,936 unique users have visited the site 193,829 times, opening 363,073 pages. Around 8,000 visits and 6,000 users a day. 
+			
+			<p>
+			The overwelming majority use it for wot (98%). 78% of users come from Europe excluding Russia, 12% from the Americas and 6% from Asia. Although wot is huge in Russia, it accounts for only 2% of visitors. 
+			Most traffic is between 19u30-22u CET with <a href="http://karellodewijk.github.io/active_users.png">peaks</a> of 1,000 symultanious users just before CW start. With a smaller peak around 01u-05u CET during NA cw time.
+
+			<p>
+			During peak times, Cpu usage on the amazon T2 micro VM i host it on, hovers around 20%, so still plenty of room to expand even without spending extra.
+			
+			<p>
+			For those interested in the sources and more details, here is a <a href="http://karellodewijk.github.io/wottactic_stats.pdf">google analytics reports</a> for March and an <a href="http://karellodewijk.github.io/hourly.pdf">hourly breakdown</a>.
+		</div>
+		<div class="col-md-4">
+			<h2>Now available in Russian</h2>
+			<p>Андрей is now working on a Russian translation, take a look. If you want this website available in your language, contact me. No technical skill required.</p>
+		</div>
+		<div class="col-md-4">
+			<h2>Suggestions</h2>
+			<p>
+			I'd like to hear from you, what do you think can still be improved? Do you think any other games would benefit from a map tool like this? Let me know on one of the forum topics linked in the about page or by mail.
+		</div>
+	</div>
+</body>
