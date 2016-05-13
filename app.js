@@ -659,9 +659,18 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		req.session.game = 'wot';
 	  }
 	  res.render('privacypolicy', { game: req.session.game, 
-									  user: req.session.passport.user,
-									  locale: req.session.locale,
-									  url: req.fullUrl});
+								    user: req.session.passport.user,
+									locale: req.session.locale,
+									url: req.fullUrl});
+	});
+	router.get('/older_news.html', function(req, res, next) {
+	  if (!req.session.game) {
+		req.session.game = 'wot';
+	  }
+	  res.render('older_news', { game: req.session.game, 
+								 user: req.session.passport.user,
+								 locale: req.session.locale,
+								 url: req.fullUrl});
 	});
 	
 	router.get('/stored_tactics.html', function(req, res, next) {

@@ -4107,7 +4107,7 @@ $(document).ready(function() {
 					change_slide(slide_uid);
 					var it = setInterval(function() {
 						if (resources_loading == 0) {
-							new_render_scene();
+							new_renderer.render(stage);
 							var data = new_renderer.view.toDataURL("image/jpeg", 0.9);
 							data = data.replace("data:image/jpeg;base64,","");
 							zip.file(n.toString() + '-' + room_data.slides[slide_uid].name + ".jpg", data, {base64:true});
@@ -4189,12 +4189,14 @@ $(document).ready(function() {
 							$('#' + link + '_menu').append('<img height=' + height + ' class="tank_select" data-scale="' + scale + '" data-no_color="' + no_color + '" id="' + path + '/' + icons[i] + '" data-toggle="tooltip" title="'+ icons[i] +'" src=' + image_host + path + '/' + icons[i] + '></img>');
 						}					
 					}
-				} else {
-					$('#' + link + '_menu').html("");
 				}	
 
 			});
-		});	
+		});
+		
+		$("[id^=icon][id$=context]").each(function() {
+			$(this).find('a:first').trigger("click")
+		});
 		
 		$('#lock').click(function () {
 			var node = $(this).find('div');

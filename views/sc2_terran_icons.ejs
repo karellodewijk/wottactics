@@ -1,229 +1,251 @@
 <p>
 
-<div class="row">
-	<button class="icon_group" id="sc2_units_terran"><%=l('Units')%><span class="caret"></span></button>
-	<div id="sc2_units_terran_list" data-path="sc2_units_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_units_terran.css" hidden>
-		btn-unit-terran-banshee.png
-		btn-unit-terran-battlecruiser.png
-		btn-unit-terran-cerberus.png
-		btn-unit-terran-cobra.png
-		btn-unit-terran-cyclone.png
-		btn-unit-terran-deathhead.png
-		btn-unit-terran-diamondback.png
-		btn-unit-terran-dreadnought.png
-		btn-unit-terran-dropship.png
-		btn-unit-terran-firebat.png
-		btn-unit-terran-ghost.png
-		btn-unit-terran-goliath.png
-		btn-unit-terran-gorgonbattlecruiser.png
-		btn-unit-terran-griffon.png
-		btn-unit-terran-hellbatblackops.png
-		btn-unit-terran-hellion.png
-		btn-unit-terran-hellionbattlemode.png
-		btn-unit-terran-hellionblackops.png
-		btn-unit-terran-hellionmercenary.png
-		btn-unit-terran-herc.png
-		btn-unit-terran-hercules.png
-		btn-unit-terran-hurcules.png
-		btn-unit-terran-hyperion.png
-		btn-unit-terran-jackal.png
-		btn-unit-terran-liberator.png
-		btn-unit-terran-marauder.png
-		btn-unit-terran-marauderblackops.png
-		btn-unit-terran-marine.png
-		btn-unit-terran-marineblackops.png
-		btn-unit-terran-medic.png
-		btn-unit-terran-medicelite.png
-		btn-unit-terran-medicmercenary.png
-		btn-unit-terran-medivac.png
-		btn-unit-terran-mule.png
-		btn-unit-terran-nomad.png
-		btn-unit-terran-outbackhunter.png
-		btn-unit-terran-perditionturret.png
-		btn-unit-terran-raven.png
-		btn-unit-terran-reaper.png
-		btn-unit-terran-reaperblackops.png
-		btn-unit-terran-reapermercenary.png
-		btn-unit-terran-sciencevessel.png
-		btn-unit-terran-scv.png
-		btn-unit-terran-shredder.png
-		btn-unit-terran-shredderirradiate.png
-		btn-unit-terran-siegetank.png
-		btn-unit-terran-siegetankblackops-sieged.png
-		btn-unit-terran-siegetankblackops-tank.png
-		btn-unit-terran-siegetanksiegemode.png
-		btn-unit-terran-tacfighter.png
-		btn-unit-terran-targetingdrone.png
-		btn-unit-terran-thor.png
-		btn-unit-terran-thorsiegemode.png
-		btn-unit-terran-valerianmengsk.png
-		btn-unit-terran-valkyrie.png
-		btn-unit-terran-viking.png
-		btn-unit-terran-vikingarchangel.png
-		btn-unit-terran-vikingassault.png
-		btn-unit-terran-vikingfighter.png
-		btn-unit-terran-vulture.png
-		btn-unit-terran-warhound.png
-		btn-unit-terran-widowmine.png
-		btn-unit-terran-wraith.png
+<div class='icon_tabs'>
+	<ul class="nav nav-tabs" id="bottom_tabs">
+	  <li><a class="icon_group" id="sc2_units_terran" data-toggle="tab" href="#sc2_units_tab"><%=l('Unit')%></a></li>
+	  <li><a class="icon_group" id="sc2_buildings_terran" data-toggle="tab" href="#sc2_buildings_tab"><%=l('Blds')%></a></li>
+	  <li><a class="icon_group" id="sc2_upgrades_terran" data-toggle="tab" href="#sc2_upgrades_tab"><%=l('Upgr')%></a></li>
+	  <li><a class="icon_group" id="sc2_abilities_terran" data-toggle="tab" href="#sc2_abilitites_tab"><%=l('Ab')%></a></li>
+	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	</ul>
+	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<div class="tab-pane" id="sc2_units_tab">
+			<div class="row">
+				<div id="sc2_units_terran_list" data-path="sc2_units_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_units_terran.css" hidden>
+					btn-unit-terran-banshee.png
+					btn-unit-terran-battlecruiser.png
+					btn-unit-terran-cerberus.png
+					btn-unit-terran-cobra.png
+					btn-unit-terran-cyclone.png
+					btn-unit-terran-deathhead.png
+					btn-unit-terran-diamondback.png
+					btn-unit-terran-dreadnought.png
+					btn-unit-terran-dropship.png
+					btn-unit-terran-firebat.png
+					btn-unit-terran-ghost.png
+					btn-unit-terran-goliath.png
+					btn-unit-terran-gorgonbattlecruiser.png
+					btn-unit-terran-griffon.png
+					btn-unit-terran-hellbatblackops.png
+					btn-unit-terran-hellion.png
+					btn-unit-terran-hellionbattlemode.png
+					btn-unit-terran-hellionblackops.png
+					btn-unit-terran-hellionmercenary.png
+					btn-unit-terran-herc.png
+					btn-unit-terran-hercules.png
+					btn-unit-terran-hurcules.png
+					btn-unit-terran-hyperion.png
+					btn-unit-terran-jackal.png
+					btn-unit-terran-liberator.png
+					btn-unit-terran-marauder.png
+					btn-unit-terran-marauderblackops.png
+					btn-unit-terran-marine.png
+					btn-unit-terran-marineblackops.png
+					btn-unit-terran-medic.png
+					btn-unit-terran-medicelite.png
+					btn-unit-terran-medicmercenary.png
+					btn-unit-terran-medivac.png
+					btn-unit-terran-mule.png
+					btn-unit-terran-nomad.png
+					btn-unit-terran-outbackhunter.png
+					btn-unit-terran-perditionturret.png
+					btn-unit-terran-raven.png
+					btn-unit-terran-reaper.png
+					btn-unit-terran-reaperblackops.png
+					btn-unit-terran-reapermercenary.png
+					btn-unit-terran-sciencevessel.png
+					btn-unit-terran-scv.png
+					btn-unit-terran-shredder.png
+					btn-unit-terran-shredderirradiate.png
+					btn-unit-terran-siegetank.png
+					btn-unit-terran-siegetankblackops-sieged.png
+					btn-unit-terran-siegetankblackops-tank.png
+					btn-unit-terran-siegetanksiegemode.png
+					btn-unit-terran-tacfighter.png
+					btn-unit-terran-targetingdrone.png
+					btn-unit-terran-thor.png
+					btn-unit-terran-thorsiegemode.png
+					btn-unit-terran-valerianmengsk.png
+					btn-unit-terran-valkyrie.png
+					btn-unit-terran-viking.png
+					btn-unit-terran-vikingarchangel.png
+					btn-unit-terran-vikingassault.png
+					btn-unit-terran-vikingfighter.png
+					btn-unit-terran-vulture.png
+					btn-unit-terran-warhound.png
+					btn-unit-terran-widowmine.png
+					btn-unit-terran-wraith.png
+				</div>
+				<div id="sc2_units_terran_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="sc2_buildings_tab">
+			<div class="row">
+				<div id="sc2_buildings_terran_list" data-path="sc2_buildings_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_buildings_terran.css" hidden>
+					btn-building-terran-armory.png
+					btn-building-terran-autoturret.png
+					btn-building-terran-barracks.png
+					btn-building-terran-bunker.png
+					btn-building-terran-bunkerfortified.png
+					btn-building-terran-commandcenter.png
+					btn-building-terran-deepspacerelay.png
+					btn-building-terran-engineeringbay.png
+					btn-building-terran-factory.png
+					btn-building-terran-fusioncore.png
+					btn-building-terran-ghostacademy.png
+					btn-building-terran-merccompound.png
+					btn-building-terran-mercenaryport.png
+					btn-building-terran-missileturret.png
+					btn-building-terran-missileturrettitaniumhousing.png
+					btn-building-terran-planetaryfortress.png
+					btn-building-terran-reactor.png
+					btn-building-terran-refinery.png
+					btn-building-terran-sensordome.png
+					btn-building-terran-starport.png
+					btn-building-terran-supplydepot.png
+					btn-building-terran-supplydepotlowered.png
+					btn-building-terran-surveillancestation.png
+					btn-building-terran-techlab.png
+				</div>
+				<div id="sc2_buildings_terran_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="sc2_upgrades_tab">
+			<div class="row">
+				<div id="sc2_upgrades_terran_list" data-path="sc2_upgrades_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_upgrades_terran.css" hidden>
+					btn-upgrade-terran-advanceballistics.png
+					btn-upgrade-terran-behemothreactor.png
+					btn-upgrade-terran-buildingarmor.png
+					btn-upgrade-terran-caduceusreactor.png
+					btn-upgrade-terran-corvidreactor.png
+					btn-upgrade-terran-dreadnoughtagmode.png
+					btn-upgrade-terran-durablematerials.png
+					btn-upgrade-terran-explosiveshrapnelshells.png
+					btn-upgrade-terran-garrisonbuildings.png
+					btn-upgrade-terran-highcapacityfueltanks.png
+					btn-upgrade-terran-highground.png
+					btn-upgrade-terran-hisecautotracking.png
+					btn-upgrade-terran-hyperflightrotors.png
+					btn-upgrade-terran-infantryarmorlevel0.png
+					btn-upgrade-terran-infantryarmorlevel1.png
+					btn-upgrade-terran-infantryarmorlevel2.png
+					btn-upgrade-terran-infantryarmorlevel3.png
+					btn-upgrade-terran-infantryweaponslevel0.png
+					btn-upgrade-terran-infantryweaponslevel1.png
+					btn-upgrade-terran-infantryweaponslevel2.png
+					btn-upgrade-terran-infantryweaponslevel3.png
+					btn-upgrade-terran-infernalpreigniter.png
+					btn-upgrade-terran-internalizedtechmodule.png
+					btn-upgrade-terran-jotunboosters.png
+					btn-upgrade-terran-jumpjets.png
+					btn-upgrade-terran-kd8chargeex3.png
+					btn-upgrade-terran-lazertargetingsystem.png
+					btn-upgrade-terran-liberator-agmode.png
+					btn-upgrade-terran-magfieldaccelerator.png
+					btn-upgrade-terran-medivacemergencythrusters.png
+					btn-upgrade-terran-mobiusreactor.png
+					btn-upgrade-terran-moebiusreactor.png
+					btn-upgrade-terran-neosteelframe.png
+					btn-upgrade-terran-reapercombatdrugs.png
+					btn-upgrade-terran-reapernitropacks.png
+					btn-upgrade-terran-researchdrillingclaws.png
+					btn-upgrade-terran-shipplatinglevel0.png
+					btn-upgrade-terran-shipplatinglevel1.png
+					btn-upgrade-terran-shipplatinglevel2.png
+					btn-upgrade-terran-shipplatinglevel3.png
+					btn-upgrade-terran-shipweaponslevel0.png
+					btn-upgrade-terran-shipweaponslevel1.png
+					btn-upgrade-terran-shipweaponslevel2.png
+					btn-upgrade-terran-shipweaponslevel3.png
+					btn-upgrade-terran-spidermineex3.png
+					btn-upgrade-terran-superstimppack.png
+					btn-upgrade-terran-transformationservos.png
+					btn-upgrade-terran-ui-internalizedtechmodule.png
+					btn-upgrade-terran-ui-jumpjets.png
+					btn-upgrade-terran-ui-lazertargetingsystem.png
+					btn-upgrade-terran-ui-spidermineex3.png
+					btn-upgrade-terran-vehicleplatinglevel0.png
+					btn-upgrade-terran-vehicleplatinglevel1.png
+					btn-upgrade-terran-vehicleplatinglevel2.png
+					btn-upgrade-terran-vehicleplatinglevel3.png
+					btn-upgrade-terran-vehicleweaponslevel0.png
+					btn-upgrade-terran-vehicleweaponslevel1.png
+					btn-upgrade-terran-vehicleweaponslevel2.png
+					btn-upgrade-terran-vehicleweaponslevel3.png
+					btn-upgrade-terran-weaponrefit.png
+				</div>
+				<div id="sc2_upgrades_terran_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="sc2_abilitites_tab">
+			<div class="row">
+				<div id="sc2_abilities_terran_list" data-path="sc2_abilities_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_abilities_terran.css" hidden>
+					btn-ability-terran-activatemine.png
+					btn-ability-terran-armnuke.png
+					btn-ability-terran-battlefieldawareness.png
+					btn-ability-terran-bombardmentstrike-color.png
+					btn-ability-terran-calldownextrasupplies-color.png
+					btn-ability-terran-cloak-color.png
+					btn-ability-terran-deactivatemine.png
+					btn-ability-terran-decloak-color.png
+					btn-ability-terran-detectionconedebuff.png
+					btn-ability-terran-dreadnought-aamode.png
+					btn-ability-terran-dreadnought-agmode.png
+					btn-ability-terran-electricfield.png
+					btn-ability-terran-emergencythrusters.png
+					btn-ability-terran-emp-color.png
+					btn-ability-terran-haywiremissile.png
+					btn-ability-terran-heal-color.png
+					btn-ability-terran-hercules-tacticaljump.png
+					btn-ability-terran-huntermissile-color.png
+					btn-ability-terran-ignorearmor.png
+					btn-ability-terran-jetpack-color.png
+					btn-ability-terran-liberator-aamode.png
+					btn-ability-terran-liberator-agmode.png
+					btn-ability-terran-lockon.png
+					btn-ability-terran-nuclearstrike-color.png
+					btn-ability-terran-perditionturret.png
+					btn-ability-terran-punishergrenade-color.png
+					btn-ability-terran-redlinereactor.png
+					btn-ability-terran-scannersweep-color.png
+					btn-ability-terran-snipe-color.png
+					btn-ability-terran-stimpack-color.png
+					btn-ability-terran-surfacetoairtargeting.png
+					btn-ability-terran-unstablepayload.png
+					btn-ability-terran-warpjump.png
+					btn-ability-terran-yamatogun-color.png
+				</div>
+				<div id="sc2_abilities_terran_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="extra_tab">
+			<div class="row">
+				<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" hidden>
+					battle.png
+					danger.png
+					defend.png
+					explosion1.png
+					explosion2.png
+					focus.png
+					spot.png
+					warning.png
+					finish.png
+					map_marker.png
+				</div>
+				<div id="extra_icons_menu"></div>				
+			</div>
+		</div>
 	</div>
-	<div id="sc2_units_terran_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
 </div>
 
-<div class="row">
-	<button class="icon_group" id="sc2_buildings_terran"><%=l('Buildings')%><span class="caret"></span></button>
-	<div id="sc2_buildings_terran_list" data-path="sc2_buildings_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_buildings_terran.css" hidden>
-		btn-building-terran-armory.png
-		btn-building-terran-autoturret.png
-		btn-building-terran-barracks.png
-		btn-building-terran-bunker.png
-		btn-building-terran-bunkerfortified.png
-		btn-building-terran-commandcenter.png
-		btn-building-terran-deepspacerelay.png
-		btn-building-terran-engineeringbay.png
-		btn-building-terran-factory.png
-		btn-building-terran-fusioncore.png
-		btn-building-terran-ghostacademy.png
-		btn-building-terran-merccompound.png
-		btn-building-terran-mercenaryport.png
-		btn-building-terran-missileturret.png
-		btn-building-terran-missileturrettitaniumhousing.png
-		btn-building-terran-planetaryfortress.png
-		btn-building-terran-reactor.png
-		btn-building-terran-refinery.png
-		btn-building-terran-sensordome.png
-		btn-building-terran-starport.png
-		btn-building-terran-supplydepot.png
-		btn-building-terran-supplydepotlowered.png
-		btn-building-terran-surveillancestation.png
-		btn-building-terran-techlab.png
-	</div>
-	<div id="sc2_buildings_terran_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
-</div>
-
-<div class="row">
-	<button class="icon_group" id="sc2_upgrades_terran"><%=l('Upgrades')%><span class="caret"></span></button>
-	<div id="sc2_upgrades_terran_list" data-path="sc2_upgrades_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_upgrades_terran.css" hidden>
-		btn-upgrade-terran-advanceballistics.png
-		btn-upgrade-terran-behemothreactor.png
-		btn-upgrade-terran-buildingarmor.png
-		btn-upgrade-terran-caduceusreactor.png
-		btn-upgrade-terran-corvidreactor.png
-		btn-upgrade-terran-dreadnoughtagmode.png
-		btn-upgrade-terran-durablematerials.png
-		btn-upgrade-terran-explosiveshrapnelshells.png
-		btn-upgrade-terran-garrisonbuildings.png
-		btn-upgrade-terran-highcapacityfueltanks.png
-		btn-upgrade-terran-highground.png
-		btn-upgrade-terran-hisecautotracking.png
-		btn-upgrade-terran-hyperflightrotors.png
-		btn-upgrade-terran-infantryarmorlevel0.png
-		btn-upgrade-terran-infantryarmorlevel1.png
-		btn-upgrade-terran-infantryarmorlevel2.png
-		btn-upgrade-terran-infantryarmorlevel3.png
-		btn-upgrade-terran-infantryweaponslevel0.png
-		btn-upgrade-terran-infantryweaponslevel1.png
-		btn-upgrade-terran-infantryweaponslevel2.png
-		btn-upgrade-terran-infantryweaponslevel3.png
-		btn-upgrade-terran-infernalpreigniter.png
-		btn-upgrade-terran-internalizedtechmodule.png
-		btn-upgrade-terran-jotunboosters.png
-		btn-upgrade-terran-jumpjets.png
-		btn-upgrade-terran-kd8chargeex3.png
-		btn-upgrade-terran-lazertargetingsystem.png
-		btn-upgrade-terran-liberator-agmode.png
-		btn-upgrade-terran-magfieldaccelerator.png
-		btn-upgrade-terran-medivacemergencythrusters.png
-		btn-upgrade-terran-mobiusreactor.png
-		btn-upgrade-terran-moebiusreactor.png
-		btn-upgrade-terran-neosteelframe.png
-		btn-upgrade-terran-reapercombatdrugs.png
-		btn-upgrade-terran-reapernitropacks.png
-		btn-upgrade-terran-researchdrillingclaws.png
-		btn-upgrade-terran-shipplatinglevel0.png
-		btn-upgrade-terran-shipplatinglevel1.png
-		btn-upgrade-terran-shipplatinglevel2.png
-		btn-upgrade-terran-shipplatinglevel3.png
-		btn-upgrade-terran-shipweaponslevel0.png
-		btn-upgrade-terran-shipweaponslevel1.png
-		btn-upgrade-terran-shipweaponslevel2.png
-		btn-upgrade-terran-shipweaponslevel3.png
-		btn-upgrade-terran-spidermineex3.png
-		btn-upgrade-terran-superstimppack.png
-		btn-upgrade-terran-transformationservos.png
-		btn-upgrade-terran-ui-internalizedtechmodule.png
-		btn-upgrade-terran-ui-jumpjets.png
-		btn-upgrade-terran-ui-lazertargetingsystem.png
-		btn-upgrade-terran-ui-spidermineex3.png
-		btn-upgrade-terran-vehicleplatinglevel0.png
-		btn-upgrade-terran-vehicleplatinglevel1.png
-		btn-upgrade-terran-vehicleplatinglevel2.png
-		btn-upgrade-terran-vehicleplatinglevel3.png
-		btn-upgrade-terran-vehicleweaponslevel0.png
-		btn-upgrade-terran-vehicleweaponslevel1.png
-		btn-upgrade-terran-vehicleweaponslevel2.png
-		btn-upgrade-terran-vehicleweaponslevel3.png
-		btn-upgrade-terran-weaponrefit.png
-	</div>
-	<div id="sc2_upgrades_terran_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
-</div>
-
-<div class="row">
-	<button class="icon_group" id="sc2_abilities_terran"><%=l('Abilities')%><span class="caret"></span></button>
-	<div id="sc2_abilities_terran_list" data-path="sc2_abilities_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_abilities_terran.css" hidden>
-		btn-ability-terran-activatemine.png
-		btn-ability-terran-armnuke.png
-		btn-ability-terran-battlefieldawareness.png
-		btn-ability-terran-bombardmentstrike-color.png
-		btn-ability-terran-calldownextrasupplies-color.png
-		btn-ability-terran-cloak-color.png
-		btn-ability-terran-deactivatemine.png
-		btn-ability-terran-decloak-color.png
-		btn-ability-terran-detectionconedebuff.png
-		btn-ability-terran-dreadnought-aamode.png
-		btn-ability-terran-dreadnought-agmode.png
-		btn-ability-terran-electricfield.png
-		btn-ability-terran-emergencythrusters.png
-		btn-ability-terran-emp-color.png
-		btn-ability-terran-haywiremissile.png
-		btn-ability-terran-heal-color.png
-		btn-ability-terran-hercules-tacticaljump.png
-		btn-ability-terran-huntermissile-color.png
-		btn-ability-terran-ignorearmor.png
-		btn-ability-terran-jetpack-color.png
-		btn-ability-terran-liberator-aamode.png
-		btn-ability-terran-liberator-agmode.png
-		btn-ability-terran-lockon.png
-		btn-ability-terran-nuclearstrike-color.png
-		btn-ability-terran-perditionturret.png
-		btn-ability-terran-punishergrenade-color.png
-		btn-ability-terran-redlinereactor.png
-		btn-ability-terran-scannersweep-color.png
-		btn-ability-terran-snipe-color.png
-		btn-ability-terran-stimpack-color.png
-		btn-ability-terran-surfacetoairtargeting.png
-		btn-ability-terran-unstablepayload.png
-		btn-ability-terran-warpjump.png
-		btn-ability-terran-yamatogun-color.png
-	</div>
-	<div id="sc2_abilities_terran_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
-</div>
 
 
-<div class="row">
-	<button class="icon_group" id="extra_icons"><%=l('Extra icons')%><span class="caret"></span></button>
-	<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" hidden>
-		battle.png
-		danger.png
-		defend.png
-		explosion1.png
-		explosion2.png
-		focus.png
-		spot.png
-		warning.png
-		finish.png
-		map_marker.png
-	</div>
-	<div id="extra_icons_menu" style="max-height:200px; width:250px; overflow-y: auto" ></div>				
-</div>
+
+
+
+
+
+
+
+
 
