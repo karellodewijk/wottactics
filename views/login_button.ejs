@@ -13,7 +13,8 @@
 		<li><a id="https://www.facebook.com/dialog/oauth" href="javascript:void(0)"><div class="inline icon icon-facebook"></div>&nbsp; Facebook</a></li>
 		<li><a id="https://api.twitter.com/oauth/authorize" href="javascript:void(0)"><div class="inline icon icon-twitter"></div>&nbsp; Twitter</a></li>
 		<li><a id="http://steamcommunity.com/openid" href="javascript:void(0)"><div class="inline icon icon-steam"></div>&nbsp; Steam</a></li>
-		<% if (url.split('/')[0] == "gametactic.org") { %> 
+		<% if (url.split('/')[0] == "gametactic.org" || url.split('/')[0] == "localhost") { %> 
+			<li><a href="javascript:void(0)" href="javascript:void(0)"><div class="inline icon icon-vk"></div>&nbsp; VK</a></li>
 			<li><a id="http://battle.net" href="javascript:void(0)"><div class="inline icon icon-battlenet"></div>&nbsp; Battle.net</a></li>
 		<% } %> 
 		<li><a id="http://eu.wargaming.net/id/" href="javascript:void(0)"><div class="inline icon icon-wargaming"></div>&nbsp; Wargaming EU</a></li>

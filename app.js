@@ -356,7 +356,30 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		user.name = profile.displayName;
 		done(null, user);
 	  }
-	));	
+	));
+	
+	
+	var VKontakteStrategy = require('passport-vkontakte').Strategy;
+	passport.use('vk', new VKontakteStrategy({
+		clientID: secrets.vk.client_id, // VK.com docs call it 'API ID'
+		clientSecret: secrets.vk.secret,
+		callbackURL: '/auth/vk/callback',
+		passReqToCallback:true,
+		stateless: true
+	  },
+	  function(req, accessToken, refreshToken, profile, done) {
+		var user = {};
+		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+			user.id = req.session.passport.user.id;
+		} else {
+			user.id = newUid();
+		}
+		user.identity = "vk-" + profile.id;
+		user.identity_provider = "vk";
+		user.name = profile.displayName;
+		done(null, user);
+	  }
+	));
 	
 	StrategyBnet = require('passport-bnet').Strategy;
 	passport.use('battlenet', new StrategyBnet({
@@ -577,10 +600,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							locale: req.session.locale,
 							url: req.fullUrl});
 	});
+	router.get('/csgo', function(req, res, next) {
+	  req.session.game = 'csgo';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl});
+	});
 	router.get('/health_check.html', function(req, res, next) {
 	  res.sendStatus(200);
 	});	
-	function planner_redirect(req, res, game) {
+	function planner_redirect(req, res, game, template) {
 	  if (req.query.restore) {
 		var uid = newUid();
 		restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
@@ -594,7 +624,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }	else {
 		  res.cookie('room',req.query.room , { maxAge: 30 * 86400 * 1000 });
 		  req.session.game = game;
-		  res.render('planner', { game: req.session.game, 
+		  res.render(template, { game: req.session.game, 
 								  user: req.session.passport.user,
 								  locale: req.session.locale,
 								  url: req.fullUrl,
@@ -616,26 +646,56 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	}
 	router.get('/wotplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'wot');
+	  planner_redirect(req, res, 'wot', 'planner');
 	});
 	router.get('/awplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'aw');
+	  planner_redirect(req, res, 'aw', 'planner');
 	});
 	router.get('/wowsplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'wows');
+	  planner_redirect(req, res, 'wows', 'planner');
 	});
 	router.get('/blitzplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'blitz');
+	  planner_redirect(req, res, 'blitz', 'planner');
 	});
 	router.get('/lolplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'lol');
+	  planner_redirect(req, res, 'lol', 'planner');
 	});
 	router.get('/hotsplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'hots');
+	  planner_redirect(req, res, 'hots', 'planner');
 	});
 	router.get('/sc2planner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'sc2');
+	  planner_redirect(req, res, 'sc2', 'planner');
 	});
+	router.get('/csgoplanner.html', function(req, res, next) {
+	  planner_redirect(req, res, 'csgo', 'planner');
+	});
+	
+	
+	router.get('/wotplanner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'wot', 'planner2');
+	});
+	router.get('/awplanner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'aw', 'planner2');
+	});
+	router.get('/wowsplanner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'wows', 'planner2');
+	});
+	router.get('/blitzplanner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'blitz', 'planner2');
+	});
+	router.get('/lolplanner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'lol', 'planner2');
+	});
+	router.get('/hotsplanner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'hots', 'planner2');
+	});
+	router.get('/sc2planner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'sc2', 'planner2');
+	});
+	router.get('/csgoplanner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'csgo', 'planner2');
+	});
+	
 	router.get('/about.html', function(req, res, next) {
 	  if (!req.session.game) {
 		  req.session.game = 'wot';
@@ -821,6 +881,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.post('/auth/google', save_return, passport.authenticate('google'));
 	router.get('/auth/google/callback', passport.authenticate('google'), redirect_return);
 
+	//vk
+	router.post('/auth/vk', save_return, passport.authenticate('vk'));
+	router.get('/auth/vk/callback', passport.authenticate('vk'), redirect_return);
+	
 	//facebook
 	router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
 	router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
@@ -862,7 +926,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (req.query.pw == secrets.mongodb_password) {
 			for (var room in room_data) {
 				save_room(room, function(){
-					io.to(room).emit('reconnect');
+					io.to(room).emit('force_reconnect');
 				});
 			}
 			res.send('Success');
@@ -916,6 +980,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	paths.splice(paths.indexOf('/auth/twitter/callback'), 1);
 	paths.splice(paths.indexOf('/auth/facebook/callback'), 1);
 	paths.splice(paths.indexOf('/auth/google/callback'), 1);
+	paths.splice(paths.indexOf('/auth/vk/callback'), 1);
 	paths.splice(paths.indexOf('/auth/openid/callback'), 1);
 	paths.splice(paths.indexOf('/auth/steam/callback'), 1);
 	paths.splice(paths.indexOf('/save'), 1);
@@ -949,6 +1014,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	robots_base += "Disallow: /auth/twitter\n";
 	robots_base += "Disallow: /auth/facebook\n";
 	robots_base += "Disallow: /auth/google\n";
+	robots_base += "Disallow: /auth/vk\n";
 	robots_base += "Disallow: /auth/openid\n";
 	
 	router.get('/robots.txt', function(req, res, next) {
