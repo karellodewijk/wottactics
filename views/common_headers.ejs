@@ -37,9 +37,25 @@
 <link rel="stylesheet" href="/stylesheets/style.css" />
 <script defer type="text/javascript" src="javascripts/login.js"></script>
 <meta name="game" content="<%=game%>">
-<meta name="keywords" content="wot,world,tanks,planner,tactic,cw,clanwar,map,strategy,tool,armored,blitz,warfare,wargaming,obsidian,wows,aw,warships,armored,stronghold,clan,division,battalion,campaign,maptactic,twiddla,strategy,stratsketch">
+<meta name="keywords" content="planner,tactic,map,strategy,tool,esport,maptactic,twiddla,strategy,stratsketch,scrum,whiteboard,colaborate">
+<%if (game == 'wot') {%>
+	<meta name="keywords" content="wot,world,tanks,world of tanks,cw,clanwar,clan war,clan wars,team battles,skirmish,skirmishes,wargaming,armored,stronghold,campaign,tier,tank,stronghold">
+<%} else if (game == 'wows') {%>
+	<meta name="keywords" content="warships,world of warships,wows,clan,tier">
+<%} else if (game == 'lol') {%>
+	<meta name="keywords" content="league,legends,moba,league of legends,heroes,champions,minions,objective,lol">
+<%} else if (game == 'hots') {%>
+	<meta name="keywords" content="heroes,storm,heroes of the storm,heroes,champions,minions,objective,hots,blizzard">
+<%} else if (game == 'aw') {%>
+	<meta name="keywords" content="aw,armored,warfare,armored warfare,tanks,cap point,battlation,territory wars,tier">
+<%} else if (game == 'sc2') {%>
+	<meta name="keywords" content="sc2,starcraft,starcraft II,starcraft 2,buildings,builds,units,composition,blizzard">
+<%} else if (game == 'csgo') {%>
+	<meta name="keywords" content="sc:go,csgo,cs,counter,strike,counterstrike,global offensive,team,composition">
+<%} else if (game == 'blitz') {%>
+	<meta name="keywords" content="wot,world,tanks,world of tanks,blitz,world of tanks blitz,cw,clanwar,wargaming,armored,stronghold,campaign,tier,tank">
+<%}%>
 <meta name=viewport content="width=device-width, initial-scale=1">
-
 <script type="text/javascript">
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

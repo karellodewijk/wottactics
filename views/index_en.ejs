@@ -28,10 +28,12 @@
 					Heroes of the Storm Tactics
 				<% } else if (game == 'sc2') { %>
 					Starcraft II Tactics
+				<% } else if (game == 'csgo') { %>
+					CS:GO Tactics
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a></p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a> &nbsp; (<a href="<%=game%>planner2.html" id="new_room2" role="button"><%= l('try a different ui')%></a>)</p>
 			<script type="text/javascript">
 				function newUid() {
 				  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
@@ -45,6 +47,11 @@
 					var el = document.getElementById('new_room');
 					el.onclick = function(e) {
 						window.location.href = el.getAttribute('href') + '?room=' + newUid();
+						e.preventDefault();
+					}
+					var el2 = document.getElementById('new_room2');
+					el2.onclick = function(e) {
+						window.location.href = el2.getAttribute('href') + '?room=' + newUid();
 						e.preventDefault();
 					}
 				};
@@ -72,16 +79,15 @@
 	
 	<div class="row">
 	<div class="col-md-4">
-		<h2>New domains</h2>
-		<p>I've registered <a href="http://wottactic.eu">http://wottactic.eu</a> and <a href="http://wottactic.com">http://wottactic.com</a>, you can start using those right now. I tried to register wottactic.asia as well but couldn't because I needed a contact in the asia region, if you can help me with that, contact me. 
+		<h2>Ui test</h2>
+		<p>I'm experimenting a little bit with a somewhat different ui options. The alternative ui link above is 2-column design with a darker color scheme. 
 		
-		<p>I'm not redirecting people quite yet, but may in the future. The site will remain available through the tk domains though.
+		<p>I'm not sure yet which way I'm going to go yet. 
 		
-		<p>The idea is to create a server in the NA and Asia region. People living in EU should then preferably use the .eu domain, people in NA, the .com domain and people in Asia the .asia domain. All your stored tactics will be available in all regions. In practice it will make the pages load a little bit faster, but mostly it will make the ping and the track cursor tools a lot more in sync for people outside the eu, where I'm currently hosting from.
+		<p>I definitely want the map as large as I can make it, so taking up the full height of the window, whatever size it is. Evertyhing else is open for debate.
 		
-		<p>I pretty much did all the legwork already when I created multiple servers to handle the extra load.
+		<p>So do you like the alternative look ? Do you have any opinions on how it should look ? Let me know.
 		
-		<p>Extra servers do cost extra money though. So I added this as goals to my <a href="https://www.patreon.com/kalith">patreon</a> page. If you want this to happen faster, consider donating.
 	</div>
 	<div class="col-md-4">
 		<h2>Future plans</h2>
@@ -116,19 +122,19 @@
 		<p>
 		Nothing major, but mostly small usabilty impovements: 
 		<ul>
-			<li>Added option to load custom map, although it's sort of picky on the host.
+			<li>Most tools can now be used by either dragging while holding the left mouse or clicking twice.
+			<li>Added an eraser tool
+			<li>Added CS:GO version, see <a href="http://gametactic.org/csgo">here</a>
+			<li>Added option to load custom map, although it's sort of picky on the host
 			<li>Added a Starcraft 2 version, see <a href="http://gametactic.org/sc2">here</a>
-			<li>Added a Heroes of the Storm version, see <a href="http://gametactic.org/hots">here</a>
-			<li>Added a hilight of the user making changes or pinging
-			<li>Added zoom in/out with the scrollwheel and panning while holding the right or middle mouse button, give it a try
 		</ul> 
 		On the bug hunting front:
 		<ul>
+			<li>You can log in again from the planner page on FF.
 			<li>Track cursor didn't work too well while zooming and panning
 			<li>Remove tracked cursor when someone loses privileges
-			<li>Creating stuff outside the viewable area would sometimes stretch new things you added.
+			<li>Creating stuff outside the viewable area would sometimes stretch new things you added
 			<li>Select tool would often not properly select things after the tactic window was resized
-			<li>Rectangular maps work now
 		</ul>
 		If you find anything else, however small, that is broken, pls let me know. 
 	</div>

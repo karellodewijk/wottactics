@@ -7,6 +7,8 @@
 <%	home = "hots" %>
 <%} else if (game == 'sc2') { %>
 <%	home = "sc2" %>
+<%} else if (game == 'csgo') { %>
+<%	home = "csgo" %>
 <%} %>
 
 <style type="text/css" scoped>
@@ -59,6 +61,8 @@
 			Hots Tactics
 		<% } else if (game == 'sc2') { %>
 			SC2 Tactics
+		<% } else if (game == 'csgo') { %>
+			CS:GO Tactics
 		<% } %>
 	</a>
 	
@@ -117,6 +121,7 @@
 					<li><a href="http://gametactic.org/lol"><div class="inline icon icon-lol_sm"></div>&nbsp; League of Legends</a></li>
 					<li><a href="http://gametactic.org/hots"><div class="inline icon icon-hots_sm"></div>&nbsp; Heroes of the Storm</a></li>
 					<li><a href="http://gametactic.org/sc2"><div class="inline icon icon-sc2_sm"></div>&nbsp; Starcraft II</a></li>
+					<li><a href="http://gametactic.org/csgo"><div class="inline icon icon-csgo_sm"></div>&nbsp; CS:GO</a></li>
 				</ul>
 			</li>
 			<% include language_select.ejs %>
