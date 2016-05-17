@@ -239,7 +239,7 @@ PIXI.CanvasTransparencyHitArea.prototype.isTextureTransparentAt = function(x, y)
     var index = (x + y * this.textureWidth) * 4 + 3;
 	
     // value 255 means fully opaque, < 255 means (at least partially) transparent
-    return this.textureData[index] < 255;
+    return this.textureData[index] < 1;
 };
 
 /**

@@ -211,6 +211,11 @@ var drag_in_progress = false;
 var current_text_element;
 var last_mouse_location;
 var ping_texture;
+var hovering_over;
+var just_activated;
+var left_bar_min_width = 350;
+var right_bar_min_width = 350;
+var single_side_bar_min_width = 350;
 
 var mouse_down_interrupted;
 document.body.onmouseup = function() {
@@ -392,14 +397,12 @@ function correct() {
 		objectContainer.scale.y = Math.max(objectContainer.scale.x, objectContainer.scale.y)
 	}
 
-	for (var i in room_data.slides[active_slide].entities) {
-		if (room_data.slides[active_slide].entities[i]) {
-			if (room_data.slides[active_slide].entities[i].type == 'note') {
-				align_note_text(room_data.slides[active_slide].entities[i]);
-			} else if (room_data.slides[active_slide].entities[i].type == 'text') {
-				var entity = room_data.slides[active_slide].entities[i];
-				remove(entity.uid);
-				create_entity(entity);
+	if (room_data) {
+		for (var i in room_data.slides[active_slide].entities) {
+			if (room_data.slides[active_slide].entities[i]) {
+				if (room_data.slides[active_slide].entities[i].type == 'note') {
+					align_note_text(room_data.slides[active_slide].entities[i]);
+				} 
 			}
 		}
 	}
@@ -435,15 +438,17 @@ $(renderer.view).mouseup(function(e) {
     }
 });
 
-
+var pan_state = {}
 function on_pan(e) {
-	var mouse_location = renderer.plugins.interaction.mouse.global;
-	var diff_x = mouse_location.x - last_pan_loc[0];
-	var diff_y = mouse_location.y - last_pan_loc[1];
-	last_pan_loc = [mouse_location.x, mouse_location.y];
-	objectContainer.x += diff_x;
-	objectContainer.y += diff_y;
-	correct();
+	limit_rate(15, pan_state, function() {
+		var mouse_location = renderer.plugins.interaction.mouse.global;
+		var diff_x = mouse_location.x - last_pan_loc[0];
+		var diff_y = mouse_location.y - last_pan_loc[1];
+		last_pan_loc = [mouse_location.x, mouse_location.y];
+		objectContainer.x += diff_x;
+		objectContainer.y += diff_y;
+		correct();
+	});
 }
 
 // create the root of the scene graph
@@ -511,20 +516,50 @@ window.onresize = function() {
 	var ratio = 1;
 	if (background_sprite.texture) {
 		ratio = background_sprite.texture.width /  background_sprite.texture.height;
-	}	
-	if (1.5 * window.innerWidth > window.innerHeight * ratio) {
-		var size_y = window.innerHeight - 15;
-		var size_x = size_y * ratio;		
-		if (window.innerWidth - $('.side_bar').width() - 50 > window.innerHeight) {
-			if (size_x > window.innerWidth - $('.side_bar').width() - 50) {
-				size_x = window.innerWidth - $('.side_bar').width() - 50;
-				size_y = size_x / ratio;
-			}
+	}
+	//$("#right_side_bar").css("display", "table-cell");
+	//$("#left_side_bar").css("display", "table-cell");
+	//$("#single_side_bar").css("display", "table-cell");
+	//$("#left_side_bar").css("vertical-align", "top");
+	
+	var iface_width = 0;
+	if ($("#single_side_bar").length) {
+		iface_width = single_side_bar_min_width;
+	} else {
+		iface_width = left_bar_min_width + right_bar_min_width;
+	}
+	
+	if (iface_width < (window.innerWidth / 1.75)) {
+		if ($('#left_side_bar').length) {
+			$('#left_side_bar').detach().prependTo($("body"));
+		}		
+		var size_y = window.innerHeight - 10;
+		var size_x = size_y * ratio;
+		if (size_x > window.innerWidth - iface_width) {
+			size_x = window.innerWidth - iface_width;
+			size_y = size_x / ratio;
 		}
 		resize_renderer(size_x, size_y);
-	} else {		
-		var size_x = window.innerWidth - 15;
+	} else {
+		if ($('#left_side_bar').length) {
+			$('#left_side_bar').detach().appendTo($("body"));
+			$('#left_side_bar').css("clear", "both");
+			iface_width = right_bar_min_width;
+		}
+		
+		var size_x = window.innerWidth - iface_width;
 		var size_y = size_x / ratio;
+			
+		if (size_x < right_bar_min_width) {
+			//$("#right_side_bar").css("clear", "both");
+			//$("#single_side_bar").css("display", "table");
+			var size_x = window.innerWidth
+			var size_y = size_x / ratio;
+		}
+		if (size_y > window.innerHeight) {
+			size_y = window.innerHeight;
+			size_x = size_y * ratio;
+		}
 		
 		resize_renderer(size_x, size_y);
 	}
@@ -616,13 +651,10 @@ function set_background(new_background, cb) {
 		var texture = PIXI.Texture.fromImage(new_background.path);
 
 		var on_loaded = function() {
-			
-			
 			background = new_background;
 			history[background.uid] = background;
-			
-			background_sprite.texture = texture;				
-			window.onresize();
+			background_sprite.texture = texture;	
+			window.onresize();			
 			render_scene();	
 			room_data.slides[active_slide].entities[new_background.uid] = new_background;
 			resources_loading--;
@@ -649,7 +681,6 @@ function set_background(new_background, cb) {
 			} else {
 				$("#map_size").text("");
 			}
-		
 			if (cb)	cb(true);
 		}
 		
@@ -682,6 +713,7 @@ function set_background(new_background, cb) {
 		background_sprite.texture = empty_backround.generateTexture();
 		$("#map_size").text("");
 
+		window.onresize();
 		if (cb)	cb(true);
 		render_scene();	
 	}	
@@ -811,11 +843,11 @@ function move_entity(entity, delta_x, delta_y) {
 
 //limits the amount of time f can be called to once every interval
 function limit_rate(interval, state, f) {
+	clearTimeout(state.timeout);
 	if (!state.last_trigger) {
 		state.last_trigger = Date.now();
 	}
 	var time_diff = (Date.now() - state.last_trigger);
-	clearTimeout(state.timeout);
 	if (time_diff > interval) {
 		f();
 		state.last_trigger = Date.now();
@@ -829,11 +861,12 @@ function limit_rate(interval, state, f) {
 var drag_state = {};
 function on_drag_move(e) {
 	_this = this;	
-	limit_rate(20, drag_state, function() {
+	limit_rate(15, drag_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
+		var mouse_new = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 		//move by deltamouse	
-		var delta_x = mouse_x_rel(mouse_location.x) - last_mouse_location[0];
-		var delta_y = mouse_y_rel(mouse_location.y) - last_mouse_location[1];
+		var delta_x = mouse_new[0] - last_mouse_location[0];
+		var delta_y = mouse_new[1] - last_mouse_location[1];
 		if (move_selected) {
 			for (var i in selected_entities) {
 				move_entity(selected_entities[i], delta_x, delta_y);
@@ -841,12 +874,13 @@ function on_drag_move(e) {
 		} else {
 			move_entity(_this.entity, delta_x, delta_y);
 		}
-		last_mouse_location = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
+		last_mouse_location = mouse_new;
 		render_scene();		
 	} , 20, drag_state);
 }
 
 function on_drag_end(e) {
+	limit_rate(15, drag_state, function() {});
 	if (this.origin_x == this.entity.x && this.origin_y == this.entity.y) {	
 		if (context_before_drag == 'remove_context') {
 			remove(this.entity.uid);
@@ -935,7 +969,7 @@ function move_track_recursive(uid, step_x, step_y, count) {
 
 var render_state = {}
 function render_scene() {
-	limit_rate(20, render_state, function() {
+	limit_rate(15, render_state, function() {
 		renderer.render(stage);
 	});
 }
@@ -1146,54 +1180,45 @@ function hexToRGBA(hex, alpha) {
   return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 }
 
-function init_canvases(line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity) {
+function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity) {
 	var line_color = '#' + ('00000' + (line_color | 0).toString(16)).substr(-6); 
 
-	start_drawing();
+	ctx.lineWidth = line_thickness * (size_x/1000);
+	ctx.strokeStyle = line_color;
+	ctx.fillStyle = line_color;
 	
-	draw_context.lineWidth = line_thickness * (size_x/1000);
-	draw_context.strokeStyle = line_color;
-	draw_context.fillStyle = line_color;
+	//provides some AA
+	ctx.shadowBlur = ctx.lineWidth / 2;
+	ctx.shadowColor = line_color;
 	
-	//draw_context.shadowBlur = 0.1;
-	//draw_context.shadowColor = line_color;
-	//draw_context.lineCap = draw_context.lineJoin = 'round';
-
-	if ('setLineDash' in draw_context) {	
+	if ('setLineDash' in ctx) {	
 		if (style == "dashed") {
-			draw_context.setLineDash([10, 10]);
+			ctx.setLineDash([10, 10]);
+			ctx.lineJoin = ctx.lineCap = 'round';
 		} else if (style == "dotted") {
-			draw_context.setLineDash([line_thickness, line_thickness]);
-		}
-	}
-	draw_context.beginPath();
-
-	temp_draw_context.lineWidth = line_thickness * (size_x/1000);
-	temp_draw_context.strokeStyle = line_color;
-	temp_draw_context.fillStyle = line_color;
-	
-	//temp_draw_context.shadowBlur = 0.1;
-	//temp_draw_context.shadowColor = line_color;
-	//temp_draw_context.lineCap = temp_draw_context.lineJoin = 'round';
-	
-	if ('setLineDash' in temp_draw_context) {	
-		if (style == "dashed") {
-			temp_draw_context.setLineDash([10, 10]);
-		} else if (style == "dotted") {
-			temp_draw_context.setLineDash([line_thickness, line_thickness]);
+			ctx.setLineDash([line_thickness, line_thickness]);
+			ctx.lineJoin = ctx.lineCap = 'butt';
+		} else {
+			ctx.lineJoin = ctx.lineCap = 'round';
 		}
 	}
 	
 	if (typeof fill_opacity !== 'undefined') {  // we assume && fill_color && outline_opacity
 		var fill_color = '#' + ('00000' + (fill_color | 0).toString(16)).substr(-6); 
 		var fill_rgba = hexToRGBA(fill_color, fill_opacity)
-		draw_context.fillStyle = fill_rgba;
-		temp_draw_context.fillStyle = fill_rgba;	
+		ctx.fillStyle = fill_rgba;
 		var outline_color = '#' + ('00000' + (fill_color | 0).toString(16)).substr(-6); 
 		var outline_rgba = hexToRGBA(line_color, outline_opacity)
-		draw_context.strokeStyle = outline_rgba;
-		temp_draw_context.strokeStyle = outline_rgba;	
-	}	
+		ctx.strokeStyle = outline_rgba;
+	}		
+}
+
+function init_canvases(line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity) {
+	start_drawing();
+	init_canvas(draw_context, line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity);
+	init_canvas(temp_draw_context, line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity);
+	draw_context.beginPath();
+	temp_draw_context.beginPath();
 }
 
 function can_edit() {
@@ -1228,9 +1253,9 @@ function on_left_click(e) {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_line_end);
 			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style') };
-			
 			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
+			just_activated = true;
 		}
 	} else if (active_context == 'polygon_context') {
 		if (!new_drawing) {
@@ -1248,6 +1273,7 @@ function on_left_click(e) {
 			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			
+			just_activated = true;
 			render_scene();
 		}
 	} else if (active_context == 'curve_context') {
@@ -1258,6 +1284,7 @@ function on_left_click(e) {
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 
 			setup_mouse_events(on_curve_move, on_curve_end);
+			just_activated = true;
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
@@ -1275,21 +1302,26 @@ function on_left_click(e) {
 			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
 			
+			just_activated = true;
 			render_scene();
 		}
 	} else if (active_context == 'icon_context') {
 		setup_mouse_events(undefined, on_icon_end);
+	} else if (active_context == 'eraser_context') {
+		hovering_over = undefined;
+		setup_mouse_events(on_eraser_move, on_eraser_end);
 	} else if (active_context == 'ping_context') {
 		if (!drag_in_progress) {
 			deselect_all();
 		}
 		
-		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
+		//ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = new Date();
 		setup_mouse_events(on_ping_move, on_ping_end);
 	} else if (active_context == "select_context") {
 		setup_mouse_events(on_select_move, on_select_end);
+		init_canvases(2, 0xBBBBBB, 'dotted', 0.25, 0xBBBBBB, 1);
 		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 		deselect_all();
 	} else if (active_context == 'text_context') {
@@ -1297,14 +1329,22 @@ function on_left_click(e) {
 	} else if (active_context == 'background_text_context') {
 		setup_mouse_events(undefined, on_background_text_end);
 	} else if (active_context == 'rectangle_context') {
-		setup_mouse_events(on_rectangle_move, on_rectangle_end);
-		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
-		init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_type').find('.active').attr('data-style'), rectangle_fill_opacity, rectangle_fill_color, rectangle_outline_opacity);
+		if (!new_drawing) {
+			setup_mouse_events(on_rectangle_move, on_rectangle_end);
+			left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
+			init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_type').find('.active').attr('data-style'), rectangle_fill_opacity, rectangle_fill_color, rectangle_outline_opacity);
+			new_drawing = true;
+			just_activated = true;
+		}
 	} else if (active_context == 'circle_context') {
-		setup_mouse_events(on_circle_move, on_circle_end);
-		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
-		init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data-style'), circle_fill_opacity, circle_fill_color, circle_outline_opacity);
-		circle_draw_style = $('#circle_draw_style').find('.active').attr('data-draw_style')
+		if (!new_drawing) {
+			setup_mouse_events(on_circle_move, on_circle_end);
+			left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
+			init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data-style'), circle_fill_opacity, circle_fill_color, circle_outline_opacity);
+			circle_draw_style = $('#circle_draw_style').find('.active').attr('data-draw_style')
+			new_drawing = true;
+			just_activated = true;
+		}
 	} else if (active_context == 'track_context') {
 		if (my_tracker) {
 			stop_tracking();
@@ -1315,6 +1355,21 @@ function on_left_click(e) {
 	} else if (active_context == 'note_context') {
 		setup_mouse_events(undefined, on_note_end);
 	}
+}
+
+var eraser_state = {}
+function on_eraser_move(e) {
+	limit_rate(15, eraser_state, function() {
+		if (hovering_over && room_data.slides[active_slide].entities[hovering_over.uid]) {
+			remove(hovering_over.uid);
+			undo_list.push(["remove", [hovering_over]]);
+			socket.emit('remove', room, hovering_over.uid, active_slide);
+		}
+	});
+}
+
+function on_eraser_end(e) {
+	setup_mouse_events(undefined, undefined);
 }
 
 function stop_tracking() {
@@ -1446,39 +1501,42 @@ var last_track_update = Date.now();
 
 var count
 var track_timeout;
+var track_state = {}
 function on_track_move(e) {
-	clearTimeout(track_timeout);
-	
-	var mouse_location = renderer.plugins.interaction.mouse.global;	
-	
-	var x = from_x_local(mouse_location.x);
-	var y = from_y_local(mouse_location.y);
-	my_tracker.x = x;
-	my_tracker.y = y;
-	my_tracker.container.x = x_abs(x);
-	my_tracker.container.y = y_abs(y);
-	
-	var dist_sq = (last_track_position[0] - my_tracker.x) * (last_track_position[0] - my_tracker.x)
-			     +(last_track_position[1] - my_tracker.y) * (last_track_position[1] - my_tracker.y);
-	
-	var interval = (Date.now() - last_track_update);
-	if (dist_sq > min_track_move_distance_sq || interval > 200) {
-		last_track_update = Date.now();
-		if (Math.abs(my_tracker.x - last_track_position[0] + my_tracker.y - last_track_position[1]) > 0) {
-			socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
-			last_track_position = [my_tracker.x, my_tracker.y];
-		}
-		render_scene();
-	} else {
-		track_timeout = setTimeout(function() {
-			if (my_tracker) {
-				last_track_update = Date.now();
+	limit_rate(15, track_state, function() {		
+		clearTimeout(track_timeout);
+		
+		var mouse_location = renderer.plugins.interaction.mouse.global;	
+		
+		var x = from_x_local(mouse_location.x);
+		var y = from_y_local(mouse_location.y);
+		my_tracker.x = x;
+		my_tracker.y = y;
+		my_tracker.container.x = x_abs(x);
+		my_tracker.container.y = y_abs(y);
+		
+		var dist_sq = (last_track_position[0] - my_tracker.x) * (last_track_position[0] - my_tracker.x)
+					 +(last_track_position[1] - my_tracker.y) * (last_track_position[1] - my_tracker.y);
+		
+		var interval = (Date.now() - last_track_update);
+		if (dist_sq > min_track_move_distance_sq || interval > 50) {
+			last_track_update = Date.now();
+			if (Math.abs(my_tracker.x - last_track_position[0] + my_tracker.y - last_track_position[1]) > 0) {
 				socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
 				last_track_position = [my_tracker.x, my_tracker.y];
-				render_scene();
 			}
-		}, 200)
-	}
+			render_scene();
+		} else {
+			track_timeout = setTimeout(function() {
+				if (my_tracker) {
+					last_track_update = Date.now();
+					socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
+					last_track_position = [my_tracker.x, my_tracker.y];
+					render_scene();
+				}
+			}, 55)
+		}
+	});
 }
 
 function on_area_end(e) {
@@ -1497,6 +1555,20 @@ function on_area_end(e) {
 	var distance_to_start_sq = x*x + y*y;
 
 	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+
+	if (just_activated) {
+		var a;
+		if (new_drawing.path.length == 1) {
+			a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
+		} else {
+			a = [to_x_local(new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
+				 to_y_local(new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
+		}
+		var b = [to_x_local(x + new_drawing.x), to_y_local(y + new_drawing.y)];
+		var distance_sq = Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2)
+		just_activated = false;
+		if (distance_sq < 0.01) return;
+	}
 	
 	if (distance_to_start_sq < (end_circle_radius*end_circle_radius)) {
 		setup_mouse_events(undefined, undefined);
@@ -1538,28 +1610,31 @@ function on_area_end(e) {
 	}
 }
 
+var curve_state = {};
 function on_curve_move(e) {
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	var x = mouse_x_rel(mouse_location.x);
-	var y = mouse_y_rel(mouse_location.y);
-	//x = Math.max(0, x);
-	//y = Math.max(0, y);
-	//x = Math.min(1, x);
-	//y = Math.min(1, y);
-	var new_x = x - new_drawing.x;
-	var new_y = y - new_drawing.y;
-	new_drawing.path.push([new_x, new_y]);
+	limit_rate(15, curve_state, function() {
+		var mouse_location = e.data.getLocalPosition(background_sprite);
+		var x = mouse_x_rel(mouse_location.x);
+		var y = mouse_y_rel(mouse_location.y);
+		//x = Math.max(0, x);
+		//y = Math.max(0, y);
+		//x = Math.min(1, x);
+		//y = Math.min(1, y);
+		var new_x = x - new_drawing.x;
+		var new_y = y - new_drawing.y;
+		new_drawing.path.push([new_x, new_y]);
 
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	var n = 30;
-	var start_index = Math.max(new_drawing.path.length-10, 0);
-	var stop_index = new_drawing.path.length;
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+		var n = 30;
+		var start_index = Math.max(new_drawing.path.length-10, 0);
+		var stop_index = new_drawing.path.length;
 
-	temp_draw_context.beginPath();
-	draw_path2(temp_draw_context, null, new_drawing, 30, start_index, stop_index, new_drawing.end);
-	temp_draw_context.stroke();
-	
-	new_drawing.path.pop();
+		temp_draw_context.beginPath();
+		draw_path2(temp_draw_context, null, new_drawing, 30, start_index, stop_index, new_drawing.end);
+		temp_draw_context.stroke();
+		
+		new_drawing.path.pop();
+	});
 }
 
 function on_curve_end(e) {
@@ -1584,7 +1659,13 @@ function on_curve_end(e) {
 
 	var distance_to_last_sq = (new_x - last_x) * (new_x - last_x) + (new_y - last_y) * (new_y - last_y);
 	
+	if (just_activated) {
+		just_activated = false;
+		if (distance_to_last_sq < 0.01) return;
+	}
+	
 	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside" || e.type == "touchstart" || e.type == "touchstartoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
+	
 	
 	if (distance_to_last_sq < (end_circle_radius*end_circle_radius)) {	
 		draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);
@@ -1644,6 +1725,21 @@ function on_polygon_end(e) {
 
 	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 	
+	var a;
+	if (new_drawing.path.length == 1) {
+		a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
+	} else {
+		a = [to_x_local(new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
+			 to_y_local(new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
+	}
+	var b = [to_x_local(x + new_drawing.x), to_y_local(y + new_drawing.y)];
+	
+	if (just_activated) {
+		var distance_sq = Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2)
+		just_activated = false;
+		if (distance_sq < 0.01) return;
+	}
+	
 	if (distance_to_start_sq < (end_circle_radius*end_circle_radius)) {
 		new_drawing.path.push([0, 0]);
 		draw_context.lineTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
@@ -1665,14 +1761,6 @@ function on_polygon_end(e) {
 		if ((new_drawing.path.length == 0) || x != last(new_drawing.path)[0] || y != last(new_drawing.path)[1]) {
 			new_drawing.path.push([x, y]);
 		}
-		var a;
-		if (new_drawing.path.length == 1) {
-			a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
-		} else {
-			a = [to_x_local(new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
-				 to_y_local(new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
-		}
-		var b = [to_x_local(last(new_drawing.path)[0] + new_drawing.x), to_y_local(last(new_drawing.path)[1] + new_drawing.y)];
 
 		draw_context.lineTo(b[0], b[1]);
 		draw_context.stroke();
@@ -1690,11 +1778,10 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 
 var ruler_state = {}
 function on_ruler_move(e) {
-	limit_rate(20, ruler_state, function() {
+	limit_rate(15, ruler_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var map_size_x = background.size_x ? background.size_x : 0;
 		var map_size_y = background.size_y ? background.size_y : 0;
-		temp_draw_context.save();
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
 		temp_draw_context.beginPath();
 		temp_draw_context.lineWidth = 2 * (size_x/1000);
@@ -1717,19 +1804,19 @@ function on_ruler_move(e) {
 			unit = "u";
 		}	
 		temp_draw_context.fillText(""+Math.round(10*length)/10+unit, mid_line_x, mid_line_y);
-		temp_draw_context.restore();
 	});
 }
 
 function on_ruler_end(e) {
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	temp_draw_context.fill();
 	setup_mouse_events(undefined, undefined);
+	limit_rate(15, ruler_state, function() {
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+	});
 }
 
 var circle_state = {}
 function on_circle_move(e) {
-	limit_rate(20, circle_state, function() {	
+	limit_rate(15, circle_state, function() {	
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		
 		var center_x, center_y, radius
@@ -1777,6 +1864,7 @@ function on_circle_move(e) {
 }
 
 function on_circle_end(e) {
+	limit_rate(15, circle_state, function() {});
 	var mouse_location = e.data.getLocalPosition(background_sprite);
 
 	var center_x, center_y, radius
@@ -1792,6 +1880,13 @@ function on_circle_end(e) {
 		radius = Math.sqrt(Math.pow(left_click_origin[0] - mouse_x_rel(mouse_location.x), 2) + 
 		                   Math.pow(left_click_origin[1] - mouse_y_rel(mouse_location.y), 2));
 	}
+	
+	if (just_activated) {
+		var distance_sq = Math.pow(to_x_local(radius), 2)
+		just_activated = false;
+		if (distance_sq < 0.01) return;
+	}
+	new_drawing = undefined;
 	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
 	temp_draw_context.beginPath();
@@ -1836,7 +1931,7 @@ function on_circle_end(e) {
 
 var rectangle_state = {}
 function on_rectangle_move(e) {
-	limit_rate(20, rectangle_state, function() {
+	limit_rate(15, rectangle_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);	
 		var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
 		var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
@@ -1850,11 +1945,19 @@ function on_rectangle_move(e) {
 }
 
 function on_rectangle_end(e) {
+	limit_rate(15, rectangle_state, function() {});
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
 	var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
 	var right_x = Math.max(left_click_origin[0], mouse_x_rel(mouse_location.x));
 	var right_y = Math.max(left_click_origin[1], mouse_y_rel(mouse_location.y));
+
+	if (just_activated) {
+		var distance_sq = Math.pow(to_x_local(left_x - right_x), 2) + Math.pow(to_y_local(left_y - right_y), 2)
+		just_activated = false;
+		if (distance_sq < 0.01) return;
+	}
+	new_drawing = undefined;
 	
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);							
 	temp_draw_context.fillRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y)); 
@@ -1882,26 +1985,33 @@ function on_ping_move(e) {
 }
 
 function on_ping_end(e) {
+	clearTimeout(drag_state.timeout);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
+	ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
+	socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 	setup_mouse_events(undefined, undefined);
 }
 
 var select_state = {}
 function on_select_move(e) {
-	limit_rate(20, select_state, function() {
-		var mouse_location = e.data.getLocalPosition(background_sprite);
-		// draw a rounded rectangle
-		var graphic = new PIXI.Graphics();
-		graphic.lineStyle(2, 0xBBBBBB, 1);
-		graphic.beginFill(0xBBBBBB, 0.25);
-		graphic.drawRect(x_abs(left_click_origin[0]), y_abs(left_click_origin[1]), x_abs(mouse_x_rel(mouse_location.x) - left_click_origin[0]), y_abs(mouse_y_rel(mouse_location.y) - left_click_origin[1]));
-		graphic.endFill();
-		objectContainer.addChild(graphic);
-		render_scene();
-		objectContainer.removeChild(graphic);
+	limit_rate(15, select_state, function() {
+		var mouse_location = e.data.getLocalPosition(background_sprite);	
+		var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
+		var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
+		var right_x = Math.max(left_click_origin[0], mouse_x_rel(mouse_location.x));
+		var right_y = Math.max(left_click_origin[1], mouse_y_rel(mouse_location.y));
+
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);							
+		temp_draw_context.fillRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y)); 
+		temp_draw_context.strokeRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y));
 	});
 }
 
-function on_select_end(e) {
+function on_select_end(e) {	
+	limit_rate(15, select_state, function() {
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+	});
+	
 	setup_mouse_events(undefined, undefined);
 
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
@@ -1909,6 +2019,7 @@ function on_select_end(e) {
 	var y_min = Math.min(mouse_y_rel(mouse_location.y), left_click_origin[1]);
 	var x_max = Math.max(mouse_x_rel(mouse_location.x), left_click_origin[0]);
 	var y_max = Math.max(mouse_y_rel(mouse_location.y), left_click_origin[1]);
+	
 	
 	for (var key in room_data.slides[active_slide].entities) {
 		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
@@ -2089,55 +2200,66 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index, end,
 		}
 	}
 }
-	
+
+var draw_state = {}
 function on_draw_move(e) {
 	//limit updates to once ever 10ms
-	var time = Date.now();
-	var time_diff = time - last_draw_time;
-	if (time_diff < 10) return;
-	last_draw_time = time;
+	limit_rate(10, draw_state, function() {
 		
-	//only move 0.3 in the direction of the pointer, this smooths it out
-	//var mouse_location = e.data.getLocalPosition(objectContainer)
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	var new_x = mouse_x_rel(mouse_location.x) - new_drawing.x;
-	var new_y = mouse_y_rel(mouse_location.y) - new_drawing.y;
-	new_x = 0.7 * new_drawing.path[new_drawing.path.length-1][0] + 0.3 * new_x;
-	new_y = 0.7 * new_drawing.path[new_drawing.path.length-1][1] + 0.3 * new_y;
-	new_drawing.path.push([new_x, new_y]);
-	
-	//draw_context.lineTo(size_x*(new_x + new_drawing.x), size_y*(new_y + new_drawing.y));
-	//draw_context.stroke();
-	
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-	
-	var n = 30;
-	var start_index = Math.max(new_drawing.path.length-10, 0);
-	var stop_index = new_drawing.path.length;
-	temp_draw_context.beginPath();
-	if (new_drawing.path.length > 3) {
-		if (new_drawing.end == "arrow") {
-			var i = Math.max(0, new_drawing.path.length-3);	
-			draw_arrow2(temp_draw_context, new_drawing, 4);
-		} else if (new_drawing.end == "T") {
-			var i = Math.max(0, new_drawing.path.length-3);	
-			draw_T2(temp_draw_context, new_drawing, 4);	
-			temp_draw_context.stroke();			
+		//only move 0.3 in the direction of the pointer, this smooths it out
+		//var mouse_location = e.data.getLocalPosition(objectContainer)
+		var mouse_location = e.data.getLocalPosition(background_sprite);
+		var new_x = mouse_x_rel(mouse_location.x) - new_drawing.x;
+		var new_y = mouse_y_rel(mouse_location.y) - new_drawing.y;
+		var last_x = new_drawing.path[new_drawing.path.length-1][0]
+		var last_y = new_drawing.path[new_drawing.path.length-1][1]
+		
+		if (Math.pow(new_x - last_x, 2) + Math.pow(new_y - last_y, 2) < 0.0001) {
+			return;
 		}
-	}
-	temp_draw_context.closePath();
-	temp_draw_context.beginPath();
-	draw_path2(temp_draw_context, draw_context, new_drawing, 30, start_index, stop_index)
-	draw_context.stroke();
-	temp_draw_context.stroke();	
+		
+		new_x = 0.7 * last_x + 0.3 * new_x;
+		new_y = 0.7 * last_y + 0.3 * new_y;
+		new_drawing.path.push([new_x, new_y]);
+		
+		//draw_context.lineTo(size_x*(new_x + new_drawing.x), size_y*(new_y + new_drawing.y));
+		//draw_context.stroke();
+		
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+		draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);	
+		
+		var n = 30;
+		var start_index = Math.max(new_drawing.path.length-10, 0);
+		var stop_index = new_drawing.path.length;
+		temp_draw_context.beginPath();
+		if (new_drawing.path.length > 6) {
+			if (new_drawing.end == "arrow") {
+				var i = Math.max(0, new_drawing.path.length-6);	
+				draw_arrow2(temp_draw_context, new_drawing, 7);
+			} else if (new_drawing.end == "T") {
+				var i = Math.max(0, new_drawing.path.length-6);	
+				draw_T2(temp_draw_context, new_drawing, 7);	
+				temp_draw_context.stroke();			
+			}
+		}
+		
+		temp_draw_context.closePath();
+		temp_draw_context.beginPath();
+		draw_path2(temp_draw_context, draw_context, new_drawing, 30, start_index, stop_index)
+		draw_context.stroke();
+		temp_draw_context.stroke();	
+	
+	});
 	
 }
 
 function on_draw_end(e) {
+	limit_rate(10, draw_state, function() {});
+	
 	//make sure the last move is recorded
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	new_drawing.path.push([mouse_x_rel(mouse_location.x)-new_drawing.x,
-						   mouse_y_rel(mouse_location.y)-new_drawing.y]);
+	//var mouse_location = e.data.getLocalPosition(background_sprite);
+	//new_drawing.path.push([mouse_x_rel(mouse_location.x)-new_drawing.x,
+	//					   mouse_y_rel(mouse_location.y)-new_drawing.y]);
 		
 	var n = 30;
 	var start_index = Math.max(new_drawing.path.length-10, 0);
@@ -2314,18 +2436,10 @@ function create_line2(line) {
 	_canvas.width = renderer.view.width;
 	_canvas.height = renderer.view.height;
 	_context = _canvas.getContext("2d");
-	_context.lineWidth = line.thickness * (size_x/1000);
-	_context.strokeStyle = color;
-	_context.fillStyle = color;	
-	if ('setLineDash' in _context) {
-		if (line.style == "dashed") {
-			_context.setLineDash([10, 10]);
-		} else if (line.style == "dotted") {
-			_context.setLineDash([line.thickness, line.thickness]);
-		}
-	}
-	_context.moveTo(to_x_local(line.x), to_y_local(line.y));
 	
+	init_canvas(_context, line.thickness, line.color, line.style);
+	
+	_context.moveTo(to_x_local(line.x), to_y_local(line.y));
 	for (var i = 0; i < line.path.length; ++i) {
 		var x = to_x_local(line.path[i][0] + line.x);
 		var y = to_y_local(line.path[i][1] + line.y);
@@ -2353,25 +2467,7 @@ function create_line2(line) {
 }
 
 function init_shape_canvas(_context, shape) {
-	_context.lineWidth = shape.outline_thickness * (size_x/1000);
-	var fill_color = '#' + ('00000' + (shape.fill_color | 0).toString(16)).substr(-6);
-	var stroke_color = '#' + ('00000' + (shape.outline_color | 0).toString(16)).substr(-6); 
-	var fill_rgba = hexToRGBA(fill_color, shape.fill_opacity);
-	var stroke_rgba = hexToRGBA(stroke_color, shape.outline_opacity);
-	_context.fillStyle = fill_rgba;
-	_context.strokeStyle = stroke_rgba;
-	
-	if ('setLineDash' in _context) {
-		if (shape.style == "dashed") {
-			_context.setLineDash([10, 10]);
-		} else if (shape.style == "dotted") {
-			if (shape.thickness) {
-				_context.setLineDash([shape.thickness, shape.thickness]);
-			} else if (shape.outline_thickness) {
-				_context.setLineDash([shape.outline_thickness, shape.outline_thickness]);
-			}
-		}
-	}
+	init_canvas(_context, shape.outline_thickness, shape.outline_color, shape.style, shape.fill_opacity, shape.fill_color, shape.outline_opacity)
 }
 
 function create_rectangle2(rectangle) {
@@ -2470,28 +2566,20 @@ function create_drawing2(drawing) {
 	_canvas.width = renderer.view.width;
 	_canvas.height = renderer.view.height;
 	var _context = _canvas.getContext("2d");
-	_context.lineWidth = drawing.thickness * (size_x/1000);
-	_context.strokeStyle = color;
-	_context.fillStyle = color;	
-	if ('setLineDash' in _context) {
-		if (drawing.style == "dashed") {
-			_context.setLineDash([10, 10]);
-		} else if (drawing.style == "dotted") {
-			_context.setLineDash([drawing.thickness, drawing.thickness]);
-		}
-	}
+
+	init_canvas(_context, drawing.thickness, drawing.color, drawing.style);
 	
 	_context.beginPath();
 	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
 	var n = drawing.path.length;
 	draw_path2(_context, undefined, drawing, n, 0, n);
 	_context.stroke();
-	if (drawing.path.length > 3) {	
+	if (drawing.path.length > 6) {	
 		if (drawing.end == "arrow") {	
-			draw_arrow2(_context, drawing, 4);
+			draw_arrow2(_context, drawing, 7);
 			_context.fill();
 		} else if (drawing.end == "T") {
-			draw_T2(_context, drawing, 4);
+			draw_T2(_context, drawing, 7);
 			_context.stroke();
 		}
 	}
@@ -2504,16 +2592,9 @@ function create_curve2(drawing) {
 	_canvas.width = renderer.view.width;
 	_canvas.height = renderer.view.height;
 	var _context = _canvas.getContext("2d");
-	_context.lineWidth = drawing.thickness * (size_x/1000);
-	_context.strokeStyle = color;
-	_context.fillStyle = color;
-	if ('setLineDash' in _context) {
-		if (drawing.style == "dashed") {
-			_context.setLineDash([10, 10]);
-		} else if (drawing.style == "dotted") {
-			_context.setLineDash([drawing.thickness, drawing.thickness]);
-		}
-	}
+
+	init_canvas(_context, drawing.thickness, drawing.color, drawing.style);
+	
 	_context.beginPath();
 	_context.moveTo(size_x*(drawing.x), size_y*(drawing.y));
 		
@@ -2556,6 +2637,9 @@ function emit_entity(entity) {
 	room_data.slides[active_slide].z_top++;
 	entity.z_index = room_data.slides[active_slide].z_top;
 	entity.container = container;
+	entity.container.mouseover = function() {
+		hovering_over = entity;
+	}
 }
 
 function on_icon_end(e) {	
@@ -2604,7 +2688,7 @@ function on_background_text_end(e) {
 
 var line_state = {};
 function on_line_move(e) {
-	limit_rate(20, line_state, function() {
+	limit_rate(15, line_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var a;
 		if (new_drawing.path.length == 0) {
@@ -2630,10 +2714,12 @@ function on_line_move(e) {
 }
 
 function on_line_end(e) {
+	limit_rate(15, line_state, function() {});
 	try {
-		var mouse_location = e.data.getLocalPosition(background_sprite);	
+		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var x = mouse_x_rel(mouse_location.x);
 		var y = mouse_y_rel(mouse_location.y);
+
 		//x = Math.max(0, x);
 		//y = Math.max(0, y);
 		//x = Math.min(1, x);
@@ -2644,6 +2730,7 @@ function on_line_end(e) {
 			new_drawing.path.push([x, y]);
 		}	
 	} catch (e) {}
+	
 	var a;
 	if (new_drawing.path.length == 1) {
 		a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
@@ -2653,9 +2740,15 @@ function on_line_end(e) {
 	}
 	var b = [to_x_local(last(new_drawing.path)[0] + new_drawing.x), to_y_local(last(new_drawing.path)[1] + new_drawing.y)];
 	
+	if (just_activated) {
+		var distance_sq = Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2);
+		just_activated = false;
+		if (distance_sq < 0.01) return;
+	}
+	
 	draw_context.lineTo(b[0], b[1]);
 	draw_context.stroke();
-	
+		
 	if (!shifted) {
 		if (new_drawing.end == "arrow") {
 			draw_arrow3(draw_context, a, b, new_drawing);
@@ -2692,8 +2785,7 @@ function create_text(text_entity) {
 	
 	make_draggable(text_entity.container);	
 	objectContainer.addChild(text_entity.container);
-	render_scene();
-	
+
 	room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
 }
 
@@ -3090,6 +3182,12 @@ function create_entity(entity) {
 		create_polygon2(entity);
 	} else if (entity.type == 'area') {
 		create_area2(entity);
+	}
+	
+	if (entity.container && entity.type != 'background') {
+		entity.container.mouseover = function() {
+			hovering_over = entity;
+		}
 	}
 }
 
@@ -3740,7 +3838,7 @@ function activity_animation(user_id) {
 	}		
 }
 
-function try_select_map(map_select, path) {
+function try_select_map(map_select, path, custom) {
 	var uid = background ? background.uid : newUid();
 
 	var size_x = 0;
@@ -3753,11 +3851,13 @@ function try_select_map(map_select, path) {
 		size_y = parseFloat(size[1]);
 	}
 	
-	var new_background = {uid:uid, type:'background', path:path, size_x:size_x, size_y:size_y};
+	custom = custom ? true : false;
+	var new_background = {uid:uid, type:'background', path:path, size_x:size_x, size_y:size_y, custom:custom};
 		
 	set_background(new_background, function(success) {
 		if (success) {
 			socket.emit('create_entity', room, new_background, active_slide);
+			render_scene();
 		}
 	});
 }
@@ -3876,7 +3976,7 @@ $(document).ready(function() {
 		$('#set_map').click(function (e) {
 			var map = $('#map_url').val();
 			if (map && map != "") {
-				try_select_map($('#map_select'), map);
+				try_select_map($('#map_select'), map, true);
 				//add_custom_map(map);
 				//$('#map_select').trigger('change');
 			}
@@ -4226,7 +4326,9 @@ $(document).ready(function() {
 			if (graphics) {
 				objectContainer.removeChild(graphics)
 			}
-			
+			if (new_drawing) {
+				new_drawing = undefined;
+			}	
 			current_text_element = undefined;
 			
 			if ( $(this).attr('id') == "undo") {
@@ -4527,10 +4629,6 @@ $(document).ready(function() {
 		}
 		
 	});
-	
-	function create_entities(entities) {
-
-	}
 
 	socket.on('create_entity', function(entity, slide, user_id) {
 		if (slide != active_slide) {
@@ -4653,7 +4751,7 @@ $(document).ready(function() {
 		activity_animation(user_id)
 	});
 	
-	socket.on('reconnect', function() {
+	socket.on('force_reconnect', function() {
 		location.reload();
 	});
 });
