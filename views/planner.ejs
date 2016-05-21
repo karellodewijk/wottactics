@@ -8,10 +8,8 @@
 	<link rel="stylesheet" href="http://karellodewijk.github.io/stylesheets/jquery.simplecolorpicker.css">
 	<script defer type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<script defer type="text/javascript" src="http://karellodewijk.github.io/javascripts/pixi.min.js"></script>
-	<script defer type="text/javascript" src="/javascripts/lib/bootstrap-slider.min.js"></script>
-	<link rel="stylesheet" href="http://karellodewijk.github.io/stylesheets/bootstrap-slider.min.css" />
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-	<script defer type="text/javascript" src="/javascripts/lib/TransparencyHitArea.js"></script>
+	<script defer type="text/javascript" src="http://karellodewijk.github.io/javascripts/lib/TransparencyHitArea.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 	<script defer type="text/javascript" src="/javascripts/planner.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
@@ -63,10 +61,10 @@
 		<link rel="stylesheet" href="http://karellodewijk.github.io/csgo_icons.css">
 	<% } %>
 </head>
-<body style="display: table-cell;">
-	<div class="edit_window" style="display: table-cell;"></div>
+<body>
+	<div id="edit_window" class="edit_window" style="height:calc(100vh - 12px); width:calc(100vh - 12px);"></div>
 	
-	<div id="single_side_bar" class="side_bar jumbotron" style="display: table-cell; vertical-align:top;">
+	<div id="single_side_bar" class="side_bar jumbotron" style="vertical-align:top;">
 	<nav class="navbar navbar-inverse container-fluid navbar_planner">
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -338,10 +336,10 @@
 						<div class="col-sm-4">
 							<small><%=l('Label size')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="label_font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="3" data-slider-max="99" data-slider-step="1" data-slider-value=<%if (game == 'blitz') { %>"15"<%} else {%>"10"<%}%>/>
+						<div class="col-sm-6">
+							<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"15"<%} else {%>"10"<%}%> max="100" step="1" list="label_font_size_ticks">
 						</div>	
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="label_font_size_text" class="slider_text_input" type="text"/>
 						</div>	
 					</div>	
@@ -350,10 +348,10 @@
 						<div class="col-sm-4">
 							<small><%=l('Icon size')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="icon_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="50" data-slider-step="1" data-slider-value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%>/>
+						<div class="col-sm-6">
+							<input type="range" id="icon_size" min="5" value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%> max="100" step="1" list="icon_size_ticks">
 						</div>	
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="icon_size_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>	
@@ -361,10 +359,10 @@
 						<div class="col-sm-4">
 							<small><%=l('Brightness')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="icon_brightness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="-1" data-slider-max="1" data-slider-step="0.05" data-slider-value="0"/>
+						<div class="col-sm-6">
+							<input type="range" id="icon_brightness" min="-1" value="0" max="1" step="0.05" list="icon_brightness_ticks">
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="icon_brightness_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>	
@@ -404,10 +402,10 @@
 						<div class="col-sm-4">
 							<small><%=l('Thickness')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="draw_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+						<div class="col-sm-6">
+							<input type="range" id="draw_thickness" min="1" value="2" max="10" step="1" list="draw_thickness_ticks">
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="draw_thickness_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
@@ -463,10 +461,10 @@
 						<div class="col-sm-4">
 							<small><%=l('Thickness')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="curve_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+						<div class="col-sm-6">
+							<input type="range" id="curve_thickness" min="1" value="2" max="10" step="1" list="curve_thickness_ticks">
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="curve_thickness_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
@@ -523,21 +521,21 @@
 						<div class="col-sm-4">
 							<small><%=l('Thickness')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="rectangle_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+						<div class="col-sm-6">
+							<input type="range" id="rectangle_outline_thickness" min="0" value="2" max="10" step="1" list="rectangle_outline_thickness_ticks">
 						</div>	
-						<div class="col-sm-3"><input id="rectangle_outline_thickness_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2"><input id="rectangle_outline_thickness_text" class="slider_text_input" type="text"/>
 						</div>	
 					</div>	
 					<div class="row">
 						<div class="col-sm-4">
-							<small><%=l('Opacity')%></small>
+							<small><%=l('Transparancy')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="rectangle_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
+						<div class="col-sm-6">
+							<input type="range" id="rectangle_outline_transparancy" min="0" value="0" max="100" step="1" list="rectangle_outline_transparancy_ticks">
 						</div>	
-						<div class="col-sm-3">
-							<input id="rectangle_outline_opacity_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2">
+							<input id="rectangle_outline_transparancy_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
 									
@@ -553,13 +551,13 @@
 					
 					<div class="row">
 						<div class="col-sm-4">
-							<small><%=l('Opacity')%></small>
+							<small><%=l('Transparancy')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="rectangle_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+						<div class="col-sm-6">
+							<input type="range" id="rectangle_fill_transparancy" min="0" value="80" max="100" step="1" list="rectangle_fill_transparancy_ticks">
 						</div>
-						<div class="col-sm-3">
-							<input id="rectangle_fill_opacity_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2">
+							<input id="rectangle_fill_transparancy_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
 					<br />
@@ -600,21 +598,21 @@
 						<div class="col-sm-4">
 							<small><%=l('Thickness')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="circle_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+						<div class="col-sm-6">
+							<input type="range" id="circle_outline_thickness" min="0" value="2" max="10" step="1" list="circle_outline_thickness_ticks">
 						</div>	
-						<div class="col-sm-3"><input id="circle_outline_thickness_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2"><input id="circle_outline_thickness_text" class="slider_text_input" type="text"/>
 						</div>	
 					</div>	
 					<div class="row">
 						<div class="col-sm-4">
-							<small><%=l('Opacity')%></small>
+							<small><%=l('Transparancy')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="circle_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
+						<div class="col-sm-6">
+							<input type="range" id="circle_outline_transparancy" min="0" value="0" max="100" step="1" list="circle_outline_transparancy_ticks">
 						</div>	
-						<div class="col-sm-3">
-							<input id="circle_outline_opacity_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2">
+							<input id="circle_outline_transparancy_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>	
 									
@@ -630,13 +628,13 @@
 					
 					<div class="row">
 						<div class="col-sm-4">
-							<small><%=l('Opacity')%></small>
+							<small><%=l('Transparancy')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="circle_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+						<div class="col-sm-6">
+							<input type="range" id="circle_fill_transparancy" min="0" value="80" max="100" step="1" list="circle_fill_transparancy_ticks">
 						</div>
-						<div class="col-sm-3">
-							<input id="circle_fill_opacity_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2">
+							<input id="circle_fill_transparancy_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
 					<br />					
@@ -691,21 +689,21 @@
 						<div class="col-sm-4">
 							<small><%=l('Thickness')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="polygon_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+						<div class="col-sm-6">
+							<input type="range" id="polygon_outline_thickness" min="0" value="2" max="10" step="1" list="polygon_outline_thickness_ticks">
 						</div>	
-						<div class="col-sm-3"><input id="polygon_outline_thickness_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2"><input id="polygon_outline_thickness_text" class="slider_text_input" type="text"/>
 						</div>	
 					</div>	
 					<div class="row">
 						<div class="col-sm-4">
-							<small><%=l('Opacity')%></small>
+							<small><%=l('Transparancy')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="polygon_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
+						<div class="col-sm-6">
+							<input type="range" id="polygon_outline_transparancy" min="0" value="0" max="100" step="1" list="polygon_outline_transparancy_ticks">
 						</div>	
-						<div class="col-sm-3">
-							<input id="polygon_outline_opacity_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2">
+							<input id="polygon_outline_transparancy_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>	
 									
@@ -721,13 +719,13 @@
 					
 					<div class="row">
 						<div class="col-sm-4">
-							<small><%=l('Opacity')%></small>
+							<small><%=l('Transparancy')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="polygon_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+						<div class="col-sm-6">
+							<input type="range" id="polygon_fill_transparancy" min="0" value="80" max="100" step="1" list="polygon_fill_transparancy_ticks">
 						</div>
-						<div class="col-sm-3">
-							<input id="polygon_fill_opacity_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2">
+							<input id="polygon_fill_transparancy_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
 					<br />					
@@ -768,22 +766,22 @@
 						<div class="col-sm-4">
 							<small><%=l('Thickness')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="area_outline_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+						<div class="col-sm-6">
+							<input type="range" id="area_outline_thickness" min="0" value="2" max="10" step="1" list="area_outline_thickness_ticks">
 						</div>	
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="area_outline_thickness_text" class="slider_text_input" type="text"/>
 						</div>	
 					</div>	
 					<div class="row">
 						<div class="col-sm-4">
-							<small><%=l('Opacity')%></small>
+							<small><%=l('Transparancy')%></small>
 						</div>	
-						<div class="col-sm-5">
-							<input id="area_outline_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="1"/>
+						<div class="col-sm-6">
+							<input type="range" id="area_outline_transparancy" min="0" value="0" max="100" step="1" list="area_outline_transparancy_ticks">
 						</div>	
-						<div class="col-sm-3">
-							<input id="area_outline_opacity_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2">
+							<input id="area_outline_transparancy_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>	
 									
@@ -799,13 +797,13 @@
 					
 					<div class="row">
 						<div class="col-sm-4">
-							<small><%=l('Opacity')%></small>
+							<small><%=l('Transparancy')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="area_fill_opacity" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.1" data-slider-value="0.2"/>
+						<div class="col-sm-6">
+							<input type="range" id="area_fill_transparancy" min="0" value="80" max="100" step="1" list="area_fill_transparancy_ticks">
 						</div>
-						<div class="col-sm-3">
-							<input id="area_fill_opacity_text" class="slider_text_input" type="text"/>
+						<div class="col-sm-2">
+							<input id="area_fill_transparancy_text" class="slider_text_input" type="text" />
 						</div>
 					</div>
 					<br />
@@ -840,6 +838,18 @@
 						<option value="#ffff00"><%=l('Yellow')%></option>
 					</select>
 					<input type="color">
+		
+					<div class="row">
+						<div class="col-sm-2">
+							<small><%=l('Size')%></small></div>
+						<div class="col-sm-8">
+							<input type="range" id="ping_size" min="1" value="10" max="20" step="1" list="ping_size_ticks">
+						</div>
+						<div class="col-sm-2">
+
+							<input id="ping_size_text" class="slider_text_input" type="text"/>
+						</div>
+					</div>
 				</div>
 
 				<div id='track_context'>
@@ -930,6 +940,7 @@
 				
 				<p>	
 				<small><%=l('Text')%></small> <input type="text" id="text_tool_text"/>
+				
 					<p>
 					<select name="colorpicker" id="text_colorpicker">
 						<option value="#ffffff"><%=l('White')%></option>
@@ -946,10 +957,10 @@
 						<div class="col-sm-4">
 							<small><%=l('Size')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="99" data-slider-step="1" data-slider-value="10"/>
+						<div class="col-sm-6">
+							<input type="range" id="font_size" min="5" value="10" max="100" step="1" list="font_size_ticks">
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="font_size_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
@@ -968,6 +979,7 @@
 						<option value="#ff0000"><%=l('Red')%></option>
 						<option value="#00AA00"><%=l('Green')%></option>
 						<option value="#0000FF"><%=l('Blue')%></option>
+
 					</select>
 					<input type="color">
 								
@@ -976,10 +988,10 @@
 						<div class="col-sm-4">
 							<small><%=l('Size')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="background_font_size" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="5" data-slider-max="99" data-slider-step="1" data-slider-value="8"/>
+						<div class="col-sm-6">
+							<input type="range" id="background_font_size" min="5" value="8" max="100" step="1" list="background_font_size_ticks">
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="background_font_size_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
@@ -1002,10 +1014,10 @@
 						<div class="col-sm-4">
 							<small><%=l('Thickness')%></small>
 						</div>
-						<div class="col-sm-5">
-							<input id="line_thickness" class="my_sliders" data-slider-id='ex1Slider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="2"/>
+						<div class="col-sm-6">
+							<input type="range" id="line_thickness" min="1" value="2" max="10" step="1" list="line_thickness_ticks">
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<input id="line_thickness_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>
@@ -1045,26 +1057,23 @@
 				</div>
 
 				<hr>
-				
+
 				<%if (game == 'blitz') { %>	
 				<h4>Extra</h4>
+
 				<p>
-				
-				<div class="btn-group" role="group">
-				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
+				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<div class="icon icon-save"></div>
-				</a>
-				<a id="save_as" href="javascript:void(0)" class="btn btn-default" data-placement="bottom"
-				data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default btn-xs'>Store</button>">
+				</button>
+				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<div class="icon icon-save_as"></div>
-				</a>
-				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
+				</button>
+				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
 					<div class="icon icon-lock"></div>
 				</button>
-				<button id="link" class="btn btn-default" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
+				<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 					<div class="icon icon-link"></div>
 				</button>
-				</div>
 				<% } %>	
 			</div>
 			
