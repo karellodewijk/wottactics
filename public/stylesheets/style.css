@@ -1,8 +1,7 @@
 body {
 	background: #DDDDDD;
-	padding-top:5px;
-	padding-left:5px;
-	padding-right:5px;
+	margin: 0px;
+	padding: 0px;
 }
 
 nav a, nav a:active, nav a:focus {

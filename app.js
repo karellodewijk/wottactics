@@ -1173,8 +1173,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 
-		socket.on('ping_marker', function(room, x, y, color) {
-			socket.broadcast.to(room).emit('ping_marker', x, y, color, socket.request.session.passport.user.id);
+		socket.on('ping_marker', function(room, x, y, color, size) {
+			socket.broadcast.to(room).emit('ping_marker', x, y, color, size, socket.request.session.passport.user.id);
 		});
 
 		socket.on('show_grid', function(room, slide, bool) {

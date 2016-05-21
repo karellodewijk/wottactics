@@ -55,7 +55,6 @@ function setup_assets() {
 }
 
 var room = location.search.split('room=')[1].split("&")[0];	
-var nowebgl = location.search.indexOf('nowebgl') != -1;	
 
 function hashstring(str) {
 	var sum = 0;
@@ -131,22 +130,15 @@ function random_darkish_color(){
     return '#' + r + g + b;
 }
 
-var ARROW_LOOKBACK = 3;
-var MOUSE_DRAW_SMOOTHING = 0.5;
-var LEFT_BAR_MIN_WIDTH = 350;
-var RIGHT_BAR_MIN_WIDTH = 345;
-var SINGLE_SIDE_BAR_MIN_WIDTH = 630;
-var MIN_POLYGON_END_DISTANCE = 0.01; //in ratio to width of map
-var MIN_POLYGON_END_DISTANCE_TOUCH = 0.025;
-var MIN_TRACK_MOVE_DISTANCE_SQ = 0.01 * 0.01;
-var ICON_SCALE = 0.025/20;
-var NOTE_SCALE = 0.05;
-var THICKNESS_SCALE = 0.0015;
-var FONT_SCALE = 0.002;
-
 var chat_color = random_darkish_color();
 var room_data;
+var min_draw_point_distance = 0.01;
 var active_slide = 0;
+var min_draw_point_distance_sq = min_draw_point_distance * min_draw_point_distance;
+var min_polygon_end_distance = 0.01; //in ratio to width of map
+var min_polygon_end_distance_touch = 0.025;
+var min_track_move_distance = 0.01;
+var min_track_move_distance_sq = min_track_move_distance * min_track_move_distance;
 var active_context = 'ping_context';
 var active_menu = 'ping_context';
 var userlist = {};
@@ -174,19 +166,18 @@ var draw_thickness;
 var curve_thickness;
 var line_thickness;
 var icon_size;
-var ping_size;
 var rectangle_outline_thickness;
-var rectangle_outline_transparancy;
-var rectangle_fill_transparancy;
+var rectangle_outline_opacity;
+var rectangle_fill_opacity;
 var circle_outline_thickness;
-var circle_outline_transparancy;
-var circle_fill_transparancy;
+var circle_outline_opacity;
+var circle_fill_opacity;
 var polygon_outline_thickness;
-var polygon_outline_transparancy;
-var polygon_fill_transparancy;
+var polygon_outline_opacity;
+var polygon_fill_opacity;
 var area_outline_thickness;
-var area_outline_transparancy;
-var area_fill_transparancy;
+var area_outline_opacity;
+var area_fill_opacity;
 var my_user;
 var undo_list = [];
 var redo_list = [];
@@ -199,7 +190,11 @@ var selected_entities = [];
 var previously_selected_entities = [];
 var label_font_size = 30;
 var last_ping_time;
+var icon_scale = 0.025/20;
 var icon_brightness;
+var note_scale = 0.05;
+var thickness_scale = 0.0015;
+var font_scale = 0.002;
 var trackers = {};
 var my_tracker;
 var last_track_position;
@@ -218,7 +213,10 @@ var last_mouse_location;
 var ping_texture;
 var hovering_over;
 var just_activated;
-
+var left_bar_min_width = 350;
+var right_bar_min_width = 345;
+var single_side_bar_min_width = 630;
+var mouse_draw_smoothing = 0.5;
 
 var mouse_down_interrupted;
 document.body.onmouseup = function() {
@@ -342,7 +340,7 @@ var size_x = size;
 var size_y = size;
 
 var renderer;
-if (Modernizr.webgl && !nowebgl) {
+if (Modernizr.webgl) {
 	renderer = PIXI.autoDetectRenderer(size, size, {backgroundColor : 0xBBBBBB});
 } else {
 	renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
@@ -523,9 +521,9 @@ window.onresize = function() {
 	}
 	var iface_width = 0;
 	if ($("#single_side_bar").length) {
-		iface_width = SINGLE_SIDE_BAR_MIN_WIDTH;
+		iface_width = single_side_bar_min_width;
 	} else {
-		iface_width = LEFT_BAR_MIN_WIDTH + RIGHT_BAR_MIN_WIDTH;
+		iface_width = left_bar_min_width + right_bar_min_width;
 	}
 		
 	if (iface_width < (window.innerWidth / 1.75)) {
@@ -547,13 +545,13 @@ window.onresize = function() {
 		if ($('#left_side_bar').length) {
 			$('#left_side_bar').detach().appendTo($("body"));
 			$('#left_side_bar').css("clear", "both");
-			iface_width = RIGHT_BAR_MIN_WIDTH;
+			iface_width = right_bar_min_width;
 		}
 		
 		var size_x = window.innerWidth - iface_width;
 		var size_y = size_x / ratio;
 			
-		if (size_x < RIGHT_BAR_MIN_WIDTH) {
+		if (size_x < right_bar_min_width) {
 			var size_x = window.innerWidth
 			var size_y = size_x / ratio;
 		}
@@ -977,13 +975,13 @@ function render_scene() {
 	});
 }
 
-function ping(x, y, color, size) {
+function ping(x, y, color) {	
 	var sprite = new PIXI.Sprite(ping_texture);
 
 	sprite.tint = color;
 	sprite.anchor.set(0.5);
-	sprite.height = y_abs(0.01) * (size/10);
-	sprite.width = y_abs(0.01) * (size/10);
+	sprite.height = y_abs(0.01);
+	sprite.width = y_abs(0.01);
 		
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
@@ -1228,11 +1226,6 @@ function can_edit() {
 	return (!is_room_locked || my_user.role);
 }
 
-//convert transprancy in the 0-100(%) range to opacity in 0-1 range
-function t2o(transparancy) {
-	return (1 - (transparancy/100));
-}
-
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_draw_time, last_point;
 function on_left_click(e) {
@@ -1254,6 +1247,10 @@ function on_left_click(e) {
 		draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		last_draw_time = Date.now();
 		last_point = [to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y))];
+		if (new_drawing.end == "arrow") {
+			arrow_graphic = draw_arrow4(new_drawing, i);
+			objectContainer.addChild(arrow_graphic);
+		}
 	} else if (active_context == 'ruler_context') {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
 		init_canvases(0.1, 0xffffff, "full");
@@ -1269,15 +1266,15 @@ function on_left_click(e) {
 	} else if (active_context == 'polygon_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_polygon_end);
-			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: t2o(polygon_outline_transparancy), fill_color:polygon_fill_color, fill_opacity: t2o(polygon_fill_transparancy), alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style')};
+			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: polygon_outline_opacity, fill_color:polygon_fill_color, fill_opacity: polygon_fill_opacity, alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style')};
 
 			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		
-			var end_circle_radius = (e.type == "touchstart") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
+			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 			
 			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.outline_thickness * x_abs(THICKNESS_SCALE), new_drawing.outline_color, new_drawing.outline_opacity);
+			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
 			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
@@ -1298,15 +1295,15 @@ function on_left_click(e) {
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_curve_move, on_area_end);
-			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: t2o(area_outline_transparancy), fill_color:area_fill_color, fill_opacity: t2o(area_fill_transparancy), alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style')};
+			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: area_outline_opacity, fill_color:area_fill_color, fill_opacity: area_fill_opacity, alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style')};
 			
 			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		
-			var end_circle_radius = (e.type == "touchstart") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
+			var end_circle_radius = (e.type == "touchstart") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 			
 			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.outline_thickness * x_abs(THICKNESS_SCALE), new_drawing.outline_color, new_drawing.outline_opacity);
+			graphics.lineStyle(new_drawing.outline_thickness * x_abs(thickness_scale), new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
 			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 			objectContainer.addChild(graphics);
@@ -1325,7 +1322,7 @@ function on_left_click(e) {
 		}
 		
 		//ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
-		//socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
+		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		last_ping_time = new Date();
 		setup_mouse_events(on_ping_move, on_ping_end);
 	} else if (active_context == "select_context") {
@@ -1341,7 +1338,7 @@ function on_left_click(e) {
 		if (!new_drawing) {
 			setup_mouse_events(on_rectangle_move, on_rectangle_end);
 			left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
-			init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_type').find('.active').attr('data-style'), t2o(rectangle_fill_transparancy), rectangle_fill_color, t2o(rectangle_outline_transparancy));
+			init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_type').find('.active').attr('data-style'), rectangle_fill_opacity, rectangle_fill_color, rectangle_outline_opacity);
 			new_drawing = true;
 			just_activated = true;
 		}
@@ -1349,7 +1346,7 @@ function on_left_click(e) {
 		if (!new_drawing) {
 			setup_mouse_events(on_circle_move, on_circle_end);
 			left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
-			init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data-style'), t2o(circle_fill_transparancy), circle_fill_color, t2o(circle_outline_transparancy));
+			init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data-style'), circle_fill_opacity, circle_fill_color, circle_outline_opacity);
 			circle_draw_style = $('#circle_draw_style').find('.active').attr('data-draw_style')
 			new_drawing = true;
 			just_activated = true;
@@ -1428,8 +1425,8 @@ function create_note(note) {
 		sprite = new PIXI.Sprite(texture);
 	}
 
-	sprite.height = (sprite.height/29) * y_abs(NOTE_SCALE) * note.scale;
-	sprite.width = (sprite.width/29) * y_abs(NOTE_SCALE) * note.scale;
+	sprite.height = (sprite.height/29) * y_abs(note_scale) * note.scale;
+	sprite.width = (sprite.width/29) * y_abs(note_scale) * note.scale;
 	
 	//note.container = new PIXI.Container();
 	sprite.x = x_abs(note.x);
@@ -1528,7 +1525,7 @@ function on_track_move(e) {
 					 +(last_track_position[1] - my_tracker.y) * (last_track_position[1] - my_tracker.y);
 		
 		var interval = (Date.now() - last_track_update);
-		if (dist_sq > MIN_TRACK_MOVE_DISTANCE_SQ || interval > 50) {
+		if (dist_sq > min_track_move_distance_sq || interval > 50) {
 			last_track_update = Date.now();
 			if (Math.abs(my_tracker.x - last_track_position[0] + my_tracker.y - last_track_position[1]) > 0) {
 				socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
@@ -1563,7 +1560,7 @@ function on_area_end(e) {
 	
 	var distance_to_start_sq = x*x + y*y;
 
-	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
+	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 
 	if (just_activated) {
 		var a;
@@ -1673,7 +1670,7 @@ function on_curve_end(e) {
 		if (distance_to_last_sq < 0.01) return;
 	}
 	
-	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside" || e.type == "touchstart" || e.type == "touchstartoutside") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
+	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside" || e.type == "touchstart" || e.type == "touchstartoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 	
 	
 	if (distance_to_last_sq < (end_circle_radius*end_circle_radius)) {	
@@ -1700,7 +1697,7 @@ function on_curve_end(e) {
 		objectContainer.removeChild(graphics);
 		
 		graphics = new PIXI.Graphics();
-		graphics.lineStyle(new_drawing.thickness * x_abs(THICKNESS_SCALE), new_drawing.color, 1);
+		graphics.lineStyle(new_drawing.thickness * x_abs(thickness_scale), new_drawing.color, 1);
 		graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
 		graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), x_abs(end_circle_radius)));
 		objectContainer.addChild(graphics);
@@ -1732,7 +1729,7 @@ function on_polygon_end(e) {
 
 	var distance_to_start_sq = x*x + y*y;
 
-	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
+	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside") ? min_polygon_end_distance_touch : min_polygon_end_distance;
 	
 	var a;
 	if (new_drawing.path.length == 1) {
@@ -1778,7 +1775,7 @@ function on_polygon_end(e) {
 
 function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opacity, fill_color, shape) {
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(outline_thickness * x_abs(THICKNESS_SCALE), outline_color, outline_opacity);
+	graphic.lineStyle(outline_thickness * x_abs(thickness_scale), outline_color, outline_opacity);
 	graphic.beginFill(fill_color, fill_opacity);
 	graphic.drawShape(shape);
 	graphic.endFill();
@@ -1903,7 +1900,7 @@ function on_circle_end(e) {
 	temp_draw_context.fill();
 	temp_draw_context.stroke();
 
-	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: t2o(circle_outline_transparancy), fill_opacity: t2o(circle_fill_transparancy), fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data-style')};
+	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: circle_outline_opacity, fill_opacity: circle_fill_opacity, fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data-style')};
 	
 	if (circle_draw_style == "radius" && background.size_x && background.size_x > 0 && background.size_y && background.size_y > 0) {
 		temp_draw_context.save();
@@ -1972,7 +1969,7 @@ function on_rectangle_end(e) {
 	temp_draw_context.fillRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y)); 
 	temp_draw_context.strokeRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y));
 
-	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: t2o(rectangle_outline_transparancy), fill_opacity: t2o(rectangle_fill_transparancy), fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data-style') };
+	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: rectangle_outline_opacity, fill_opacity: rectangle_fill_opacity, fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data-style') };
 	
 	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
 	if (success) {
@@ -1988,16 +1985,16 @@ var ping_state = {}
 function on_ping_move(e) {
 	limit_rate(80, drag_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
-		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
-		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
+		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
+		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 	});
 }
 
 function on_ping_end(e) {
 	clearTimeout(drag_state.timeout);
 	var mouse_location = e.data.getLocalPosition(background_sprite);
-	ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
-	socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
+	ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
+	socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 	setup_mouse_events(undefined, undefined);
 }
 
@@ -2210,40 +2207,42 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index, end,
 	}
 }
 
+function curve_to(context, ax, ay, bx, by) {
+	var c = (ax + bx) / 2;
+	var d = (ay + by) / 2;	
+	context.quadraticCurveTo(ax, ay, c, d);	
+}
 
 var draw_state = {}
 function on_draw_move(e) {
 	limit_rate(20, draw_state, function() {
 		var mouse_location = renderer.plugins.interaction.mouse.global;				
-		new_x = last_point[0] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.x;
-		new_y = last_point[1] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.y;	
+		new_x = last_point[0] * mouse_draw_smoothing + (1-mouse_draw_smoothing) * mouse_location.x;
+		new_y = last_point[1] * mouse_draw_smoothing + (1-mouse_draw_smoothing) * mouse_location.y;	
 		new_drawing.path.push([from_x_local(new_x) - new_drawing.x, from_y_local(new_y) - new_drawing.y]);
 		
-		draw_context.quadraticCurveTo(last_point[0], last_point[1], new_x, new_y);	
+		curve_to(draw_context, last_point[0], last_point[1], mouse_location.x, mouse_location.y);
 		draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);
 		draw_context.stroke();		
 		
 		temp_draw_context.beginPath();
-		temp_draw_context.moveTo(last_point[0], last_point[1]);
+		temp_draw_context.moveTo(new_x, new_y);
 		temp_draw_context.quadraticCurveTo(new_x, new_y, mouse_location.x, mouse_location.y);
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
 
+
 		new_drawing.path.push([from_x_local(mouse_location.x) - new_drawing.x, from_y_local(mouse_location.y) - new_drawing.y]);		
-		if (new_drawing.path.length >= ARROW_LOOKBACK) {	
+		if (new_drawing.path.length > 6) {	
 			if (new_drawing.end == "arrow") {
-				temp_draw_context.stroke();
-				draw_arrow2(temp_draw_context, new_drawing, ARROW_LOOKBACK);
-				temp_draw_context.fill();
+				orient_arrow4(arrow_graphic, new_drawing, 7);
+				render_scene();
 			} else if (new_drawing.end == "T") {
-				draw_T2(temp_draw_context, new_drawing, ARROW_LOOKBACK);
-				temp_draw_context.stroke();
-			} else {
-				temp_draw_context.stroke();
+				draw_T2(temp_draw_context, new_drawing, 7);
 			}
-		} else {
-			temp_draw_context.stroke();
 		}
 		new_drawing.path.pop();
+
+		temp_draw_context.stroke();
 		
 		last_point = [new_x, new_y];
 	});
@@ -2257,23 +2256,25 @@ function on_draw_end(e) {
 	draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);
 	new_drawing.path.push([from_x_local(mouse_location.x) - new_drawing.x, from_y_local(mouse_location.y) - new_drawing.y]);
 
-	if (new_drawing.path.length > ARROW_LOOKBACK) {	
-		if (new_drawing.end == "arrow") {
-			draw_context.stroke();
-			draw_arrow2(draw_context, new_drawing, ARROW_LOOKBACK);
-			draw_context.fill();
-		} else if (new_drawing.end == "T") {
-			draw_T2(draw_context, new_drawing, ARROW_LOOKBACK);
-			draw_context.stroke();
-		} else {
-			draw_context.stroke();
+	if (new_drawing.path.length > 6) {	
+		 if (new_drawing.end == "T") {
+			draw_T2(draw_context, new_drawing, 7);
 		}
-	} else {
-		draw_context.stroke();
 	}
+
+	draw_context.stroke();
 
 	var success = canvas2container(draw_context, draw_canvas, new_drawing);
 	if (success) {
+		if (new_drawing.end == "arrow") {
+			objectContainer.removeChild(arrow_graphic);
+			arrow_graphic.x -= new_drawing.container.x;
+			arrow_graphic.y -= new_drawing.container.y;
+			arrow_graphic.anchor.set(0,0)
+			new_drawing.container.addChild(arrow_graphic);
+			arrow_graphic = undefined;
+		}
+		
 		emit_entity(new_drawing);
 		undo_list.push(["add", [new_drawing]]);
 	}
@@ -2343,6 +2344,38 @@ function createSprite(ctx, canvas) {
 	} else {
 		return null;
 	}
+}
+
+function draw_arrow4(drawing, i) {
+	var texture;
+	if (texture_atlas["arrow_head.png"] && !is_safari()) {
+		var img = texture_atlas["arrow_head.png"];
+		texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
+	} else {
+		//texture = PIXI.Texture.fromImage(image_host + 'arrow_head.png');
+		texture = PIXI.Texture.fromImage('icons/arrow_head.png');
+	}
+	
+	var i = Math.max(0, drawing.path.length-i);
+	var size = Math.max(Math.min(7*drawing.thickness, 40), 20); //[15 < size < 30]
+	var size = size * (size_x/1000);	
+	var sprite = new PIXI.Sprite(texture);
+	sprite.anchor.set(0, 0.5);
+	sprite.tint = drawing.color;
+	sprite.width = size;
+	sprite.height = size;
+	return sprite;
+}
+
+function orient_arrow4(sprite, drawing, i) {
+	var i = Math.max(0, drawing.path.length-i);
+	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
+	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
+	start_x = drawing.path[drawing.path.length-1][0] + drawing.x;
+	start_y = drawing.path[drawing.path.length-1][1] + drawing.y;		
+	sprite.x = x_abs(start_x);
+	sprite.y = x_abs(start_y);
+	sprite.rotation = Math.atan2(y0, x0);	
 }
 
 function draw_arrow2(context, drawing, i) {
@@ -2574,18 +2607,20 @@ function create_drawing2(drawing) {
 
 	for (i = 1; i < drawing.path.length - 2; i++) {
 		p_i_plus_1 = [to_x_local(drawing.path[i+1][0] + drawing.x), to_y_local(drawing.path[i+1][1] + drawing.y)]
-		_context.quadraticCurveTo(p_i[0], p_i[1], p_i_plus_1[0], p_i_plus_1[1]);
+		var c = (p_i[0] + p_i_plus_1[0]) / 2;
+		var d = (p_i[1] + p_i_plus_1[1]) / 2;
+		_context.quadraticCurveTo(p_i[0], p_i[1], c, d);
 		p_i = p_i_plus_1;
 	}
 	_context.quadraticCurveTo(p_i[0], p_i[1], p_i_plus_1[0], p_i_plus_1[1]);
 
-	if (drawing.path.length >= ARROW_LOOKBACK) {	
+	if (drawing.path.length > 6) {	
 		if (drawing.end == "arrow") {
 			_context.stroke();
-			draw_arrow2(_context, drawing, ARROW_LOOKBACK);
+			draw_arrow2(_context, drawing, 7);
 			_context.fill();
 		} else if (drawing.end == "T") {
-			draw_T2(_context, drawing, ARROW_LOOKBACK);
+			draw_T2(_context, drawing, 7);
 			_context.stroke();
 		} else {
 			_context.stroke();
@@ -2662,7 +2697,7 @@ function on_icon_end(e) {
 	}
 	
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	var size = icon_size*icon_extra_scale*ICON_SCALE;
+	var size = icon_size*icon_extra_scale*icon_scale;
 	size *= zoom_level;
 	var x = mouse_x_rel(mouse_location.x) - (size/2);
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
@@ -2785,7 +2820,7 @@ objectContainer.mousedown = on_left_click;
 objectContainer.touchstart = on_left_click;
 
 function create_text(text_entity) {
-	var size = "bold "+text_entity.font_size*x_abs(FONT_SCALE)+"px " + text_entity.font;
+	var size = "bold "+text_entity.font_size*x_abs(font_scale)+"px " + text_entity.font;
 	text_entity.container = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: (text_entity.font_size/5), stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
 	text_entity.container.x = x_abs(text_entity.x);
 	text_entity.container.y = y_abs(text_entity.y);
@@ -2800,7 +2835,7 @@ function create_text(text_entity) {
 }
 
 function create_background_text(text_entity) {
-	var size = "bold "+text_entity.font_size*x_abs(FONT_SCALE)+"px " + text_entity.font;
+	var size = "bold "+text_entity.font_size*x_abs(font_scale)+"px " + text_entity.font;
 	var text_ = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, align: "center"});
 	
 	var bounds = text_.getBounds();
@@ -2847,7 +2882,7 @@ function create_icon_cont(icon, texture) {
 	icon.container.y = y_abs(icon.y);
 	
 	if (icon.label && icon.label != "") {
-		var size = "bold "+icon.label_font_size*x_abs(FONT_SCALE)+"px " + icon.label_font;
+		var size = "bold "+icon.label_font_size*x_abs(font_scale)+"px " + icon.label_font;
 		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: (icon.label_font_size/5), stroke: "black", dropShadow:true, dropShadowDistance:1});		
 		text.x += sprite.width/2 - text.width/2;
 		text.y += sprite.height;
@@ -3068,7 +3103,7 @@ function free_draw(graph, drawing, smooth_out) {
 
 function create_drawing(drawing) {
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.thickness * x_abs(THICKNESS_SCALE), drawing.color, 1);
+	graphic.lineStyle(drawing.thickness * x_abs(thickness_scale), drawing.color, 1);
 	free_draw(graphic, drawing);		
 	graphic.graphicsData[0].shape.closed = false;
 	init_graphic(drawing, graphic);
@@ -3076,7 +3111,7 @@ function create_drawing(drawing) {
 
 function create_area(drawing, smooth_point) {
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.outline_thickness * x_abs(THICKNESS_SCALE), drawing.outline_color, 1);
+	graphic.lineStyle(drawing.outline_thickness * x_abs(thickness_scale), drawing.outline_color, 1);
 	graphic.beginFill(drawing.fill_color, drawing.fill_opacity);
 	free_draw(graphic, drawing, true);
 	graphic.graphicsData[0].shape.closed = true;
@@ -3109,7 +3144,7 @@ function create_polygon(drawing) {
 
 function create_line(drawing) {
 	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.thickness * x_abs(THICKNESS_SCALE), drawing.color, 1);
+	graphic.lineStyle(drawing.thickness * x_abs(thickness_scale), drawing.color, 1);
 	var last_x = x_abs(drawing.x), last_y = y_abs(drawing.y);
 	graphic.moveTo(last_x, last_y);
 	for (var i = 0; i < drawing.path.length; i++) {
@@ -3377,7 +3412,6 @@ function initialize_color_picker(slider_id, variable_name) {
 	});
 }
 
-/*
 function initialize_slider(slider_id, slider_text_id, variable_name) {
 	var slider = $("#"+ slider_id).bootstrapSlider({tooltip:'hide'});
 	$("#"+slider_text_id).val(slider.attr('value'));
@@ -3385,26 +3419,6 @@ function initialize_slider(slider_id, slider_text_id, variable_name) {
 	slider.on("slide", function(slideEvt) {
 		$("#"+slider_text_id).val(slideEvt.value);
 		window[variable_name] = parseFloat(slideEvt.value);
-	});
-	$("#"+slider_text_id).change(function () {
-		var new_value = parseFloat(this.value); 
-		if (isNaN(new_value)) {
-			this.value = window[variable_name]; //restore old value
-		} else {
-			window[variable_name] = new_value;
-			slider.slider('setValue', window[variable_name])
-		}
-	});
-}
-*/
-
-function initialize_slider(slider_id, slider_text_id, variable_name) {
-	var slider = $("#"+ slider_id);
-	$("#"+slider_text_id).val(slider.attr('value'));
-	window[variable_name] = parseFloat(slider.attr('value'));
-	slider.on("input", function(slideEvt) {
-		$("#"+slider_text_id).val(this.value);
-		window[variable_name] = parseFloat(this.value);
 	});
 	$("#"+slider_text_id).change(function () {
 		var new_value = parseFloat(this.value); 
@@ -3711,11 +3725,7 @@ function transition(slide) {
 
 	var new_background_uid;
 	for (var i in to_transition) {
-		remove(to_transition[i], true);
-		to_add.push(to_transition[i]);
-		
 		//take over the container
-		/*
 		var key = to_transition[i];
 		room_data.slides[slide].entities[key].container = room_data.slides[active_slide].entities[key].container;
 		delete room_data.slides[active_slide].entities[key].container;
@@ -3732,18 +3742,11 @@ function transition(slide) {
 				align_note_text(room_data.slides[slide].entities[key]);
 			}
 		}
-		*/
 	}
 
 	active_slide = slide;
 	
 	var add_other_entities = function() {
-		try {
-			to_add.sort(function(a,b) {	
-				return room_data.slides[slide].entities[a].z_index - room_data.slides[slide].entities[b].z_index;
-			});
-		} catch (e) {}
-		
 		for (var i in to_add) {
 			var key = to_add[i];
 			create_entity(room_data.slides[slide].entities[key]);
@@ -3924,29 +3927,6 @@ $(document).ready(function() {
 	initialize_map_select($("#map_select_wotbase"));
 	
 	loader.once('complete', function () {
-		
-		//generate ticks, leveraged from: http://thenewcode.com/864/Auto-Generate-Marks-on-HTML5-Range-Sliders-with-JavaScript
-		function ticks(element) {		
-			if ('list' in element && 'min' in element && 'max' in element && 'step' in element) {
-				var datalist = document.createElement('datalist'),
-					minimum = parseFloat(element.getAttribute('min')),
-					step = parseFloat(element.getAttribute('step')),
-					maximum = parseFloat(element.getAttribute('max'));
-					datalist.id = element.getAttribute('list');
-					
-				if ((Math.abs(maximum - minimum) / step) < 20) {
-					for (var i = minimum; i < maximum+step; i = i + step) {
-						datalist.innerHTML +="<option value="+i.toFixed(2)+"></option>";
-					}
-					element.parentNode.insertBefore(datalist, element.nextSibling);
-				}
-			}
-		}
-		var lists = document.querySelectorAll("input[type=range][list]"),
-		arr = Array.prototype.slice.call(lists);
-		arr.forEach(ticks);
-		
-		
 		if (texture_atlas["circle.png"] && !is_safari()) {
 			var img = texture_atlas["circle.png"];
 			ping_texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
@@ -4105,17 +4085,17 @@ $(document).ready(function() {
 		//initialize sliders
 		initialize_slider("rectangle_outline_thickness", "rectangle_outline_thickness_text", "rectangle_outline_thickness");
 		rectangle_outline_thickness = parseFloat($("#rectangle_outline_thickness").val());
-		initialize_slider("rectangle_outline_transparancy", "rectangle_outline_transparancy_text", "rectangle_outline_transparancy");
-		initialize_slider("rectangle_fill_transparancy", "rectangle_fill_transparancy_text", "rectangle_fill_transparancy");
+		initialize_slider("rectangle_outline_opacity", "rectangle_outline_opacity_text", "rectangle_outline_opacity");
+		initialize_slider("rectangle_fill_opacity", "rectangle_fill_opacity_text", "rectangle_fill_opacity");
 		initialize_slider("circle_outline_thickness", "circle_outline_thickness_text", "circle_outline_thickness");
-		initialize_slider("circle_outline_transparancy", "circle_outline_transparancy_text", "circle_outline_transparancy");
-		initialize_slider("circle_fill_transparancy", "circle_fill_transparancy_text", "circle_fill_transparancy");
+		initialize_slider("circle_outline_opacity", "circle_outline_opacity_text", "circle_outline_opacity");
+		initialize_slider("circle_fill_opacity", "circle_fill_opacity_text", "circle_fill_opacity");
 		initialize_slider("polygon_outline_thickness", "polygon_outline_thickness_text", "polygon_outline_thickness");
-		initialize_slider("polygon_outline_transparancy", "polygon_outline_transparancy_text", "polygon_outline_transparancy");
-		initialize_slider("polygon_fill_transparancy", "polygon_fill_transparancy_text", "polygon_fill_transparancy");
+		initialize_slider("polygon_outline_opacity", "polygon_outline_opacity_text", "polygon_outline_opacity");
+		initialize_slider("polygon_fill_opacity", "polygon_fill_opacity_text", "polygon_fill_opacity");
 		initialize_slider("area_outline_thickness", "area_outline_thickness_text", "area_outline_thickness");
-		initialize_slider("area_outline_transparancy", "area_outline_transparancy_text", "area_outline_transparancy");
-		initialize_slider("area_fill_transparancy", "area_fill_transparancy_text", "area_fill_transparancy");
+		initialize_slider("area_outline_opacity", "area_outline_opacity_text", "area_outline_opacity");
+		initialize_slider("area_fill_opacity", "area_fill_opacity_text", "area_fill_opacity");
 		initialize_slider("line_thickness", "line_thickness_text", "line_thickness");
 		initialize_slider("draw_thickness", "draw_thickness_text", "draw_thickness");
 		initialize_slider("curve_thickness", "curve_thickness_text", "curve_thickness");
@@ -4124,8 +4104,7 @@ $(document).ready(function() {
 		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		initialize_slider("icon_size", "icon_size_text", "icon_size");
 		initialize_slider("icon_brightness", "icon_brightness_text", "icon_brightness");
-		initialize_slider("ping_size", "ping_size_text", "ping_size");
-				
+		
 		$('html').click(function(e) {
 			if (e.target.id != 'tactic_name') {
 				$('[data-toggle="popover"]').popover('hide');
@@ -4628,7 +4607,7 @@ $(document).ready(function() {
 					socket.emit('join_room', room, game);
 					clearInterval(timer);
 				}
-			}, 20);
+			}, 2);
 		}
 	});
 	
@@ -4649,7 +4628,6 @@ $(document).ready(function() {
 	
 	socket.on('room_data', function(new_room_data, my_id, new_tactic_name) {
 		cleanup();
-
 		room_data = new_room_data;
 		active_slide = room_data.active_slide;
 		is_room_locked = room_data.locked;
@@ -4671,13 +4649,6 @@ $(document).ready(function() {
 				entities.push(room_data.slides[active_slide].entities[key])
 			}
 		}
-		
-		try {
-			entities.sort(function(a,b) {
-				return a.z_index - b.z_index;
-			})
-		} catch (e) {}
-		
 		if (background_entity) {
 			//we need to set the background before we add other entities
 			set_background(background_entity, function() {
@@ -4701,6 +4672,11 @@ $(document).ready(function() {
 			stop_tracking();
 			start_tracking({x:2000,y:2000});
 		}
+		
+		setTimeout(render_scene(), 1000);
+		setTimeout(render_scene(), 2000);
+		setTimeout(render_scene(), 3000);
+		setTimeout(render_scene(), 4000);
 	});
 
 	socket.on('create_entity', function(entity, slide, user_id) {
@@ -4725,8 +4701,8 @@ $(document).ready(function() {
 		activity_animation(user_id)
 	});
 
-	socket.on('ping_marker', function(x, y, color, size, user_id) {
-		ping(x, y, color, size);
+	socket.on('ping_marker', function(x, y, color, user_id) {
+		ping(x,y,color);
 		activity_animation(user_id)
 	});
 
