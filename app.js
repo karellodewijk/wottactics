@@ -311,179 +311,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		next();
 	});
 	
-	
-	OpenIDStrategy = require('passport-openid').Strategy;
-	passport.use('openid', new OpenIDStrategy({
-			returnURL: function(req) { 
-				return "http://" + req.hostname + "/auth/openid/callback"; 
-			},
-			passReqToCallback: true,
-			stateless: true
-		},
-		function(req, identifier, done) {
-			var user = {};
-			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
-				user.id = req.session.passport.user.id;
-			} else {
-				user.id = newUid();		
-			}
-			user.server = identifier.split('://')[1].split(".wargaming")[0];
-			user.identity_provider = "wargaming";
-			user.identity = identifier.split('/id/')[1].split("/")[0];
-			user.wg_account_id = user.identity.split('-')[0];
-			user.name = user.identity.split('-')[1];
-			done(null, user);
-		}
-	));
-	
-	StrategyGoogle = require('passport-google-openidconnect').Strategy;
-	passport.use('google', new StrategyGoogle({
-		clientID: secrets.google.client_id,
-		clientSecret: secrets.google.secret,
-		callbackURL: '/auth/google/callback',
-		passReqToCallback:true,
-		stateless: true
-	  },
-	  function(req, iss, sub, profile, accessToken, refreshToken, done) {
-		var user = {};
-		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
-			user.id = req.session.passport.user.id;
-		} else {
-			user.id = newUid();
-		}
-		user.identity = profile.id;
-		user.identity_provider = "google";
-		user.name = profile.displayName;
-		done(null, user);
-	  }
-	));
-	
-	
-	var VKontakteStrategy = require('passport-vkontakte').Strategy;
-	passport.use('vk', new VKontakteStrategy({
-		clientID: secrets.vk.client_id, // VK.com docs call it 'API ID'
-		clientSecret: secrets.vk.secret,
-		callbackURL: '/auth/vk/callback',
-		passReqToCallback:true,
-		stateless: true
-	  },
-	  function(req, accessToken, refreshToken, profile, done) {
-		var user = {};
-		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
-			user.id = req.session.passport.user.id;
-		} else {
-			user.id = newUid();
-		}
-		user.identity = "vk-" + profile.id;
-		user.identity_provider = "vk";
-		user.name = profile.displayName;
-		done(null, user);
-	  }
-	));
-	
-	StrategyBnet = require('passport-bnet').Strategy;
-	passport.use('battlenet', new StrategyBnet({
-		clientID: secrets.battlenet.client_id,
-		clientSecret: secrets.battlenet.secret,
-		callbackURL:"https://karellodewijk.github.io/battlenet_redirect.html",
-		passReqToCallback:true,
-		stateless: true
-	  },
-	  function(req, accessToken, refreshToken, profile, done) {
-		var user = {};
-		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
-			user.id = req.session.passport.user.id;
-		} else {
-			user.id = newUid();
-		}
-		user.identity = 'bnet-'+profile.id;
-		user.identity_provider = "bnet";
-		user.name = profile.battletag;
-		done(null, user);
-	  }
-	));	
-
-	FacebookStrategy = require('passport-facebook').Strategy;
-	passport.use('facebook', new FacebookStrategy({
-		clientID: secrets.facebook.client_id,
-		clientSecret: secrets.facebook.secret,
-		callbackURL: "/auth/facebook/callback",
-		passReqToCallback: true,
-		stateless: true
-	  },
-	  function(req, accessToken, refreshToken, profile, done) {
-		var user = {};
-		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
-			user.id = req.session.passport.user.id;
-		} else {
-			user.id = newUid();
-		}
-		user.identity = profile.id;
-		user.identity_provider = "facebook";
-		user.name = profile.displayName;
-		done(null, user);
-	  }
-	));
-
-	TwitterStrategy = require('passport-twitter').Strategy;
-	passport.use('twitter', new TwitterStrategy({
-		consumerKey: secrets.twitter.client_id,
-		consumerSecret: secrets.twitter.secret,
-		callbackURL: "/auth/twitter/callback",
-		passReqToCallback: true,
-		stateless: true
-	  },
-	  function(req, token, tokenSecret, profile, done) {
-		var user = {};
-		if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
-			user.id = req.session.passport.user.id;
-		} else {
-			user.id = newUid();
-		}
-		user.identity = profile.id;
-		user.identity_provider = "twitter";
-		user.name = profile.displayName;
-		done(null, user);
-	  }
-	));	
-
-	var SteamWebAPI = require('steam-web');
-	var steam = new SteamWebAPI({ apiKey: secrets.steam.api_key, format: 'json' });
-	passport.use('steam', new OpenIDStrategy({
-			returnURL: function(req) { 
-				return "http://wottactic.com/steam_redirect.html?dest=" + "http://" + req.hostname + "/auth/steam/callback/";
-			},
-			realm: function(req) { 
-				return "http://wottactic.com"; 
-			},
-			provider: 'steam',
-			name:'steam',
-			profile:false,
-			providerURL: 'http://steamcommunity.com/openid/id/',
-			passReqToCallback: true,
-			stateless: true
-		},
-		function(req, identifier, done) {
-			var user = {};
-			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
-				user.id = req.session.passport.user.id;
-			} else {
-				user.id = newUid();		
-			}
-			steam.getPlayerSummaries({
-				steamids: [ identifier ],
-				callback: function(err, result) {
-					if (!err) {
-						user.identity = result.response.players[0].steamid;
-						user.identity_provider = "steam";
-						user.name = result.response.players[0].personaname;
-					}
-					done(null, user);
-				}
-			});			
-		}
-	));
-
 	passport.serializeUser(function(user, done) {
 		if (user.wg_account_id) {
 			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider, server:user.server, wg_id:user.wg_account_id}}, {upsert:true});
@@ -790,6 +617,217 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  res.redirect(return_to);
 	});
 
+	OpenIDStrategy = require('passport-openid').Strategy;
+	passport.use('openid', new OpenIDStrategy({
+			returnURL: function(req) { 
+				return "http://" + req.hostname + "/auth/openid/callback"; 
+			},
+			passReqToCallback: true,
+			stateless: true
+		},
+		function(req, identifier, done) {
+			var user = {};
+			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+				user.id = req.session.passport.user.id;
+			} else {
+				user.id = newUid();		
+			}
+			user.server = identifier.split('://')[1].split(".wargaming")[0];
+			user.identity_provider = "wargaming";
+			user.identity = identifier.split('/id/')[1].split("/")[0];
+			user.wg_account_id = user.identity.split('-')[0];
+			user.name = user.identity.split('-')[1];
+			done(null, user);
+		}
+	));
+	
+	//openid
+	router.post('/auth/openid', save_return, passport.authenticate('openid'));
+	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
+	
+	if (secrets.google.client_id != "") {
+		StrategyGoogle = require('passport-google-openidconnect').Strategy;
+		passport.use('google', new StrategyGoogle({
+			clientID: secrets.google.client_id,
+			clientSecret: secrets.google.secret,
+			callbackURL: '/auth/google/callback',
+			passReqToCallback:true,
+			stateless: true
+		  },
+		  function(req, iss, sub, profile, accessToken, refreshToken, done) {
+			var user = {};
+			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+				user.id = req.session.passport.user.id;
+			} else {
+				user.id = newUid();
+			}
+			user.identity = profile.id;
+			user.identity_provider = "google";
+			user.name = profile.displayName;
+			done(null, user);
+		  }
+		));
+		
+		//google
+		router.post('/auth/google', save_return, passport.authenticate('google'));
+		router.get('/auth/google/callback', passport.authenticate('google'), redirect_return);
+	}
+	
+	if (secrets.vk.client_id != "") {
+		var VKontakteStrategy = require('passport-vkontakte').Strategy;
+		passport.use('vk', new VKontakteStrategy({
+			clientID: secrets.vk.client_id, // VK.com docs call it 'API ID'
+			clientSecret: secrets.vk.secret,
+			callbackURL: '/auth/vk/callback',
+			passReqToCallback:true,
+			stateless: true
+		  },
+		  function(req, accessToken, refreshToken, profile, done) {
+			var user = {};
+			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+				user.id = req.session.passport.user.id;
+			} else {
+				user.id = newUid();
+			}
+			user.identity = "vk-" + profile.id;
+			user.identity_provider = "vk";
+			user.name = profile.displayName;
+			done(null, user);
+		  }
+		));
+		
+		//vk
+		router.post('/auth/vk', save_return, passport.authenticate('vk'));
+		router.get('/auth/vk/callback', passport.authenticate('vk'), redirect_return);
+	}
+	
+	if (secrets.battlenet.client_id != "") {
+		StrategyBnet = require('passport-bnet').Strategy;
+		passport.use('battlenet', new StrategyBnet({
+			clientID: secrets.battlenet.client_id,
+			clientSecret: secrets.battlenet.secret,
+			callbackURL:"https://karellodewijk.github.io/battlenet_redirect.html",
+			passReqToCallback:true,
+			stateless: true
+		  },
+		  function(req, accessToken, refreshToken, profile, done) {
+			var user = {};
+			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+				user.id = req.session.passport.user.id;
+			} else {
+				user.id = newUid();
+			}
+			user.identity = 'bnet-'+profile.id;
+			user.identity_provider = "bnet";
+			user.name = profile.battletag;
+			done(null, user);
+		  }
+		));	
+		
+		//battle.net
+		router.post('/auth/battlenet', save_return, passport.authenticate('battlenet'));
+		router.get('/auth/battlenet/callback', passport.authenticate('battlenet'), redirect_return);
+	}
+
+	if (secrets.facebook.client_id != "") {
+		FacebookStrategy = require('passport-facebook').Strategy;
+		passport.use('facebook', new FacebookStrategy({
+			clientID: secrets.facebook.client_id,
+			clientSecret: secrets.facebook.secret,
+			callbackURL: "/auth/facebook/callback",
+			passReqToCallback: true,
+			stateless: true
+		  },
+		  function(req, accessToken, refreshToken, profile, done) {
+			var user = {};
+			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+				user.id = req.session.passport.user.id;
+			} else {
+				user.id = newUid();
+			}
+			user.identity = profile.id;
+			user.identity_provider = "facebook";
+			user.name = profile.displayName;
+			done(null, user);
+		  }
+		));
+		
+		//facebook
+		router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
+		router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
+	}
+
+	if (secrets.twitter.client_id != "") {
+		TwitterStrategy = require('passport-twitter').Strategy;
+		passport.use('twitter', new TwitterStrategy({
+			consumerKey: secrets.twitter.client_id,
+			consumerSecret: secrets.twitter.secret,
+			callbackURL: "/auth/twitter/callback",
+			passReqToCallback: true,
+			stateless: true
+		  },
+		  function(req, token, tokenSecret, profile, done) {
+			var user = {};
+			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+				user.id = req.session.passport.user.id;
+			} else {
+				user.id = newUid();
+			}
+			user.identity = profile.id;
+			user.identity_provider = "twitter";
+			user.name = profile.displayName;
+			done(null, user);
+		  }
+		));	
+		
+		//twitter
+		router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
+		router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
+	}
+
+	if (secrets.steam.api_key != "") {		
+		var SteamWebAPI = require('steam-web');
+		var steam = new SteamWebAPI({ apiKey: secrets.steam.api_key, format: 'json' });
+		passport.use('steam', new OpenIDStrategy({
+				returnURL: function(req) { 
+					return "http://wottactic.com/steam_redirect.html?dest=" + "http://" + req.hostname + "/auth/steam/callback/";
+				},
+				realm: function(req) { 
+					return "http://wottactic.com"; 
+				},
+				provider: 'steam',
+				name:'steam',
+				profile:false,
+				providerURL: 'http://steamcommunity.com/openid/id/',
+				passReqToCallback: true,
+				stateless: true
+			},
+			function(req, identifier, done) {
+				var user = {};
+				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+					user.id = req.session.passport.user.id;
+				} else {
+					user.id = newUid();		
+				}
+				steam.getPlayerSummaries({
+					steamids: [ identifier ],
+					callback: function(err, result) {
+						if (!err) {
+							user.identity = result.response.players[0].steamid;
+							user.identity_provider = "steam";
+							user.name = result.response.players[0].personaname;
+						}
+						done(null, user);
+					}
+				});			
+			}
+		));
+		
+		//steam
+		router.post('/auth/steam', save_return, passport.authenticate('steam'));
+		router.get('/auth/steam/callback', passport.authenticate('steam'), redirect_return);
+	}
+	
 	
 	function copy_slides(source, target, res) {
 		if (source.slides) {
@@ -872,34 +910,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		delete req.session.return_to;
 		return;
 	}
-	
-	//openid
-	router.post('/auth/openid', save_return, passport.authenticate('openid'));
-	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
-
-	//google
-	router.post('/auth/google', save_return, passport.authenticate('google'));
-	router.get('/auth/google/callback', passport.authenticate('google'), redirect_return);
-
-	//vk
-	router.post('/auth/vk', save_return, passport.authenticate('vk'));
-	router.get('/auth/vk/callback', passport.authenticate('vk'), redirect_return);
-	
-	//facebook
-	router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
-	router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
-
-	//twitter
-	router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
-	router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
-
-	//steam
-	router.post('/auth/steam', save_return, passport.authenticate('steam'));
-	router.get('/auth/steam/callback', passport.authenticate('steam'), redirect_return);
-
-	//battle.net
-	router.post('/auth/battlenet', save_return, passport.authenticate('battlenet'));
-	router.get('/auth/battlenet/callback', passport.authenticate('battlenet'), redirect_return);
 
 	//force saves all rooms to DB, run before a restart/shutdown
 	router.get('/save', function(req, res, next) {
