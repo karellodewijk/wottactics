@@ -275,7 +275,7 @@ div.inline { display: inline-block; vertical-align: middle; }
 }
 
 .icon {
-  background-image: url('http://karellodewijk.github.io/sprite.png');
+  background-image: url('sprite.png');
 }
 
 .icon-logout {

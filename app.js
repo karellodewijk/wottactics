@@ -1117,7 +1117,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid, z_top:0}
 							var background_uid = newUid();
 							if (game == 'lol') {
-								room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"http://karellodewijk.github.io/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
+								room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:secrets.static_host+"/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
 								room_data[room].locked = false;
 							} else {
 								room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"", z_index:0};
