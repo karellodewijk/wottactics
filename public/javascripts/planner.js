@@ -2383,8 +2383,15 @@ function draw_T2(context, drawing, i) {
 	start_y = to_y_local(drawing.path[drawing.path.length-1][1] + drawing.y);	
 	var x_ort = - y0;
 	var y_ort = x0;
+	
+	context.stroke();
+	var temp_dash = context.getLineDash()
+	context.setLineDash([]);
+	context.beginPath();
 	context.moveTo(start_x - size * x_ort, start_y - size * y_ort);
-	context.lineTo(start_x + size * x_ort, start_y + size * y_ort);	
+	context.lineTo(start_x + size * x_ort, start_y + size * y_ort);
+	context.stroke();
+	context.setLineDash(temp_dash);
 }
 
 function draw_T3(context, a, b, drawing) {
@@ -2397,8 +2404,15 @@ function draw_T3(context, a, b, drawing) {
 	y_diff /= l;
 	var x_ort = - y_diff;
 	var y_ort = x_diff;
+	
+	context.stroke();
+	var temp_dash = context.getLineDash()
+	context.setLineDash([]);
+	context.beginPath();	
 	context.moveTo(b[0] - size * x_ort, b[1] - size * y_ort);
 	context.lineTo(b[0] + size * x_ort, b[1] + size * y_ort);
+	context.stroke();
+	context.setLineDash(temp_dash);
 }
 
 function canvas2container(_context, _canvas, entity) {
@@ -2572,12 +2586,11 @@ function create_drawing2(drawing) {
 	var p_i = [to_x_local(drawing.x), to_y_local(drawing.y)];
 	var p_i_plus_1 = p_i;
 
-	for (i = 1; i < drawing.path.length - 2; i++) {
+	for (i = 1; i <= drawing.path.length - 2; i++) {
 		p_i_plus_1 = [to_x_local(drawing.path[i+1][0] + drawing.x), to_y_local(drawing.path[i+1][1] + drawing.y)]
 		_context.quadraticCurveTo(p_i[0], p_i[1], p_i_plus_1[0], p_i_plus_1[1]);
 		p_i = p_i_plus_1;
 	}
-	_context.quadraticCurveTo(p_i[0], p_i[1], p_i_plus_1[0], p_i_plus_1[1]);
 
 	if (drawing.path.length >= ARROW_LOOKBACK) {	
 		if (drawing.end == "arrow") {
