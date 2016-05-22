@@ -2,63 +2,65 @@
 <html style="width: 100%; height:100%">
 <head>
 	<% include common_headers.ejs %>
-	<script defer src="http://karellodewijk.github.io/javascripts/lib/bootstrap-select.min.js"></script>
-	<link rel="stylesheet" href="http://karellodewijk.github.io/stylesheets/bootstrap-select.min.css">
-	<script defer src="http://karellodewijk.github.io/javascripts/lib/jquery.simplecolorpicker.js"></script>
-	<link rel="stylesheet" href="http://karellodewijk.github.io/stylesheets/jquery.simplecolorpicker.css">
+	<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>
+	<link rel="stylesheet" href="<%=static_host%>/stylesheets/bootstrap-select.min.css">
+	<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
+	<link rel="stylesheet" href="<%=static_host%>/stylesheets/jquery.simplecolorpicker.css">
 	<script defer type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<script defer type="text/javascript" src="http://karellodewijk.github.io/javascripts/pixi.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/pixi.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-	<script defer type="text/javascript" src="http://karellodewijk.github.io/javascripts/lib/TransparencyHitArea.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 	<script defer type="text/javascript" src="/javascripts/planner.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
+	<script id="static_host" data-static_host="<%=static_host%>"></script>
+	<script id="socket_io_servers" data-socket_io_servers="<%=socket_io_servers%>"></script>
 	<% if (game == 'wot') { %>
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_assets.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot-icon-set1.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot-icon-set2.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot-icon-set3.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_assets.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot-icon-set1.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot-icon-set2.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot-icon-set3.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'wows') { %>
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'blitz') { %>
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'lol') { %>
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_abilities.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_npcs.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_champions.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_spells.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_wards.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/lol_runes.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/lol_abilities.css">
+		<link rel="stylesheet" href="<%=static_host%>/lol_npcs.css">
+		<link rel="stylesheet" href="<%=static_host%>/lol_champions.css">
+		<link rel="stylesheet" href="<%=static_host%>/lol_spells.css">
+		<link rel="stylesheet" href="<%=static_host%>/lol_wards.css">
+		<link rel="stylesheet" href="<%=static_host%>/lol_runes.css">
 	<% } else if (game == 'hots') { %>
-		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_main.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_heroes.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_map_icons.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_abilities.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/hots_minions.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/hots_main.css">
+		<link rel="stylesheet" href="<%=static_host%>/hots_heroes.css">
+		<link rel="stylesheet" href="<%=static_host%>/hots_map_icons.css">
+		<link rel="stylesheet" href="<%=static_host%>/hots_abilities.css">
+		<link rel="stylesheet" href="<%=static_host%>/hots_minions.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'sc2') { %>
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_units_terran.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_units_zerg.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_units_protoss.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_buildings_terran.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_buildings_zerg.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_buildings_protoss.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_abilities_terran.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_abilities_zerg.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_abilities_protoss.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_upgrades_terran.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_upgrades_zerg.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/sc2_upgrades_protoss.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_units_terran.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_units_zerg.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_units_protoss.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_buildings_terran.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_buildings_zerg.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_buildings_protoss.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_abilities_terran.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_abilities_zerg.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_abilities_protoss.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_upgrades_terran.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_upgrades_zerg.css">
+		<link rel="stylesheet" href="<%=static_host%>/sc2_upgrades_protoss.css">
 	<% } else if (game == 'aw') { %>
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'csgo') { %>
-		<link rel="stylesheet" href="http://karellodewijk.github.io/wot_icon_set4.css">
-		<link rel="stylesheet" href="http://karellodewijk.github.io/csgo_icons.css">
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/csgo_icons.css">
 	<% } %>
 </head>
 <body style="width:100%; background-color:#333333; margin:0px; padding:0px; border: 1px solid black; color:white; min-width: 100%; display: flex; height:100%">
