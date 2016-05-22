@@ -1,17 +1,17 @@
-var servers = ['server1.wottactic.eu']
-//var servers = ['localhost']
+var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
 
 var image_host;
 function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
 }
 
+var static_host = $("#static_host").attr("data-static_host");
 if (is_safari()) {
 	image_host = 'http://'+location.host+'/icons/'; //enable for local image hosting
 } else {
-	image_host = "http://karellodewijk.github.io/icons/";
+	image_host = static_host + "/icons/";
 }
-var asset_host = 'http://karellodewijk.github.io/';
+var asset_host = static_host + "/";
 
 var game = $('meta[name=game]').attr("content");
 

@@ -1,5 +1,4 @@
-var servers = ['server1.wottactic.eu']
-//var servers = ['localhost']
+var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
 
 function escape(s) {
 	return ('' + s)
