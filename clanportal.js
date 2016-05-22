@@ -135,7 +135,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 								   user: req.session.passport.user,
 								   locale: req.session.locale,
 								   clan: clan,
-								   url: req.fullUrl});
+								   url: req.fullUrl,
+								   static_host: secrets.static_host});
 	  });
 	});
 
@@ -146,7 +147,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 										   user: req.session.passport.user,
 										   locale: req.session.locale,
 										   clan: clan,
-										   url: req.fullUrl});
+										   url: req.fullUrl,
+										   static_host: secrets.static_host});
 	  });
 	});
 
@@ -160,14 +162,16 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 											 user: req.session.passport.user,
 											 locale: req.session.locale,
 											 clan: clan,
-											 url: req.fullUrl});
+											 url: req.fullUrl,
+											 static_host: secrets.static_host});
 		  });
 		} else {
 		  res.render('clanportal_battles', { game: req.session.game, 
 											 user: req.session.passport.user,
 											 locale: req.session.locale,
 											 clan: clan,
-											 url: req.fullUrl});			
+											 url: req.fullUrl,
+											 static_host: secrets.static_host});			
 		}
 	  });
 	});
@@ -182,14 +186,16 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 											   user: req.session.passport.user,
 											   locale: req.session.locale,
 											   clan: clan,
-											   url: req.fullUrl});
+											   url: req.fullUrl,
+											   static_host: secrets.static_host});
 		  });
 		} else {
 		  res.render('clanportal_battles', { game: req.session.game, 
 											 user: req.session.passport.user,
 											 locale: req.session.locale,
 											 clan: clan,
-											 url: req.fullUrl});			
+											 url: req.fullUrl,
+											 static_host: secrets.static_host});			
 		}
 	  });
 	});
@@ -440,7 +446,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 											  locale: req.session.locale,
 											  clan: clan,
 											  reason: reason,
-											  url: req.fullUrl});
+											  url: req.fullUrl,
+											  static_host: secrets.static_host});
 		  });
 		  return;
 		}
@@ -449,7 +456,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 										  locale: req.session.locale,
 										  clan: clan,
 										  reason: reason,
-										  url: req.fullUrl});
+										  url: req.fullUrl,
+										  static_host: secrets.static_host});
 	  });
 	});
 
