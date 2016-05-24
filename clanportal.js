@@ -136,7 +136,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 								   locale: req.session.locale,
 								   clan: clan,
 								   url: req.fullUrl,
-								   static_host: secrets.static_host});
+								   static_host: secrets.static_host, 
+								   ga_id:secrets.ga_id});
 	  });
 	});
 
@@ -148,7 +149,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 										   locale: req.session.locale,
 										   clan: clan,
 										   url: req.fullUrl,
-										   static_host: secrets.static_host});
+										   static_host: secrets.static_host, 
+										   ga_id:secrets.ga_id});
 	  });
 	});
 
@@ -163,7 +165,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 											 locale: req.session.locale,
 											 clan: clan,
 											 url: req.fullUrl,
-											 static_host: secrets.static_host});
+											 static_host: secrets.static_host, 
+											 ga_id:secrets.ga_id});
 		  });
 		} else {
 		  res.render('clanportal_battles', { game: req.session.game, 
@@ -171,7 +174,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 											 locale: req.session.locale,
 											 clan: clan,
 											 url: req.fullUrl,
-											 static_host: secrets.static_host});			
+											 static_host: secrets.static_host, 
+											 ga_id:secrets.ga_id});			
 		}
 	  });
 	});
@@ -187,7 +191,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 											   locale: req.session.locale,
 											   clan: clan,
 											   url: req.fullUrl,
-											   static_host: secrets.static_host});
+											   static_host: secrets.static_host, 
+											   ga_id:secrets.ga_id});
 		  });
 		} else {
 		  res.render('clanportal_battles', { game: req.session.game, 
@@ -195,7 +200,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 											 locale: req.session.locale,
 											 clan: clan,
 											 url: req.fullUrl,
-											 static_host: secrets.static_host});			
+											 static_host: secrets.static_host, 
+											 ga_id:secrets.ga_id});			
 		}
 	  });
 	});
@@ -447,7 +453,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 											  clan: clan,
 											  reason: reason,
 											  url: req.fullUrl,
-											  static_host: secrets.static_host});
+											  static_host: secrets.static_host, 
+											  ga_id:secrets.ga_id});
 		  });
 		  return;
 		}
@@ -457,7 +464,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 										  clan: clan,
 										  reason: reason,
 										  url: req.fullUrl,
-										  static_host: secrets.static_host});
+										  static_host: secrets.static_host, 
+										  ga_id:secrets.ga_id});
 	  });
 	});
 

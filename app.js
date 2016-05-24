@@ -376,7 +376,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-                            static_host: secrets.static_host});
+                            static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	
 	router.get('/wot.html', function(req, res, next) {
@@ -385,7 +386,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/aw.html', function(req, res, next) {
 	  req.session.game = 'aw';
@@ -393,7 +395,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/wows.html', function(req, res, next) {
 	  req.session.game = 'wows';
@@ -401,7 +404,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/blitz.html', function(req, res, next) {
 	  req.session.game = 'blitz';
@@ -409,7 +413,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/lol', function(req, res, next) {
 	  req.session.game = 'lol';
@@ -417,7 +422,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/hots', function(req, res, next) {
 	  req.session.game = 'hots';
@@ -425,7 +431,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/sc2', function(req, res, next) {
 	  req.session.game = 'sc2';
@@ -433,7 +440,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/csgo', function(req, res, next) {
 	  req.session.game = 'csgo';
@@ -441,7 +449,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/health_check.html', function(req, res, next) {
 	  res.sendStatus(200);
@@ -466,7 +475,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								 url: req.fullUrl,
 								 sid: req.sessionID,
 								 static_host: secrets.static_host,
-								 socket_io_servers: secrets.socket_io_servers});
+								 socket_io_servers: secrets.socket_io_servers, 
+								 ga_id:secrets.ga_id});
 								  
 		  if (req.session.passport.user.identity) {
 			  setImmediate(function() {
@@ -542,7 +552,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host});
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
 	});
 	router.get('/getting_started.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -552,7 +563,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 									  user: req.session.passport.user,
 									  locale: req.session.locale,
 									  url: req.fullUrl,
-									  static_host: secrets.static_host});
+									  static_host: secrets.static_host, 
+									  ga_id:secrets.ga_id});
 	});
 	router.get('/privacypolicy.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -562,7 +574,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								    user: req.session.passport.user,
 									locale: req.session.locale,
 									url: req.fullUrl,
-									static_host: secrets.static_host});
+									static_host: secrets.static_host, 
+									ga_id:secrets.ga_id});
 	});
 	router.get('/older_news.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -572,7 +585,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								 user: req.session.passport.user,
 								 locale: req.session.locale,
 								 url: req.fullUrl,
-								 static_host: secrets.static_host});
+								 static_host: secrets.static_host, 
+								 ga_id:secrets.ga_id});
 	});
 	
 	router.get('/stored_tactics.html', function(req, res, next) {
@@ -589,7 +603,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 										 url: req.fullUrl,
 										 sid: req.sessionID,
 										 static_host: secrets.static_host,
-										 socket_io_servers: secrets.socket_io_servers });
+										 socket_io_servers: secrets.socket_io_servers, 
+										 ga_id:secrets.ga_id});
 		});
 	  } else {
 		  res.redirect('/');

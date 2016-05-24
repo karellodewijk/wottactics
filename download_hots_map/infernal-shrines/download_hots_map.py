@@ -1,32 +1,31 @@
 import os;
 
-import subprocess as sp
+link = "http://media.blizzard.com/heroes/images/battlegrounds/maps/infernal-shrines/main/6/"
 
+column = 0;
+rc_column = 0;
+while (rc_column == 0):
+	row = 0;
+	rc_column = os.system('wget ' + link + str(column) + '/' + str(row) + '.jpg -O ' + str(1000 + column) + '-' + str(1000 + row) + '.jpg')
+	rc_row = rc_column
+	while (rc_row == 0):
+		row += 1
+		rc_row = os.system('wget ' + link + str(column) + '/' + str(row) + '.jpg -O ' + str(1000 + column) + '-' + str(1000 + row) + '.jpg')
 
-# column = 0;
-# rc_column = 0;
-# while (rc_column == 0):
-	# row = 0;
-	# rc_column = os.system('wget http://media.blizzard.com/heroes/images/battlegrounds/maps/infernal-shrines/main/6/' + str(column) + '/' + str(row) + '.jpg -O ' + str(1000 + column) + '-' + str(1000 + row) + '.jpg')
-	# rc_row = rc_column
-	# while (rc_row == 0):
-		# row += 1
-		# rc_row = os.system('wget http://media.blizzard.com/heroes/images/battlegrounds/maps/infernal-shrines/main/6/' + str(column) + '/' + str(row) + '.jpg -O ' + str(1000 + column) + '-' + str(1000 + row) + '.jpg')
-
-	# column += 1
+	column += 1
 	
-# p = os.popen('ls -1 *.jpg | tail -n2');
-# second_last_file = p.readline();
-# last_file = p.readline();
+p = os.popen('ls -1 *.jpg | tail -n2');
+second_last_file = p.readline();
+last_file = p.readline();
 
-# column_end = last_file[0:4]
-# row_end = second_last_file[5:9]
+column_end = last_file[0:4]
+row_end = second_last_file[5:9]
 
-# print column_end
-# print row_end
+print column_end
+print row_end
 
-# os.system('rm ' + column_end + '*');
-# os.system('rm *-' + row_end + '.jpg');
+os.system('rm ' + column_end + '*');
+os.system('rm *-' + row_end + '.jpg');
 
 column_end = int("1064") - 1000;
 row_end = int("1064") - 1000;
@@ -40,5 +39,7 @@ for r in range(0, row_end):
 		os.system('cp ' + file_to_move + ' ./temp/' + str(100000 + i) + '.jpg');
 		i += 1
 
-os.system('montage ./temp/*.jpg -geometry ' + str(column_end) + 'x' + str(row_end) + '+0+0 result.jpg');
-
+os.system('montage ./temp/*.jpg -tile ' + str(column_end) + 'x' + str(row_end) + ' -geometry +0+0 result.png');
+os.system('montage ./temp/*.jpg -tile ' + str(column_end) + 'x' + str(row_end) + ' -geometry +0+0 result.jpg');
+os.system('rm temp -r');
+os.system('rm 1*.jpg');
