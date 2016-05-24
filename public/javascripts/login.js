@@ -1,7 +1,6 @@
 $('#login_dropdown_select').on('click', 'a', function () {
 	if (this.text.indexOf('Wargaming') != -1) {
 		var form = $("<form action='/auth/openid' method='POST'><input type='hidden' name='openid_identifier' value='"+ this.id +"' /></form>");
-		console.log("<form action='/auth/openid' method='POST'><input type='hidden' name='openid_identifier' value='"+ this.id +"' /></form>")
 		$('body').append(form);
 		form.submit();
 	} else if (this.text.indexOf('Google') != -1) {

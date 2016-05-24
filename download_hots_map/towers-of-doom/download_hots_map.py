@@ -1,7 +1,5 @@
 import os;
 
-import subprocess as sp
-
 column = 0;
 rc_column = 0;
 while (rc_column == 0):
@@ -39,7 +37,7 @@ for r in range(0, row_end):
 		os.system('cp ' + file_to_move + ' ./temp/' + str(100000 + i) + '.jpg');
 		i += 1
 
-os.system('montage ./temp/*.jpg -geometry ' + str(column_end) + 'x' + str(row_end) + '+0+0 result.jpg');
+os.system('montage ./temp/*.jpg -tile ' + str(column_end) + 'x' + str(row_end) + ' -geometry +0+0 result.png');
+os.system('montage ./temp/*.jpg -tile ' + str(column_end) + 'x' + str(row_end) + ' -geometry +0+0 result.jpg');
 os.system('rm temp -r');
 os.system('rm 1*.jpg');
-
