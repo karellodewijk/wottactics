@@ -629,22 +629,6 @@ function mouse_y_rel(y) {
 	return y/(background_sprite.height / background_sprite.scale.y);
 }
 
-// From http://stackoverflow.com/questions/14967647/ (continues on next line)
-// encode-decode-image-with-base64-breaks-image (2013-04-21)
-function fixBinary(bin) {
-	var length = bin.length;
-	var buf = "";
-	for (var i = 0; i < length; i++) {
-		var charcode = bin.charCodeAt(i) 
-
-		buf += String.fromCharCode(charcode);
-		//if (charcode > 0xFF) {
-		//	buf += String.fromCharCode((charcode & 0xFF00) >> 8);
-		//}
-	}
-	return buf;
-}
-
 function set_background(new_background, cb) {
 	if (new_background.path != "") {
 		resources_loading++;
@@ -879,7 +863,7 @@ function on_drag_move(e) {
 		}
 		last_mouse_location = mouse_new;
 		render_scene();		
-	} , 20, drag_state);
+	});
 }
 
 function on_drag_end(e) {
@@ -950,11 +934,9 @@ function remove(uid, keep_entity) {
 }
 
 function move_tracker(uid, delta_x, delta_y) {
-	move_track_recursive(uid, delta_x * 0.1, delta_y * 0.1, 10);
-}
-
-
-function move_track_recursive(uid, step_x, step_y, count) {
+	var step_x = delta_x * 0.1;
+	var step_y = delta_y * 0.1;
+	var count = 10;
 	var timer = setInterval(function() {
 		if (trackers[uid]) {
 			trackers[uid].x += step_x;
@@ -967,7 +949,7 @@ function move_track_recursive(uid, step_x, step_y, count) {
 		if (count == 0) {
 			clearInterval(timer)
 		}
-	}, 20);
+	}, 15);
 }
 
 var render_state = {}
@@ -1192,7 +1174,7 @@ function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_
 	
 	//provides some AA
 	ctx.shadowBlur = ctx.lineWidth / 2;
-	ctx.shadowColor = line_color;
+	ctx.shadowColor = '#000000';
 	
 	if ('setLineDash' in ctx) {	
 		if (style == "dashed") {
