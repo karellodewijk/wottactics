@@ -55,6 +55,8 @@
 <%} else if (game == 'blitz') {%>
 	<meta name="keywords" content="wot,world,tanks,world of tanks,blitz,world of tanks blitz,cw,clanwar,wargaming,armored,stronghold,campaign,tier,tank">
 <%}%>
+
+<%if (ga_id != "") {%>
 <meta name=viewport content="width=device-width, initial-scale=1">
 <script type="text/javascript">
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -65,4 +67,5 @@
   ga('create', '<%=ga_id%>', 'auto');
   ga('send', 'pageview');
 </script>
+<%}%>
 
