@@ -143,6 +143,7 @@ var ICON_SCALE = 0.025/20;
 var NOTE_SCALE = 0.05;
 var THICKNESS_SCALE = 0.0015;
 var FONT_SCALE = 0.002;
+var TEXT_QUALITY = 2;
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -199,7 +200,6 @@ var selected_entities = [];
 var previously_selected_entities = [];
 var label_font_size = 30;
 var last_ping_time;
-var icon_brightness;
 var trackers = {};
 var my_tracker;
 var last_track_position;
@@ -360,15 +360,12 @@ function zoom(amount, isZoomIn, e) {
 	var factor = (1 + amount * direction);
 	
 	var mouse_location = renderer.plugins.interaction.mouse.global;
-	var old_scale = objectContainer.scale.x;
 	objectContainer.scale.x *= factor;
 	objectContainer.scale.y *= factor;
-	var new_scale = objectContainer.scale.x;
 
 	//pan to cursor
-	var scalechange = new_scale - old_scale;	
-	objectContainer.x -= x_abs(from_x_local(mouse_location.x)) * scalechange;
-	objectContainer.y -= y_abs(from_y_local(mouse_location.y)) * scalechange;
+	objectContainer.x -= x_abs(from_x_local(mouse_location.x) * (factor - 1) * objectContainer.scale.x);
+	objectContainer.y -= y_abs(from_y_local(mouse_location.y) * (factor - 1) * objectContainer.scale.y);
 
 	correct();
 }
@@ -465,6 +462,9 @@ background_sprite.height = renderer.height;
 background_sprite.width = renderer.width;
 objectContainer.addChild(background_sprite);
 
+//var fast_container = new PIXI.ParticleContainer();
+//objectContainer.addChild(fast_container);
+
 //initialize grid layer
 var grid_layer;
 if (game == "aw") {
@@ -503,10 +503,12 @@ function resize_renderer(new_size_x, new_size_y) {
 	temp_draw_canvas.width = new_size_x;
 	temp_draw_canvas.height = new_size_y;
 	
+	/*
 	if (background_sprite.texture) {
 		background_sprite.width = new_size_x / objectContainer.scale.x;
 		background_sprite.height = new_size_y / objectContainer.scale.y;
 	}
+	*/
 	
 	renderer.resize(new_size_x, new_size_y);
 	$("#render_frame").attr('style', 'height:' + new_size_y + 'px; width:' + new_size_x + 'px;');
@@ -630,13 +632,13 @@ function mouse_y_rel(y) {
 }
 
 function set_background(new_background, cb) {
+	
 	if (new_background.path != "") {
 		resources_loading++;
 
 		var texture = PIXI.Texture.fromImage(new_background.path);
 
-		var on_loaded = function() {
-						
+		var on_loaded = function() {					
 			background = new_background;
 			history[background.uid] = background;
 			background_sprite.texture = texture;	
@@ -685,8 +687,14 @@ function set_background(new_background, cb) {
 		}
 		
 	} else {
+				
 		background = new_background;
 		history[background.uid] = background;
+
+		$("#map_select").val(background.path).change();	
+		$("#use_wotbase").prop("checked", false);
+		$('#map_select_container').show();
+		$('#wotbase_map_select_container').hide();
 		
 		var empty_backround = new PIXI.Graphics();
 		empty_backround.beginFill(0xFFFFFF, 1);
@@ -808,23 +816,6 @@ function toggle_note(e) {
 function move_entity(entity, delta_x, delta_y) {
 	var new_x = entity.container.x + x_abs(delta_x);
 	var new_y = entity.container.y + y_abs(delta_y);
-	
-	//I don't remember why I restrict moving icons, etc like this.
-	//new_x = Math.max(new_x, 0);
-	//new_y = Math.max(new_y, 0);
-	//var new_x, new_y;
-	//if (entity.type == 'icon') {
-		//in case of icons, do not count the label as a hit box
-		//new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.getChildAt(0).width)));
-		//new_y = Math.min(new_y, y_abs(1 - x_rel(entity.container.getChildAt(0).height)));		
-	//} else {	
-		//new_x = Math.min(new_x, x_abs(1 - x_rel(entity.container.width)));
-		//new_y = Math.min(new_y, y_abs(1 - y_rel(entity.container.height)));
-	//}
-		
-	//move by relative positioning cause x on the container is the left upper corner of the bounding box
-	//and for the entity this is mostly the start point
-	
 	drag_entity(entity, entity.x + x_rel(new_x - entity.container.x), entity.y + y_rel(new_y - entity.container.y));
 }
 
@@ -841,6 +832,7 @@ function limit_rate(interval, state, f) {
 	} else {
 		state.timeout = setTimeout(function() {
 			f();
+			state.last_trigger = Date.now();
 		}, interval + 5)		
 	}
 }
@@ -962,10 +954,12 @@ function render_scene() {
 function ping(x, y, color, size) {
 	var sprite = new PIXI.Sprite(ping_texture);
 
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	
 	sprite.tint = color;
 	sprite.anchor.set(0.5);
-	sprite.height = y_abs(0.01) * (size/10);
-	sprite.width = y_abs(0.01) * (size/10);
+	sprite.height = y_abs(0.01) * (size/10) * zoom_level;
+	sprite.width = y_abs(0.01) * (size/10) * zoom_level;
 		
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
@@ -1231,8 +1225,9 @@ function on_left_click(e) {
 	}
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness), end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]]};
-		init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
+		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]]};
+		init_canvases(parseFloat(draw_thickness), new_drawing.color, new_drawing.style);
 		draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		last_draw_time = Date.now();
 		last_point = [to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y))];
@@ -1243,17 +1238,19 @@ function on_left_click(e) {
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_line_end);
-			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness), path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style') };
-			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
+			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness) * zoom_level, path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style') };
+			init_canvases(parseFloat(line_thickness), new_drawing.color, new_drawing.style);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 			just_activated = true;
 		}
 	} else if (active_context == 'polygon_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_polygon_end);
-			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness, outline_color:polygon_outline_color, outline_opacity: t2o(polygon_outline_transparancy), fill_color:polygon_fill_color, fill_opacity: t2o(polygon_fill_transparancy), alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style')};
+			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness * zoom_level, outline_color:polygon_outline_color, outline_opacity: t2o(polygon_outline_transparancy), fill_color:polygon_fill_color, fill_opacity: t2o(polygon_fill_transparancy), alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style')};
 
-			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
+			init_canvases(polygon_outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		
 			var end_circle_radius = (e.type == "touchstart") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
@@ -1269,9 +1266,10 @@ function on_left_click(e) {
 		}
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
-			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness), path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style') };
+			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness) * zoom_level, path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style') };
 
-			init_canvases(new_drawing.thickness, new_drawing.color, new_drawing.style);
+			init_canvases(parseFloat(curve_thickness), new_drawing.color, new_drawing.style);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 
 			setup_mouse_events(on_curve_move, on_curve_end);
@@ -1280,9 +1278,10 @@ function on_left_click(e) {
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_curve_move, on_area_end);
-			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness, outline_color:area_outline_color, outline_opacity: t2o(area_outline_transparancy), fill_color:area_fill_color, fill_opacity: t2o(area_fill_transparancy), alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style')};
+			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:area_outline_thickness * zoom_level, outline_color:area_outline_color, outline_opacity: t2o(area_outline_transparancy), fill_color:area_fill_color, fill_opacity: t2o(area_fill_transparancy), alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style')};
 			
-			init_canvases(new_drawing.outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
+			init_canvases(area_outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		
 			var end_circle_radius = (e.type == "touchstart") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
@@ -1885,7 +1884,8 @@ function on_circle_end(e) {
 	temp_draw_context.fill();
 	temp_draw_context.stroke();
 
-	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness, outline_color:circle_outline_color, outline_opacity: t2o(circle_outline_transparancy), fill_opacity: t2o(circle_fill_transparancy), fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data-style')};
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:radius, outline_thickness:circle_outline_thickness * zoom_level, outline_color:circle_outline_color, outline_opacity: t2o(circle_outline_transparancy), fill_opacity: t2o(circle_fill_transparancy), fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data-style')};
 	
 	if (circle_draw_style == "radius" && background.size_x && background.size_x > 0 && background.size_y && background.size_y > 0) {
 		temp_draw_context.save();
@@ -1954,7 +1954,8 @@ function on_rectangle_end(e) {
 	temp_draw_context.fillRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y)); 
 	temp_draw_context.strokeRect(to_x_local(left_x), to_y_local(left_y), to_x_local(right_x)-to_x_local(left_x), to_y_local(right_y)-to_y_local(left_y));
 
-	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness, outline_color:rectangle_outline_color, outline_opacity: t2o(rectangle_outline_transparancy), fill_opacity: t2o(rectangle_fill_transparancy), fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data-style') };
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness * zoom_level, outline_color:rectangle_outline_color, outline_opacity: t2o(rectangle_outline_transparancy), fill_opacity: t2o(rectangle_fill_transparancy), fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data-style') };
 	
 	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
 	if (success) {
@@ -1968,9 +1969,9 @@ function on_rectangle_end(e) {
 
 var ping_state = {}
 function on_ping_move(e) {
-	limit_rate(80, drag_state, function() {
-		var mouse_location = e.data.getLocalPosition(background_sprite);
-		ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
+	limit_rate(60, drag_state, function() {
+		var mouse_location = renderer.plugins.interaction.mouse.global;
+		ping(from_x_local(mouse_location.x), from_y_local(mouse_location.y), ping_color, ping_size);
 		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
 	});
 }
@@ -2052,17 +2053,6 @@ function on_select_end(e) {
 	select_entities();
 	undo_list.push(["select", selected_entities, previously_selected_entities]);
 	render_scene();
-}
-
-function brighten(sprite, brightness) {
-	var filter = new PIXI.filters.ColorMatrixFilter();
-	filter.matrix = [
-		1, 0, 0, brightness, 0,
-		0, 1, 0, brightness, 0,
-		0, 0, 1, brightness, 0,
-		0, 0, 0, 1, 0
-	]
-	sprite.filters = [filter];
 }
 
 function select_entities() {
@@ -2196,7 +2186,7 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index, end,
 var draw_state = {}
 function on_draw_move(e) {
 	limit_rate(20, draw_state, function() {
-		var mouse_location = renderer.plugins.interaction.mouse.global;				
+		var mouse_location = renderer.plugins.interaction.mouse.global;
 		new_x = last_point[0] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.x;
 		new_y = last_point[1] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.y;	
 		new_drawing.path.push([from_x_local(new_x) - new_drawing.x, from_y_local(new_y) - new_drawing.y]);
@@ -2329,8 +2319,8 @@ function createSprite(ctx, canvas) {
 
 function draw_arrow2(context, drawing, i) {
 	var i = Math.max(0, drawing.path.length-i);
-	var size = Math.max(Math.min(7*drawing.thickness, 40), 20); //[15 < size < 30]
-	var size = size * (size_x/1000);
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	var size = 6 * drawing.thickness / zoom_level; //[15 < size < 30]
 	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
 	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
@@ -2342,8 +2332,8 @@ function draw_arrow2(context, drawing, i) {
 }
 
 function draw_arrow3(context, a, b, drawing) {
-	var size = Math.max(Math.min(7*drawing.thickness, 40), 20); //[15 < size < 30]
-	var size = size * (size_x/1000);
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	var size = 6 * drawing.thickness / zoom_level; //[15 < size < 30]
 	var x_diff = b[0] - a[0];
 	var y_diff = b[1] - a[1];
 	l = Math.sqrt(Math.pow(x_diff,2) + Math.pow(y_diff,2));
@@ -2662,7 +2652,7 @@ function on_icon_end(e) {
 	var x = mouse_x_rel(mouse_location.x) - (size/2);
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
- 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Open Sans", brightness:parseFloat(icon_brightness)}
+ 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size * zoom_level, label_color: "#ffffff", label_font: "Open Sans"}
 	
 	undo_list.push(["add", [icon]]);
 	create_icon(icon, snap_and_emit_entity);
@@ -2673,10 +2663,11 @@ function on_text_end(e) {
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size, font:'Open Sans'};
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size * zoom_level, font:'Open Sans'};
 	undo_list.push(["add", [text]]);
 	current_text_element = text;
-	create_text(text);
+	create_text2(text);
 	snap_and_emit_entity(text);
 }
 
@@ -2685,9 +2676,10 @@ function on_background_text_end(e) {
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:1, color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size, font:'Open Sans'};
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:1, color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size * zoom_level, font:'Open Sans'};
 	undo_list.push(["add", [background_text]]);
-	create_background_text(background_text);
+	create_background_text2(background_text);
 	snap_and_emit_entity(background_text);
 }
 
@@ -2779,9 +2771,52 @@ objectContainer.interactive = true;
 objectContainer.mousedown = on_left_click;
 objectContainer.touchstart = on_left_click;
 
+function create_text2(text_entity) {
+	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
+	var _canvas = document.createElement("canvas");
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	_canvas.width = text_entity.text.length * text_entity.font_size /zoom_level * 1.5 * TEXT_QUALITY;
+	_canvas.height = text_entity.font_size /zoom_level * 2 * TEXT_QUALITY + 30;
+	var _context = _canvas.getContext("2d");
+	
+	_context.font = ""+text_entity.font_size*TEXT_QUALITY/zoom_level*x_abs(FONT_SCALE)+"px "+text_entity.font;
+	
+	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
+	_context.fillStyle = fill_color;
+
+	_context.shadowColor = "black";
+	_context.shadowOffsetX = 1; 
+	_context.shadowOffsetY = 1; 
+	_context.shadowBlur = 7;
+	
+	_context.fillText(text_entity.text, 0, _canvas.height - 15);
+
+	var sprite = createSprite(_context, _canvas);
+		
+	if (sprite) {
+		text_entity.container = sprite;		
+		//rescale to objectContainer
+		sprite.height /= objectContainer.scale.x * TEXT_QUALITY;
+		sprite.width /= objectContainer.scale.y * TEXT_QUALITY;
+		sprite.x = x_abs(text_entity.x);
+		sprite.y = y_abs(text_entity.y);
+		objectContainer.addChild(sprite);
+		
+		//make draggable
+		sprite.texture.baseTexture.source.src = text_entity.uid;
+		make_draggable(sprite);
+		sprite.entity = text_entity;
+		
+		//send off
+		room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
+		render_scene();	
+	}
+}
+
 function create_text(text_entity) {
 	var size = "bold "+text_entity.font_size*x_abs(FONT_SCALE)+"px " + text_entity.font;
 	text_entity.container = new PIXI.Text(text_entity.text, {font: size, fill: text_entity.color, strokeThickness: (text_entity.font_size/5), stroke: "black", align: "center", dropShadow:true, dropShadowDistance:1});	
+	
 	text_entity.container.x = x_abs(text_entity.x);
 	text_entity.container.y = y_abs(text_entity.y);
 	
@@ -2792,6 +2827,54 @@ function create_text(text_entity) {
 	objectContainer.addChild(text_entity.container);
 
 	room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
+}
+
+function create_background_text2(text_entity) {
+	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
+	var _canvas = document.createElement("canvas");
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	_canvas.width = text_entity.text.length * text_entity.font_size /zoom_level * 1.5 * TEXT_QUALITY;
+	_canvas.height = text_entity.font_size /zoom_level * 1.5 * TEXT_QUALITY + 30;
+	var _context = _canvas.getContext("2d");
+	
+	_context.font = ""+text_entity.font_size*TEXT_QUALITY/zoom_level*x_abs(FONT_SCALE)+"px "+text_entity.font;
+	
+	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
+	_context.fillStyle = fill_color;
+	
+	_context.fillText(text_entity.text, 0, _canvas.height - 15);
+
+	var sprite = createSprite(_context, _canvas);
+		
+	if (sprite) {
+		//rescale to objectContainer
+		sprite.height /= objectContainer.scale.x * TEXT_QUALITY;
+		sprite.width /= objectContainer.scale.y * TEXT_QUALITY;
+		sprite.x = 0;
+		sprite.y = 0;
+		
+		var shape = new PIXI.RoundedRectangle(-5, -5, sprite.width+10, sprite.height+10, 10);
+		var graphic = draw_shape(1, 1, 0, 1, 16777215, shape);
+				
+		var container = new PIXI.Container();
+		container.addChild(graphic);
+		container.addChild(sprite);
+		container.x = x_abs(text_entity.x);
+		container.y = y_abs(text_entity.y);
+		text_entity.container = container;		
+
+		
+		objectContainer.addChild(container);
+		
+		//make draggable
+		sprite.texture.baseTexture.source.src = text_entity.uid;
+		make_draggable(container);
+		container.entity = text_entity;
+		
+		//send off
+		room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
+		render_scene();	
+	}
 }
 
 function create_background_text(text_entity) {
@@ -2828,10 +2911,6 @@ function create_icon_cont(icon, texture) {
 	var sprite = new PIXI.Sprite(texture);
 	sprite.tint = icon.color;
 
-	if (icon.brightness) {
-		brighten(sprite, icon.brightness);
-	}
-
 	var ratio = sprite.width / sprite.height;
 	sprite.height = x_abs(icon.size);
 	sprite.width = sprite.height * ratio;	
@@ -2842,10 +2921,29 @@ function create_icon_cont(icon, texture) {
 	icon.container.y = y_abs(icon.y);
 	
 	if (icon.label && icon.label != "") {
-		var size = "bold "+icon.label_font_size*x_abs(FONT_SCALE)+"px " + icon.label_font;
-		var text = new PIXI.Text(icon.label, {font: size, fill: icon.label_color, align: "center", strokeThickness: (icon.label_font_size/5), stroke: "black", dropShadow:true, dropShadowDistance:1});		
-		text.x += sprite.width/2 - text.width/2;
-		text.y += sprite.height;
+		var color = '#' + ('00000' + (icon.label_color | 0).toString(16)).substr(-6); 
+		var _canvas = document.createElement("canvas");
+		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+		_canvas.width = icon.label.length * icon.label_font_size /zoom_level * 1.5 * TEXT_QUALITY + 10;
+		_canvas.height = icon.label_font_size /zoom_level * 1.5 * TEXT_QUALITY + 30;		
+		var _context = _canvas.getContext("2d");
+		
+		_context.font = ""+icon.label_font_size*TEXT_QUALITY/zoom_level*x_abs(FONT_SCALE)+"px "+icon.label_font;
+		_context.fillStyle = icon.label_color;
+
+		_context.shadowColor = "black";
+		_context.shadowOffsetX = 1; 
+		_context.shadowOffsetY = 1; 
+		_context.shadowBlur = 7;
+		_context.fillText(icon.label, 0, _canvas.height - 15);
+		
+		var text = createSprite(_context, _canvas);
+		text.scale.x /= TEXT_QUALITY;
+		text.scale.y /= TEXT_QUALITY;
+		
+		text.x -= text.width/2 - sprite.width/2;
+		text.y = sprite.height;
+
 		icon['container'].addChild(text);
 	}
 
@@ -3061,104 +3159,6 @@ function free_draw(graph, drawing, smooth_out) {
 	graph.graphicsData[0].shape.closed = false;
 }
 
-function create_drawing(drawing) {
-	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.thickness * x_abs(THICKNESS_SCALE), drawing.color, 1);
-	free_draw(graphic, drawing);		
-	graphic.graphicsData[0].shape.closed = false;
-	init_graphic(drawing, graphic);
-}
-
-function create_area(drawing, smooth_point) {
-	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.outline_thickness * x_abs(THICKNESS_SCALE), drawing.outline_color, 1);
-	graphic.beginFill(drawing.fill_color, drawing.fill_opacity);
-	free_draw(graphic, drawing, true);
-	graphic.graphicsData[0].shape.closed = true;
-	graphic.endFill();
-	init_graphic(drawing, graphic);
-}
-
-function create_rectangle(drawing) {
-	var rect = new PIXI.Rectangle(x_abs(drawing.x), y_abs(drawing.y), x_abs(drawing.width), y_abs(drawing.height));
-	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, rect);
-	init_graphic(drawing, graphic);	
-}
-
-function create_circle(drawing) {
-	var circle = new PIXI.Circle(x_abs(drawing.x), y_abs(drawing.y), x_abs(drawing.radius));
-	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, circle);
-	init_graphic(drawing, graphic);	
-}
-
-function create_polygon(drawing) {
-	var path = [x_abs(drawing.x), y_abs(drawing.y)];
-	for (var i in drawing.path) {
-		path.push(x_abs(drawing.path[i][0]+drawing.x));
-		path.push(y_abs(drawing.path[i][1]+drawing.y));
-	}
-	var polygon = new PIXI.Polygon(path);
-	var graphic = draw_shape(drawing.outline_thickness, drawing.outline_opacity, drawing.outline_color, drawing.fill_opacity, drawing.fill_color, polygon);
-	init_graphic(drawing, graphic);	
-}
-
-function create_line(drawing) {
-	var graphic = new PIXI.Graphics();
-	graphic.lineStyle(drawing.thickness * x_abs(THICKNESS_SCALE), drawing.color, 1);
-	var last_x = x_abs(drawing.x), last_y = y_abs(drawing.y);
-	graphic.moveTo(last_x, last_y);
-	for (var i = 0; i < drawing.path.length; i++) {
-		var x_i = x_abs(drawing.x + drawing.path[i][0]);
-		var y_i = y_abs(drawing.y + drawing.path[i][1]);
-		if (!drawing.is_dotted) {
-			graphic.lineTo(x_i, y_i);
-		} else {
-			draw_dotted_line(graphic, last_x, last_y, x_i, y_i);
-		}
-		last_x = x_i;
-		last_y = y_i;
-	}
-
-	if (drawing.end == "arrow") {
-		var a;
-		if (drawing.path.length == 1) {
-			a = [x_abs(drawing.x), y_abs(drawing.y)];
-		} else {
-			a = [x_abs(drawing.x + drawing.path[drawing.path.length-2][0]), 
-			     y_abs(drawing.y + drawing.path[drawing.path.length-2][1])];
-		}
-		var b = [x_abs(drawing.x + drawing.path[drawing.path.length-1][0]), 
-			     y_abs(drawing.y + drawing.path[drawing.path.length-1][1])];
-		draw_arrow(graphic, a, b);
-	}
-	
-	graphic.graphicsData[0].shape.closed = false;
-	
-	init_graphic(drawing, graphic);
-}
-
-function init_graphic(drawing, graphic) {
-	var texture = graphic.generateTexture();
-	var sprite = new PIXI.Sprite(texture);
-	var box = graphic.getBounds();
-	
-	sprite.x = box.x;
-	sprite.y = box.y;
-	drawing.container = sprite;
-	
-	drawing.container.alpha = drawing.alpha;
-
-	sprite.texture.baseTexture.source.src = drawing.uid;
-	drawing.container.hitArea = new PIXI.TransparencyHitArea.create(sprite, false);
-
-	objectContainer.addChild(drawing.container);
-	make_draggable(drawing.container);
-
-	drawing.container.entity = drawing;
-	render_scene();	
-	room_data.slides[active_slide].entities[drawing.uid] = drawing;
-}
-
 function create_entity(entity) {
 	if (room_data.slides[active_slide].entities[entity.uid]) {
 		remove(entity.uid);
@@ -3174,9 +3174,9 @@ function create_entity(entity) {
 	} else if (entity.type == 'line') {
 		create_line2(entity);
 	} else if (entity.type == 'text') {
-		create_text(entity);
+		create_text2(entity);
 	} else if (entity.type == 'background_text') {
-		create_background_text(entity);
+		create_background_text2(entity);
 	} else if (entity.type == 'note') {
 		create_note(entity);
 	} else if (entity.type == 'rectangle') {
@@ -3857,7 +3857,7 @@ function initialize_map_select(map_select) {
 	map_select.val("");
 	
 	map_select.change(function() {
-		var path = map_select.val();
+		var path = map_select.val().trim();
 		if (!background || background.path != path) {
 			try_select_map(map_select, path);
 		} 
@@ -4034,7 +4034,7 @@ $(document).ready(function() {
 		});
 		
 		$('#set_map').click(function (e) {
-			var map = $('#map_url').val();
+			var map = $('#map_url').val().trim();
 			if (map && map != "") {
 				try_select_map($('#map_select'), map, true);
 				//add_custom_map(map);
@@ -4118,7 +4118,6 @@ $(document).ready(function() {
 		initialize_slider("background_font_size", "background_font_size_text", "background_font_size");
 		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		initialize_slider("icon_size", "icon_size_text", "icon_size");
-		initialize_slider("icon_brightness", "icon_brightness_text", "icon_brightness");
 		initialize_slider("ping_size", "ping_size_text", "ping_size");
 				
 		$('html').click(function(e) {
