@@ -1,79 +1,86 @@
 {
   "sprites": {
     "wot_assets.png": {
-      "width": 55,
-      "height": 380
+      "width": 108,
+      "height": 568
     }
   },
   "tiles": {
     "note.png": {
       "width": 22,
       "height": 22,
-      "x": 0,
-      "y": 0,
-      "sprite": "wot_assets.png"
-    },
-    "arty.png": {
-      "width": 29,
-      "height": 29,
-      "x": 0,
-      "y": 22,
+      "x": 4,
+      "y": 4,
       "sprite": "wot_assets.png"
     },
     "heavy.png": {
       "width": 29,
       "height": 29,
-      "x": 0,
-      "y": 51,
-      "sprite": "wot_assets.png"
-    },
-    "light.png": {
-      "width": 29,
-      "height": 29,
-      "x": 0,
-      "y": 80,
-      "sprite": "wot_assets.png"
-    },
-    "medium.png": {
-      "width": 29,
-      "height": 29,
-      "x": 0,
-      "y": 109,
+      "x": 4,
+      "y": 34,
       "sprite": "wot_assets.png"
     },
     "td.png": {
       "width": 29,
       "height": 29,
-      "x": 0,
-      "y": 138,
+      "x": 4,
+      "y": 71,
+      "sprite": "wot_assets.png"
+    },
+    "medium.png": {
+      "width": 29,
+      "height": 29,
+      "x": 4,
+      "y": 108,
+      "sprite": "wot_assets.png"
+    },
+    "light.png": {
+      "width": 29,
+      "height": 29,
+      "x": 4,
+      "y": 145,
+      "sprite": "wot_assets.png"
+    },
+    "arty.png": {
+      "width": 29,
+      "height": 29,
+      "x": 4,
+      "y": 182,
       "sprite": "wot_assets.png"
     },
     "dot.png": {
       "width": 30,
       "height": 30,
-      "x": 0,
-      "y": 167,
+      "x": 4,
+      "y": 219,
       "sprite": "wot_assets.png"
     },
     "circle.png": {
       "width": 50,
       "height": 50,
-      "x": 0,
-      "y": 197,
+      "x": 4,
+      "y": 257,
       "sprite": "wot_assets.png"
     },
     "recticle.png": {
       "width": 50,
       "height": 50,
-      "x": 0,
-      "y": 247,
+      "x": 4,
+      "y": 315,
       "sprite": "wot_assets.png"
     },
     "cursor.png": {
       "width": 55,
       "height": 83,
-      "x": 0,
-      "y": 297,
+      "x": 4,
+      "y": 373,
+      "sprite": "wot_assets.png"
+    },
+    "arrow_head.png": {
+      "width": 100,
+      "height": 100,
+      "x": 4,
+      "y": 464,
       "sprite": "wot_assets.png"
     }
   }

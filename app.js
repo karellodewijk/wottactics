@@ -25,6 +25,7 @@ var passport = require('passport');
 
 var app = express();
 app.use(compress());
+
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   
