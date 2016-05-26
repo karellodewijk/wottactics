@@ -213,7 +213,7 @@ PIXI.CanvasTransparencyHitArea.prototype.createTextureData = function (texture) 
     canvas.width = textureSource.width;
     canvas.height = textureSource.height;
 
-    var ctx = renderer.context;
+    var ctx = renderer.view.getContext("2d");
 
 	ctx.clearRect(0, 0, textureSource.width, textureSource.height);
 	ctx.drawImage(textureSource, 0, 0);

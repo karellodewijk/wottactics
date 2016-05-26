@@ -11,7 +11,7 @@
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-	<script defer type="text/javascript" src="/javascripts/planner.js"></script>
+	<script defer type="text/javascript" src="javascripts/planner.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
@@ -128,7 +128,7 @@
 	</nav>	
 		<div class="top">
 			<div class="left_column">	
-				<h4><%=l('Map')%>&nbsp<span id="map_size"></span></h4>
+				<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
 				<p>
 					<div class="dropdown inline" id="map_select_container">
 						<select class="selectpicker" id="map_select">
@@ -159,7 +159,7 @@
 						</div>
 					<%} %>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
-						<div class="icon icon-link"></div>
+						<div class="icon icon-link_sm"></div>
 					</button>
 					<%if (game == 'wot') { %>
 						<br /><input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span>Use wotbase maps</span>
@@ -339,7 +339,7 @@
 							<small><%=l('Label size')%></small>
 						</div>	
 						<div class="col-sm-6">
-							<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"15"<%} else {%>"10"<%}%> max="100" step="1" list="label_font_size_ticks">
+							<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"12"<%} else {%>"8"<%}%> max="100" step="1" list="label_font_size_ticks">
 						</div>	
 						<div class="col-sm-2">
 							<input id="label_font_size_text" class="slider_text_input" type="text"/>
@@ -355,17 +355,6 @@
 						</div>	
 						<div class="col-sm-2">
 							<input id="icon_size_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>	
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Brightness')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="icon_brightness" min="-1" value="0" max="1" step="0.05" list="icon_brightness_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="icon_brightness_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>	
 					</div>					
@@ -960,7 +949,7 @@
 							<small><%=l('Size')%></small>
 						</div>
 						<div class="col-sm-6">
-							<input type="range" id="font_size" min="5" value="10" max="100" step="1" list="font_size_ticks">
+							<input type="range" id="font_size" min="5" value="12" max="100" step="1" list="font_size_ticks">
 						</div>
 						<div class="col-sm-2">
 							<input id="font_size_text" class="slider_text_input" type="text"/>
@@ -991,7 +980,7 @@
 							<small><%=l('Size')%></small>
 						</div>
 						<div class="col-sm-6">
-							<input type="range" id="background_font_size" min="5" value="8" max="100" step="1" list="background_font_size_ticks">
+							<input type="range" id="background_font_size" min="5" value="10" max="100" step="1" list="background_font_size_ticks">
 						</div>
 						<div class="col-sm-2">
 							<input id="background_font_size_text" class="slider_text_input" type="text"/>

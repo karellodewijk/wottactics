@@ -11,7 +11,7 @@
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-	<script defer type="text/javascript" src="/javascripts/planner.js"></script>
+	<script defer type="text/javascript" src="javascripts/planner.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
@@ -141,7 +141,7 @@
 				</div>
 			<%} %>
 			<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
-				<div class="icon icon-link"></div>
+				<div class="icon icon-link_sm"></div>
 			</button>
 			<%if (game == 'wot') { %>
 				<br /><input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span>Use wotbase maps</span>
@@ -164,11 +164,11 @@
 			  <li id="export_tab_button"><a data-toggle="tab" href="#export_tab"><%=l('Export')%></a></li>
 			</ul>
 			<div class="tab-content">
-				<div class="tab-pane active" style="min-height:250px;" id="chat_tab">
+				<div class="tab-pane active" style="min-height:250px; width:330px" id="chat_tab">
 					<div id="chat_box" class="fake_textarea" style="height:200px;"></div>
 					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
 				</div>
-				<div class="tab-pane" id="slide_tab" style="min-height:250px;">
+				<div class="tab-pane" id="slide_tab" style="min-height:250px; width:330px">
 					<div class="input-group dropdown" id="slide_interactive">
 						<span class="input-group-btn">
 							<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
@@ -196,7 +196,7 @@
 						</table>
 					</div>
 				</div>
-				<div class="tab-pane" id="export_tab" style="min-height:250px;">
+				<div class="tab-pane" id="export_tab" style="min-height:250px; width:330px">
 					<div class="btn-group input-group dropdown" id="export_box">
 						<button id="export" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
 							<div class="icon icon-export"></div>
@@ -416,7 +416,7 @@
 							<small><%=l('Label size')%></small>
 						</div>	
 						<div class="col-sm-6">
-							<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"15"<%} else {%>"10"<%}%> max="100" step="1" list="label_font_size_ticks">
+							<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"18"<%} else {%>"8"<%}%> max="100" step="1" list="label_font_size_ticks">
 						</div>	
 						<div class="col-sm-2">
 							<input id="label_font_size_text" class="slider_text_input" type="text"/>
@@ -432,17 +432,6 @@
 						</div>	
 						<div class="col-sm-2">
 							<input id="icon_size_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>	
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Brightness')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="icon_brightness" min="-1" value="0" max="1" step="0.05" list="icon_brightness_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="icon_brightness_text" class="slider_text_input" type="text"/>
 						</div>
 					</div>	
 					</div>					
@@ -1037,7 +1026,7 @@
 							<small><%=l('Size')%></small>
 						</div>
 						<div class="col-sm-6">
-							<input type="range" id="font_size" min="5" value="10" max="100" step="1" list="font_size_ticks">
+							<input type="range" id="font_size" min="5" value="12" max="100" step="1" list="font_size_ticks">
 						</div>
 						<div class="col-sm-2">
 							<input id="font_size_text" class="slider_text_input" type="text"/>
@@ -1068,7 +1057,7 @@
 							<small><%=l('Size')%></small>
 						</div>
 						<div class="col-sm-6">
-							<input type="range" id="background_font_size" min="5" value="8" max="100" step="1" list="background_font_size_ticks">
+							<input type="range" id="background_font_size" min="5" value="10" max="100" step="1" list="background_font_size_ticks">
 						</div>
 						<div class="col-sm-2">
 							<input id="background_font_size_text" class="slider_text_input" type="text"/>
