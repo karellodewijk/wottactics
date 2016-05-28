@@ -2,21 +2,8 @@
 <html>
 <head>
 	<% include common_headers.ejs %>
-	<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>
 	<link rel="stylesheet" href="<%=static_host%>/stylesheets/bootstrap-select.min.css">
-	<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
 	<link rel="stylesheet" href="<%=static_host%>/stylesheets/jquery.simplecolorpicker.css">
-	<script defer type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/pixi.min.js"></script>
-	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
-	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-	<script defer type="text/javascript" src="javascripts/planner.js"></script>
-	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
-	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
-	<script id="sid" data-sid="<%=sid%>"></script>
-	<script id="static_host" data-static_host="<%=static_host%>"></script>
-	<script id="socket_io_servers" data-socket_io_servers="<%=socket_io_servers%>"></script>
 	<% if (game == 'wot') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_assets.css">
 		<link rel="stylesheet" href="<%=static_host%>/wot-icon-set1.css">
@@ -62,6 +49,20 @@
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 		<link rel="stylesheet" href="<%=static_host%>/csgo_icons.css">
 	<% } %>
+	<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>	
+	<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
+	<script defer type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/pixi.min.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+	<script defer type="text/javascript" src="javascripts/planner.js"></script>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
+	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
+	<script id="sid" data-sid="<%=sid%>"></script>
+	<script id="static_host" data-static_host="<%=static_host%>"></script>
+	<script id="socket_io_servers" data-socket_io_servers="<%=socket_io_servers%>"></script>
+
 </head>
 <body>
 	<div id="edit_window" class="edit_window" style="height:calc(100vh - 12px); width:calc(100vh - 12px);"></div>
@@ -91,7 +92,7 @@
 				href="/csgo">
 			<% } else if (game == 'aw') { %>
 				href="/">
-			<% } %><i class="fa fa-home fa-lg"></i>
+			<% } %><i class="fa-lg icon-home "></i>
 		</a>
 	</div>
 	<div class="collapse navbar-collapse" id="myNavbar">
@@ -170,7 +171,7 @@
 				<p>
 					<div id="contexts">
 					<div class="btn-group">
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="ping" data-toggle="tooltip" title="<%=l('Ping map')%>">
+					<button type="button" style="border-radius: 0px; margin-left: -1px;" class="btn btn-default menu_btn" aria-label="Left Align" id="ping" data-toggle="tooltip" title="<%=l('Ping map')%>">
 						<div class="icon icon-ping_icon"></div>
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
@@ -194,26 +195,12 @@
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
 						<div class="icon icon-pencil"></div>
 					</button>
-					
-					<%if (game == 'sc2') {%>
-					</div>
-					<br />
-					<div class="btn-group">
-					<%}%>
-					
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="line" data-toggle="tooltip" title="<%=l('Draw line (hold left mouse)')%>">
 						<div class="icon icon-line_icon"></div>
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="curve" data-toggle="tooltip" title="<%=l('Draw curve (double click to end)')%>">
 						<div class="icon icon-curve"></div>
 					</button>
-					
-					<%if (game != 'sc2') {%>
-					</div>
-					<br />
-					<div class="btn-group">
-					<%}%>
-
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="<%=l('Draw rectangle')%>">
 						<div class="icon icon-rectangle"></div>
 					</button>
@@ -226,26 +213,12 @@
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="area" data-toggle="tooltip" title="<%=l('Draw area')%>">
 						<div class="icon icon-area"></div>
 					</button>
-					
-					<%if (game == 'sc2') {%>
-					</div>
-					<br />
-					<div class="btn-group">
-					<%}%>
-					
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
 						<div class="icon icon-text_icon"></div>
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="background_text" data-toggle="tooltip" title="<%=l('Add Text with background')%>">
 						<div class="icon icon-text_on_background"></div>
 					</button>
-					
-					<%if (game != 'sc2') {%>
-					</div>
-					<br />
-					<div class="btn-group">
-					<%}%>
-					
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="undo" data-toggle="tooltip" title="<%=l('Undo last action')%>">
 						<div class="icon icon-undo"></div>
 					</button>
@@ -258,24 +231,12 @@
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="eraser" data-toggle="tooltip" title="<%=l('Erase')%>">
 						<div class="icon icon-eraser"></div>
 					</button>
-
-					
-					<%if (game == 'sc2') {%>
-					</div>
-					<br />
-					<div class="btn-group">
-					<%}%>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="note" data-toggle="tooltip" title="<%=l('Add a note')%>">
 						<div class="icon icon-note"></div>
 					</button>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
 						<div class="icon icon-select"></div>
 					</button>					
-					<%if (game != 'sc2') {%>
-					</div>
-					<br />
-					<div class="btn-group">
-					<%}%>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="ruler" data-toggle="tooltip" title="<%=l('Ruler')%>">
 						<div class="icon icon-ruler_icon"></div>
 					</button>
@@ -287,7 +248,10 @@
 					</button>			
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="paste" data-toggle="tooltip" title="<%=l('Paste (press ctrl-v while on the map to paste to a specific location)')%>">
 						<div class="icon icon-paste"></div>
-					</button>						
+					</button>
+					<button type="button" style="border-radius: 0px" class="btn btn-default" aria-label="Left Align" id="clear_all_main" data-toggle="tooltip" title="<%=l('Clear all')%>">
+						<div class="icon icon-clear"></div>
+					</button>
 					</div>
 					</div>					
 
