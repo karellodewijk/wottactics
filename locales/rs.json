@@ -266,5 +266,10 @@
 	"Share": "Share",
 	"Share this tactic": "Share this tactic",
 	"Last visited": "Last visited",
-	"Log out": "Log out"
+	"Log out": "Log out",
+	"Ruler": "Ruler",
+	"Draw style": "Draw style",
+	"Edge drag": "Edge drag",
+	"Radius drag": "Radius drag",
+	"try a different ui": "try a different ui"
 }

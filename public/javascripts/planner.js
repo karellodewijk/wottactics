@@ -462,8 +462,14 @@ background_sprite.height = renderer.height;
 background_sprite.width = renderer.width;
 objectContainer.addChild(background_sprite);
 
-//var fast_container = new PIXI.ParticleContainer();
-//objectContainer.addChild(fast_container);
+var fast_container = new PIXI.ParticleContainer(10000, {
+    scale: true,
+    position: true,
+    rotation: false,
+    uvs: false,
+    alpha: false
+});
+objectContainer.addChild(fast_container);
 
 //initialize grid layer
 var grid_layer;
@@ -503,12 +509,13 @@ function resize_renderer(new_size_x, new_size_y) {
 	temp_draw_canvas.width = new_size_x;
 	temp_draw_canvas.height = new_size_y;
 	
-	/*
-	if (background_sprite.texture) {
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+
+	if (background_sprite.texture && (zoom_level - 1) < 0.0000001) {
 		background_sprite.width = new_size_x / objectContainer.scale.x;
 		background_sprite.height = new_size_y / objectContainer.scale.y;
 	}
-	*/
+
 	
 	renderer.resize(new_size_x, new_size_y);
 	$("#render_frame").attr('style', 'height:' + new_size_y + 'px; width:' + new_size_x + 'px;');
@@ -734,6 +741,15 @@ function on_drag_start(e) {
 		delay = 300;
 	} else if (active_context == "ruler_context") {
 		return;
+	} else if (active_context == "remove_context" || active_context == "eraser_context") {
+		deselect_all();
+		remove(_this.entity.uid);
+		undo_list.push(["remove", [_this.entity]]);
+		socket.emit('remove', room, _this.entity.uid, active_slide);
+		if (active_context == "eraser_context") {
+			on_left_click(e);
+		}
+		return;
 	} else {
 		if (active_context != 'drag_context') {
 			context_before_drag = active_context;
@@ -951,12 +967,26 @@ function render_scene() {
 	});
 }
 
+
+var ping_texture_atlas = {}
+
+
 function ping(x, y, color, size) {
-	var sprite = new PIXI.Sprite(ping_texture);
+	var sprite;
+	var use_fast_container;
+	if (ping_texture_atlas[color]) {
+		sprite = new PIXI.Sprite();
+		sprite.setTexture(ping_texture_atlas[color]);
+		use_fast_container = true;
+	} else {
+		var sprite = new PIXI.Sprite(ping_texture);
+		sprite.tint = color;
+		ping_texture_atlas[color] = sprite.tintedTexture;
+		use_fast_container = false;
+	}
 
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
 	
-	sprite.tint = color;
 	sprite.anchor.set(0.5);
 	sprite.height = y_abs(0.01) * (size/10) * zoom_level;
 	sprite.width = y_abs(0.01) * (size/10) * zoom_level;
@@ -964,7 +994,11 @@ function ping(x, y, color, size) {
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
 
-	objectContainer.addChild(sprite);
+	if (use_fast_container) {
+		fast_container.addChild(sprite);
+	} else {
+		objectContainer.addChild(sprite);
+	}
 	render_scene();
 	
 	var steps = 25;
@@ -978,7 +1012,11 @@ function ping(x, y, color, size) {
 		steps--;
 		if (steps <= 0) {
 			clearInterval(loop)
-			objectContainer.removeChild(sprite);
+			if (use_fast_container) {
+				fast_container.removeChild(sprite);
+			} else {
+				objectContainer.removeChild(sprite);
+			}
 			render_scene();			
 		}
 	}, 20);
@@ -1967,20 +2005,25 @@ function on_rectangle_end(e) {
 	setup_mouse_events(undefined, undefined);
 }
 
+
 var ping_state = {}
 function on_ping_move(e) {
 	limit_rate(60, drag_state, function() {
 		var mouse_location = renderer.plugins.interaction.mouse.global;
-		ping(from_x_local(mouse_location.x), from_y_local(mouse_location.y), ping_color, ping_size);
-		socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
+		var x = from_x_local(mouse_location.x);
+		var y = from_y_local(mouse_location.y);
+		ping(x, y, ping_color, ping_size);
+		socket.emit('ping_marker', room, x, y, ping_color, ping_size);
 	});
 }
 
 function on_ping_end(e) {
-	clearTimeout(drag_state.timeout);
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
-	socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color, ping_size);
+	limit_rate(15, drag_state, function() {});
+	var mouse_location = renderer.plugins.interaction.mouse.global;
+	var x = from_x_local(mouse_location.x);
+	var y = from_y_local(mouse_location.y);
+	ping(x, y, ping_color, ping_size);
+	socket.emit('ping_marker', room, x, y, ping_color, ping_size);
 	setup_mouse_events(undefined, undefined);
 }
 
@@ -3993,7 +4036,13 @@ $(document).ready(function() {
 			} else {
 				tactic_uid = link.slice(i+5).split('&')[0];
 				var target = servers[hashstring(tactic_uid) % servers.length];
-				$.post('http://'+target+'/add_to_room', {target: tactic_uid, source:room, session_id:$("#sid").attr("data-sid"), host:parse_domain(location.hostname), stored:"false"}).done(function( data ) {
+				var slide = active_slide;
+				console.log($('#this_slide_only').get(0).checked)
+				if (!$('#this_slide_only').get(0).checked) {
+					slide = undefined;
+				}
+				console.log(slide)
+				$.post('http://'+target+'/add_to_room', {target: tactic_uid, source:room, session_id:$("#sid").attr("data-sid"), host:parse_domain(location.hostname), stored:"false", slide:slide}).done(function( data ) {
 					if (data != "Success") {
 						alert(data);
 					}

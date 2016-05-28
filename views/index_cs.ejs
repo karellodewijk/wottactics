@@ -2,7 +2,6 @@
 <html>
 <head>
 	<% include common_headers.ejs %>
-	<script defer type="text/javascript" src="/javascripts/index.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy planner.')%>">
 </head>
@@ -82,4 +81,7 @@
 	<% include footer.ejs %>
 	
 	</div>
+	
+	<% include index_js.ejs %>
+	
 </body>
