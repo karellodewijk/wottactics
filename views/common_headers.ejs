@@ -27,13 +27,10 @@
 <meta name="msapplication-square150x150logo" content="/mediumtile.png" />
 <meta name="msapplication-wide310x150logo" content="/widetile.png" />
 <meta name="msapplication-square310x310logo" content="/largetile.png" />
-<script defer type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<script defer src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="<%=static_host%>/stylesheets/style.css">
 <link rel="icon" type="image/png" href="<%=static_host%>/icons/favicon.ico">
-<link rel="stylesheet" href="<%=static_host%>/stylesheets/style.css" />
 <meta name="game" content="<%=game%>">
 <meta name="keywords" content="planner,tactic,map,strategy,tool,esport,maptactic,twiddla,strategy,stratsketch,scrum,whiteboard,colaborate">
 <%if (game == 'wot') {%>
@@ -74,3 +71,8 @@
 </script>
 <%}%>
 
+<link rel="prefetch" href="<%=static_host%>/stylesheets/sprite.png">
+<link rel="prefetch" href="<%=static_host%>/stylesheets/fonts/icomoon.ttf">
+
+<script defer type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script defer src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
