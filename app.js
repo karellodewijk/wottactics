@@ -862,7 +862,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	
-	function copy_slides(source, target, res) {
+	function copy_slides(source, target, res, slide) {
 		if (source.slides) {
 			if (Object.keys(source.slides).length > 100) {
 				res.send("Error: too many slides");
@@ -881,7 +881,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				}
 			}
 			largest_slide_order += 4294967296;
-			for (var key in source.slides) {
+			var slide_list = source.slides;
+			if (slide) {
+				slide_list = {}
+				slide_list[slide] = source.slides[slide];
+			}
+			for (var key in slide_list) {
 				if (source.slides.hasOwnProperty(key)) {
 					var uid = newUid();
 					var new_slide = JSON.parse(JSON.stringify(source.slides[key]));
@@ -898,6 +903,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.post('/add_to_room', function(req, res, next) {
 		var sessionId = req.body.session_id;
 		var host = req.body.host;
+		var slide = req.body.slide;
 		
 		session_from_sessionid_host(sessionId, host, function(session) {			
 			var target = req.body.target;
@@ -917,7 +923,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (req.body.stored == "true") {
 				db.collection('stored_tactics').findOne({_id:source}, function(err, result) {
 					if (!err && result) { 
-						copy_slides(result, target, res);
+						copy_slides(result, target, res, slide);
 					} else {
 						res.send("Error: tactic not found");
 					}
@@ -925,7 +931,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			} else {
 				db.collection('tactics').findOne({_id:source}, function(err, result) {
 					if (!err && result) { 
-						copy_slides(result, target, res);
+						copy_slides(result, target, res, slide);
 					} else {
 						res.send("Error: tactic not found");
 					}
@@ -1025,13 +1031,14 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	paths.splice(paths.indexOf('/auth/google/callback'), 1);
 	paths.splice(paths.indexOf('/auth/vk/callback'), 1);
 	paths.splice(paths.indexOf('/auth/openid/callback'), 1);
+	paths.splice(paths.indexOf('/auth/battlenet/callback'), 1);
 	paths.splice(paths.indexOf('/auth/steam/callback'), 1);
 	paths.splice(paths.indexOf('/save'), 1);
 	paths.splice(paths.indexOf('/log'), 1);
 	paths.splice(paths.indexOf('/refresh'), 1);
 	paths.splice(paths.indexOf('/disconnect'), 1);
 	paths.splice(paths.indexOf('/health_check.html'), 1);
-	paths.splice(paths.indexOf('share_tactic.html'), 1);
+	paths.splice(paths.indexOf('/share_tactic.html'), 1);
 
 	router.get('/sitemap.xml', function(req, res, next) {
 		var sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
@@ -1059,6 +1066,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	robots_base += "Disallow: /auth/google\n";
 	robots_base += "Disallow: /auth/vk\n";
 	robots_base += "Disallow: /auth/openid\n";
+	robots_base += "Disallow: /auth/steam\n";
+	robots_base += "Disallow: /auth/battlenet\n";
 	
 	router.get('/robots.txt', function(req, res, next) {
 		res.header('Content-Type', 'text/plain');

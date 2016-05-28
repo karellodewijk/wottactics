@@ -2,7 +2,6 @@
 <html>
 <head>
 	<% include common_headers.ejs %>
-	<script defer type="text/javascript" src="/javascripts/index.js"></script>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
 	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or just explore, share and discuss map tactics with your friends, team, platoon or clan.">
 </head>
@@ -129,11 +128,11 @@
 		</ul> 
 		On the bug hunting front:
 		<ul>
+			<li>ping marker was off a bit on remotely connected clients when dragging
 			<li>You can log in again from the planner page on FF.
 			<li>Track cursor didn't work too well while zooming and panning
 			<li>Remove tracked cursor when someone loses privileges
 			<li>Creating stuff outside the viewable area would sometimes stretch new things you added
-			<li>Select tool would often not properly select things after the tactic window was resized
 		</ul>
 		If you find anything else, however small, that is broken, pls let me know. 
 	</div>
@@ -150,4 +149,7 @@
 	</div>
 	<br />
 </div>
+
+<% include index_js.ejs %>
+
 </body>
