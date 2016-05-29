@@ -44,6 +44,7 @@
 		<link rel="stylesheet" href="<%=static_host%>/sc2_upgrades_zerg.css">
 		<link rel="stylesheet" href="<%=static_host%>/sc2_upgrades_protoss.css">
 	<% } else if (game == 'aw') { %>
+		<link rel="stylesheet" href="<%=static_host%>/aw_assets.css">
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'csgo') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
@@ -63,7 +64,7 @@
 	<script id="static_host" data-static_host="<%=static_host%>"></script>
 	<script id="socket_io_servers" data-socket_io_servers="<%=socket_io_servers%>"></script>
 </head>
-<body style="width:100%; background-color:#333333; margin:0px; padding:0px; border: 1px solid black; color:white; min-width: 100%; display: flex; height:100%">
+<body style="width:100%; background-color:#333333; margin:0px; padding:0px; border: 1px solid black; color:white; min-width: 100%; height:100%; display: inline-block;">
 	<style>
 	input, textarea, .chatmsg, .userlist {
 	  color : black;
@@ -73,10 +74,10 @@
 	}
 	</style>
 
-	<div id="left_side_bar" style="min-width:350px; height:100vh; overflow: hidden; height:100%; display:flex; flex-direction:column">
+	<div id="left_side_bar" style="max-width:350px; height:100vh; vertical-align:top; float:left; display:flex; flex-direction:column;">
 		<div style="flex: 0 1 auto; justify-content: flex-start;">
-			<nav class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
-				<div class="navbar-header">
+			<nav id="left_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
+				<div id="home_button" class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
@@ -111,7 +112,8 @@
 				</div>
 			</nav>	
 		</div>
-		<div style="padding:10px; padding-top:0px; flex: 0 1 auto; justify-content: flex-start;">
+		<div id="map_select_section" style="padding:10px; padding-top:0px; flex: 0 1 auto; justify-content: flex-start;">
+			<div id="map_select_box">
 			<h4><%=l('Map')%>&nbsp<span id="map_size"></span></h4>
 			<div class="dropdown inline" id="map_select_container">
 				<select class="selectpicker" id="map_select">
@@ -149,6 +151,8 @@
 		
 			<hr>
 			
+			</div>
+			
 			<h4><%=l('User list')%> (<span id="user_count"></span>)</h4>
 			<p>
 		</div>
@@ -166,7 +170,7 @@
 			<div class="tab-content">
 				<div class="tab-pane active" style="min-height:250px; width:330px" id="chat_tab">
 					<div id="chat_box" class="fake_textarea" style="height:200px;"></div>
-					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
+					<input id="chat_input" maxlength="500" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
 				</div>
 				<div class="tab-pane" id="slide_tab" style="min-height:250px; width:330px">
 					<div class="input-group dropdown" id="slide_interactive">
@@ -178,7 +182,7 @@
 								<div class="icon icon-bin"></div>
 							</button>
 						</span>
-						<input class="form-control" style="height:42px" type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />
+						<input class="form-control" maxlength="100" style="height:42px" type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />
 						<span class="input-group-btn">
 							<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
 						</span>
@@ -213,32 +217,30 @@
 		</div>
 	</div>	
 	
-	<div id="edit_window" class="edit_window" style="height:calc(100vh - 2px); width:calc(100vh - 2px);"></div>
+	<div id="edit_window" class="edit_window" style="height:calc(100vh - 2px); width:calc(100vh - 2px); display: inline-block; vertical-align:top;"></div>
 
-	<div id="right_side_bar" style="min-width:340px; overflow: hidden; vertical-align:top; flex:1; height:100%">
-		<nav class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
+	<div id="right_side_bar" style="max-width:340px; display: inline-block; vertical-align:top;">
+		<nav id="right_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
 			<ul class="nav navbar-nav navbar-left container-fluid">
-				<%if (game != 'blitz') { %>
-					<div class="btn-group">
-					<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
-						<div class="icon icon-save"></div>
+				<div class="btn-group">
+				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
+					<div class="icon icon-save"></div>
+				</button>
+				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
+					<div class="icon icon-save_as"></div>
+				</button>
+				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
+					<div class="icon icon-lock"></div>
+				</button>
+				<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
+					<div class="icon icon-link"></div>
+				</button>
+				<% if (game == 'wot' || game == 'wows' || game == 'aw') { %>
+					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
+						<div class="icon icon-grid_icon"></div>
 					</button>
-					<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
-						<div class="icon icon-save_as"></div>
-					</button>
-					<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
-						<div class="icon icon-lock"></div>
-					</button>
-					<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
-						<div class="icon icon-link"></div>
-					</button>
-					<% if (game == 'wot' || game == 'wows' || game == 'aw') { %>
-						<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
-							<div class="icon icon-grid_icon"></div>
-						</button>
-					<% } %>					
-					</div>
-				<% } %>	
+				<% } %>					
+				</div>
 			</ul>
 		</nav>	
 		<div class="top">
@@ -1086,105 +1088,8 @@
 						</tr>
 					</table>
 				</div>
-				
-				<%if (game == 'blitz') { %>	
-				<h4>Extra</h4>
-				<p>
-				
-				<div class="btn-group" role="group">
-				<a id="save" href="javascript:void(0)" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
-					<div class="icon icon-save"></div>
-				</a>
-				<a id="save_as" href="javascript:void(0)" class="btn btn-default" data-placement="bottom"
-				data-toggle="popover" data-content="<input type='text' id='tactic_name' style='width:100px' /> <button id='store_tactic' class='btn btn-default btn-xs'>Store</button>">
-					<div class="icon icon-save_as"></div>
-				</a>
-				<button id="lock" class="btn btn-default" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
-					<div class="icon icon-lock"></div>
-				</button>
-				<button id="link" class="btn btn-default" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
-					<div class="icon icon-link"></div>
-				</button>
-				</div>
-				<% } %>	
 			</div>
-			
-			<%if (game != 'blitz') { %>	
-			<% } %>
-			
-		</div>	
-			
-		<%if (game != 'blitz') { %>	
-		<% } %>	
 	</div>
-
-
-
-<%if (game == 'blitz') { %>	
-	<div class="side_bar jumbotron">
-		<br />
-		<div class="bottom" style="min-width:500px;">
-			<ul class="nav nav-tabs" id="bottom_tabs">
-			  <li class="active"><a data-toggle="tab" href="#chat_tab"><%=l('Chat')%></a></li>
-			  <li id="slide_tab_button"><a data-toggle="tab" href="#slide_tab"><%=l('Slides')%></a></li>
-			  <li id="export_tab_button"><a data-toggle="tab" href="#export_tab"><%=l('Export')%></a></li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active" style="min-height:150px;" id="chat_tab">
-					<div id="chat_box" class="fake_textarea" style="min-height:150px; height:80%; width:100%;"></div>
-					<input id="chat_input" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
-				</div>
-				<div class="tab-pane" id="slide_tab" style="max-width:500px;">
-					<div class="input-group dropdown" id="slide_interactive">
-						<span class="input-group-btn">
-							<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
-						</span>
-						<span class="input-group-btn">
-							<button type="button" class="btn btn-default slide_btn" id="remove_slide" data-toggle="tooltip" title="<%=l('Remove slide')%>">
-								<div class="icon icon-bin"></div>
-							</button>
-						</span>
-						<input class="form-control" style="height:42px" type="text" id="slide_name_field" placeholder="<%=l('Slide')%> 1" />
-						<span class="input-group-btn">
-							<button class="btn btn-default slide_btn" id="new_slide" data-toggle="tooltip" title="<%=l('New slide')%>">&#10133;</button>
-						</span>
-						<span class="input-group-btn">
-							<button class="btn btn-default slide_btn" id="next_slide" data-toggle="tooltip" title="<%=l('Next slide')%>">&#9654;</button>
-						</span>
-					</div>
-					<div class="input-group dropdown" id="slide_static">
-						<input class="form-control" style="height:42px" type="text" id="slide_name_field2" placeholder="<%=l('Slide')%> 1" readonly/>
-					</div>
-					<table class="table table-bordered" id="slide_table1" style="text-align:left">
-						<tbody class="ui-sortable" id="slide_table">
-						</tbody>
-					</table>
-				</div>
-				<div class="tab-pane" id="export_tab">
-					<div class="btn-group input-group dropdown" id="export_box">
-						<button id="export" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
-							<div class="icon icon-export"></div>
-						</button>
-						<button id="backup" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Download a backup')%>">
-							<div class="icon icon-archive_icon"></div>
-						</button>
-						<button id="send_to_link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Send to room')%>">
-							<div class="icon icon-send_to_link_22"></div>
-						</button>						
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="side_bar jumbotron">
-		<div class="right_column">
-			<h4><%=l('User list')%> (<span id="user_count"></span>)</h4>
-			<p>
-			<div class="btn-group-vertical btn-group-xs" role="group" id="userlist" style="max-height:70%; overflow:auto"></div>
-		</div>
-	</div>
-<% } %>	
 
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
@@ -1200,7 +1105,7 @@
 			<button id='modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
 		</span>
 	</div>
-	<input type="checkbox" id="this_slide_only" style="vertical-align:-2px;"><span>This slide only</span>
+	<input type="checkbox" id="this_slide_only" style="vertical-align:-2px;"><span style="color:black">This slide only</span>
 	</div>
   </div>
 </div>
