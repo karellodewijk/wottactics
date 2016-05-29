@@ -462,11 +462,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
 			save_room(uid, function() {
 			  delete room_data[uid];
-			  res.redirect(game+'planner.html?room='+uid);
+			  res.redirect(game + template + '.html?room='+uid);
 			});
 		});
 	  } else if (!req.query.room) {
-		  res.redirect(game+'planner.html?room='+newUid());
+		  res.redirect(game + template + '.html?room='+newUid());
 	  }	else {
 		  res.cookie('room',req.query.room , { maxAge: 30 * 86400 * 1000 });
 		  req.session.game = game;

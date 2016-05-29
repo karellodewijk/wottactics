@@ -24,8 +24,8 @@ if (game == "wows") { //wows
 	assets.push(image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"td.png", image_host+"arty.png");	
 	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "aw") {
-	assets.push(image_host+"aw_afv.png", image_host+"aw_lt.png", image_host+"aw_mbt.png", image_host+"aw_spg.png", image_host+"aw_td.png", image_host+"aw_grid.png");
-	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
+	loader.add("aw_assets.png", asset_host + "aw_assets.png");
+	loader.add("aw_assets.json",  asset_host +  "aw_assets.json");
 } else if (game == "lol") {
 	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "hots") {
@@ -134,7 +134,7 @@ function random_darkish_color(){
 var ARROW_LOOKBACK = 3;
 var MOUSE_DRAW_SMOOTHING = 0.5;
 var LEFT_BAR_MIN_WIDTH = 350;
-var RIGHT_BAR_MIN_WIDTH = 345;
+var RIGHT_BAR_MIN_WIDTH = 340;
 var SINGLE_SIDE_BAR_MIN_WIDTH;
 if (game == 'blitz') {
 	SINGLE_SIDE_BAR_MIN_WIDTH = 350;
@@ -149,6 +149,9 @@ var NOTE_SCALE = 0.05;
 var THICKNESS_SCALE = 0.0015;
 var FONT_SCALE = 0.002;
 var TEXT_QUALITY = 2;
+var ARROW_SCALE = 0.008;
+var TEND_SCALE = 0.008;
+var MAGIC_NUMBER = 25;
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -546,21 +549,23 @@ window.onresize = function() {
 		var size_y;
 		if ($('#left_side_bar').length) {
 			$('#left_side_bar').detach().prependTo($("body"));
+			$('#map_select_box').prependTo($("#map_select_section"));
+			$('#home_button').prependTo($("#left_navbar"));
 			size_y = window.innerHeight - 2;
 		} else {
 			size_y = window.innerHeight - 10;
 		}
 		var size_x = size_y * ratio;
-		
-		if (size_x > window.innerWidth - iface_width) {
-			size_x = window.innerWidth - iface_width;			
+		if (size_x + iface_width + MAGIC_NUMBER > window.innerWidth) {
+			size_x = window.innerWidth - iface_width - MAGIC_NUMBER;			
 			size_y = size_x / ratio;
 		}
 		resize_renderer(size_x, size_y);
 	} else {
 		if ($('#left_side_bar').length) {
 			$('#left_side_bar').detach().appendTo($("body"));
-			$('#left_side_bar').css("clear", "both");
+			$('#map_select_box').prependTo($(".left_column"));
+			$('#home_button').prependTo($("#right_navbar"));
 			iface_width = RIGHT_BAR_MIN_WIDTH;
 		}
 		
@@ -1038,8 +1043,10 @@ function setup_mouse_events(on_move, on_release) {
 
 function align_note_text(entity) {
 	if (entity.container) {
-		var x = objectContainer.x + x_abs(entity.x) * objectContainer.scale.x + x_abs(0.035) * objectContainer.scale.x;
-		var y = objectContainer.y + y_abs(entity.y) * objectContainer.scale.y;
+		var rect = document.getElementById("edit_window").getBoundingClientRect();
+		var x = rect.left + objectContainer.x + x_abs(entity.x) * objectContainer.scale.x + x_abs(0.035) * objectContainer.scale.x;
+		var y = rect.top + objectContainer.y + y_abs(entity.y) * objectContainer.scale.y;
+
 		if (entity.container.is_open) {
 			entity.container.menu.attr('style', 'top:' + y +'px; left:' + x + 'px; display: block;');
 		} else {
@@ -1406,6 +1413,7 @@ function on_eraser_end(e) {
 }
 
 function stop_tracking() {
+	limit_rate(15, track_state, function() {});
 	setup_mouse_events(undefined, undefined);
 	socket.emit("stop_track", room, my_tracker.uid);
 	objectContainer.removeChild(my_tracker.container);
@@ -1414,7 +1422,7 @@ function stop_tracking() {
 }
 
 function start_tracking(mouse_location) {
-	setup_mouse_events(on_track_move, undefined);
+	setup_mouse_events(on_track_move);
 	var shape = $('#track_shape .active').attr('data-cursor');
 	var size;
 	if (shape == 'dot' || shape == 'cursor') {
@@ -1472,7 +1480,7 @@ function create_note(note) {
 		$('button', note.container.menu).hide();
 	}
 	
-	$("#render_frame").append(note.container.menu);
+	$("#edit_window").append(note.container.menu);
 	
 	$("#note_box", note.container.menu).on('blur', function() {
 		if (!can_edit()) {
@@ -1549,6 +1557,8 @@ function on_track_move(e) {
 		var dist_sq = (last_track_position[0] - my_tracker.x) * (last_track_position[0] - my_tracker.x)
 					 +(last_track_position[1] - my_tracker.y) * (last_track_position[1] - my_tracker.y);
 		
+		render_scene();
+		
 		var interval = (Date.now() - last_track_update);
 		if (dist_sq > MIN_TRACK_MOVE_DISTANCE_SQ || interval > 50) {
 			last_track_update = Date.now();
@@ -1556,7 +1566,6 @@ function on_track_move(e) {
 				socket.emit("track_move", room, my_tracker.uid, my_tracker.x - last_track_position[0], my_tracker.y - last_track_position[1]);
 				last_track_position = [my_tracker.x, my_tracker.y];
 			}
-			render_scene();
 		} else {
 			track_timeout = setTimeout(function() {
 				if (my_tracker) {
@@ -2364,8 +2373,7 @@ function createSprite(ctx, canvas) {
 
 function draw_arrow2(context, drawing, i) {
 	var i = Math.max(0, drawing.path.length-i);
-	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	var size = 6 * drawing.thickness / zoom_level; //[15 < size < 30]
+	var size = (ARROW_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
 	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
 	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
@@ -2377,8 +2385,7 @@ function draw_arrow2(context, drawing, i) {
 }
 
 function draw_arrow3(context, a, b, drawing) {
-	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	var size = 6 * drawing.thickness / zoom_level; //[15 < size < 30]
+	var size = (ARROW_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
 	var x_diff = b[0] - a[0];
 	var y_diff = b[1] - a[1];
 	l = Math.sqrt(Math.pow(x_diff,2) + Math.pow(y_diff,2));
@@ -2389,8 +2396,7 @@ function draw_arrow3(context, a, b, drawing) {
 
 function draw_T2(context, drawing, i) {
 	var i = Math.max(0, drawing.path.length-i);
-	var size = Math.max(Math.min(7*drawing.thickness, 40), 20); //[15 < size < 30]
-	var size = size * (size_x/1000);
+	var size = (TEND_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
 	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
 	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
@@ -3264,7 +3270,7 @@ function add_user(user) {
 		}
 	} else {	
 		if (user.id == my_user_id) {
-			var node = "<div class='btn' style='text-align:left;' id='" + user.id + "'><input type='text' placeholder='"+ user.name + "'></div>";
+			var node = "<div class='btn' style='text-align:left;' id='" + user.id + "'><input maxlength='30' type='text' placeholder='"+ escapeHtml(user.name) + "'></div>";
 			$("#userlist").prepend(node);
 			var input_node = $("#userlist").find("input");
 			input_node.on('blur', function() {
@@ -3279,7 +3285,7 @@ function add_user(user) {
 			}
 
 		} else { 
-			var node = "<button class='btn' style='text-align:left;' data-toggle='tooltip' title='Click to toggle this user&#39;s permission.' id='" + user.id + "'>" + user.name + "</button>";
+			var node = "<button class='btn' style='text-align:left;' data-toggle='tooltip' title='Click to toggle this user&#39;s permission.' id='" + user.id + "'>" + escapeHtml(user.name) + "</button>";
 			$("#userlist").append(node);
 		}
 	}
@@ -3708,14 +3714,14 @@ function update_slide_buttons() {
 		grid_layer.visible = false;
 	}
 	
-	var name = room_data.slides[active_slide].name;
+	var name = escapeHtml(room_data.slides[active_slide].name);
 	$('#slide_name_field').val(name);
 	$('#slide_name_field2').val(name);
 	$('#slide_table').empty();
 		
 	var current_slide_uid = find_first_slide();
 	do {
-		var name = room_data.slides[current_slide_uid].name;
+		var name = escapeHtml(room_data.slides[current_slide_uid].name);
 				
 		if (current_slide_uid == active_slide) {
 			$('#slide_table').append("<tr id='" + current_slide_uid + "' style='background-color:#ADD8E6'><td><a id='" + current_slide_uid + "'>" + name + "</a></td></tr>");
@@ -4039,11 +4045,9 @@ $(document).ready(function() {
 				tactic_uid = link.slice(i+5).split('&')[0];
 				var target = servers[hashstring(tactic_uid) % servers.length];
 				var slide = active_slide;
-				console.log($('#this_slide_only').get(0).checked)
 				if (!$('#this_slide_only').get(0).checked) {
 					slide = undefined;
 				}
-				console.log(slide)
 				$.post('http://'+target+'/add_to_room', {target: tactic_uid, source:room, session_id:$("#sid").attr("data-sid"), host:parse_domain(location.hostname), stored:"false", slide:slide}).done(function( data ) {
 					if (data != "Success") {
 						alert(data);
@@ -4272,7 +4276,7 @@ $(document).ready(function() {
 		$('#export').click(function () {
 			render_scene();	
 			var new_renderer = new PIXI.CanvasRenderer(size, size,{backgroundColor : 0xBBBBBB});
-			new_render_scene();			
+			new_renderer.render(stage);			
 
 			$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function() {
 				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.3.0/js/canvas-to-blob.min.js", function() {
