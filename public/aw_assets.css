@@ -1,0 +1,55 @@
+
+.aw {
+  background-image: url('aw_assets.png');
+}
+
+.aw-note {
+  background-position: -0px -0px;
+  width: 30px;
+  height: 30px;
+}
+.aw-aw_afv {
+  background-position: -0px -30px;
+  width: 37px;
+  height: 37px;
+}
+.aw-aw_lt {
+  background-position: -0px -67px;
+  width: 37px;
+  height: 37px;
+}
+.aw-aw_mbt {
+  background-position: -0px -104px;
+  width: 37px;
+  height: 37px;
+}
+.aw-aw_spg {
+  background-position: -0px -141px;
+  width: 37px;
+  height: 37px;
+}
+.aw-aw_td {
+  background-position: -0px -178px;
+  width: 37px;
+  height: 37px;
+}
+.aw-dot {
+  background-position: -0px -215px;
+  width: 38px;
+  height: 38px;
+}
+.aw-circle {
+  background-position: -0px -253px;
+  width: 58px;
+  height: 58px;
+}
+.aw-recticle {
+  background-position: -0px -311px;
+  width: 58px;
+  height: 58px;
+}
+.aw-cursor {
+  background-position: -0px -369px;
+  width: 63px;
+  height: 91px;
+}

@@ -1,0 +1,80 @@
+{
+  "sprites": {
+    "aw_assets.png": {
+      "width": 63,
+      "height": 460
+    }
+  },
+  "tiles": {
+    "note.png": {
+      "width": 22,
+      "height": 22,
+      "x": 4,
+      "y": 4,
+      "sprite": "aw_assets.png"
+    },
+    "aw_afv.png": {
+      "width": 29,
+      "height": 29,
+      "x": 4,
+      "y": 34,
+      "sprite": "aw_assets.png"
+    },
+    "aw_lt.png": {
+      "width": 29,
+      "height": 29,
+      "x": 4,
+      "y": 71,
+      "sprite": "aw_assets.png"
+    },
+    "aw_mbt.png": {
+      "width": 29,
+      "height": 29,
+      "x": 4,
+      "y": 108,
+      "sprite": "aw_assets.png"
+    },
+    "aw_spg.png": {
+      "width": 29,
+      "height": 29,
+      "x": 4,
+      "y": 145,
+      "sprite": "aw_assets.png"
+    },
+    "aw_td.png": {
+      "width": 29,
+      "height": 29,
+      "x": 4,
+      "y": 182,
+      "sprite": "aw_assets.png"
+    },
+    "dot.png": {
+      "width": 30,
+      "height": 30,
+      "x": 4,
+      "y": 219,
+      "sprite": "aw_assets.png"
+    },
+    "circle.png": {
+      "width": 50,
+      "height": 50,
+      "x": 4,
+      "y": 257,
+      "sprite": "aw_assets.png"
+    },
+    "recticle.png": {
+      "width": 50,
+      "height": 50,
+      "x": 4,
+      "y": 315,
+      "sprite": "aw_assets.png"
+    },
+    "cursor.png": {
+      "width": 55,
+      "height": 83,
+      "x": 4,
+      "y": 373,
+      "sprite": "aw_assets.png"
+    }
+  }
+}

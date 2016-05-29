@@ -32,7 +32,8 @@
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a> &nbsp; (<a href="<%=game%>planner2.html" id="new_room2" role="button"><%= l('try a different ui')%></a>)</p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a><br /><br />
+			(<a href="<%=game%>planner2.html" id="new_room2" role="button"><%= l('try a different ui')%></a>)</p>
 			<script type="text/javascript">
 				function newUid() {
 				  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
@@ -120,19 +121,19 @@
 		<h2>Latest changes</h2>
 		<p>
 		<ul>
-			<li>Text should appear more crisp
+			<li>Added some hight contrast maps for cs:go
+			<li>Text should appear more crisp. And removed the bold tag on it
+			<li>Decided things like size/thickness should scale with zooming
 			<li>Added size to ping
-			<li>Using html5 &lt;input type=&quot;range&quot;&gt; sliders instead of custom ones
-			<li>Properly respecting z-ordering
-			<li>Most tools can now be used by either dragging while holding the left mouse or clicking twice
+			<li>Testing new ui and pixi v4, try it with "alternative ui"
 		</ul> 
 		On the bug hunting front:
 		<ul>
+			<li>Some tools were not working on touch devices
 			<li>ping marker was off a bit on remotely connected clients when dragging
-			<li>You can log in again from the planner page on FF.
+			<li>You can log in again from the planner page on FF
 			<li>Track cursor didn't work too well while zooming and panning
 			<li>Remove tracked cursor when someone loses privileges
-			<li>Creating stuff outside the viewable area would sometimes stretch new things you added
 		</ul>
 		If you find anything else, however small, that is broken, pls let me know. 
 	</div>
