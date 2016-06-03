@@ -46,7 +46,9 @@
 <%} else if (game == 'sc2') {%>
 	<meta name="keywords" content="sc2,starcraft,starcraft II,starcraft 2,buildings,builds,units,composition,blizzard">
 <%} else if (game == 'csgo') {%>
-	<meta name="keywords" content="sc:go,csgo,cs,counter,strike,counterstrike,global offensive,team,composition">
+	<meta name="keywords" content="cs:go,csgo,cs,counter,strike,counterstrike,global offensive,team,composition">
+<%} else if (game == 'warface') {%>
+	<meta name="keywords" content="warface,crytek">
 <%} else if (game == 'blitz') {%>
 	<meta name="keywords" content="wot,world,tanks,world of tanks,blitz,world of tanks blitz,cw,clanwar,wargaming,armored,stronghold,campaign,tier,tank">
 <%}%>
@@ -71,8 +73,8 @@
 </script>
 <%}%>
 
-<link rel="prefetch" href="<%=static_host%>/stylesheets/sprite.png">
-<link rel="prefetch" href="<%=static_host%>/stylesheets/fonts/icomoon.ttf">
+<link rel="preload" href="<%=static_host%>/stylesheets/sprite.png" as="image">
+<link rel="preload" href="<%=static_host%>/stylesheets/fonts/icomoon.ttf" as="font">
 
 <script defer type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script defer src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>

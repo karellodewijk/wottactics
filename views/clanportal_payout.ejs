@@ -2,7 +2,6 @@
 <html>
 <head>
 	<% include clanportal_headers.ejs %>
-	<script defer type="text/javascript" src="/javascripts/index.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.23.5/js/jquery.tablesorter.js"></script>
 	<link rel="stylesheet" href="/stylesheets/tablesorter/style.css" />
 	<title><%=l('Clanportal')%><%if (clan) {%> - <%=clan.name;%><%}%> - <%=l('payout')%></title>
@@ -21,25 +20,34 @@
 			  <div class="col-md-4"><b>Gold to distribute:</b> <input id="treasury" type='text' value=<%=clan.treasury%> /></div>
 			</div>
     		<div class="list-group-item row">
-			  <div class="col-md-2"><b>CW</b> <input id="CW" type='text' value=<%=clan.multipliers.CW%> /></div>
-			  <div class="col-md-2">win: <input id="CWW" type='text' value=<%=clan.multipliers.CWW%> /></div>
-			  <div class="col-md-2">loss: <input id="CWL" type='text' value=<%=clan.multipliers.CWL%> /></div>
-			  <div class="col-md-3">reserve: <input id="CWR" type='text' value=<%=clan.multipliers.CWR%> /></div>
-			  <div class="col-md-2">fc: <input id="CWFC" type='text' value=<%=clan.multipliers.CWFC%> /></div>
+			  <div class="col-md-1"><b>CW</b></div>
+			  <div class="col-md-1">T6 <input id="CW6" style="width: 50px;" type='text' value=<%=clan.multipliers.CW[0]%> /></div>
+			  <div class="col-md-1">T8 <input id="CW8" style="width: 50px;" type='text' value=<%=clan.multipliers.CW[1]%> /></div>
+			  <div class="col-md-1">T10 <input id="CW10" style="width: 50px;" type='text' value=<%=clan.multipliers.CW[2]%> /></div>
+			  <div class="col-md-1">win: <input id="CWW" style="width: 50px;" type='text' value=<%=clan.multipliers.CWW%> /></div>
+			  <div class="col-md-1">loss: <input id="CWL" style="width: 50px;" type='text' value=<%=clan.multipliers.CWL%> /></div>
+			  <div class="col-md-2">reserve: <input id="CWR" style="width: 50px;" type='text' value=<%=clan.multipliers.CWR%> /></div>
+			  <div class="col-md-1">fc: <input id="CWFC" style="width: 50px;" type='text' value=<%=clan.multipliers.CWFC%> /></div>
 			</div>
     		<div class="list-group-item row">
-			  <div class="col-md-2"><b>SH</b> <input id="SH" type='text' value=<%=clan.multipliers.SH%> /></div>
-			  <div class="col-md-2">win: <input id="SHW" type='text' value=<%=clan.multipliers.SHW%> /></div>
-			  <div class="col-md-2">loss: <input id="SHL" type='text' value=<%=clan.multipliers.SHL%> /></div>
-			  <div class="col-md-3">reserve: <input id="SHR" type='text' value=<%=clan.multipliers.SHR%> /></div>
-			  <div class="col-md-2">fc: <input id="SHFC" type='text' value=<%=clan.multipliers.SHFC%> /></div>
+			  <div class="col-md-1"><b>SH</b></div>
+			  <div class="col-md-1">T6 <input id="SH6" style="width: 50px;" type='text' value=<%=clan.multipliers.SH[0]%> /></div>
+			  <div class="col-md-1">T8 <input id="SH8" style="width: 50px;" type='text' value=<%=clan.multipliers.SH[1]%> /></div>
+			  <div class="col-md-1">T10 <input id="SH10" style="width: 50px;" type='text' value=<%=clan.multipliers.SH[2]%> /></div>
+			  <div class="col-md-1">win: <input id="SHW" style="width: 50px;" type='text' value=<%=clan.multipliers.SHW%> /></div>
+			  <div class="col-md-1">loss: <input id="SHL" style="width: 50px;" type='text' value=<%=clan.multipliers.SHL%> /></div>
+			  <div class="col-md-2">reserve: <input id="SHR" style="width: 50px;" type='text' value=<%=clan.multipliers.SHR%> /></div>
+			  <div class="col-md-1">fc: <input id="SHFC" style="width: 50px;" type='text' value=<%=clan.multipliers.SHFC%> /></div>
 			</div>
     		<div class="list-group-item row">
-			  <div class="col-md-2"><b>SK</b> <input id="SK" type='text' value=<%=clan.multipliers.SK%> /></div>
-			  <div class="col-md-2">win: <input id="SKW" type='text' value=<%=clan.multipliers.SKW%> /></div>
-			  <div class="col-md-2">loss: <input id="SKL" type='text' value=<%=clan.multipliers.SKL%> /></div>
-			  <div class="col-md-3">reserve: <input id="SKR" type='text' value=<%=clan.multipliers.SKR%> /></div>
-			  <div class="col-md-2">fc: <input id="SKFC" type='text' value=<%=clan.multipliers.SKFC%> /></div>			  
+			  <div class="col-md-1"><b>SK</b></div>
+			  <div class="col-md-1">T6 <input id="SK6" style="width: 50px;" width=10 type='text' value=<%=clan.multipliers.SK[0]%> /></div>
+			  <div class="col-md-1">T8 <input id="SK8" style="width: 50px;" type='text' value=<%=clan.multipliers.SK[1]%> /></div>
+			  <div class="col-md-1">T10 <input id="SK10" style="width: 50px;" type='text' value=<%=clan.multipliers.SK[1]%> /></div>
+			  <div class="col-md-1">win: <input id="SKW" style="width: 50px;" type='text' value=<%=clan.multipliers.SKW%> /></div>
+			  <div class="col-md-1">loss: <input id="SKL" style="width: 50px;" type='text' value=<%=clan.multipliers.SKL%> /></div>
+			  <div class="col-md-2">reserve: <input id="SKR" style="width: 50px;" type='text' value=<%=clan.multipliers.SKR%> /></div>
+			  <div class="col-md-1">fc: <input id="SKFC" style="width: 50px;" type='text' value=<%=clan.multipliers.SKFC%> /></div>			  
 			</div>	
     		<div class="list-group-item row">
 			  <div class="col-md-12"><b>Attendance</b> <input id="A" type='text' value=<%=clan.multipliers.A%> /></div>	  
@@ -57,24 +65,22 @@
 			You are not in a clan or you are not logged in. Pls login with your WG account.
 		<% } %>
 	</div>
-	<% include footer.ejs %>
-	</div>
 </body>
 
 <script type="text/javascript">
 	$("#recalculate").click(function() {
 		var multipliers = {};
-		multipliers.CW = parseFloat($("#CW").val());
+		multipliers.CW = [parseFloat($("#CW6").val()), parseFloat($("#CW8").val()), parseFloat($("#CW10").val())]
 		multipliers.CWW = parseFloat($("#CWW").val());
 		multipliers.CWL = parseFloat($("#CWL").val());
 		multipliers.CWR = parseFloat($("#CWR").val());
 		multipliers.CWFC = parseFloat($("#CWFC").val());
-		multipliers.SH = parseFloat($("#SH").val());
+		multipliers.SH = [parseFloat($("#SH6").val()), parseFloat($("#SH8").val()), parseFloat($("#SH10").val())]
 		multipliers.SHW = parseFloat($("#SHW").val());
 		multipliers.SHL = parseFloat($("#SHL").val());
 		multipliers.SHR = parseFloat($("#SHR").val());
 		multipliers.SHFC = parseFloat($("#SHFC").val());
-		multipliers.SK = parseFloat($("#SK").val());
+		multipliers.SK = [parseFloat($("#SK6").val()), parseFloat($("#SK8").val()), parseFloat($("#SK10").val())]
 		multipliers.SKW = parseFloat($("#SKW").val());
 		multipliers.SKL = parseFloat($("#SKL").val());
 		multipliers.SKR = parseFloat($("#SKR").val());
