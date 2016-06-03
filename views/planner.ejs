@@ -49,6 +49,9 @@
 	<% } else if (game == 'csgo') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 		<link rel="stylesheet" href="<%=static_host%>/csgo_icons.css">
+	<% } else if (game == 'warface') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/warface_icons.css">
 	<% } %>
 	<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>	
 	<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
@@ -68,7 +71,7 @@
 <body>
 	<div id="edit_window" class="edit_window" style="height:calc(100vh - 12px); width:calc(100vh - 12px);"></div>
 	
-	<div id="single_side_bar" class="side_bar jumbotron" style="vertical-align:top;">
+	<div id="single_side_bar" class="side_bar jumbotron" style="vertical-align:top; max-width:630px">
 	<nav class="navbar navbar-inverse container-fluid navbar_planner">
 	<div class="navbar-header">
 		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -91,6 +94,8 @@
 				href="/sc2">
 			<% } else if (game == 'csgo') { %>
 				href="/csgo">
+			<% } else if (game == 'warface') { %>
+				href="/warface">
 			<% } else if (game == 'aw') { %>
 				href="/">
 			<% } %><i class="fa-lg icon-home "></i>
@@ -129,7 +134,7 @@
 	</div>
 	</nav>	
 		<div class="top">
-			<div class="left_column">	
+			<div class="left_column" style="width:350px; padding:20px">	
 				<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
 				<p>
 					<div class="dropdown inline" id="map_select_container">
@@ -146,6 +151,8 @@
 							<%include sc2_maps.ejs%>
 						<%} else if (game == 'csgo') { %>
 							<%include csgo_maps.ejs%>
+						<%} else if (game == 'warface') { %>
+							<%include warface_maps.ejs%>
 						<%} else if (game == 'blitz') { %>	
 							<%include blitz_maps.ejs %>	
 						<%} else if (game == 'aw') { %>	
@@ -180,7 +187,7 @@
 					</button>
 					<%if (game != 'sc2') {%>
 					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
-						<div class="icon icon-<%if (game == 'wows') { %>ship_icon<%} else if (game == 'aw') { %>aw_icon<%} else if (game == 'lol') { %>icon_icon<%} else if (game == 'hots') { %>hots<% } else if (game == 'csgo') { %>csgo<% } else if (game == 'sc2') { %>sc2<% } else { %>tank_icon<%} %>"></div>
+						<div class="icon icon-<%if (game == 'wows') { %>ship_icon<%} else if (game == 'aw') { %>aw_icon<%} else if (game == 'lol') { %>icon_icon<%} else if (game == 'hots') { %>hots<% } else if (game == 'csgo') { %>csgo<% } else if (game == 'warface') { %>warface<% } else if (game == 'sc2') { %>sc2<% } else { %>tank_icon<%} %>"></div>
 					</button>
 					<%} else {%>
 					<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_terran" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
@@ -281,6 +288,8 @@
 						<%include hots_icons.ejs%>
 					<%} else if (game == 'csgo') { %>
 						<%include csgo_icons.ejs%>
+					<%} else if (game == 'warface') { %>
+						<%include warface_icons.ejs%>
 					<%} %>
 					
 					<div id="icon_options">
@@ -1037,7 +1046,7 @@
 			<div class="right_column">
 				<h4><%=l('User list')%> (<span id="user_count"></span>)</h4>
 				<p>
-				<div class="btn-group-vertical btn-group-xs" role="group" id="userlist"></div>
+				<div class="btn-group-vertical btn-group-xs" role="group" id="userlist" style="min-height:500px;"></div>
 			</div>
 			<% } %>
 			

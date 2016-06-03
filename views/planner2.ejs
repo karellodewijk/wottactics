@@ -49,11 +49,14 @@
 	<% } else if (game == 'csgo') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 		<link rel="stylesheet" href="<%=static_host%>/csgo_icons.css">
+	<% } else if (game == 'warface') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/warface_icons.css">
 	<% } %>
 	<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>
 	<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
 	<script defer type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/pixiv4/pixi.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/pixi.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
@@ -64,7 +67,7 @@
 	<script id="static_host" data-static_host="<%=static_host%>"></script>
 	<script id="socket_io_servers" data-socket_io_servers="<%=socket_io_servers%>"></script>
 </head>
-<body style="width:100%; background-color:#333333; margin:0px; padding:0px; border: 1px solid black; color:white; min-width: 100%; height:100%; display: inline-block;">
+<body style="width:100%; background-color:#333333; padding:0px; margin:0px; border:0; color:white; min-width: 100%; height:100%; display: inline-block;">
 	<style>
 	input, textarea, .chatmsg, .userlist {
 	  color : black;
@@ -74,7 +77,7 @@
 	}
 	</style>
 
-	<div id="left_side_bar" style="max-width:350px; height:100vh; vertical-align:top; float:left; display:flex; flex-direction:column;">
+	<div id="left_side_bar" style="max-width:340px; height:100%; vertical-align:top; float:left; display:flex; flex-direction:column;">
 		<div style="flex: 0 1 auto; justify-content: flex-start;">
 			<nav id="left_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
 				<div id="home_button" class="navbar-header">
@@ -98,6 +101,8 @@
 							href="/sc2">
 						<% } else if (game == 'csgo') { %>
 							href="/csgo">
+						<% } else if (game == 'warface') { %>
+							href="/warface">
 						<% } else if (game == 'aw') { %>
 							href="/">
 						<% } %><i class="fa-lg icon-home"></i>
@@ -129,6 +134,8 @@
 					<%include sc2_maps.ejs%>
 				<%} else if (game == 'csgo') { %>
 					<%include csgo_maps.ejs%>
+				<%} else if (game == 'warface') { %>
+					<%include warface_maps.ejs%>
 				<%} else if (game == 'blitz') { %>	
 					<%include blitz_maps.ejs %>	
 				<%} else if (game == 'aw') { %>	
@@ -168,11 +175,11 @@
 			  <li id="export_tab_button"><a data-toggle="tab" href="#export_tab"><%=l('Export')%></a></li>
 			</ul>
 			<div class="tab-content">
-				<div class="tab-pane active" style="min-height:250px; width:330px" id="chat_tab">
+				<div class="tab-pane active" style="min-height:250px; width:320px" id="chat_tab">
 					<div id="chat_box" class="fake_textarea" style="height:200px;"></div>
 					<input id="chat_input" maxlength="500" class="slider_text_input" type="text" style="height:20%; width:100%;"/>
 				</div>
-				<div class="tab-pane" id="slide_tab" style="min-height:250px; width:330px">
+				<div class="tab-pane" id="slide_tab" style="min-height:250px; width:320px">
 					<div class="input-group dropdown" id="slide_interactive">
 						<span class="input-group-btn">
 							<button class="btn btn-default slide_btn" id="prev_slide" data-toggle="tooltip" title="<%=l('Previous slide')%>">&#9664;</button>
@@ -200,7 +207,7 @@
 						</table>
 					</div>
 				</div>
-				<div class="tab-pane" id="export_tab" style="min-height:250px; width:330px">
+				<div class="tab-pane" id="export_tab" style="min-height:250px; width:320px">
 					<div class="btn-group input-group dropdown" id="export_box">
 						<button id="export" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Save tactic as image')%>">
 							<div class="icon icon-export"></div>
@@ -217,9 +224,9 @@
 		</div>
 	</div>	
 	
-	<div id="edit_window" class="edit_window" style="height:calc(100vh - 2px); width:calc(100vh - 2px); display: inline-block; vertical-align:top;"></div>
+	<div id="edit_window" class="edit_window" style="height:100%; width:calc(100vh); display: inline-block; vertical-align:top; padding:0px; margin:0px; border:0;"></div>
 
-	<div id="right_side_bar" style="max-width:340px; display: inline-block; vertical-align:top;">
+	<div id="right_side_bar" style="height:100%; max-width:304px; display: inline-block; vertical-align:top;">
 		<nav id="right_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
 			<ul class="nav navbar-nav navbar-left container-fluid">
 				<div class="btn-group">
@@ -243,852 +250,852 @@
 				</div>
 			</ul>
 		</nav>	
-		<div class="top">
-			<div class="left_column">	
-				<h4><%=l('Tools')%></h4>
-				<p>
-					<div id="contexts">
-					<div class="btn-group">
-					<button type="button" style="border-radius: 0px; margin-left: -1px;" class="btn btn-default menu_btn" aria-label="Left Align" id="ping" data-toggle="tooltip" title="<%=l('Ping map')%>">
-						<div class="icon icon-ping_icon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
-						<div class="icon icon-recticle_icon"></div>
-					</button>
-					<%if (game != 'sc2') {%>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
-						<div class="icon icon-<%if (game == 'wows') { %>ship_icon<%} else if (game == 'aw') { %>aw_icon<%} else if (game == 'lol') { %>icon_icon<%} else if (game == 'hots') { %>hots<% } else if (game == 'csgo') { %>csgo<% } else if (game == 'sc2') { %>sc2<% } else { %>tank_icon<%} %>"></div>
-					</button>
-					<%} else {%>
-					<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_terran" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
-						<div class="icon icon-terran"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_zerg" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
-						<div class="icon icon-zerg"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_protoss" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
-						<div class="icon icon-protoss"></div>
-					</button>					
-					<%}%>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
-						<div class="icon icon-pencil"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="line" data-toggle="tooltip" title="<%=l('Draw line (hold left mouse)')%>">
-						<div class="icon icon-line_icon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="curve" data-toggle="tooltip" title="<%=l('Draw curve (double click to end)')%>">
-						<div class="icon icon-curve"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="<%=l('Draw rectangle')%>">
-						<div class="icon icon-rectangle"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="circle" data-toggle="tooltip" title="<%=l('Draw circle')%>">
-						<div class="icon icon-draw_circle_icon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="polygon" data-toggle="tooltip" title="<%=l('Draw polygon')%>">
-						<div class="icon icon-polygon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="area" data-toggle="tooltip" title="<%=l('Draw area')%>">
-						<div class="icon icon-area"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
-						<div class="icon icon-text_icon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="background_text" data-toggle="tooltip" title="<%=l('Add Text with background')%>">
-						<div class="icon icon-text_on_background"></div>
-					</button>			
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="undo" data-toggle="tooltip" title="<%=l('Undo last action')%>">
-						<div class="icon icon-undo"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="redo" data-toggle="tooltip" title="<%=l('Redo last action')%>">
-						<div class="icon icon-redo"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="remove" data-toggle="tooltip" title="<%=l('Delete (click map)/Delete menu')%>">
-						<div class="icon icon-bin"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="eraser" data-toggle="tooltip" title="<%=l('Erase')%>">
-						<div class="icon icon-eraser"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="note" data-toggle="tooltip" title="<%=l('Add a note')%>">
-						<div class="icon icon-note"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
-						<div class="icon icon-select"></div>
-					</button>					
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="ruler" data-toggle="tooltip" title="<%=l('Ruler')%>">
-						<div class="icon icon-ruler_icon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="cut" data-toggle="tooltip" title="<%=l('Cut (ctrl-x)')%>">
-						<div class="icon icon-cut"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="copy" data-toggle="tooltip" title="<%=l('Copy (ctrl-c)')%>">
-						<div class="icon icon-copy"></div>
-					</button>			
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="paste" data-toggle="tooltip" title="<%=l('Paste (press ctrl-v while on the map to paste to a specific location)')%>">
-						<div class="icon icon-paste"></div>
-					</button>
-					<button type="button" style="border-radius: 0px; margin-left: -1px;" class="btn btn-default" aria-label="Left Align" id="clear_all_main" data-toggle="tooltip" title="<%=l('Clear all')%>">
-						<div class="icon icon-clear"></div>
-					</button>					
-					</div>
-					</div>					
-
-				<hr>
-				
-				<div id='icon_context'>
-						
-				<h4><%=l('Icon options')%> (<span id="icon_counter">0</span>)</h4>
-					<div id="icon_label_container">
-					<p>	
-					<small><%=l('Label')%></small> <input type="text" id="icon_label" />
-					<p>
-					</div>
-					
-					<%if (game == 'wot') { %>
-						<%include wot_icons.ejs%>
-					<%} else if (game == 'wows') { %>
-						<%include wows_icons.ejs%>
-					<%} else if (game == 'blitz') { %>
-						<%include blitz_icons.ejs%>
-					<%} else if (game == 'aw') { %>
-						<%include aw_icons.ejs%>
-					<%} else if (game == 'lol') { %>
-						<%include lol_icons.ejs%>
-					<%} else if (game == 'hots') { %>
-						<%include hots_icons.ejs%>
-					<%} else if (game == 'csgo') { %>
-						<%include csgo_icons.ejs%>
-					<%} %>
-					
-					<div id="icon_options">
-					<select name="colorpicker" id="icon_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<%if (game == 'aw') { %>
-						<option value="#70c5ea"><%=l('Cyan')%></option>
-						<% } %>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<%if (game != 'aw') { %>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-						<% } %>
-						<option value="#ffffff"><%=l('White')%></option>
-					</select>
-					<input type="color">
-
-
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Label size')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"18"<%} else {%>"8"<%}%> max="100" step="1" list="label_font_size_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="label_font_size_text" class="slider_text_input" type="text"/>
-						</div>	
-					</div>	
-
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Icon size')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="icon_size" min="5" value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%> max="100" step="1" list="icon_size_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="icon_size_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>	
-					</div>					
-				</div>
-				
-				<%if (game == 'sc2') {%>
-				<div id="icon_terran_context">
-				<h4><%=l('Terran Icon options')%></h4>
-					<%include sc2_terran_icons.ejs%><br/>
-				</div>
-				<div id="icon_zerg_context">
-				<h4><%=l('Zerg Icon options')%></h4>
-					<%include sc2_zerg_icons.ejs%><br/>
-				</div>
-				<div id="icon_protoss_context">
-				<h4><%=l('Protoss Icon options')%></h4>
-					<%include sc2_protoss_icons.ejs%><br/>
-				</div>
+		<div class="left_column">
+			<h4><%=l('Tools')%></h4>
+			<p>
+				<div id="contexts">
+				<div class="btn-group">
+				<button type="button" style="border-radius: 0px; margin-left: -1px;" class="btn btn-default menu_btn" aria-label="Left Align" id="ping" data-toggle="tooltip" title="<%=l('Ping map')%>">
+					<div class="icon icon-ping_icon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
+					<div class="icon icon-recticle_icon"></div>
+				</button>
+				<%if (game != 'sc2') {%>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+					<div class="icon icon-<%if (game == 'wows') { %>ship_icon<%} else if (game == 'aw') { %>aw_icon<%} else if (game == 'lol') { %>icon_icon<%} else if (game == 'hots') { %>hots<% } else if (game == 'csgo') { %>csgo<% } else if (game == 'warface') { %>warface<% } else if (game == 'sc2') { %>sc2<% } else { %>tank_icon<%} %>"></div>
+				</button>
+				<%} else {%>
+				<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_terran" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+					<div class="icon icon-terran"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_zerg" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+					<div class="icon icon-zerg"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_protoss" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+					<div class="icon icon-protoss"></div>
+				</button>					
 				<%}%>
-
-				
-				<div id='draw_context'>			
-				
-				<h4><%=l('Draw options')%></h4>
-				
-				<p>
-					<select name="colorpicker" id="draw_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Thickness')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="draw_thickness" min="1" value="3" max="10" step="1" list="draw_thickness_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="draw_thickness_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>
-					<p>
-					
-					<table>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
-							<td><div class="btn-group" role="group" id="draw_type">						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
-								<div class="icon icon-curved_line"></div>
-							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
-								<div class="icon icon-curved_dotted_line"></div>
-							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
-								<div class="icon icon-curved_dashed_line"></div>
-							</button>
-							</div></td>
-						</tr>
-						<tr><td>&nbsp;</td></tr>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('End')%></small></td>
-							<td><div class="btn-group" role="group" id="draw_end_type">
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
-								<div class="icon icon-curved_line"></div>
-							</button>						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
-								<div class="icon icon-curved_arrow"></div>
-							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
-								<div class="icon icon-curve_T"></div>
-							</button>
-							</div></td>
-						</tr>
-					</table>					
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
+					<div class="icon icon-pencil"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="line" data-toggle="tooltip" title="<%=l('Draw line (hold left mouse)')%>">
+					<div class="icon icon-line_icon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="curve" data-toggle="tooltip" title="<%=l('Draw curve (double click to end)')%>">
+					<div class="icon icon-curve"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="rectangle" data-toggle="tooltip" title="<%=l('Draw rectangle')%>">
+					<div class="icon icon-rectangle"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="circle" data-toggle="tooltip" title="<%=l('Draw circle')%>">
+					<div class="icon icon-draw_circle_icon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="polygon" data-toggle="tooltip" title="<%=l('Draw polygon')%>">
+					<div class="icon icon-polygon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="area" data-toggle="tooltip" title="<%=l('Draw area')%>">
+					<div class="icon icon-area"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="text" data-toggle="tooltip" title="<%=l('Add Text')%>">
+					<div class="icon icon-text_icon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="background_text" data-toggle="tooltip" title="<%=l('Add Text with background')%>">
+					<div class="icon icon-text_on_background"></div>
+				</button>			
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="undo" data-toggle="tooltip" title="<%=l('Undo last action')%>">
+					<div class="icon icon-undo"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="redo" data-toggle="tooltip" title="<%=l('Redo last action')%>">
+					<div class="icon icon-redo"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="remove" data-toggle="tooltip" title="<%=l('Delete (click map)/Delete menu')%>">
+					<div class="icon icon-bin"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="eraser" data-toggle="tooltip" title="<%=l('Erase')%>">
+					<div class="icon icon-eraser"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="note" data-toggle="tooltip" title="<%=l('Add a note')%>">
+					<div class="icon icon-note"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="select" data-toggle="tooltip" title="<%=l('Select items on the map')%>">
+					<div class="icon icon-select"></div>
+				</button>					
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="ruler" data-toggle="tooltip" title="<%=l('Ruler')%>">
+					<div class="icon icon-ruler_icon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="cut" data-toggle="tooltip" title="<%=l('Cut (ctrl-x)')%>">
+					<div class="icon icon-cut"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="copy" data-toggle="tooltip" title="<%=l('Copy (ctrl-c)')%>">
+					<div class="icon icon-copy"></div>
+				</button>			
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" id="paste" data-toggle="tooltip" title="<%=l('Paste (press ctrl-v while on the map to paste to a specific location)')%>">
+					<div class="icon icon-paste"></div>
+				</button>
+				<button type="button" style="border-radius: 0px; margin-left: -1px;" class="btn btn-default" aria-label="Left Align" id="clear_all_main" data-toggle="tooltip" title="<%=l('Clear all')%>">
+					<div class="icon icon-clear"></div>
+				</button>					
 				</div>
+				</div>					
 
-				<div id='curve_context'>			
-				
-				<h4><%=l('Curve options')%></h4>
-				
+			<hr>
+			
+			<div id='icon_context'>
+					
+			<h4><%=l('Icon options')%> (<span id="icon_counter">0</span>)</h4>
+				<div id="icon_label_container">
+				<p>	
+				<small><%=l('Label')%></small> <input type="text" id="icon_label" />
 				<p>
-					<select name="colorpicker" id="curve_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Thickness')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="curve_thickness" min="1" value="3" max="10" step="1" list="curve_thickness_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="curve_thickness_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>
-					<p>
-					<table>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
-							<td><div class="btn-group" role="group" id="curve_type">						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal curve')%>">
-								<div class="icon icon-curved_line"></div>
-							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted curve')%>">
-								<div class="icon icon-curved_dotted_line"></div>
-							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed curve')%>">
-								<div class="icon icon-curved_dashed_line"></div>
-							</button>
-							</div></td>
-						</tr>
-						<tr><td>&nbsp;</td></tr>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('End')%></small></td>
-							<td><div class="btn-group" role="group" id="curve_end_type">
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
-								<div class="icon icon-curved_line"></div>
-							</button>						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
-								<div class="icon icon-curved_arrow"></div>
-							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
-								<div class="icon icon-curve_T"></div>
-							</button>
-							</div></td>
-						</tr>
-					</table>
 				</div>
 				
-				<div id='rectangle_context'>			
+				<%if (game == 'wot') { %>
+					<%include wot_icons.ejs%>
+				<%} else if (game == 'wows') { %>
+					<%include wows_icons.ejs%>
+				<%} else if (game == 'blitz') { %>
+					<%include blitz_icons.ejs%>
+				<%} else if (game == 'aw') { %>
+					<%include aw_icons.ejs%>
+				<%} else if (game == 'lol') { %>
+					<%include lol_icons.ejs%>
+				<%} else if (game == 'hots') { %>
+					<%include hots_icons.ejs%>
+				<%} else if (game == 'csgo') { %>
+					<%include csgo_icons.ejs%>
+				<%} else if (game == 'warface') { %>
+					<%include warface_icons.ejs%>
+				<%} %>
 				
-				<h4><%=l('Rectangle options')%></h4>
-				
-				<p>
-					<h5><%=l('Outline')%></h5>
-					<select name="colorpicker" id="rectangle_outline_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Thickness')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="rectangle_outline_thickness" min="0" value="2" max="10" step="1" list="rectangle_outline_thickness_ticks">
-						</div>	
-						<div class="col-sm-2"><input id="rectangle_outline_thickness_text" class="slider_text_input" type="text"/>
-						</div>	
-					</div>	
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Transparancy')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="rectangle_outline_transparancy" min="0" value="0" max="100" step="1" list="rectangle_outline_transparancy_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="rectangle_outline_transparancy_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>
-									
-					<h5><%=l('Fill')%></h5>	
-					<select name="colorpicker" id="rectangle_fill_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">	
-					
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Transparancy')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="rectangle_fill_transparancy" min="0" value="80" max="100" step="1" list="rectangle_fill_transparancy_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="rectangle_fill_transparancy_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>
-					<br />
-					<table>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
-							<td><div class="btn-group" role="group" id="rectangle_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
-									<div class="icon icon-line_icon"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
-									<div class="icon icon-dotted_line"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
-									<div class="icon icon-dashed_line"></div>
-								</button>
-							</div></td>
-						</tr>
-					</table>
-				</div>
+				<div id="icon_options">
+				<select name="colorpicker" id="icon_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<%if (game == 'aw') { %>
+					<option value="#70c5ea"><%=l('Cyan')%></option>
+					<% } %>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<%if (game != 'aw') { %>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% } %>
+					<option value="#ffffff"><%=l('White')%></option>
+				</select>
+				<input type="color">
 
-				<div id='circle_context'>			
-				
-				<h4><%=l('Circle options')%></h4>
-				
-				<p>
-					<h5><%=l('Outline')%></h5>
-					<select name="colorpicker" id="circle_outline_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Thickness')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="circle_outline_thickness" min="0" value="2" max="10" step="1" list="circle_outline_thickness_ticks">
-						</div>	
-						<div class="col-sm-2"><input id="circle_outline_thickness_text" class="slider_text_input" type="text"/>
-						</div>	
+
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Label size')%></small>
 					</div>	
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Transparancy')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="circle_outline_transparancy" min="0" value="0" max="100" step="1" list="circle_outline_transparancy_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="circle_outline_transparancy_text" class="slider_text_input" type="text"/>
-						</div>
+					<div class="col-sm-6">
+						<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"18"<%} else {%>"8"<%}%> max="100" step="1" list="label_font_size_ticks">
 					</div>	
-									
-					<h5><%=l('Fill')%></h5>	
-					<select name="colorpicker" id="circle_fill_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Transparancy')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="circle_fill_transparancy" min="0" value="80" max="100" step="1" list="circle_fill_transparancy_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="circle_fill_transparancy_text" class="slider_text_input" type="text"/>
-						</div>
+					<div class="col-sm-2">
+						<input id="label_font_size_text" class="slider_text_input" type="text"/>
+					</div>	
+				</div>	
+
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Icon size')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="icon_size" min="5" value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%> max="100" step="1" list="icon_size_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="icon_size_text" class="slider_text_input" type="text"/>
 					</div>
-					<br />					
-					<table>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
-							<td><div class="btn-group" role="group" id="circle_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
-									<div class="icon icon-line_icon"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
-									<div class="icon icon-dotted_line"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
-									<div class="icon icon-dashed_line"></div>
-								</button>
-							</div></td>
-						</tr>
-					</table>
-					<br />
-					<table>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('Draw style')%></small></td>				
-							<td><div class="btn-group" role="group" id="circle_draw_style">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-draw_style="edge" data-toggle="tooltip" title="<%=l('Edge drag')%>">
-									<div class="icon icon-draw_circle_icon"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-draw_style="radius" data-toggle="tooltip" title="<%=l('Radius drag')%>">
-									<div class="icon icon-draw_circle_radius_icon"></div>
-								</button>
-							</div></td>
-						</tr>
-					</table>
-				</div>
+				</div>	
+				</div>					
+			</div>
+			
+			<%if (game == 'sc2') {%>
+			<div id="icon_terran_context">
+			<h4><%=l('Terran Icon options')%></h4>
+				<%include sc2_terran_icons.ejs%><br/>
+			</div>
+			<div id="icon_zerg_context">
+			<h4><%=l('Zerg Icon options')%></h4>
+				<%include sc2_zerg_icons.ejs%><br/>
+			</div>
+			<div id="icon_protoss_context">
+			<h4><%=l('Protoss Icon options')%></h4>
+				<%include sc2_protoss_icons.ejs%><br/>
+			</div>
+			<%}%>
 
-				<div id='polygon_context'>			
-				
-				<h4><%=l('Polygon options')%></h4>
-				
-				<p>
-					<h5><%=l('Outline')%></h5>
-					<select name="colorpicker" id="polygon_outline_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Thickness')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="polygon_outline_thickness" min="0" value="2" max="10" step="1" list="polygon_outline_thickness_ticks">
-						</div>	
-						<div class="col-sm-2"><input id="polygon_outline_thickness_text" class="slider_text_input" type="text"/>
-						</div>	
-					</div>	
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Transparancy')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="polygon_outline_transparancy" min="0" value="0" max="100" step="1" list="polygon_outline_transparancy_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="polygon_outline_transparancy_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>	
-									
-					<h5><%=l('Fill')%></h5>
-					<select name="colorpicker" id="polygon_fill_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Transparancy')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="polygon_fill_transparancy" min="0" value="80" max="100" step="1" list="polygon_fill_transparancy_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="polygon_fill_transparancy_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>
-					<br />					
-					<table>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
-							<td><div class="btn-group" role="group" id="polygon_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
-									<div class="icon icon-line_icon"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
-									<div class="icon icon-dotted_line"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
-									<div class="icon icon-dashed_line"></div>
-								</button>
-							</div></td>
-						</tr>
-					</table>
-				</div>
-
-				<div id='area_context'>			
-				
-				<h4><%=l('Area options')%></h4>
-				
-				<p>
-					<h5><%=l('Outline')%></h5>
-					<select name="colorpicker" id="area_outline_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Thickness')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="area_outline_thickness" min="0" value="2" max="10" step="1" list="area_outline_thickness_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="area_outline_thickness_text" class="slider_text_input" type="text"/>
-						</div>	
-					</div>	
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Transparancy')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="area_outline_transparancy" min="0" value="0" max="100" step="1" list="area_outline_transparancy_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="area_outline_transparancy_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>	
-									
-					<h5><%=l('Fill')%></h5>
-					<select name="colorpicker" id="area_fill_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Transparancy')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="area_fill_transparancy" min="0" value="80" max="100" step="1" list="area_fill_transparancy_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="area_fill_transparancy_text" class="slider_text_input" type="text" />
-						</div>
-					</div>
-					<br />
-					<table>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
-							<td><div class="btn-group" role="group" id="area_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
-									<div class="icon icon-line_icon"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
-									<div class="icon icon-dotted_line"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
-									<div class="icon icon-dashed_line"></div>
-								</button>
-							</div></td>
-						</tr>
-					</table>
-				</div>
-				
-				<div id='ping_context'>			
-				
-				<h4><%=l('Ping options')%></h4>
-				
-				<p>
-					<select name="colorpicker" id="ping_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-		
-					<div class="row">
-						<div class="col-sm-2">
-							<small><%=l('Size')%></small></div>
-						<div class="col-sm-8">
-							<input type="range" id="ping_size" min="1" value="10" max="20" step="1" list="ping_size_ticks">
-						</div>
-						<div class="col-sm-2">
-
-							<input id="ping_size_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>
-				</div>
-
-				<div id='track_context'>
-
-				<h4><%=l('Track options')%></h4>
-				
-				<p>
-				<select name="colorpicker" id="track_colorpicker">
+			
+			<div id='draw_context'>			
+			
+			<h4><%=l('Draw options')%></h4>
+			
+			<p>
+				<select name="colorpicker" id="draw_colorpicker">
 					<option value="#ff0000"><%=l('Red')%></option>
 					<option value="#00ff00"><%=l('Green')%></option>
 					<option value="#87CEFA"><%=l('Blue')%></option>
 					<option value="#ffffff"><%=l('White')%></option>
 					<option value="#ffff00"><%=l('Yellow')%></option>
-				</select>			
-				<input type="color">					
-
-				<div class="btn-group" role="group" id="track_shape">
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="cursor" data-toggle="tooltip" title="<%=l('Cursor')%>">
-						<div class="icon icon-cursor_icon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="circle" data-toggle="tooltip" title="<%=l('Circle')%>">
-						<div class="icon icon-circle_icon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="dot" data-toggle="tooltip" title="<%=l('Dot')%>">
-						<div class="icon icon-dot_icon"></div>
-					</button>
-					<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="recticle" data-toggle="tooltip" title="<%=l('Crosshair')%>">
-						<div class="icon icon-recticle_icon"></div>
-					</button>
+				</select>
+				<input type="color">
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Thickness')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="draw_thickness" min="1" value="3" max="10" step="1" list="draw_thickness_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="draw_thickness_text" class="slider_text_input" type="text"/>
+					</div>
 				</div>
-				</div>
-				
-				
-				<div id='remove_context'>			
-
-				<h4><%=l('Remove options')%></h4>
-				
 				<p>
-					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_all" data-toggle="tooltip" title="<%=l('Clear all')%>">
-							<div class="icon icon-clear"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_draw" data-toggle="tooltip" title="<%=l('Clear all free draw')%>">
-							<div class="icon icon-clear_draw"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_icons" data-toggle="tooltip" title="<%=l('clear all icons')%>">
-							<div class="icon icon-clear_icon"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_lines" data-toggle="tooltip" title="<%=l('Clear all lines and arrows')%>">
-							<div class="icon icon-clear_line"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_text" data-toggle="tooltip" title="<%=l('Clear all text')%>">
-							<div class="icon icon-clear_text"></div>
-						</button>
-					</div>
-					<br />
-					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_selected" data-toggle="tooltip" title="<%=l('Clear all selected items')%>">
-							<div class="icon icon-clear_selected"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_curve" data-toggle="tooltip" title="<%=l('Clear all curved lines')%>">
-							<div class="icon icon-clear_curve"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_rectangle" data-toggle="tooltip" title="<%=l('Clear all rectangles')%>">
-							<div class="icon icon-clear_rectangle"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_circle" data-toggle="tooltip" title="<%=l('Clear all circles')%>">
-							<div class="icon icon-clear_circle"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_polygon" data-toggle="tooltip" title="<%=l('Clear all polygons')%>">
-							<div class="icon icon-clear_polygon"></div>
-						</button>
-					</div>
-					<br />
-					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_area" data-toggle="tooltip" title="<%=l('Clear all areas')%>">
-							<div class="icon icon-clear_area"></div>
-						</button>
-						<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_note" data-toggle="tooltip" title="<%=l('Clear all notes')%>">
-							<div class="icon icon-clear_note"></div>
-						</button>				
-					</div>
-				</div>
-
-				<div id='text_context'>
-
-				<h4><%=l('Text options')%></h4>
 				
-				<p>	
-				<small><%=l('Text')%></small> <input type="text" id="text_tool_text"/>
-				
-					<p>
-					<select name="colorpicker" id="text_colorpicker">
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#000000"><%=l('Black')%></option>
-					</select>
-					<input type="color">
-					
-					
-					<br />
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Size')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="font_size" min="5" value="12" max="100" step="1" list="font_size_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="font_size_text" class="slider_text_input" type="text"/>
-						</div>
+				<table>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
+						<td><div class="btn-group" role="group" id="draw_type">						
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+							<div class="icon icon-curved_line"></div>
+						</button>
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+							<div class="icon icon-curved_dotted_line"></div>
+						</button>
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+							<div class="icon icon-curved_dashed_line"></div>
+						</button>
+						</div></td>
+					</tr>
+					<tr><td>&nbsp;</td></tr>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('End')%></small></td>
+						<td><div class="btn-group" role="group" id="draw_end_type">
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
+							<div class="icon icon-curved_line"></div>
+						</button>						
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<div class="icon icon-curved_arrow"></div>
+						</button>
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<div class="icon icon-curve_T"></div>
+						</button>
+						</div></td>
+					</tr>
+				</table>					
+			</div>
+
+			<div id='curve_context'>			
+			
+			<h4><%=l('Curve options')%></h4>
+			
+			<p>
+				<select name="colorpicker" id="curve_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Thickness')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="curve_thickness" min="1" value="3" max="10" step="1" list="curve_thickness_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="curve_thickness_text" class="slider_text_input" type="text"/>
 					</div>
 				</div>
-				
-				<div id='background_text_context'>
-
-				<h4><%=l('Text with background options')%></h4>
-				
-				<p>	
-				<small><%=l('Text')%></small> <input type="text" id="text_tool_background_text"/>
-					<p>
-					<select name="colorpicker" id="background_text_colorpicker">
-						<option value="#000000"><%=l('Black')%></option>
-						<option value="#555555"><%=l('Grey')%></option>
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00AA00"><%=l('Green')%></option>
-						<option value="#0000FF"><%=l('Blue')%></option>
-
-					</select>
-					<input type="color">
-								
-					<br />
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Size')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="background_font_size" min="5" value="10" max="100" step="1" list="background_font_size_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="background_font_size_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>
-				</div>
-
-				<div id='line_context'>	
-								
-				<h4><%=l('Line options')%></h4>
-				
 				<p>
-					<select name="colorpicker" id="line_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<option value="#ffffff"><%=l('White')%></option>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-					</select>
-					<input type="color">
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Thickness')%></small>
-						</div>
-						<div class="col-sm-6">
-							<input type="range" id="line_thickness" min="1" value="3" max="10" step="1" list="line_thickness_ticks">
-						</div>
-						<div class="col-sm-2">
-							<input id="line_thickness_text" class="slider_text_input" type="text"/>
-						</div>
+				<table>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
+						<td><div class="btn-group" role="group" id="curve_type">						
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal curve')%>">
+							<div class="icon icon-curved_line"></div>
+						</button>
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted curve')%>">
+							<div class="icon icon-curved_dotted_line"></div>
+						</button>
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed curve')%>">
+							<div class="icon icon-curved_dashed_line"></div>
+						</button>
+						</div></td>
+					</tr>
+					<tr><td>&nbsp;</td></tr>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('End')%></small></td>
+						<td><div class="btn-group" role="group" id="curve_end_type">
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
+							<div class="icon icon-curved_line"></div>
+						</button>						
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<div class="icon icon-curved_arrow"></div>
+						</button>
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<div class="icon icon-curve_T"></div>
+						</button>
+						</div></td>
+					</tr>
+				</table>
+			</div>
+			
+			<div id='rectangle_context'>			
+			
+			<h4><%=l('Rectangle options')%></h4>
+			
+			<p>
+				<h5><%=l('Outline')%></h5>
+				<select name="colorpicker" id="rectangle_outline_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Thickness')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="rectangle_outline_thickness" min="0" value="2" max="10" step="1" list="rectangle_outline_thickness_ticks">
+					</div>	
+					<div class="col-sm-2"><input id="rectangle_outline_thickness_text" class="slider_text_input" type="text"/>
+					</div>	
+				</div>	
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Transparancy')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="rectangle_outline_transparancy" min="0" value="0" max="100" step="1" list="rectangle_outline_transparancy_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="rectangle_outline_transparancy_text" class="slider_text_input" type="text"/>
 					</div>
-					<p>
-					
-					<table>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
-							<td><div class="btn-group" role="group" id="line_type">						
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
-									<div class="icon icon-line_icon"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
-									<div class="icon icon-dotted_line"></div>
-								</button>
-								<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
-									<div class="icon icon-dashed_line"></div>
-								</button>
-							</div></td>
-						</tr>
-						<tr><td>&nbsp;</td></tr>
-						<tr>
-							<td style="padding-right:10px"><small><%=l('End')%></small></td>
-							<td><div class="btn-group" role="group" id="line_end_type">
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
+				</div>
+								
+				<h5><%=l('Fill')%></h5>	
+				<select name="colorpicker" id="rectangle_fill_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">	
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Transparancy')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="rectangle_fill_transparancy" min="0" value="80" max="100" step="1" list="rectangle_fill_transparancy_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="rectangle_fill_transparancy_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>
+				<br />
+				<table>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
+						<td><div class="btn-group" role="group" id="rectangle_type">						
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
 								<div class="icon icon-line_icon"></div>
-							</button>						
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
-								<div class="icon icon-arrow"></div>
 							</button>
-							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
-								<div class="icon icon-line_T"></div>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<div class="icon icon-dotted_line"></div>
 							</button>
-							</div></td>
-						</tr>
-					</table>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<div class="icon icon-dashed_line"></div>
+							</button>
+						</div></td>
+					</tr>
+				</table>
+			</div>
+
+			<div id='circle_context'>			
+			
+			<h4><%=l('Circle options')%></h4>
+			
+			<p>
+				<h5><%=l('Outline')%></h5>
+				<select name="colorpicker" id="circle_outline_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Thickness')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="circle_outline_thickness" min="0" value="2" max="10" step="1" list="circle_outline_thickness_ticks">
+					</div>	
+					<div class="col-sm-2"><input id="circle_outline_thickness_text" class="slider_text_input" type="text"/>
+					</div>	
+				</div>	
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Transparancy')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="circle_outline_transparancy" min="0" value="0" max="100" step="1" list="circle_outline_transparancy_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="circle_outline_transparancy_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>	
+								
+				<h5><%=l('Fill')%></h5>	
+				<select name="colorpicker" id="circle_fill_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Transparancy')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="circle_fill_transparancy" min="0" value="80" max="100" step="1" list="circle_fill_transparancy_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="circle_fill_transparancy_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>
+				<br />					
+				<table>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
+						<td><div class="btn-group" role="group" id="circle_type">						
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<div class="icon icon-line_icon"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<div class="icon icon-dotted_line"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<div class="icon icon-dashed_line"></div>
+							</button>
+						</div></td>
+					</tr>
+				</table>
+				<br />
+				<table>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('Draw style')%></small></td>				
+						<td><div class="btn-group" role="group" id="circle_draw_style">						
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-draw_style="edge" data-toggle="tooltip" title="<%=l('Edge drag')%>">
+								<div class="icon icon-draw_circle_icon"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-draw_style="radius" data-toggle="tooltip" title="<%=l('Radius drag')%>">
+								<div class="icon icon-draw_circle_radius_icon"></div>
+							</button>
+						</div></td>
+					</tr>
+				</table>
+			</div>
+
+			<div id='polygon_context'>			
+			
+			<h4><%=l('Polygon options')%></h4>
+			
+			<p>
+				<h5><%=l('Outline')%></h5>
+				<select name="colorpicker" id="polygon_outline_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Thickness')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="polygon_outline_thickness" min="0" value="2" max="10" step="1" list="polygon_outline_thickness_ticks">
+					</div>	
+					<div class="col-sm-2"><input id="polygon_outline_thickness_text" class="slider_text_input" type="text"/>
+					</div>	
+				</div>	
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Transparancy')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="polygon_outline_transparancy" min="0" value="0" max="100" step="1" list="polygon_outline_transparancy_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="polygon_outline_transparancy_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>	
+								
+				<h5><%=l('Fill')%></h5>
+				<select name="colorpicker" id="polygon_fill_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Transparancy')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="polygon_fill_transparancy" min="0" value="80" max="100" step="1" list="polygon_fill_transparancy_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="polygon_fill_transparancy_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>
+				<br />					
+				<table>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
+						<td><div class="btn-group" role="group" id="polygon_type">						
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<div class="icon icon-line_icon"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<div class="icon icon-dotted_line"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<div class="icon icon-dashed_line"></div>
+							</button>
+						</div></td>
+					</tr>
+				</table>
+			</div>
+
+			<div id='area_context'>			
+			
+			<h4><%=l('Area options')%></h4>
+			
+			<p>
+				<h5><%=l('Outline')%></h5>
+				<select name="colorpicker" id="area_outline_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Thickness')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="area_outline_thickness" min="0" value="2" max="10" step="1" list="area_outline_thickness_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="area_outline_thickness_text" class="slider_text_input" type="text"/>
+					</div>	
+				</div>	
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Transparancy')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="area_outline_transparancy" min="0" value="0" max="100" step="1" list="area_outline_transparancy_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="area_outline_transparancy_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>	
+								
+				<h5><%=l('Fill')%></h5>
+				<select name="colorpicker" id="area_fill_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Transparancy')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="area_fill_transparancy" min="0" value="80" max="100" step="1" list="area_fill_transparancy_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="area_fill_transparancy_text" class="slider_text_input" type="text" />
+					</div>
+				</div>
+				<br />
+				<table>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
+						<td><div class="btn-group" role="group" id="area_type">						
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<div class="icon icon-line_icon"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<div class="icon icon-dotted_line"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<div class="icon icon-dashed_line"></div>
+							</button>
+						</div></td>
+					</tr>
+				</table>
+			</div>
+			
+			<div id='ping_context'>			
+			
+			<h4><%=l('Ping options')%></h4>
+			
+			<p>
+				<select name="colorpicker" id="ping_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+	
+				<div class="row">
+					<div class="col-sm-2">
+						<small><%=l('Size')%></small></div>
+					<div class="col-sm-8">
+						<input type="range" id="ping_size" min="1" value="10" max="20" step="1" list="ping_size_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="ping_size_text" class="slider_text_input" type="text"/>
+					</div>
 				</div>
 			</div>
+
+			<div id='track_context'>
+
+			<h4><%=l('Track options')%></h4>
+			
+			<p>
+			<select name="colorpicker" id="track_colorpicker">
+				<option value="#ff0000"><%=l('Red')%></option>
+				<option value="#00ff00"><%=l('Green')%></option>
+				<option value="#87CEFA"><%=l('Blue')%></option>
+				<option value="#ffffff"><%=l('White')%></option>
+				<option value="#ffff00"><%=l('Yellow')%></option>
+			</select>			
+			<input type="color">					
+
+			<div class="btn-group" role="group" id="track_shape">
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="cursor" data-toggle="tooltip" title="<%=l('Cursor')%>">
+					<div class="icon icon-cursor_icon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="circle" data-toggle="tooltip" title="<%=l('Circle')%>">
+					<div class="icon icon-circle_icon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="dot" data-toggle="tooltip" title="<%=l('Dot')%>">
+					<div class="icon icon-dot_icon"></div>
+				</button>
+				<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-cursor="recticle" data-toggle="tooltip" title="<%=l('Crosshair')%>">
+					<div class="icon icon-recticle_icon"></div>
+				</button>
+			</div>
+			</div>
+			
+			
+			<div id='remove_context'>			
+
+			<h4><%=l('Remove options')%></h4>
+			
+			<p>
+				<div class="btn-group" role="group">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_all" data-toggle="tooltip" title="<%=l('Clear all')%>">
+						<div class="icon icon-clear"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_draw" data-toggle="tooltip" title="<%=l('Clear all free draw')%>">
+						<div class="icon icon-clear_draw"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_icons" data-toggle="tooltip" title="<%=l('clear all icons')%>">
+						<div class="icon icon-clear_icon"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_lines" data-toggle="tooltip" title="<%=l('Clear all lines and arrows')%>">
+						<div class="icon icon-clear_line"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_text" data-toggle="tooltip" title="<%=l('Clear all text')%>">
+						<div class="icon icon-clear_text"></div>
+					</button>
+				</div>
+				<br />
+				<div class="btn-group" role="group">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_selected" data-toggle="tooltip" title="<%=l('Clear all selected items')%>">
+						<div class="icon icon-clear_selected"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_curve" data-toggle="tooltip" title="<%=l('Clear all curved lines')%>">
+						<div class="icon icon-clear_curve"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_rectangle" data-toggle="tooltip" title="<%=l('Clear all rectangles')%>">
+						<div class="icon icon-clear_rectangle"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_circle" data-toggle="tooltip" title="<%=l('Clear all circles')%>">
+						<div class="icon icon-clear_circle"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_polygon" data-toggle="tooltip" title="<%=l('Clear all polygons')%>">
+						<div class="icon icon-clear_polygon"></div>
+					</button>
+				</div>
+				<br />
+				<div class="btn-group" role="group">
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_area" data-toggle="tooltip" title="<%=l('Clear all areas')%>">
+						<div class="icon icon-clear_area"></div>
+					</button>
+					<button type="button" class="btn btn-default" aria-label="Left Align" id="clear_note" data-toggle="tooltip" title="<%=l('Clear all notes')%>">
+						<div class="icon icon-clear_note"></div>
+					</button>				
+				</div>
+			</div>
+
+			<div id='text_context'>
+
+			<h4><%=l('Text options')%></h4>
+			
+			<p>	
+			<small><%=l('Text')%></small> <input type="text" id="text_tool_text"/>
+			
+				<p>
+				<select name="colorpicker" id="text_colorpicker">
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#000000"><%=l('Black')%></option>
+				</select>
+				<input type="color">
+				
+				
+				<br />
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Size')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="font_size" min="5" value="12" max="100" step="1" list="font_size_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="font_size_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>
+			</div>
+			
+			<div id='background_text_context'>
+
+			<h4><%=l('Text with background options')%></h4>
+			
+			<p>	
+			<small><%=l('Text')%></small> <input type="text" id="text_tool_background_text"/>
+				<p>
+				<select name="colorpicker" id="background_text_colorpicker">
+					<option value="#000000"><%=l('Black')%></option>
+					<option value="#555555"><%=l('Grey')%></option>
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00AA00"><%=l('Green')%></option>
+					<option value="#0000FF"><%=l('Blue')%></option>
+
+				</select>
+				<input type="color">
+							
+				<br />
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Size')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="background_font_size" min="5" value="10" max="100" step="1" list="background_font_size_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="background_font_size_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>
+			</div>
+
+			<div id='line_context'>	
+							
+			<h4><%=l('Line options')%></h4>
+			
+			<p>
+				<select name="colorpicker" id="line_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<option value="#ffffff"><%=l('White')%></option>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+				</select>
+				<input type="color">
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Thickness')%></small>
+					</div>
+					<div class="col-sm-6">
+						<input type="range" id="line_thickness" min="1" value="3" max="10" step="1" list="line_thickness_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="line_thickness_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>
+				<p>
+				
+				<table>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('Style')%></small></td>				
+						<td><div class="btn-group" role="group" id="line_type">						
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="full" data-toggle="tooltip" title="<%=l('Normal line')%>">
+								<div class="icon icon-line_icon"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dotted" data-toggle="tooltip" title="<%=l('Dotted line')%>">
+								<div class="icon icon-dotted_line"></div>
+							</button>
+							<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-style="dashed" data-toggle="tooltip" title="<%=l('Dashed line')%>">
+								<div class="icon icon-dashed_line"></div>
+							</button>
+						</div></td>
+					</tr>
+					<tr><td>&nbsp;</td></tr>
+					<tr>
+						<td style="padding-right:10px"><small><%=l('End')%></small></td>
+						<td><div class="btn-group" role="group" id="line_end_type">
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="none" data-toggle="tooltip" title="<%=l('Normal')%>">
+							<div class="icon icon-line_icon"></div>
+						</button>						
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="arrow" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<div class="icon icon-arrow"></div>
+						</button>
+						<button type="button" class="btn btn-default menu_btn" aria-label="Left Align" data-end="T" data-toggle="tooltip" title="<%=l('Arrow')%>">
+							<div class="icon icon-line_T"></div>
+						</button>
+						</div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
 	</div>
 
 <div id="myModal" class="modal fade" role="dialog">
