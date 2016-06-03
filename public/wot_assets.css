@@ -8,27 +8,27 @@
   width: 30px;
   height: 30px;
 }
-.wot-heavy {
+.wot-arty {
   background-position: -0px -30px;
   width: 37px;
   height: 37px;
 }
-.wot-td {
+.wot-heavy {
   background-position: -0px -67px;
   width: 37px;
   height: 37px;
 }
-.wot-medium {
+.wot-light {
   background-position: -0px -104px;
   width: 37px;
   height: 37px;
 }
-.wot-light {
+.wot-medium {
   background-position: -0px -141px;
   width: 37px;
   height: 37px;
 }
-.wot-arty {
+.wot-td {
   background-position: -0px -178px;
   width: 37px;
   height: 37px;
@@ -52,9 +52,4 @@
   background-position: -0px -369px;
   width: 63px;
   height: 91px;
-}
-.wot-arrow_head {
-  background-position: -0px -460px;
-  width: 108px;
-  height: 108px;
 }

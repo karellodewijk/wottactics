@@ -27,3 +27,18 @@ db.tactics.find({}).forEach(function (doc) {
 	}
 	db.tactics.update({_id:doc._id}, doc);
 });
+
+db.clans.forEach(function (doc) { 
+	for (var key in doc.slides) {
+		if (doc.slides.hasOwnProperty(key)) {
+			for (var i in doc.slides[key].entities) {
+				if (doc.slides[key].entities[i].type == 'line' || doc.slides[key].entities[i].type == 'curve' || doc.slides[key].entities[i].type == 'drawing' || doc.slides[key].entities[i].type == 'polygon' || doc.slides[key].entities[i].type == 'area') {
+					if (doc.slides[key].entities[i].path.length == 0 || ((doc.slides[key].entities[i].path[0][0] != 0) && (doc.slides[key].entities[i].path[0][0] != 0 && doc.slides[key].entities[i].path[0][1] != 0))) {
+						doc.slides[key].entities[i].path.splice(0, 0, [0,0]);
+					}
+				}
+			}
+		}
+	}
+	db.stored_tactics.update({_id:doc._id}, doc);
+});

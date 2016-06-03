@@ -2,12 +2,13 @@
 <html>
 <head>
 	<% include common_headers.ejs %>
+	<link rel="preload" href="<%=static_host%>/stylesheets/banner.jpg" as="image">
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
 	<meta name="description" content="Инструмент <%=game.toUpperCase()%> для планирования тактик на ГК, в командных боях или просто делиться и обсуждать тактику на карте с друзьями, командой, взводом или кланом.">
 </head>
 <body>
-	<div class="container" style='width:100%; padding-top:65px;'>
-    <div class="jumbotron side_bar" style='width:100%;'>
+	<div class="container" style='width:100%;'>
+    <div id="call_to_action" class="jumbotron side_bar" style='width:100%;'>
 	
 		<% include navbar.ejs %>
 
@@ -29,10 +30,12 @@
 					Starcraft II Tactics
 				<% } else if (game == 'csgo') { %>
 					CS:GO Tactics
+				<% } else if (game == 'warface') { %>
+					Warface Tactics
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a></p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a></p>
 			<script type="text/javascript">
 				function newUid() {
 				  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,

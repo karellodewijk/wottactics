@@ -56,6 +56,7 @@
 			  <thead>
 				<tr>
 				  <th><b>Type</b></th>
+				  <th><b>Tier</b></th>
 				  <th data-toggle="tooltip" title="side"><b>S</b></th>
 				  <th data-toggle="tooltip" title="Enemy clan"><b>VS</b></th>
 				  <th><b>W</b></th>
@@ -74,6 +75,7 @@
 				<thead>
 				<tr>
 				  <th><b>Type</b></th>
+				  <th><b>Tier</b></th>
 				  <th data-toggle="tooltip" title="side"><b>S</b></th>
 				  <th data-toggle="tooltip" title="Enemy clan"><b>VS</b></th>
 				  <th><b>W</b></th>
@@ -88,6 +90,7 @@
 					 <% for (var i in clan.battles) { %>
 					   <tr id=<%=clan.battles[i].uid%>>
 						 <td><%=clan.battles[i].battle_type%></td>
+						 <td><%=clan.battles[i].tier%></td>
 						 <td><%=clan.battles[i].side%></td>
 						 <td><%=clan.battles[i].vs ? clan.battles[i].vs[1] : ""%></td>
 						 <td><%=(clan.battles[i].win == 0 ? "y" : "n")%></td>
@@ -104,20 +107,17 @@
 								<%=clan.battles[i].reserves[j][1]%>, 
 							<% } %>						 
 						 </td>	
-						 <%if (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private') {%>
+						 <%if (user.identity == "505943778-Kalith" || (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private')) {%>
 							<td><button class="btn btn-warning remove_battle"><img src="<%=static_host%>/icons/bin.png" /></button></td>
 						 <%}%>
 					    </tr>
 					 <% } %>					 
 			</table>
-		</div>
-		</div>
-	</div>
+
 	<% } else { %>
 		You are not in a clan or you are not logged in. Pls login with your WG account.
 	<% } %>
 	</div>
-	<% include footer.ejs %>
 	</div>
 </body>
 	
@@ -248,6 +248,14 @@
 				
 				replay_data = {battle_type:battle_type, commander:commander, map_id:map_id, map_name:map_name, side:side, time:time, uid:uid, win:$(this).find("#win").val(), players:players, reserves:reserves, vs:[0,vs]};				
 
+				if (replay_data.players.length > 10) {
+					replay_data.tier = 10;
+				} else if (replay_data.players.length > 7) {
+					replay_data.tier = 8;
+				} else {
+					replay_data.tier = 6;
+				}
+				
 				replays[replay_data.uid] = replay_data;		
 			}
 		});
@@ -343,6 +351,14 @@
 			}
 		}
 		
+		if (replay_data.players.length > 10) {
+			replay_data.tier = 10;
+		} else if (replay_data.players.length > 7) {
+			replay_data.tier = 8;
+		} else {
+			replay_data.tier = 6;
+		}
+		
 		var commander_select = '';
 		commander_select += '<select id="commander_select">';
 		for (var i in replay_data.players) {
@@ -358,6 +374,7 @@
 		var line = '';
 		line += '<tr id=' + replay_data.uid + '>';
 		line +=   '<td>' + replay_data.battle_type + '</td>';
+		line +=   '<td>' + replay_data.tier + '</td>';
 		line +=   '<td>' + replay_data.side + '</td>';
 		line +=   '<td>' + replay_data.vs[1] + '</td>';
 		line +=   '<td>' + (replay_data.win ? "n" : "y") + '</td>';

@@ -9,6 +9,8 @@
 <%	home = "sc2" %>
 <%} else if (game == 'csgo') { %>
 <%	home = "csgo" %>
+<%} else if (game == 'warface') { %>
+<%	home = "warface" %>
 <%} %>
 
 <style type="text/css" scoped>
@@ -45,6 +47,8 @@
 			SC2 Tactics
 		<% } else if (game == 'csgo') { %>
 			CS:GO Tactics
+		<% } else if (game == 'warface') { %>
+			Warface Tactics
 		<% } %>
 	</a>
 	
@@ -103,6 +107,7 @@
 					<li><a href="http://gametactic.org/hots"><div class="inline icon icon-hots_sm"></div>&nbsp; Heroes of the Storm</a></li>
 					<li><a href="http://gametactic.org/sc2"><div class="inline icon icon-sc2_sm"></div>&nbsp; Starcraft II</a></li>
 					<li><a href="http://gametactic.org/csgo"><div class="inline icon icon-csgo_sm"></div>&nbsp; CS:GO</a></li>
+					<li><a href="http://gametactic.org/warface"><div class="inline icon icon-warface_sm"></div>&nbsp; Warface</a></li>
 				</ul>
 			</li>
 			<% include language_select.ejs %>
@@ -110,11 +115,14 @@
 		
 
 	</div>
-
-	
-
-<div id="result"></div>
 </nav>
 
-<hr>
+<script type="text/javascript">
+	var pad = function () { 
+		document.getElementsByTagName('body')[0].style.paddingTop = ''+(document.getElementsByClassName('navbar')[0].clientHeight+10)+'px'
+	};
+	window.onresize = pad;
+    pad();
+</script>
+
 

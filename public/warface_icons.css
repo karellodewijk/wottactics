@@ -1,0 +1,60 @@
+
+.warface_icons {
+  background-image: url('warface_icons.png');
+}
+
+.warface_icons-sniper {
+  background-position: -0px -0px;
+  width: 30px;
+  height: 26px;
+}
+.warface_icons-explosive {
+  background-position: -0px -26px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-bw {
+  background-position: -0px -56px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-csgo {
+  background-position: -0px -86px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-engineer {
+  background-position: -0px -116px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-bomb {
+  background-position: -0px -146px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-medic {
+  background-position: -0px -176px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-mine {
+  background-position: -0px -206px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-smoke {
+  background-position: -0px -236px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-assault {
+  background-position: -0px -266px;
+  width: 30px;
+  height: 30px;
+}
+.warface_icons-wf {
+  background-position: -0px -296px;
+  width: 30px;
+  height: 30px;
+}

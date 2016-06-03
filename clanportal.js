@@ -21,7 +21,7 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 			for (var i in result.members) {
 			  var account_id = result.members[i].account_id;
 			  if (!clan.members[account_id]) {
-				clan.members[account_id] = {CW:[0, 0], CWR:[0, 0], SH:[0, 0], SHR:[0, 0], SK:[0, 0], SKR:[0, 0], A:[0, 0], TCW:[0, 0], TCWR:[0, 0], TSH:[0, 0], TSHR:[0, 0], TSK:[0, 0], TSKR:[0, 0], TA:[0, 0], FCCW: [0, 0], FCSH: [0, 0], FCSK: [0, 0], TFCCW: [0, 0], TFCSH: [0, 0], TFCSK: [0, 0]};
+				clan.members[account_id] = {CW:[[0,0,0], [0,0,0]], CWR:[[0,0,0], [0,0,0]], SH:[[0,0,0], [0,0,0]], SHR:[[0,0,0], [0,0,0]], SK:[[0,0,0], [0,0,0]], SKR:[[0,0,0], [0,0,0]], A:[0, 0], TCW:[[0,0,0], [0,0,0]], TCWR:[[0,0,0], [0,0,0]], TSH:[[0,0,0], [0,0,0]], TSHR:[[0,0,0], [0,0,0]], TSK:[[0,0,0], [0,0,0]], TSKR:[[0,0,0], [0,0,0]], TA:[0, 0], FCCW: [[0,0,0], [0,0,0]], FCSH: [[0,0,0], [0,0,0]], FCSK: [[0,0,0], [0,0,0]], TFCCW: [[0,0,0], [0,0,0]], TFCSH: [[0,0,0], [0,0,0]], TFCSK: [[0,0,0], [0,0,0]]};
 			  }
 			  clan.members[account_id].role = result.members[i].role;
 			  clan.members[account_id].role_i18n = result.members[i].role;
@@ -43,9 +43,9 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 			clan.tag = result.tag;
 			clan._id = clan_id;
 			if (!clan.multipliers) {
-				clan.multipliers = {CW:1, CWW:1, CWL:0.5, CWR:0.5, CWFC:1.1,
-									SH:0.5, SHW:1, SHL:0.5, SHR:0.5, SHFC:1.1,
-									SK:0.1, SKW:1, SKL:0.5, SKR:0.5, SKFC:1.1,
+				clan.multipliers = {CW:[1,1,1], CWW:1, CWL:0.5, CWR:0.5, CWFC:1.1,
+									SH:[0.5,0.5,0.5], SHW:1, SHL:0.5, SHR:0.5, SHFC:1.1,
+									SK:[0.1,0.1,0.1], SKW:1, SKL:0.5, SKR:0.5, SKFC:1.1,
 									A:0.5};
 			}
 			if (!clan.treasury) {
@@ -217,30 +217,31 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 		  for (var i in battles) {
 			if (!old_battles[i]) {
 			  var w = battles[i].win; 
+			  var t = (battles[i].tier == 6) ? 0 : (battles[i].tier == 8) ? 1 : 2 ;
 			  for (var j in battles[i].players) {
 				if (clan.members[battles[i].players[j][0]]) {
 				  if (battles[i].battle_type == "Clanwar") {
-					clan.members[battles[i].players[j][0]].CW[w] += 1;
-					clan.members[battles[i].players[j][0]].TCW[w] += 1;
+					clan.members[battles[i].players[j][0]].CW[w][t] += 1;
+					clan.members[battles[i].players[j][0]].TCW[w][t] += 1;
 					if (battles[i].players[j][0] == battles[i].commander[0]) {
-						clan.members[battles[i].players[j][0]].FCCW[w] += 1;
-						clan.members[battles[i].players[j][0]].TFCCW[w] += 1;
+						clan.members[battles[i].players[j][0]].FCCW[w][t] += 1;
+						clan.members[battles[i].players[j][0]].TFCCW[w][t] += 1;
 					}
 				  }
 				  if (battles[i].battle_type == "Skirmish") {
-					clan.members[battles[i].players[j][0]].SK[w] += 1;
-					clan.members[battles[i].players[j][0]].TSK[w] += 1;
+					clan.members[battles[i].players[j][0]].SK[w][t] += 1;
+					clan.members[battles[i].players[j][0]].TSK[w][t] += 1;
 					if (battles[i].players[j][0] == battles[i].commander[0]) {
-						clan.members[battles[i].players[j][0]].FCSK[w] += 1;
-						clan.members[battles[i].players[j][0]].TFCSK[w] += 1;
+						clan.members[battles[i].players[j][0]].FCSK[w][t] += 1;
+						clan.members[battles[i].players[j][0]].TFCSK[w][t] += 1;
 					}
 				  }
 				  if (battles[i].battle_type == "Stronghold") {
-					clan.members[battles[i].players[j][0]].SH[w] += 1;
-					clan.members[battles[i].players[j][0]].TSH[w] += 1;
+					clan.members[battles[i].players[j][0]].SH[w][t] += 1;
+					clan.members[battles[i].players[j][0]].TSH[w][t] += 1;
 					if (battles[i].players[j][0] == battles[i].commander[0]) {
-						clan.members[battles[i].players[j][0]].FCSH[w] += 1;
-						clan.members[battles[i].players[j][0]].TFCSH[w] += 1;
+						clan.members[battles[i].players[j][0]].FCSH[w][t] += 1;
+						clan.members[battles[i].players[j][0]].TFCSH[w][t] += 1;
 					}
 				  }
 				} 
@@ -248,16 +249,16 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 			  for (var j in battles[i].reserves) {
 				if (clan.members[battles[i].reserves[j][0]]) {
 				  if (battles[i].battle_type == "Clanwar") {
-					clan.members[battles[i].reserves[j][0]].CWR[w] += 1;
-					clan.members[battles[i].reserves[j][0]].TCWR[w] += 1;
+					clan.members[battles[i].reserves[j][0]].CWR[w][t] += 1;
+					clan.members[battles[i].reserves[j][0]].TCWR[w][t] += 1;
 				  }
 				  if (battles[i].battle_type == "Skirmish") {
-					clan.members[battles[i].reserves[j][0]].SKR[w] += 1;
-					clan.members[battles[i].reserves[j][0]].TSKR[w] += 1;
+					clan.members[battles[i].reserves[j][0]].SKR[w][t] += 1;
+					clan.members[battles[i].reserves[j][0]].TSKR[w][t] += 1;
 				  }
 				  if (battles[i].battle_type == "Stronghold") {
-					clan.members[battles[i].reserves[j][0]].SHR[w] += 1;
-					clan.members[battles[i].reserves[j][0]].TSHR[w] += 1;
+					clan.members[battles[i].reserves[j][0]].SHR[w][t] += 1;
+					clan.members[battles[i].reserves[j][0]].TSHR[w][t] += 1;
 				  }
 				} 
 			  }
@@ -280,7 +281,6 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 	});	
 	
 	function verify_access(req) {
-		console.log(req.session.passport.user.identity)
 		if (req.session.passport.user.identity == "505943778-Kalith") { //special access, can't test this without
 			return true;
 		}
@@ -314,15 +314,15 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 		  } 
 		  for (var i in clan.members) {
 			clan.members[i].A[0] = 0;
-			clan.members[i].CW = [0, 0];
-			clan.members[i].CWR = [0, 0];
-			clan.members[i].SH = [0, 0];
-			clan.members[i].SHR = [0, 0];
-			clan.members[i].SK = [0, 0];
-			clan.members[i].SKR = [0, 0];
-			clan.members[i].FCCW = [0, 0];
-			clan.members[i].FCSH = [0, 0];
-			clan.members[i].FCSK = [0, 0];
+			clan.members[i].CW = [[0,0,0], [0,0,0]];
+			clan.members[i].CWR = [[0,0,0], [0,0,0]];
+			clan.members[i].SH = [[0,0,0], [0,0,0]];
+			clan.members[i].SHR = [[0,0,0], [0,0,0]];
+			clan.members[i].SK = [[0,0,0], [0,0,0]];
+			clan.members[i].SKR = [[0,0,0], [0,0,0]];
+			clan.members[i].FCCW = [[0,0,0], [0,0,0]];
+			clan.members[i].FCSH = [[0,0,0], [0,0,0]];
+			clan.members[i].FCSK = [[0,0,0], [0,0,0]];
 		  }
 		  clan.treasury = 0;
 		  db.collection('clans').update({_id:clan._id}, clan, {upsert: true}, function() {
@@ -354,30 +354,31 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 		  if (battles[req.body.uid]) {
 			var battle = battles[req.body.uid];
 			var w = battle.win; 
+			var t = (battle.tier == 6) ? 0 : (battle.tier == 8) ? 1 : 2;
 			for (var j in battle.players) {
 			  if (clan.members[battle.players[j][0]]) {
 				if (battle.battle_type == "Clanwar") {
-				  clan.members[battle.players[j][0]].CW[w] -= 1;
-				  clan.members[battle.players[j][0]].TCW[w] -= 1;
+				  clan.members[battle.players[j][0]].CW[w][t] -= 1;
+				  clan.members[battle.players[j][0]].TCW[w][t] -= 1;
 				  if (battle.players[j][0] == battle.commander[0]) {
-					clan.members[battle.players[j][0]].FCCW[w] -= 1;
-					clan.members[battle.players[j][0]].TFCCW[w] -= 1;
+					clan.members[battle.players[j][0]].FCCW[w][t] -= 1;
+					clan.members[battle.players[j][0]].TFCCW[w][t] -= 1;
 				  }
 				}
 				if (battle.battle_type == "Skirmish") {
-				  clan.members[battle.players[j][0]].SK[w] -= 1;
-				  clan.members[battle.players[j][0]].TSK[w] -= 1;
+				  clan.members[battle.players[j][0]].SK[w][t] -= 1;
+				  clan.members[battle.players[j][0]].TSK[w][t] -= 1;
 				  if (battle.players[j][0] == battle.commander[0]) {
-					clan.members[battle.players[j][0]].FCSK[w] -= 1;
-					clan.members[battle.players[j][0]].TFCSK[w] -= 1;
+					clan.members[battle.players[j][0]].FCSK[w][t] -= 1;
+					clan.members[battle.players[j][0]].TFCSK[w][t] -= 1;
 				  }
 				}
 				if (battle.battle_type == "Stronghold") {
-				  clan.members[battle.players[j][0]].SH[w] -= 1;
-				  clan.members[battle.players[j][0]].TSH[w] -= 1;
+				  clan.members[battle.players[j][0]].SH[w][t] -= 1;
+				  clan.members[battle.players[j][0]].TSH[w][t] -= 1;
 				  if (battle.players[j][0] == battle.commander[0]) {
-					clan.members[battle.players[j][0]].FCSH[w] -= 1;
-					clan.members[battle.players[j][0]].TFCSH[w] -= 1;
+					clan.members[battle.players[j][0]].FCSH[w][t] -= 1;
+					clan.members[battle.players[j][0]].TFCSH[w][t] -= 1;
 				  }
 				}
 			  } 
@@ -385,16 +386,16 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 			for (var j in battle.reserves) {
 			  if (clan.members[battle.reserves[j][0]]) {
 				if (battle.battle_type == "Clanwar") {
-				  clan.members[battle.reserves[j][0]].CWR[w] -= 1;
-				  clan.members[battle.reserves[j][0]].TCWR[w] -= 1;
+				  clan.members[battle.reserves[j][0]].CWR[w][t] -= 1;
+				  clan.members[battle.reserves[j][0]].TCWR[w][t] -= 1;
 				}
 				if (battle.battle_type == "Skirmish") {
-				  clan.members[battle.reserves[j][0]].SKR[w] -= 1;
-				  clan.members[battle.reserves[j][0]].TSKR[w] -= 1;
+				  clan.members[battle.reserves[j][0]].SKR[w][t] -= 1;
+				  clan.members[battle.reserves[j][0]].TSKR[w][t] -= 1;
 				}
 				if (battle.battle_type == "Stronghold") {
-				  clan.members[battle.reserves[j][0]].SHR[w] -= 1;
-				  clan.members[battle.reserves[j][0]].TSHR[w] -= 1;
+				  clan.members[battle.reserves[j][0]].SHR[w][t] -= 1;
+				  clan.members[battle.reserves[j][0]].TSHR[w][t] -= 1;
 				}
 			  } 
 			}

@@ -2,15 +2,15 @@
 <html>
 <head>
 	<% include common_headers.ejs %>
+	<link rel="preload" href="<%=static_host%>/stylesheets/banner.jpg" as="image">
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
 	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or just explore, share and discuss map tactics with your friends, team, platoon or clan.">
 </head>
 <body>
-	<div class="container" style='width:100%; padding-top:65px;'>
-    <div class="jumbotron side_bar" style='width:100%;'>
-	
-		<% include navbar.ejs %>
+	<% include navbar.ejs %>
 
+	<div class="container" style='width:100%;'>
+    <div id="call_to_action" class="jumbotron side_bar" style='width:100%;'>
 		<div class="container" id="big_button_frame" style="text-align:center">
 			<h1>
 				<% if (game == 'wot') { %>
@@ -29,11 +29,13 @@
 					Starcraft II Tactics
 				<% } else if (game == 'csgo') { %>
 					CS:GO Tactics
+				<% } else if (game == 'warface') { %>
+					Warface Tactics
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a><br /><br />
-			(<a href="<%=game%>planner2.html" id="new_room2" role="button"><%= l('try a different ui')%></a>)</p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a><br /><br />
+			(<a href="<%=game%>planner.html" id="new_room2" role="button" style="color:#ADD8E6"><%= l('Use original ui')%></a>)</p>
 			<script type="text/javascript">
 				function newUid() {
 				  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
@@ -61,82 +63,102 @@
 	</div>
 
 	<div class="row">
-	<div class="col-md-4">
-		<h2>Welcome</h2>
-		<p>This tool is created to make planning and sharing battle tactics quick and easy. Just press the blue button, share the link and get started. <% if (game == 'wot') { %> Are you an FC trying to plan a clan war or stronghold battle in world of tanks? Or are you part of team that wants to perform better in team battles or ESL? Or do you just want to discuss some details about a map with a friend? Then this tool is for you. If you are used to maptactic, give this a try. Planning has never been easier.<% } %>
-	</div>
-	<div class="col-md-4">
+		<div class="col-md-4">
+			<h2>What is <%=game.toUpperCase()%> <%=l('Tactics')%> &#63;</h2>
+			<p><%=game.toUpperCase()%> <%=l('Tactics')%> is an interactive map planning tool for <%=game.toUpperCase()%>.
+			
+			<p><h4><b>So how does it work ?</b></h4>
+			
+			<p>Press the blue button. Then select a map and use the tools on the right to start planning. You can invite others by sending them the link. 
+			
+		</div>
+		<%if (game == 'warface') {%>
+			<div class="col-md-4">
+			<h2>Looking for help with warface maps</h2>
+			<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
+			</div>
+		<%} else { %>
+		<div class="col-md-4">
+			<h2>New interface</h2>
+			<p>The new ui has been available as an alternative for a little while. I've asked around and most people seem to prefer it, so I've decided to make it the default.
+			
+			<p>It adresses a few concerns:
+			
+			<ul>
+				<li>The map is now more centered.
+				<li>Darker background draws more focus to the map.
+				<li>Changing tools doesn't cause the chat/slide/export pannel to jump around.
+				<li>It adapts to a wider number of screen sizes and resolutions.
+			</ul>
+
+			<p>I've left the original ui as an option and I'll continue to update it for the near future and monitor how many people keep using it. 
+
+			<p>I hope you like it. And if there are any issues please let me know.
+	
+		</div>
+		<% } %>
+
+		<div class="col-md-4">
 		<h2>Your input matters</h2>
 		<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
 		
 		<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
+		</div>
 	</div>
-	<div class="col-md-4">
-		<h2>New video tutorial</h2>
-		<p>I've created a <a href="https://youtu.be/K-yl_WNjvwk">tutorial</a> explaining all the tools and features of <%=url.split('/')[0]%>. And here's another <a href="https://www.youtube.com/watch?v=sLWv7yXYQ-c">tutorial</a> by Stewiejp.</div>
-
-	</div>
-	
 	<div class="row">
-	<div class="col-md-4">
-		<h2>Ui test</h2>
-		<p>I'm experimenting a little bit with a somewhat different ui options. The alternative ui link above is 2-column design with a darker color scheme. 
+		<div class="col-md-4">
+			<h2>Video tutorial</h2>
+			<p>I've created a <a href="https://youtu.be/K-yl_WNjvwk">tutorial</a> explaining all the tools and features of <%=url.split('/')[0]%>. And here's another <a href="https://www.youtube.com/watch?v=sLWv7yXYQ-c">tutorial</a> by Stewiejp.
+		</div>
 		
-		<p>I'm not sure yet which way I'm going to go yet. 
-		
-		<p>I definitely want the map as large as I can make it, so taking up the full height of the window, whatever size it is. Evertyhing else is open for debate.
-		
-		<p>So do you like the alternative look ? Do you have any opinions on how it should look ? Let me know.
-		
-	</div>
-	<div class="col-md-4">
-		<h2>Future plans</h2>
-		<p>Now that the wot campaign is over, things should get a little quieter, so I'm going to use this opportunity to improve and expand a bit.
-		
-		<p>People seem to find this tool very useful for wot, so I'm going to see if people from a few other games would be interested in it. I'll be starting with league of legend, cause it's easy (not too many maps). If you want a version of wottactic for your favourite game, let me know.
-		
-		<p>Next, not a lot of people have filled in the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, but there are some good suggestions in the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">results</a>. 
-		
-		<p>I got that people want:
-			<ol>
-			<li>More store/share options 
-			<li>More tools 
-			<li>Improved ui
-			<li>Better maps
-			</ol>
-		<p>Specifically I got people asking for:
-			<ol>
-			<li>A zoom option
-			<li>A colorblind option 
-			<li>Spawns on the aw and wows maps 
-			<li>More security
-			</ol>
+		<div class="col-md-4">
+			<h2>Future plans</h2>
+			<p>Now that the wot campaign is over, things should get a little quieter, so I'm going to use this opportunity to improve and expand a bit.
 			
-		<p>I'm having a hard time finding good quality WOWS maps. If you have any idea pls get in touch. 
-		
-		<p>Also I'm not to sure what a color blind mode means exactly. If you are color blind, could you tell what works and what doesn't and how best to fix it.
+			<p>People seem to find this tool very useful for wot, so I'm going to see if people from a few other games would be interested in it. I'll be starting with league of legend, cause it's easy (not too many maps). If you want a version of wottactic for your favourite game, let me know.
+			
+			<p>Next, not a lot of people have filled in the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, but there are some good suggestions in the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">results</a>. 
+			
+			<p>I got that people want:
+				<ol>
+				<li>More store/share options 
+				<li>More tools 
+				<li>Improved ui
+				<li>Better maps
+				</ol>
+			<p>Specifically I got people asking for:
+				<ol>
+				<li>A zoom option
+				<li>A colorblind option 
+				<li>Spawns on the aw and wows maps 
+				<li>More security
+				</ol>
 				
-	</div>
-	<div class="col-md-4">
-		<h2>Latest changes</h2>
-		<p>
-		<ul>
-			<li>Added some hight contrast maps for cs:go
-			<li>Text should appear more crisp. And removed the bold tag on it
-			<li>Decided things like size/thickness should scale with zooming
-			<li>Added size to ping
-			<li>Testing new ui and pixi v4, try it with "alternative ui"
-		</ul> 
-		On the bug hunting front:
-		<ul>
-			<li>Some tools were not working on touch devices
-			<li>ping marker was off a bit on remotely connected clients when dragging
-			<li>You can log in again from the planner page on FF
-			<li>Track cursor didn't work too well while zooming and panning
-			<li>Remove tracked cursor when someone loses privileges
-		</ul>
-		If you find anything else, however small, that is broken, pls let me know. 
-	</div>
+			<p>I'm having a hard time finding good quality WOWS maps. If you have any idea pls get in touch. 
+			
+			<p>Also I'm not to sure what a color blind mode means exactly. If you are color blind, could you tell what works and what doesn't and how best to fix it.
+					
+		</div>
+		<div class="col-md-4">
+			<h2>Latest changes</h2>
+			<p>
+			<ul>
+				<li>Made alternative ui the default ui.
+				<li>Changed default text font of text tools to Arial
+				<li>Added warface version
+				<li>Added some hight contrast maps for cs:go
+				<li>Text should appear more crisp. And removed the bold tag on it
+			</ul> 
+			On the bug hunting front:
+			<ul>
+				<li>Fixed note tool for wot blitz
+				<li>Area tool construction lines were hidden
+				<li>Some tools were not working on touch devices
+				<li>ping marker was off a bit on remotely connected clients when dragging
+				<li>You can log in again from the planner page on FF
+			</ul>
+			If you find anything else, however small, that is broken, pls let me know. 
+		</div>
 	</div>
 	
 	<br />
