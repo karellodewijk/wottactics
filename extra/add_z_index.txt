@@ -2,28 +2,37 @@ db.tactics.find({}).forEach(function (doc) {
 	var modified = false;
 	for (var key in doc.slides) {
 		if (doc.slides.hasOwnProperty(key)) {
-			var z_index = 0;
 			for (var i in doc.slides[key].entities) {
 				if (doc.slides[key].entities.hasOwnProperty(i)) {
-					if (typeof doc.slides[key].entities[i].z_index === 'undefined') {
-						if (doc.slides[key].entities[i].type == 'background') {
-							doc.slides[key].entities[i].z_index = 0;
-						} else {
-							z_index++;
-							doc.slides[key].entities[i].z_index = z_index;
-						}
+					if (doc.slides[key].entities[i].scale == 1) {
+						doc.slides[key].entities[i].scale = [1,1];
 						modified = true;
 					}
 				}
-			}
-			if (typeof doc.slides[key].z_top === 'undefined') {
-				doc.slides[key].z_top = z_index;
-				modified = true;
 			}
 		}
 	}
 	if (modified) {
 		db.tactics.update({_id:doc._id}, doc);
+	}
+});
+
+db.stored_tactics.find({}).forEach(function (doc) { 
+	var modified = false;
+	for (var key in doc.slides) {
+		if (doc.slides.hasOwnProperty(key)) {
+			for (var i in doc.slides[key].entities) {
+				if (doc.slides[key].entities.hasOwnProperty(i)) {
+					if (doc.slides[key].entities[i].scale == 1) {
+						doc.slides[key].entities[i].scale = [1,1];
+						modified = true;
+					}
+				}
+			}
+		}
+	}
+	if (modified) {
+		db.stored_tactics.update({_id:doc._id}, doc);
 	}
 });
 

@@ -3,7 +3,7 @@
   background-image: url('wot_icon_set4.png');
 }
 
-.wot_icon_set4-finish {
+.wot_icon_set4-focus {
   background-position: -0px -0px;
   width: 30px;
   height: 30px;
@@ -28,33 +28,38 @@
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-danger {
+.wot_icon_set4-finish {
   background-position: -0px -150px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-focus {
+.wot_icon_set4-danger {
   background-position: -0px -180px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-group {
+.wot_icon_set4-football {
   background-position: -0px -210px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-map_marker {
+.wot_icon_set4-group {
   background-position: -0px -240px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-spot {
+.wot_icon_set4-map_marker {
   background-position: -0px -270px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-warning {
+.wot_icon_set4-spot {
   background-position: -0px -300px;
+  width: 30px;
+  height: 30px;
+}
+.wot_icon_set4-warning {
+  background-position: -0px -330px;
   width: 30px;
   height: 30px;
 }

@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" src="/javascripts/lib/pixi.min.js"></script>
+</head>
+<body>
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var renderer = PIXI.autoDetectRenderer(800, 600,{backgroundColor : 0x1099bb});
+		
+		// create the root of the scene graph
+		var stage = new PIXI.Container();
+
+		// create a texture from an image path
+		var texture = PIXI.Texture.fromImage('favicon-32x32.png');
+
+		// create a new Sprite using the texture
+		var bunny = new PIXI.Sprite(texture);
+
+		// center the sprite's anchor point
+		bunny.anchor.x = 0.5;
+		bunny.anchor.y = 0.5;
+
+		// move the sprite to the center of the screen
+		bunny.position.x = 200;
+		bunny.position.y = 150;
+
+		stage.addChild(bunny);
+
+		renderer.render(stage);
+		for (i = 0; i < 100; i++) {
+			setTimeout(function() {
+				// just for fun, let's rotate mr rabbit a little
+				bunny.rotation += 0.1;
+
+				// render the container
+				renderer.render(stage);
+			}, i * 10);
+		}
+		
+		setTimeout(function() {
+			document.body.appendChild(renderer.view);
+		},1100);
+
+});
+</script>
