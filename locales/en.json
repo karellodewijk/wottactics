@@ -471,5 +471,14 @@
 	"Warface": "Warface",
 	"Guy": "Guy",
 	"Original ui": "Original ui",
-	"Use original ui": "Use original ui"
+	"Use original ui": "Use original ui",
+	"Football": "Football",
+	"Room is locked and you have no permission to edit.": "Room is locked and you have no permission to edit.",
+	"Tactic is locked": "Tactic is locked",
+	"Tactic is locked and you have no permission to edit.": "Tactic is locked and you have no permission to edit.",
+	"You do not have permission to edit.": "You do not have permission to edit.",
+	"Label position": "Label position",
+	"Label background": "Label background",
+	"Label options": "Label options",
+	"Add background": "Add background"
 }

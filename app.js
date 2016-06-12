@@ -1227,15 +1227,18 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 		
-		socket.on('drag', function(room, uid, slide, x, y) {
+		socket.on('drag', function(room, uid, slide, x, y, scale) {			
 			if (room_data[room] && room_data[room].slides[slide] && room_data[room].slides[slide].entities[uid]) {
 				room_data[room].slides[slide].entities[uid].x = x;
 				room_data[room].slides[slide].entities[uid].y = y;
+				if (scale) {
+					room_data[room].slides[slide].entities[uid].scale = scale;
+				}
 				if (room_data[room].slides[slide].z_top !== 'undefined') {
 					room_data[room].slides[slide].z_top++;
 					room_data[room].slides[slide].entities[uid].z_index = room_data[room].slides[slide].z_top;
 				}
-				io.to(room).emit('drag', uid, slide, x, y, socket.request.session.passport.user.id);
+				io.to(room).emit('drag', uid, slide, x, y, socket.request.session.passport.user.id, scale);
 			}
 		});
 

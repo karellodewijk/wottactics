@@ -78,23 +78,27 @@ function parse_domain(domain) {
 }
 
 var socket;
-if (Modernizr.websockets) {
-	socket = io.connect(server, {
-		reconnectionDelay: 100,
-		reconnectionDelayMax: 500,
-		'reconnection limit' : 1000,
-		'max reconnection attempts': Infinity,
-		query: "connect_sid="+$("#sid").attr("data-sid")+"&host="+parse_domain(location.hostname)
-	});	
-} else {
-	socket = io.connect(server, {
-		transports: ['polling'],
-		reconnectionDelay: 100,
-		reconnectionDelayMax: 500,
-		'reconnection limit' : 1000,
-		'max reconnection attempts': Infinity,
-		query: "connect_sid="+$("#sid").attr("data-sid")+"&host="+parse_domain(location.hostname)
-	});	
+try {
+	if (Modernizr.websockets) {
+		socket = io.connect(server, {
+			reconnectionDelay: 100,
+			reconnectionDelayMax: 500,
+			'reconnection limit' : 1000,
+			'max reconnection attempts': Infinity,
+			query: "connect_sid="+$("#sid").attr("data-sid")+"&host="+parse_domain(location.hostname)
+		});	
+	} else {
+		socket = io.connect(server, {
+			transports: ['polling'],
+			reconnectionDelay: 100,
+			reconnectionDelayMax: 500,
+			'reconnection limit' : 1000,
+			'max reconnection attempts': Infinity,
+			query: "connect_sid="+$("#sid").attr("data-sid")+"&host="+parse_domain(location.hostname)
+		});	
+	}
+} catch(e) {
+	console.log(e);
 }
 
 //generates unique ids
@@ -131,7 +135,7 @@ function random_darkish_color(){
     return '#' + r + g + b;
 }
 
-var ARROW_LOOKBACK = 3;
+var ARROW_LOOKBACK = 6;
 var MOUSE_DRAW_SMOOTHING = 0.5;
 var LEFT_BAR_MIN_WIDTH = 340;
 var RIGHT_BAR_MIN_WIDTH = 302;
@@ -145,13 +149,14 @@ var MIN_POLYGON_END_DISTANCE = 0.01; //in ratio to width of map
 var MIN_POLYGON_END_DISTANCE_TOUCH = 0.025;
 var MIN_TRACK_MOVE_DISTANCE_SQ = 0.01 * 0.01;
 var ICON_SCALE = 0.025/20;
-var NOTE_SCALE = 0.05;
+var NOTE_SCALE = 0.03;
 var THICKNESS_SCALE = 0.0015;
 var FONT_SCALE = 0.002;
 var TEXT_QUALITY = 2;
 var ARROW_SCALE = 0.008;
 var TEND_SCALE = 0.008;
 var MAGIC_NUMBER = 25;
+var EPSILON = 0.000000001;
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -161,6 +166,7 @@ var active_menu = 'ping_context';
 var userlist = {};
 var selected_icon;
 var selected_icon_no_color = false;
+var label_position = "pos_bottom";
 var icon_extra_scale = 1;
 var icon_color = 0xff0000;
 var draw_color = 0xff0000;
@@ -184,6 +190,7 @@ var curve_thickness;
 var line_thickness;
 var icon_size;
 var ping_size;
+var track_size;
 var rectangle_outline_thickness;
 var rectangle_outline_transparancy;
 var rectangle_fill_transparancy;
@@ -226,7 +233,22 @@ var last_mouse_location;
 var ping_texture;
 var hovering_over;
 var just_activated;
-
+var select_box;
+var select_box_dirty = false;
+var objectContainer;
+var fast_container;
+var background_sprite;
+var renderer;
+var size
+var size_x;
+var size_y;
+var useWebGL;
+var last_pan_loc;
+var panning;
+var last_move_func, last_end_func;
+var draw_canvas;
+var temp_draw_canvas;
+var grid_layer;
 
 var mouse_down_interrupted;
 document.body.onmouseup = function() {
@@ -343,27 +365,6 @@ function paste() {
 
 }
 
-//start pixi renderer
-var border = 30;
-var size = Math.min(window.innerHeight, window.innerWidth) - border;
-var size_x = size;
-var size_y = size;
-
-var renderer;
-if (Modernizr.webgl && !nowebgl) {
-	renderer = PIXI.autoDetectRenderer(size, size, {backgroundColor : 0xBBBBBB});
-} else {
-	renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
-}
-
-renderer.autoResize = true;
-var useWebGL = renderer instanceof PIXI.WebGLRenderer;
-
-renderer.view.addEventListener("wheel", function(e) {
-	zoom(0.1, e.deltaY < 0, e);
-	e.preventDefault();
-});
-
 function zoom(amount, isZoomIn, e) {
 	direction = isZoomIn ? 1 : -1;
 	var factor = (1 + amount * direction);
@@ -423,30 +424,6 @@ function correct() {
 	render_scene();
 }
 
-var last_pan_loc;
-var panning
-var last_move_func, last_end_func;
-$(renderer.view).mousedown(function(e) {
-    if (e.which === 3 || e.which === 2) {
-		last_pan_loc = [renderer.plugins.interaction.eventData.data.global.x, renderer.plugins.interaction.eventData.data.global.y];
-        setup_mouse_events(on_pan);
-		e.preventDefault();
-    }
-});
-
-renderer.view.addEventListener('contextmenu', function(e) {
-    setup_mouse_events(undefined);
-	e.preventDefault();
-});
-
-
-$(renderer.view).mouseup(function(e) {
-    if (e.which === 3 || e.which === 2) {
-        setup_mouse_events(undefined);
-		e.preventDefault();
-    }
-});
-
 var pan_state = {}
 function on_pan(e) {
 	limit_rate(15, pan_state, function() {
@@ -459,52 +436,6 @@ function on_pan(e) {
 		correct();
 	});
 }
-
-// create the root of the scene graph
-var stage = new PIXI.Container();
-var objectContainer = new PIXI.Container();
-stage.addChild(objectContainer);
-
-//initialize background
-var background_sprite = new PIXI.Sprite();
-background_sprite.height = renderer.height;
-background_sprite.width = renderer.width;
-objectContainer.addChild(background_sprite);
-
-var fast_container = new PIXI.ParticleContainer(10000, {
-    scale: true,
-    position: true,
-    rotation: false,
-    uvs: false,
-    alpha: false
-});
-objectContainer.addChild(fast_container);
-renderer.render(stage)
-
-
-//initialize grid layer
-var grid_layer;
-if (game == "aw") {
-	grid_layer = new PIXI.Sprite.fromImage(image_host + "aw_grid.png");
-} else {
-	grid_layer = new PIXI.Sprite.fromImage(image_host + "grid.png");
-}
-grid_layer.height = renderer.height;
-grid_layer.width = renderer.width;
-objectContainer.addChild(grid_layer);
-
-
-var draw_canvas = document.createElement("canvas");
-$(draw_canvas).attr('style', 'padding:0px; margin:0px; border:0; position:absolute; z-index:'+ 2 + '; pointer-events:none');
-draw_canvas.width = renderer.view.width;
-draw_canvas.height = renderer.view.height;
-draw_context = draw_canvas.getContext("2d");
-
-var temp_draw_canvas = document.createElement("canvas");
-$(temp_draw_canvas).attr('style', 'padding:0px; margin:0px; border:0; position:absolute; z-index:'+ 3 + '; pointer-events:none');
-temp_draw_canvas.width = renderer.view.width;
-temp_draw_canvas.height = renderer.view.height;
-temp_draw_context = temp_draw_canvas.getContext("2d");
 
 //resize the render window
 function resize_renderer(new_size_x, new_size_y) {
@@ -655,7 +586,7 @@ function set_background(new_background, cb) {
 
 		var texture = PIXI.Texture.fromImage(new_background.path);
 
-		var on_loaded = function() {					
+		var on_loaded = function() {
 			background = new_background;
 			history[background.uid] = background;
 			background_sprite.texture = texture;	
@@ -697,8 +628,7 @@ function set_background(new_background, cb) {
 				alert("Image exists, but the host does not allow embedding. Try uploading your map to a service such as http://imgur.com.");
 				resources_loading--;
 				if (cb)	cb(false);
-			});
-			
+			});			
 		} else {
 			on_loaded();
 		}
@@ -727,17 +657,21 @@ function set_background(new_background, cb) {
 		window.onresize();
 		render_scene();	
 		if (cb)	cb(true);
-
 	}	
 }
-
-
 
 var context_before_drag;
 var move_selected;
 var drag_timeout;
 var last_drag_position, last_drag_update;
 function on_drag_start(e) {
+	if (this == select_box) {
+		limit_rate(15, select_box_move_state, function() {});
+		select_box.mousemove = undefined;
+		select_box.mouseover = undefined;
+		select_box.mouseout = undefined;
+	}
+
 	drag_in_progress = true;
 	if (drag_timeout) {
 		clearTimeout(drag_timeout);
@@ -747,17 +681,22 @@ function on_drag_start(e) {
 	last_mouse_location = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 	mouse_down_interrupted = false;
 	var delay = 0;
-	if (active_context == "ping_context" && _this.entity.type != 'note') {
+	if (active_context == "ping_context" && (!_this.entity || _this.entity.type != 'note')) {
 		delay = 300;
 	} else if (active_context == "ruler_context") {
 		return;
 	} else if ((active_context == "remove_context" || active_context == "eraser_context")) {
-		deselect_all();
-		remove(_this.entity.uid);
-		undo_list.push(["remove", [_this.entity]]);
-		socket.emit('remove', room, _this.entity.uid, active_slide);
-		if (active_context == "eraser_context") {
-			on_left_click(e);
+		if (_this.entity) {
+			deselect_all();
+			remove(_this.entity.uid);
+			undo_list.push(["remove", [_this.entity]]);
+			socket.emit('remove', room, _this.entity.uid, active_slide);
+			if (active_context == "eraser_context") {
+				on_left_click(e);
+			}
+		}
+		if (_this == select_box) {
+			clear_selected();
 		}
 		return;
 	} else {
@@ -776,8 +715,9 @@ function on_drag_start(e) {
 			deselect_all();
 			return;
 		}
+		
 		if (is_room_locked && !my_user.role) {
-			if (_this.entity.type == 'note') {
+			if (_this.entity && _this.entity.type == 'note') {	
 				_this.mouseup = toggle_note;
 				_this.touchend = toggle_note;
 				_this.mouseupoutside = toggle_note;
@@ -791,27 +731,24 @@ function on_drag_start(e) {
 		}
 		active_context = "drag_context";
 		
-		render_scene();
-		
 		_this.mouseup = on_drag_end;
 		_this.touchend = on_drag_end;
 		_this.mouseupoutside = on_drag_end;
 		_this.touchendoutside = on_drag_end;
 		_this.mousemove = on_drag_move;
 		_this.touchmove = on_drag_move;
-
-		move_selected = false;
-		for (var i in selected_entities) {
-			if (selected_entities[i].uid == _this.entity.uid) {
-				move_selected = true;
-				break;
-			}
-		}
+		$('html,body').css('cursor', 'pointer');
 		
-		if (!move_selected) {
-			deselect_all();
-			selected_entities = [_this.entity];
-			select_entities();
+		move_selected = false;
+		if (_this.entity) {
+			for (var i in selected_entities) {
+				if (selected_entities[i].uid == _this.entity.uid) {
+					move_selected = true;
+					break;
+				}
+			}
+		} else {
+			move_selected = true;
 		}
 		
 		for (var i in selected_entities) {
@@ -820,10 +757,17 @@ function on_drag_start(e) {
 			objectContainer.removeChild(selected_entities[i].container);
 			objectContainer.addChild(selected_entities[i].container);
 		}
-		_this.origin_x = _this.entity.x;
-		_this.origin_y = _this.entity.y;
+		_this.origin_x = x_rel(_this.x);
+		_this.origin_y = y_rel(_this.y);
 		
 		drag_in_progress = false;
+	
+		if (select_box) {
+			objectContainer.removeChild(select_box);
+			objectContainer.addChild(select_box);
+		}
+		
+		render_scene();
 	
 	}, delay);
 }
@@ -879,6 +823,16 @@ function on_drag_move(e) {
 		} else {
 			move_entity(_this.entity, delta_x, delta_y);
 		}
+		if (select_box) {
+			select_box.x += x_abs(delta_x);
+			select_box.y += y_abs(delta_y);
+		}
+		
+		if (select_box) {
+			objectContainer.removeChild(select_box);
+			objectContainer.addChild(select_box);
+		}
+	
 		last_mouse_location = mouse_new;
 		render_scene();		
 	});
@@ -886,7 +840,8 @@ function on_drag_move(e) {
 
 function on_drag_end(e) {
 	limit_rate(15, drag_state, function() {});
-	if (this.origin_x == this.entity.x && this.origin_y == this.entity.y) {	
+	$('html,body').css('cursor', 'initial');
+	if (this.entity && Math.abs(this.origin_x - this.entity.x) < EPSILON &&  Math.abs(this.origin_y - this.entity.y) < EPSILON) {	
 		if (context_before_drag == 'remove_context') {
 			remove(this.entity.uid);
 			undo_list.push(["remove", [this.entity]]);
@@ -897,15 +852,24 @@ function on_drag_end(e) {
 		}
 	} else {
 		var origin_entity_map = [];
-		for (var i in selected_entities) {
-			origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
-			origin_entity_map.push([origin, selected_entities[i]]);
-			delete selected_entities[i].origin_x;
-			delete selected_entities[i].origin_y;
-			socket.emit("drag", room, selected_entities[i].uid, active_slide, selected_entities[i].x, selected_entities[i].y);
+		if (selected_entities.length > 0) {
+			for (var i in selected_entities) {
+				origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
+				origin_entity_map.push([origin, selected_entities[i]]);
+				delete selected_entities[i].origin_x;
+				delete selected_entities[i].origin_y;
+				socket.emit("drag", room, selected_entities[i].uid, active_slide, selected_entities[i].x, selected_entities[i].y);
+			}
+		} else {
+			origin = [this.entity.origin_x, this.entity.origin_y];
+			origin_entity_map.push([origin, this.entity]);
+			delete this.entity.origin_x;
+			delete this.entity.origin_y;
+			socket.emit("drag", room, this.entity.uid, active_slide, this.entity.x, this.entity.y);
 		}
 		undo_list.push(["drag", origin_entity_map]);
 	}
+	
 	this.mouseup = undefined;
 	this.touchend = undefined;
 	this.mouseupoutside = undefined;
@@ -913,6 +877,12 @@ function on_drag_end(e) {
 	this.mousemove = undefined;
 	this.touchmove = undefined;
 	active_context = context_before_drag;
+	
+	if (this == select_box) {
+		make_resizable(select_box);
+		on_select_over.bind(select_box, e)();
+		on_selectbox_move.bind(select_box, e)();
+	}
 	
 	render_scene();
 }
@@ -971,30 +941,30 @@ function move_tracker(uid, delta_x, delta_y) {
 }
 
 var render_state = {}
-function render_scene() {
-	limit_rate(15, render_state, function() {
-		renderer.render(stage);
+function update_render() {
+	limit_rate(5, render_state, function() {
+		if (select_box_dirty) {
+			redraw_select_box();
+		}
+		renderer.render(objectContainer);
 	});
 }
 
+function render_scene() {
+	requestAnimationFrame(update_render)
+}
 
 var ping_texture_atlas = {}
+function ping(x, y, color, size) {	
+console.log($('#slide_container').scrollTop())
 
-
-function ping(x, y, color, size) {
-	var sprite;
-	var use_fast_container;
-	if (ping_texture_atlas[color]) {
-		sprite = new PIXI.Sprite();
-		sprite.setTexture(ping_texture_atlas[color]);
-		use_fast_container = true;
-	} else {
-		var sprite = new PIXI.Sprite(ping_texture);
-		sprite.tint = color;
-		ping_texture_atlas[color] = sprite.tintedTexture;
-		use_fast_container = false;
+	if (!ping_texture_atlas[color]) {
+		var temp = new PIXI.Sprite(ping_texture);
+		temp.tint = color;
+		ping_texture_atlas[color] = temp.generateTexture(renderer);
 	}
 
+	var sprite = new PIXI.Sprite(ping_texture_atlas[color]);	
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
 	
 	sprite.anchor.set(0.5);
@@ -1004,11 +974,7 @@ function ping(x, y, color, size) {
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
 
-	if (use_fast_container) {
-		fast_container.addChild(sprite);
-	} else {
-		objectContainer.addChild(sprite);
-	}
+	fast_container.addChild(sprite);
 	render_scene();
 	
 	var steps = 25;
@@ -1022,11 +988,7 @@ function ping(x, y, color, size) {
 		steps--;
 		if (steps <= 0) {
 			clearInterval(loop)
-			if (use_fast_container) {
-				fast_container.removeChild(sprite);
-			} else {
-				objectContainer.removeChild(sprite);
-			}
+			fast_container.removeChild(sprite);
 			render_scene();			
 		}
 	}, 20);
@@ -1044,8 +1006,8 @@ function setup_mouse_events(on_move, on_release) {
 function align_note_text(entity) {
 	if (entity.container) {
 		var rect = document.getElementById("edit_window").getBoundingClientRect();
-		var x = rect.left + objectContainer.x + x_abs(entity.x) * objectContainer.scale.x + x_abs(0.035) * objectContainer.scale.x;
-		var y = rect.top + objectContainer.y + y_abs(entity.y) * objectContainer.scale.y;
+		var x = rect.left + to_x_local(entity.x) + entity.container.width * objectContainer.scale.x;
+		var y = rect.top + to_y_local(entity.y);
 
 		if (entity.container.is_open) {
 			entity.container.menu.attr('style', 'top:' + y +'px; left:' + x + 'px; display: block;');
@@ -1266,7 +1228,9 @@ function on_left_click(e) {
 	if (!can_edit()) {
 		return;
 	}
-	document.activeElement.blur();
+	try {
+		document.activeElement.blur();
+	} catch(e) {}
 	if (active_context == 'drag_context') {
 		return;
 	}
@@ -1276,7 +1240,7 @@ function on_left_click(e) {
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
 		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]]};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]]};
 		init_canvases(parseFloat(draw_thickness), new_drawing.color, new_drawing.style);
 		draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		last_draw_time = Date.now();
@@ -1289,7 +1253,7 @@ function on_left_click(e) {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_line_end);
 			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, color:line_color, alpha:1, thickness:parseFloat(line_thickness) * zoom_level, path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style') };
+			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:line_color, alpha:1, thickness:parseFloat(line_thickness) * zoom_level, path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style') };
 			init_canvases(parseFloat(line_thickness), new_drawing.color, new_drawing.style);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 			just_activated = true;
@@ -1298,7 +1262,7 @@ function on_left_click(e) {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_polygon_end);
 			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:polygon_outline_thickness * zoom_level, outline_color:polygon_outline_color, outline_opacity: t2o(polygon_outline_transparancy), fill_color:polygon_fill_color, fill_opacity: t2o(polygon_fill_transparancy), alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style')};
+			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], outline_thickness:polygon_outline_thickness * zoom_level, outline_color:polygon_outline_color, outline_opacity: t2o(polygon_outline_transparancy), fill_color:polygon_fill_color, fill_opacity: t2o(polygon_fill_transparancy), alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style')};
 
 			init_canvases(polygon_outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
@@ -1317,7 +1281,7 @@ function on_left_click(e) {
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
 			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:1, color:curve_color, alpha:1, thickness:parseFloat(curve_thickness) * zoom_level, path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style') };
+			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:[1,1], color:curve_color, alpha:1, thickness:parseFloat(curve_thickness) * zoom_level, path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style') };
 
 			init_canvases(parseFloat(curve_thickness), new_drawing.color, new_drawing.style);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
@@ -1329,7 +1293,7 @@ function on_left_click(e) {
 		if (!new_drawing) {
 			setup_mouse_events(on_curve_move, on_area_end);
 			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:1, outline_thickness:parseFloat(area_outline_thickness) * zoom_level, outline_color:area_outline_color, outline_opacity: t2o(area_outline_transparancy), fill_color:area_fill_color, fill_opacity: t2o(area_fill_transparancy), alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style')};
+			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], outline_thickness:parseFloat(area_outline_thickness) * zoom_level, outline_color:area_outline_color, outline_opacity: t2o(area_outline_transparancy), fill_color:area_fill_color, fill_opacity: t2o(area_fill_transparancy), alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style')};
 			
 			init_canvases(parseFloat(area_outline_thickness), new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
@@ -1430,7 +1394,7 @@ function start_tracking(mouse_location) {
 	} else {
 		size = 0.05;
 	}
-	my_tracker = {uid:newUid(), shape:shape, size:size, color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), owner:my_user.id};
+	my_tracker = {uid:newUid(), shape:shape, size:(size * (track_size/10)), color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), owner:my_user.id};
 	last_track_position = [my_tracker.x, my_tracker.y];
 	socket.emit("track", room, my_tracker);
 	create_tracker(my_tracker);
@@ -1441,7 +1405,7 @@ function on_note_end(e) {
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	var note = {uid:newUid(), type: 'note', x:x, y:y, scale:1, color:text_color, alpha:1, text:"", font_size:font_size, font:'Arial'};
+	var note = {uid:newUid(), type: 'note', x:x, y:y, scale:[1,1], color:text_color, alpha:1, text:"", font_size:font_size, font:'Arial'};
 	undo_list.push(["add", [note]]);
 	create_note(note);
 	note.container.is_open = true;
@@ -1450,18 +1414,17 @@ function on_note_end(e) {
 }
 
 function create_note(note) {
-	var sprite;
-	if (texture_atlas["note.png"] && !is_safari()) {
-		var img = texture_atlas["note.png"];
-		var texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
-		sprite = new PIXI.Sprite(texture);
+	var texture;
+	if (texture_atlas['note.png'] && !is_safari()) {
+		var img = texture_atlas['note.png'];
+		texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
 	} else {
-		var texture = PIXI.Texture.fromImage(image_host + 'note.png');
-		sprite = new PIXI.Sprite(texture);
+		texture = PIXI.Texture.fromImage(image_host + 'note.png');
 	}
+	var sprite = new PIXI.Sprite(texture);
 
-	sprite.height = (sprite.height/29) * y_abs(NOTE_SCALE) * note.scale;
-	sprite.width = (sprite.width/29) * y_abs(NOTE_SCALE) * note.scale;
+	sprite.height = y_abs(NOTE_SCALE);
+	sprite.width = x_abs(NOTE_SCALE);
 	
 	//note.container = new PIXI.Container();
 	sprite.x = x_abs(note.x);
@@ -1471,7 +1434,7 @@ function create_note(note) {
 	note.container.entity = note; 
 	note.container.is_open = false;
 
-	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="top: 50%;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea style="height:400px; width:300px;" id="note_box"></textarea><br /><span id="notification_area" style="float: left;" hidden>Saved</span><div style="float:right; padding:3px;"></div></div></div>');
+	note.container.menu = $('<div class="popover fade right in" role="tooltip"><div style="margin-top: -15px;" class="arrow"></div><h3 style="display: none;" class="popover-title"></h3><div class="popover-content"><textarea style="height:400px; width:300px;" id="note_box"></textarea><br /><span id="notification_area" style="float: left;" hidden>Saved</span><div style="float:right; padding:3px;"></div></div></div>');
 	
 	$("#note_box", note.container.menu).val(note.text);
 	
@@ -1726,6 +1689,7 @@ function on_curve_end(e) {
 		render_scene();
 		
 		if (new_drawing.path.length > 9) {
+			draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);
 			var n = 30;
 			var start_index = Math.max(new_drawing.path.length-10, 0);
 			var stop_index = new_drawing.path.length;
@@ -1809,27 +1773,37 @@ function on_ruler_move(e) {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var map_size_x = background.size_x ? background.size_x : 0;
 		var map_size_y = background.size_y ? background.size_y : 0;
-		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
-		temp_draw_context.beginPath();
 		temp_draw_context.lineWidth = 2 * (size_x/1000);
 		temp_draw_context.strokeStyle = "#FFFFFF";
 		temp_draw_context.fillStyle = "#FFFFFF";
-		temp_draw_context.beginPath();
-		temp_draw_context.moveTo(to_x_local(left_click_origin[0]), to_y_local(left_click_origin[1]));		
-		temp_draw_context.lineTo(to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y)));
-		temp_draw_context.stroke();	
-		var mid_line_x = (to_x_local(left_click_origin[0]) + to_x_local(mouse_x_rel(mouse_location.x))) / 2;
-		var mid_line_y = (to_y_local(left_click_origin[1]) + to_y_local(mouse_y_rel(mouse_location.y))) / 2;
+		var center_x = to_x_local(left_click_origin[0]);
+		var center_y = to_y_local(left_click_origin[1]);
+		var border_x = to_x_local(mouse_x_rel(mouse_location.x));
+		var border_y = to_y_local(mouse_y_rel(mouse_location.y));
+		var length_local = Math.sqrt(Math.pow(center_x - border_x, 2) + Math.pow(center_y - border_y, 2));
+
+		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);	
+		temp_draw_context.beginPath();		
+		temp_draw_context.moveTo(border_x, border_y);
+		temp_draw_context.lineTo(center_x, center_y);
+		temp_draw_context.moveTo(center_x + length_local, center_y);
+		temp_draw_context.arc(center_x, center_y, length_local, 0, 2*Math.PI);
+		temp_draw_context.stroke();
+		
+		var mid_line_x = (center_x + to_x_local(mouse_x_rel(mouse_location.x))) / 2;
+		var mid_line_y = (center_y + to_y_local(mouse_y_rel(mouse_location.y))) / 2;
+		
 		temp_draw_context.font = "22px Arial";		  
 		var length = Math.sqrt(Math.pow(map_size_x * (left_click_origin[0] - mouse_x_rel(mouse_location.x)), 2) 
-							 + Math.pow(map_size_y * (left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2))  
+							 + Math.pow(map_size_y * (left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2));
+							 							 
 		temp_draw_context.lineWidth = to_x_local(0.5)/1000;
 		temp_draw_context.strokeStyle = "#000000";
 		temp_draw_context.fillStyle = "#FFFFFF";
 		var unit = "m";
 		if (game == "lol") {
 			unit = "u";
-		}	
+		}
 		temp_draw_context.fillText(""+Math.round(10*length)/10+unit, mid_line_x, mid_line_y);
 	});
 }
@@ -2052,44 +2026,28 @@ function on_select_end(e) {
 	
 	setup_mouse_events(undefined, undefined);
 
-	var mouse_location = e.data.getLocalPosition(background_sprite);	
-	var x_min = Math.min(mouse_x_rel(mouse_location.x), left_click_origin[0]);
-	var y_min = Math.min(mouse_y_rel(mouse_location.y), left_click_origin[1]);
-	var x_max = Math.max(mouse_x_rel(mouse_location.x), left_click_origin[0]);
-	var y_max = Math.max(mouse_y_rel(mouse_location.y), left_click_origin[1]);
+	var mouse_location = e.data.getLocalPosition(background_sprite);
 	
+	var x_min = Math.min(x_abs(mouse_x_rel(mouse_location.x)), x_abs(left_click_origin[0]));
+	var y_min = Math.min(y_abs(mouse_y_rel(mouse_location.y)), y_abs(left_click_origin[1]));
+	var x_max = Math.max(x_abs(mouse_x_rel(mouse_location.x)), x_abs(left_click_origin[0]));
+	var y_max = Math.max(y_abs(mouse_y_rel(mouse_location.y)), y_abs(left_click_origin[1]));
 	
 	for (var key in room_data.slides[active_slide].entities) {
 		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
-			
-			var box_min_x = 1000;
-			var box_max_x = -1000;
-			var box_min_y = 1000;
-			var box_max_y = -1000;
 			var entity = room_data.slides[active_slide].entities[key];			
-			box_min_x = Math.min(box_min_x, entity.x);
-			box_min_y = Math.min(box_min_y, entity.y);
-			box_max_x = Math.max(box_max_x, entity.x);
-			box_max_y = Math.max(box_max_y, entity.y);			
-			if (entity.path) {
-				for (var i in entity.path) {
-					var tempx = entity.x + entity.path[i][0];
-					var tempy = entity.y + entity.path[i][1];
-					box_min_x = Math.min(box_min_x, tempx);
-					box_min_y = Math.min(box_min_y, tempy);
-					box_max_x = Math.max(box_max_x, tempx);
-					box_max_y = Math.max(box_max_y, tempy);		
-				}
-			}
-			if (entity.width) {
-				var tempx = entity.x + entity.width;
-				var tempy = entity.y + entity.height;
-				box_min_x = Math.min(box_min_x, tempx);
-				box_min_y = Math.min(box_min_y, tempy);
-				box_max_x = Math.max(box_max_x, tempx);
-				box_max_y = Math.max(box_max_y, tempy);		
-			}
-
+			var box_min_x = entity.container.x;
+			var box_min_y = entity.container.y;
+			var box_max_x = entity.container.x + entity.container.width;
+			var box_max_y = entity.container.y + entity.container.height;
+			
+			//enable to visualise bounding boxes
+			// var shape = new PIXI.RoundedRectangle(0, 0, box_max_x - box_min_x, box_max_y - box_min_y, 5);
+			// var container = draw_shape(1, 1, 0, 0, 16777215, shape);
+			// container.x = box_min_x;
+			// container.y = box_min_y;
+			// objectContainer.addChild(container)
+			
 			if (box_min_x > x_min && box_min_y > y_min && box_max_x < x_max && box_max_y < y_max) {
 				selected_entities.push(room_data.slides[active_slide].entities[key]);
 			}
@@ -2101,11 +2059,264 @@ function on_select_end(e) {
 	render_scene();
 }
 
-function select_entities() {
+function measure_text(entity) {
+	return [x_rel(entity.container.width), x_rel(entity.container.height)];
+}
+
+function select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) {
+	limit_rate(15, select_box_move_state, function() {
+		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		mouse_location.x = x_abs(from_x_local(mouse_location.x));
+		mouse_location.y = y_abs(from_y_local(mouse_location.y));
+		var x_diff = mouse_location.x - ref_x;
+		var y_diff = mouse_location.y - ref_y;	
+		var scale_x = Math.abs(x_diff / ref_width);
+		var scale_y = Math.abs(y_diff / ref_height);
+		
+		for (var i in selected_entities) {
+			var entity = selected_entities[i];
+			if (!lock_x) {
+				entity.container.scale.x = scale_x * entity.container.start_scale[0];
+				entity.container.x = (entity.container.x_orig - ref_x) * scale_x + ref_x;
+			}
+			if (!lock_y) {
+				entity.container.scale.y = scale_y * entity.container.start_scale[1];
+				entity.container.y = (entity.container.y_orig - ref_y) * scale_y + ref_y;
+			}
+		}
+		
+		if (!lock_x) {
+			select_box.x = Math.min(ref_x, mouse_location.x);
+			select_box.width = Math.abs(ref_x - mouse_location.x);
+		}
+		if (!lock_y) {
+			select_box.y = Math.min(ref_y, mouse_location.y);
+			select_box.height = Math.abs(ref_y - mouse_location.y);
+		}
+		
+		render_scene();
+	});
+	e.stopPropagation();
+}
+
+function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) {
+	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	mouse_location.x = x_abs(from_x_local(mouse_location.x));
+	mouse_location.y = y_abs(from_y_local(mouse_location.y));
+	var x_diff = mouse_location.x - ref_x;
+	var y_diff = mouse_location.y - ref_y;	
+	var scale_x = Math.abs(x_diff / ref_width);
+	var scale_y = Math.abs(y_diff / ref_height);
+		
+	var origin_entity_map = [];	
 	for (var i in selected_entities) {
+		var entity = selected_entities[i];
+		
+		var scale = entity.scale ? entity.scale : [1,1], x = entity.x, y = entity.y;
+		
+		origin = [x, y, [scale[0], scale[1]]];
+		origin_entity_map.push([origin, selected_entities[i]]);
+		
+		if (!lock_x) {
+			x = x_rel((entity.container.x_orig - ref_x) * scale_x + ref_x - entity.container.x_orig) + entity.x;
+			scale[0] = scale_x * entity.container.start_scale[0] / entity.container.orig_scale[0];
+		}
+		if (!lock_y) {
+			y = y_rel((entity.container.y_orig - ref_y) * scale_y + ref_y - entity.container.y_orig) + entity.y;
+			scale[1] = scale_y * entity.container.start_scale[1] / entity.container.orig_scale[1];
+		}
+		entity.container.x = entity.container.x_orig;
+		entity.container.y = entity.container.y_orig;
+		drag_entity(entity, x, y, scale);
+		socket.emit('drag', room, entity.uid, active_slide, x, y, scale);
+	}
+	undo_list.push(["drag", origin_entity_map]);
+	
+	select_box.mousedown = undefined;
+	select_box.mousemove = on_selectbox_move;
+	select_box.mouseup = undefined;
+	select_box.mouseupoutside = undefined;
+	objectContainer.mouseup = undefined;
+	objectContainer.mouseupoutside = undefined;
+	
+	on_selectbox_move(e);
+	
+	if (!lock_x) {
+		select_box.x = Math.min(ref_x, mouse_location.x);
+		select_box.width = Math.abs(ref_x - mouse_location.x);
+	}
+	if (!lock_y) {
+		select_box.y = Math.min(ref_y, mouse_location.y);
+		select_box.height = Math.abs(ref_y - mouse_location.y);
+	}
+	
+	render_scene();
+	e.stopPropagation();
+}
+
+function prepare_resize(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) {
+	for (var i in selected_entities) {
+		var entity = selected_entities[i];
+		entity.container.x_orig = entity.container.x;
+		entity.container.y_orig = entity.container.y;
+		entity.container.start_scale = [entity.container.scale.x, entity.container.scale.y];
+	}
+	
+	objectContainer.mousedown = on_left_click;
+	select_box.mouseup = function(e) { select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
+	select_box.mouseupoutside = select_box.mouseup;
+	objectContainer.mouseup = select_box.mouseup;
+	objectContainer.mouseupoutside = select_box.mouseup;
+	
+	select_box.mousemove = function(e) { select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
+	
+	e.stopPropagation();
+}
+
+var select_box_move_state = {}
+function on_selectbox_move(e) {
+	limit_rate(15, select_box_move_state, function() {
+		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		mouse_location.x = x_abs(from_x_local(mouse_location.x));
+		mouse_location.y = y_abs(from_y_local(mouse_location.y));
+				
+		mouse_location.x -= select_box.x;
+		mouse_location.y -= select_box.y;
+		mouse_location.x /= select_box.width;
+		mouse_location.y /= select_box.height;
+		
+		var margin = 0.1;
+		
+		var left_x = select_box.x;
+		var top_y = select_box.y;
+		var right_x = left_x + select_box.width;
+		var bottom_y = top_y + select_box.height;
+		
+		if (mouse_location.x < 0-0.1 || mouse_location.x > 1+0.1 || mouse_location.y < 0-0.1 || mouse_location.y > 1+0.1)  {
+			on_select_out(e);
+			e.stopPropagation();
+			return;
+		}
+		
+		if (mouse_location.x < margin) {
+			if (mouse_location.y < margin) { //top-left
+				$('html,body').css('cursor', 'nw-resize');
+				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, bottom_y, select_box.width, select_box.height, false, false); };
+				select_box.mousedown = objectContainer.mousedown;
+			} else if (mouse_location.y > 1 - margin) { //bottom-left
+				$('html,body').css('cursor', 'sw-resize');
+				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, top_y, select_box.width, select_box.height, false, false); };
+				select_box.mousedown = objectContainer.mousedown;
+			} else { //left
+				$('html,body').css('cursor', 'w-resize');
+				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, 0, select_box.width, select_box.height, false, true); };
+				select_box.mousedown = objectContainer.mousedown;
+			}
+		} else if (mouse_location.x > 1 - margin) { //right
+			if (mouse_location.y < margin) { //top-right
+				$('html,body').css('cursor', 'ne-resize');
+				objectContainer.mousedown = function(e) { prepare_resize(e, left_x, bottom_y, select_box.width, select_box.height, false, false); };
+				select_box.mousedown = objectContainer.mousedown;
+			} else if (mouse_location.y > 1 - margin) { //bottom-right
+				$('html,body').css('cursor', 'se-resize');
+				objectContainer.mousedown = function(e) { prepare_resize(e, left_x, top_y, select_box.width, select_box.height, false, false); };
+				select_box.mousedown = objectContainer.mousedown;
+			} else { //right
+				$('html,body').css('cursor', 'e-resize');
+				objectContainer.mousedown = function(e) { prepare_resize(e, left_x, 0, select_box.width, select_box.height, false, true); };
+				select_box.mousedown = objectContainer.mousedown;
+			}
+		} else {			
+			if (mouse_location.y < margin) { //top
+				$('html,body').css('cursor', 'n-resize');
+				objectContainer.mousedown = function(e) { prepare_resize(e, 0, bottom_y, select_box.width, select_box.height, true, false); };
+				select_box.mousedown = objectContainer.mousedown;
+			} else if (mouse_location.y > 1 - margin) { //bottom
+				$('html,body').css('cursor', 's-resize');
+				objectContainer.mousedown = function(e) { prepare_resize(e, 0, top_y, select_box.width, select_box.height, true, false); };
+				select_box.mousedown = objectContainer.mousedown;
+			} else {
+				$('html,body').css('cursor', 'move');
+				select_box.mousedown = on_drag_start;
+				objectContainer.mousedown = on_left_click;
+			}
+		}
+	});
+	e.stopPropagation();
+}
+
+function on_select_over(e) {
+	select_box.mousemove = on_selectbox_move;
+	select_box.mouseout = on_select_out;
+}
+
+function on_select_out(e) {
+	limit_rate(15, select_box_move_state, function() {});
+	$('html,body').css('cursor', 'initial');
+	select_box.mousemove = undefined;
+	select_box.mousedown = undefined;
+	objectContainer.mousedown = on_left_click;
+	select_box.mouseout = undefined;
+}
+
+function make_resizable(select_box) {
+	select_box.interactive = true;
+	select_box.mouseover = on_select_over;
+}
+
+function redraw_select_box() {
+	if (select_box) {
+		if (selected_entities.length > 0) {
+			var x_min = 99999, x_max = -99999, y_min = 99999, y_max = -99999;
+			for (var i in selected_entities) {
+				x_min = Math.min(selected_entities[i].container.x, x_min);
+				y_min = Math.min(selected_entities[i].container.y, y_min);
+				x_max = Math.max(selected_entities[i].container.x + selected_entities[i].container.width, x_max);
+				y_max = Math.max(selected_entities[i].container.y + selected_entities[i].container.height, y_max);	
+			}
+			select_box.x = x_min;
+			select_box.width = x_max - x_min;
+			select_box.y = y_min;
+			select_box.height = y_max - y_min;
+		}	
+		objectContainer.removeChild(select_box);
+		objectContainer.addChild(select_box);
+	}
+}
+
+function select_entities() {
+	remove_select_box();
+	var x_min = 99999, x_max = -99999, y_min = 99999, y_max = -99999;
+	for (var i in selected_entities) {
+		x_min = Math.min(x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.x), x_min);
+		y_min = Math.min(y_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.y), y_min);
+		x_max = Math.max(  x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.x)
+						 + x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.width), x_max);
+		y_max = Math.max(  x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.y)
+						 + x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.height), y_max);	
 		room_data.slides[active_slide].entities[selected_entities[i].uid].container.alpha = select_alpha;
 	}
+	
+	if (selected_entities.length > 0) {
+		var shape = new PIXI.Rectangle(0, 0, x_abs(x_max - x_min), y_abs(y_max - y_min), 5);
+		select_box = draw_select_box(shape);
+		select_box.x = x_abs(x_min);
+		select_box.y = y_abs(y_min);
+		objectContainer.addChild(select_box);
+		make_resizable(select_box);
+	}
+
 	render_scene();
+}
+
+function draw_select_box(shape) {
+	var graphic = new PIXI.Graphics();
+	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+	graphic.lineStyle(1 * zoom_level, 16777215, 0.2);
+	graphic.beginFill(16777215, 0.2);
+	graphic.drawShape(shape);
+	graphic.endFill();
+	return graphic;
 }
 
 function select_all() {
@@ -2120,7 +2331,26 @@ function select_all() {
 	undo_list.push(["select", selected_entities, previously_selected_entities]);
 }
 
+function remove_select_box() {
+	limit_rate(15, select_box_move_state, function() {});
+	if (select_box) {
+		select_box.mousedown = undefined;
+		select_box.mousemove = undefined;
+		select_box.mouseup = undefined;
+		select_box.mouseout = undefined;
+		select_box.mouseover = undefined;
+		select_box.mouseupoutside = undefined;
+		objectContainer.mousedown = on_left_click;
+		objectContainer.removeChild(select_box);
+		delete select_box;
+		select_box = undefined;
+		render_scene();
+	}
+	$('html,body').css('cursor', 'initial');
+}
+
 function deselect_all() {
+	remove_select_box();
 	previously_selected_entities = selected_entities;
 	for (var entity in selected_entities) {
 		selected_entities[entity].container.filters = undefined;
@@ -2208,6 +2438,7 @@ function draw_path2(context, context2, drawing, n, start_index, stop_index, end,
 			var i = start_index;
 			context2.bezierCurveTo(cx.p1[i], cy.p1[i], cx.p2[i], cy.p2[i], path_x[i+1], path_y[i+1]);
 		}
+		context2.stroke();
 	}
 	
 	
@@ -2416,6 +2647,19 @@ function draw_T3(context, a, b, drawing) {
 	context.lineTo(b[0] + size * x_ort, b[1] + size * y_ort);
 	context.stroke();
 	context.setLineDash(temp_dash);
+}
+
+function canvas2sprite(_context, _canvas) {
+	var sprite = createSprite(_context, _canvas);
+		
+	if (sprite) {
+		//rescale to objectContainer
+		sprite.height /= objectContainer.scale.x;
+		sprite.width /= objectContainer.scale.y;
+		return sprite;
+	} else {
+		return false; //failure
+	}
 }
 
 function canvas2container(_context, _canvas, entity) {
@@ -2668,7 +2912,11 @@ function on_icon_end(e) {
 	var x = mouse_x_rel(mouse_location.x) - (size/2);
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
- 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size * zoom_level, label_color: "#ffffff", label_font: "Arial"}
+ 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size * zoom_level, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked}
+	
+	if (icon.label_background) {
+		icon.label_color = "#000000";
+	}
 	
 	undo_list.push(["add", [icon]]);
 	create_icon(icon, snap_and_emit_entity);
@@ -2680,7 +2928,7 @@ function on_text_end(e) {
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:1, color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size * zoom_level, font:'Arial'};
+	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:[1,1], color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size * zoom_level, font:'Arial'};
 	undo_list.push(["add", [text]]);
 	current_text_element = text;
 	create_text2(text);
@@ -2693,7 +2941,7 @@ function on_background_text_end(e) {
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:1, color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size * zoom_level, font:'Arial'};
+	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:[1,1], color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size * zoom_level, font:'Arial'};
 	undo_list.push(["add", [background_text]]);
 	create_background_text2(background_text);
 	snap_and_emit_entity(background_text);
@@ -2783,10 +3031,6 @@ function on_line_end(e) {
 	}
 }
 
-objectContainer.interactive = true;
-objectContainer.mousedown = on_left_click;
-objectContainer.touchstart = on_left_click;
-
 function create_text2(text_entity) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
@@ -2853,12 +3097,12 @@ function create_background_text2(text_entity) {
 		sprite.x = 0;
 		sprite.y = 0;
 		
-		var shape = new PIXI.RoundedRectangle(-5, -5, sprite.width+10, sprite.height+10, 5);
-		var graphic = draw_shape(1, 1, 0, 1, 16777215, shape);
+		var shape = new PIXI.RoundedRectangle(0, 0, sprite.width+10, sprite.height+10, 5);
+		var container = draw_shape(1, 1, 0, 1, 16777215, shape);
 				
-		var container = new PIXI.Container();
-		container.addChild(graphic);
 		container.addChild(sprite);
+		sprite.x += 5;
+		sprite.y += 5;
 		container.x = x_abs(text_entity.x);
 		container.y = y_abs(text_entity.y);
 		text_entity.container = container;		
@@ -2893,27 +3137,71 @@ function create_icon_cont(icon, texture) {
 		var color = '#' + ('00000' + (icon.label_color | 0).toString(16)).substr(-6); 
 		var _canvas = document.createElement("canvas");
 		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-		_canvas.width = icon.label.length * icon.label_font_size /zoom_level * 1.5 * TEXT_QUALITY + 10;
-		_canvas.height = icon.label_font_size /zoom_level * 1.5 * TEXT_QUALITY + 30;		
+		var scale_up = (8/icon.label_font_size);
+		var scale_factor;
+		_canvas.width = scale_up * icon.label.length * icon.label_font_size * 1.5 * TEXT_QUALITY / zoom_level + 10;
+		_canvas.height = scale_up * icon.label_font_size * 1.5 * TEXT_QUALITY / zoom_level + 30;		
 		var _context = _canvas.getContext("2d");
 		
-		_context.font = ""+icon.label_font_size*TEXT_QUALITY/zoom_level*x_abs(FONT_SCALE)+"px "+icon.label_font;
+		_context.font = ""+ scale_up * icon.label_font_size / zoom_level * TEXT_QUALITY * x_abs(FONT_SCALE)+"px "+icon.label_font;
 		_context.fillStyle = icon.label_color;
 
-		_context.shadowColor = "black";
+		if (!icon.label_background) {
+			_context.shadowColor = "black";
+		}
 		_context.shadowOffsetX = 1; 
 		_context.shadowOffsetY = 1; 
 		_context.shadowBlur = 7;
 		_context.fillText(icon.label, 0, _canvas.height - 15);
 		
 		var text = createSprite(_context, _canvas);
-		text.scale.x /= TEXT_QUALITY;
-		text.scale.y /= TEXT_QUALITY;
+		text.scale.x /= TEXT_QUALITY / zoom_level * scale_up;
+		text.scale.y /= TEXT_QUALITY / zoom_level * scale_up;
+		text.x = 0;
+		text.y = 0;
 		
-		text.x -= text.width/2 - sprite.width/2;
-		text.y = sprite.height;
+		if (icon.label_background) {
+			var temp = text;
+			var shape = new PIXI.RoundedRectangle(0, 0, temp.width+(temp.height/1.5), temp.height+(temp.height/1.5), (temp.height/2));
+			text = draw_shape((temp.height/8), 1, 0, 1, 16777215, shape);
+			text.addChild(temp);
+			temp.x += (temp.height/3);
+			temp.y += (temp.height/3);	
+		}			
 
 		icon['container'].addChild(text);
+		
+		var label_pos = icon.label_pos;
+		if (!label_pos) {
+			label_pos = "pos_bottom";
+		}
+		
+		if (label_pos == 'pos_bottom') {
+			text.x -= text.width/2 - sprite.width/2;
+			text.y += sprite.height;
+		} else if (label_pos == 'pos_top') {
+			text.x -= text.width/2 - sprite.width/2;
+			text.y -= text.height;
+		} else if (label_pos == 'pos_left') {
+			text.x -= text.width;
+			text.y += sprite.height/2 - text.height/2;
+		} else if (label_pos == 'pos_right') {
+			text.x += sprite.width;
+			text.y += sprite.height/2 - text.height/2;
+		} else if (label_pos == 'pos_top_left') {
+			text.x -= text.width;
+			text.y -= text.height/2;
+		} else if (label_pos == 'pos_top_right') {
+			text.x += sprite.width;
+			text.y -= text.height/2;			
+		} else if (label_pos == 'pos_bottom_left') {
+			text.x -= text.width;
+			text.y += sprite.height - text.height/2;		
+		} else if (label_pos == 'pos_bottom_right') {
+			text.x += sprite.width;
+			text.y += sprite.height - text.height/2;	
+		}
+
 	}
 
 	icon.container.entity = icon; 
@@ -2968,8 +3256,10 @@ function create_icon(icon, cb_after) {
 function make_draggable(root) {
 	root.interactive = true;
     root.buttonMode = true;
+	root.draggable = true;
 	root.mousedown = on_drag_start;
 	root.touchstart = on_drag_start;
+	root.orig_scale = [root.scale.x, root.scale.y];
 }
 
 /*computes control points given knots K, this is the brain of the operation*/
@@ -3054,6 +3344,11 @@ function create_entity(entity) {
 		create_polygon2(entity);
 	} else if (entity.type == 'area') {
 		create_area2(entity);
+	}
+
+	if (entity.scale) {
+		entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
+		entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
 	}
 	
 	if (entity.container && entity.type != 'background') {
@@ -3151,6 +3446,8 @@ function update_lock() {
 		$('#slide_interactive').hide();
 		$('#slide_static').show();
 		$('#slide_table1').hide();
+		$('#can_not_edit').show();
+		$('#map_select_box').hide();
 		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 				if (room_data.slides[active_slide].entities[i].container) {
@@ -3162,11 +3459,16 @@ function update_lock() {
 		if (my_tracker) {
 			stop_tracking();
 		}
+		if (active_context == 'ping_context') {
+			objectContainer.onmousemove = undefined;
+		}
 	} else {
 		$('.left_column').show();
 		$('#slide_interactive').show();
 		$('#slide_static').hide();
 		$('#slide_table1').show();
+		$('#can_not_edit').hide();
+		$('#map_select_box').show();
 		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 				if (room_data.slides[active_slide].entities[i].container) {
@@ -3243,6 +3545,10 @@ function initialize_slider(slider_id, slider_text_id, variable_name) {
 	var slider = $("#"+ slider_id);
 	$("#"+slider_text_id).val(slider.attr('value'));
 	window[variable_name] = parseFloat(slider.attr('value'));
+	slider.on("change", function(slideEvt) {
+		$("#"+slider_text_id).val(this.value);
+		window[variable_name] = parseFloat(this.value);
+	});
 	slider.on("input", function(slideEvt) {
 		$("#"+slider_text_id).val(this.value);
 		window[variable_name] = parseFloat(this.value);
@@ -3288,13 +3594,19 @@ function undo() {
 			for (var i in action[1]) {
 				var x = action[1][i][0][0];
 				var y = action[1][i][0][1];
+				var scale = action[1][i][0][2];
 				var uid = action[1][i][1].uid;
 				if (room_data.slides[active_slide].entities[uid]) { //still exists
 					action[1][i][0][0] = room_data.slides[active_slide].entities[uid].x;
 					action[1][i][0][1] = room_data.slides[active_slide].entities[uid].y;
-					drag_entity(room_data.slides[active_slide].entities[uid], x, y);
+					if (room_data.slides[active_slide].entities[uid].scale) {
+						action[1][i][0][2] = [room_data.slides[active_slide].entities[uid].scale[0], room_data.slides[active_slide].entities[uid].scale[1]]
+					} else {
+						action[1][i][0][2] = [1,1]
+					}
+					drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale);
 					render_scene();
-					socket.emit('drag', room, uid, active_slide, x, y);
+					socket.emit('drag', room, uid, active_slide, x, y, scale);
 				}
 			}
 			redo_list.push(action);
@@ -3338,13 +3650,19 @@ function redo() {
 			for (var i in action[1]) {
 				var x = action[1][i][0][0];
 				var y = action[1][i][0][1];
+				var scale = action[1][i][0][2];
 				var uid = action[1][i][1].uid;
 				if (room_data.slides[active_slide].entities[uid]) { //still exists
 					action[1][i][0][0] = room_data.slides[active_slide].entities[uid].x;
 					action[1][i][0][1] = room_data.slides[active_slide].entities[uid].y;
-					drag_entity(room_data.slides[active_slide].entities[uid], x, y);
+					if (room_data.slides[active_slide].entities[uid].scale) {
+						action[1][i][0][2] = [room_data.slides[active_slide].entities[uid].scale[0], room_data.slides[active_slide].entities[uid].scale[1]]
+					} else {
+						action[1][i][0][2] = [1,1]
+					}
+					drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale);
 					render_scene();
-					socket.emit('drag', room, uid, active_slide, x, y);
+					socket.emit('drag', room, uid, active_slide, x, y, scale);
 				}
 			}
 			undo_list.push(action);
@@ -3377,6 +3695,7 @@ function redo() {
 }
 
 function clear_selected() {
+	remove_select_box();
 	var clone = selected_entities.slice(0);
 	var cleared_entities = [];
 	for (var i in clone) {
@@ -3385,6 +3704,7 @@ function clear_selected() {
 		cleared_entities.push(entity)
 		socket.emit('remove', room, entity.uid, active_slide);
 	}
+	deselect_all();
 	selected_entities = [];
 	undo_list.push(["remove", cleared_entities]);
 	if (active_context == "drag_context") {
@@ -3392,19 +3712,30 @@ function clear_selected() {
 	}
 }
 
-function drag_entity(entity, x, y) {
+function drag_entity(entity, x, y, scale) {
 	entity.container.x += x_abs(x-entity.x);
 	entity.container.y += y_abs(y-entity.y);
 	entity.x = x;
 	entity.y = y;
+	entity.scale = scale;
 	if (entity.type == 'note') {
 		align_note_text(entity);
 	}
 	if (entity.container) {
 		objectContainer.removeChild(entity.container);
 		objectContainer.addChild(entity.container);
+		if (scale) {
+			entity.container.scale.x = entity.container.orig_scale[0] * scale[0];
+			entity.container.scale.y = entity.container.orig_scale[1] * scale[1];
+		}
 	}
 	
+	select_box_dirty = false;
+	for (var i in selected_entities) {
+		if (selected_entities[i].uid == entity.uid) {
+			select_box_dirty = true;
+		}
+	}
 	render_scene();	
 }
 
@@ -3483,7 +3814,7 @@ function resolve_order_conflicts(slide) {
 	}
 }
 
-function update_slide_buttons() {
+function update_slide_buttons() {	
 	var prev_slide_uid = find_previous_slide(room_data.slides[active_slide].order);
 	var next_slide_uid = find_next_slide(room_data.slides[active_slide].order);
 	
@@ -3512,20 +3843,29 @@ function update_slide_buttons() {
 	var name = escapeHtml(room_data.slides[active_slide].name);
 	$('#slide_name_field').val(name);
 	$('#slide_name_field2').val(name);
-	$('#slide_table').empty();
-		
+	
 	var current_slide_uid = find_first_slide();
+	var table = $('#slide_table');
+	
+	table.empty();	
 	do {
 		var name = escapeHtml(room_data.slides[current_slide_uid].name);
 				
 		if (current_slide_uid == active_slide) {
-			$('#slide_table').append("<tr id='" + current_slide_uid + "' style='background-color:#ADD8E6'><td><a id='" + current_slide_uid + "'>" + name + "</a></td></tr>");
+			table.append("<tr id='" + current_slide_uid + "' style='background-color:#ADD8E6'><td><a id='" + current_slide_uid + "'>" + name + "</a></td></tr>");
 		} else {
-			$('#slide_table').append("<tr id='" + current_slide_uid + "'><td><a id='" + current_slide_uid + "'>" + name + "</a></td></tr>");
+			table.append("<tr id='" + current_slide_uid + "'><td><a id='" + current_slide_uid + "'>" + name + "</a></td></tr>");
 		}
 		
 		current_slide_uid = find_next_slide(room_data.slides[current_slide_uid].order);
+		
 	} while (current_slide_uid != 0);
+	
+	//TODO: Future me, figure out why it resets the scrollbar, I'm too stupid to figure it out
+	var scrolltop = $('#slide_container').scrollTop();
+	setTimeout(function() {
+		$('#slide_container').scrollTop(scrolltop);
+	},0);
 }
 
 function transition(slide) {	
@@ -3552,9 +3892,13 @@ function transition(slide) {
 
 	var new_background_uid;
 	for (var i in to_transition) {
-		remove(to_transition[i], true);
-		to_add.push(to_transition[i]);
-		
+		var key = to_transition[i];
+		if (room_data.slides[slide].entities[key].type == "background") {
+			new_background_uid = key;
+		} else {
+			remove(key, true);
+			to_add.push(key);
+		}
 		//take over the container
 		/*
 		var key = to_transition[i];
@@ -3577,6 +3921,7 @@ function transition(slide) {
 	}
 
 	active_slide = slide;
+	update_slide_buttons();
 	
 	var add_other_entities = function() {
 		try {
@@ -3589,19 +3934,18 @@ function transition(slide) {
 			var key = to_add[i];
 			create_entity(room_data.slides[slide].entities[key]);
 		}
-		render_scene();
 	}
 
 	//we need to set the background first cause the canvases may need to be resized before we can draw on them
-	if (new_background_uid) {
+	if (new_background_uid) {	
 		set_background(room_data.slides[slide].entities[new_background_uid], function() {
 			add_other_entities();
+			render_scene();
 		});
 	} else {
 		add_other_entities();
+		render_scene();
 	}
-		
-	update_slide_buttons();
 }
 
 function change_slide(slide) {
@@ -3753,14 +4097,119 @@ function add_custom_map(url) {
 	map_select.selectpicker('refresh');	
 } 
 
+function cleanup() {
+	deselect_all();
+	undo_list = [];
+	redo_list = [];
+	if (active_slide) {
+		for (var key in room_data.slides[active_slide].entities) {
+			if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
+				var entity = room_data.slides[active_slide].entities[key];
+				remove(key);
+			}
+		}
+	}
+	room_data = {};
+}
+
 //connect socket.io socket
 $(document).ready(function() {
 	//sorts maps alphabetically, can't presort cause it depends on language
 	initialize_map_select($("#map_select"));
 	initialize_map_select($("#map_select_wotbase"));
+
+	//start pixi renderer
+	var border = 30;
+	size = Math.min(window.innerHeight, window.innerWidth) - border;
+	size_x = size;
+	size_y = size;
+
+	if (Modernizr.webgl && !nowebgl) {
+		renderer = PIXI.autoDetectRenderer(size, size, {backgroundColor : 0xBBBBBB});
+	} else {
+		renderer = new PIXI.CanvasRenderer(size, size, {backgroundColor : 0xBBBBBB});
+	}
+	renderer.autoResize = true;
+	useWebGL = renderer instanceof PIXI.WebGLRenderer;
+
+	$(renderer.view).attr('style', 'z-index: 0; position:absolute; padding:0; margin:0; border:0;');
+	$(".edit_window").append(renderer.view);
 	
-	loader.once('complete', function () {
-		
+	renderer.view.addEventListener("wheel", function(e) {
+		zoom(0.1, e.deltaY < 0, e);
+		e.preventDefault();
+	});
+
+	//initialize background
+	background_sprite = new PIXI.Sprite();
+	
+	// create the root of the scene graph
+	objectContainer = new PIXI.Container();
+	fast_container = new PIXI.ParticleContainer(10000, {
+		scale: true,
+		position: true,
+		rotation: false,
+		uvs: false,
+		alpha: false
+	});
+	
+	objectContainer.addChild(background_sprite);
+	objectContainer.addChild(fast_container);
+
+	//initialize grid layer
+	if (game == "aw") {
+		grid_layer = new PIXI.Sprite.fromImage(image_host + "aw_grid.png");
+	} else {
+		grid_layer = new PIXI.Sprite.fromImage(image_host + "grid.png");
+	}
+	grid_layer.height = renderer.height;
+	grid_layer.width = renderer.width;
+	objectContainer.addChild(grid_layer);
+	
+	objectContainer.interactive = true;
+	objectContainer.mousedown = on_left_click;
+	objectContainer.touchstart = on_left_click;
+	
+	$(renderer.view).mousedown(function(e) {
+		if (e.which === 3 || e.which === 2) {
+			last_pan_loc = [renderer.plugins.interaction.eventData.data.global.x, renderer.plugins.interaction.eventData.data.global.y];
+			setup_mouse_events(on_pan);
+			e.preventDefault();
+		}
+	});
+
+	renderer.view.addEventListener('contextmenu', function(e) {
+		setup_mouse_events(undefined);
+		e.preventDefault();
+	});
+
+
+	$(renderer.view).mouseup(function(e) {
+		if (e.which === 3 || e.which === 2) {
+			setup_mouse_events(undefined);
+			e.preventDefault();
+		}
+	});
+
+	draw_canvas = document.createElement("canvas");
+	$(draw_canvas).attr('style', 'padding:0px; margin:0px; border:0; position:absolute; z-index:'+ 2 + '; pointer-events:none');
+	draw_canvas.width = renderer.view.width;
+	draw_canvas.height = renderer.view.height;
+	draw_context = draw_canvas.getContext("2d");
+
+	temp_draw_canvas = document.createElement("canvas");
+	$(temp_draw_canvas).attr('style', 'padding:0px; margin:0px; border:0; position:absolute; z-index:'+ 3 + '; pointer-events:none');
+	temp_draw_canvas.width = renderer.view.width;
+	temp_draw_canvas.height = renderer.view.height;
+	temp_draw_context = temp_draw_canvas.getContext("2d");
+
+	$(renderer.view).parent().append(temp_draw_canvas);
+	$(renderer.view).parent().append(draw_canvas);
+	$(temp_draw_canvas).hide();
+	$(draw_canvas).hide();
+	
+	
+	loader.once('complete', function () {		
 		//generate ticks, leveraged from: http://thenewcode.com/864/Auto-Generate-Marks-on-HTML5-Range-Sliders-with-JavaScript
 		function ticks(element) {		
 			if ('list' in element && 'min' in element && 'max' in element && 'step' in element) {
@@ -3895,13 +4344,14 @@ $(document).ready(function() {
 
 		//except this one :)
 		$('#ping_context').show();
-		
-		
 		$("#store_tactic_popover").hide();
 		
 		
 		$("#save").hide();
 		$('#ping').addClass('active');	
+		$('#' + label_position).addClass('active');	
+
+		
 		var first_icon = $("#icon_context").find("button:first");
 		first_icon.addClass('selected');
 		if (first_icon.attr('data-no_color') == 'true') {
@@ -3964,6 +4414,7 @@ $(document).ready(function() {
 		initialize_slider("label_font_size", "label_font_size_text", "label_font_size");
 		initialize_slider("icon_size", "icon_size_text", "icon_size");
 		initialize_slider("ping_size", "ping_size_text", "ping_size");
+		initialize_slider("track_size", "track_size_text", "track_size");
 				
 		$('html').click(function(e) {
 			if (e.target.id != 'tactic_name') {
@@ -4065,7 +4516,7 @@ $(document).ready(function() {
 
 		$('#export').click(function () {
 			var new_renderer = new PIXI.CanvasRenderer(size_x, size_y,{backgroundColor : 0xBBBBBB});
-			new_renderer.render(stage);			
+			new_renderer.render(objectContainer);			
 
 			$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function() {
 				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.3.0/js/canvas-to-blob.min.js", function() {
@@ -4093,7 +4544,7 @@ $(document).ready(function() {
 					change_slide(slide_uid);
 					var it = setInterval(function() {
 						if (resources_loading == 0) {
-							new_renderer.render(stage);
+							new_renderer.render(objectContainer);
 							var data = new_renderer.view.toDataURL("image/jpeg", 0.9);
 							data = data.replace("data:image/jpeg;base64,","");
 							zip.file(n.toString() + '-' + room_data.slides[slide_uid].name + ".jpg", data, {base64:true});
@@ -4252,8 +4703,8 @@ $(document).ready(function() {
 			if (game == 'sc2') {
 				if (new_menu.substring(0, 4) == 'icon') {
 					$('#icon_options').detach().appendTo($('#' + new_menu));
-					var label = $('#icon_label_container').detach();
-					$('#' + new_menu).find('h4').after(label);
+					//var label = $('#icon_label_container').detach();
+					//$('#' + new_menu).find('h4').after(label);
 				}
 			}
 						
@@ -4278,6 +4729,13 @@ $(document).ready(function() {
 			active_menu = new_menu;	
 			active_context = new_context;
 		});	
+
+		//label position
+		$('#label_pos').on('click', 'button', function (e) {
+			$('#label_pos').find("button").removeClass('active');
+			$(this).addClass('active');	
+			label_position = this.id;
+		});
 		
 		$('#rectangle_type button[data-style="full"]').addClass('active');	
 		$('#rectangle_type').on('click', 'button', function (e) {
@@ -4430,44 +4888,16 @@ $(document).ready(function() {
 			}
 		});
 		
-		$(renderer.view).attr('style', 'z-index: 0; position:absolute; padding:0; margin:0; border:0;');
-		$(".edit_window").append(renderer.view);
-		$(renderer.view).parent().append(temp_draw_canvas);
-		$(renderer.view).parent().append(draw_canvas);
-		$(temp_draw_canvas).hide();
-		$(draw_canvas).hide();
-					
 		assets_loaded = true;
-	});
-	
-	//network data responses
-	socket.on('connect', function() { 
-		if (assets_loaded) {
+		
+		socket.on('connect', function() { 
 			socket.emit('join_room', room, game);
-		} else {
-			var timer = setInterval(function() {
-				if (assets_loaded) {
-					socket.emit('join_room', room, game);
-					clearInterval(timer);
-				}
-			}, 20);
+		});
+		
+		if (socket.connected) {
+			socket.emit('join_room', room, game);
 		}
 	});
-	
-	function cleanup() {
-		deselect_all();
-		undo_list = [];
-		redo_list = [];
-		if (active_slide) {
-			for (var key in room_data.slides[active_slide].entities) {
-				if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
-					var entity = room_data.slides[active_slide].entities[key];
-					remove(key);
-				}
-			}
-		}
-		room_data = {};
-	}
 	
 	socket.on('room_data', function(new_room_data, my_id, new_tactic_name) {
 		cleanup();
@@ -4534,15 +4964,16 @@ $(document).ready(function() {
 		activity_animation(user_id)
 	});
 	
-	socket.on('drag', function(uid, slide, x, y, user_id) {
+	socket.on('drag', function(uid, slide, x, y, user_id, scale) {
 		if (room_data.slides[slide].entities[uid].x == x && room_data.slides[slide].entities[uid].y == y) {
 			return; //ignore, it's probably an echo of what I've sent
 		}
 		if (slide != active_slide) {
 			room_data.slides[slide].entities[uid].x = x;
 			room_data.slides[slide].entities[uid].y = y;
+			room_data.slides[slide].entities[uid].scale = scale;
 		} else {
-			drag_entity(room_data.slides[active_slide].entities[uid], x, y);
+			drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale);
 		}
 		activity_animation(user_id)
 	});
@@ -4556,7 +4987,6 @@ $(document).ready(function() {
 		chat(message, color);
 	});
 
-	
 	socket.on('identify', function(user) {
 		if (!my_user) {
 			my_user = user;

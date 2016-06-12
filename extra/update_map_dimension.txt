@@ -1,0 +1,297 @@
+db.stored_tactics.find({}).forEach(function (doc) { 
+	var modified = false;
+	for (var key in doc.slides) {
+		if (doc.slides.hasOwnProperty(key)) {
+			for (var i in doc.slides[key].entities) {
+				if (doc.slides[key].entities.hasOwnProperty(i)) {
+					modified = true;
+					if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/abbey.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/airfield.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/arctic_region.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/arctic_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/cliffs.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/cliff_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/dragon_ridge.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/el_halluf.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/el_halluf_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/ensk.jpg") {
+						doc.slides[key].entities[i].size_x = 600;
+						doc.slides[key].entities[i].size_y = 600;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/ensk_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/erlenberg.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/erlenberg_assault.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/erlenberg_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/fiery_salient.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/fiery_salient_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/fishermans_bay.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/ghost_town.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/ghost_town_attack_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/hidden_village.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/fjords.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/highway.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/himmelsdorf.jpg") {
+						doc.slides[key].entities[i].size_x = 700;
+						doc.slides[key].entities[i].size_y = 700;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/himmelsdorf_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 700;
+						doc.slides[key].entities[i].size_y = 700;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/himmelsdorf_attack_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 700;
+						doc.slides[key].entities[i].size_y = 700;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/karelia.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/karelia_assault.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/komarin.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/krarkov.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/kharkov_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/lakeville.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/lakeville_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/lakeville_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/live_oaks.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/malinovka.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/malinovka_assault.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/malinovka_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/mines.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/mines_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/mines_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/mittengard.jpg") {
+						doc.slides[key].entities[i].size_x = 600;
+						doc.slides[key].entities[i].size_y = 600;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/mountain_pass.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/moon_pool.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/murovanka.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/murovanka_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/murovanka_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/northwest.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/overlord.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/pearl_river.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/pacific_Island.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/phrokorovka.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/phrokorovka_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/phrokorovka_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/pilsen.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/port.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/province.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/redshire.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/redshire_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/ruinberg.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/ruinberg_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/ruinberg_on_fire.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/ruinberg_on_fire_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/sacred_valley.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/sacred_valley_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/sand_river.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/sand_river_assault.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/sand_river_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/sand_river_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/serene_coast.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/severogorsk.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/severogorsk_assault.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/siegfried_line.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/siegfried_line_assault.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/siegfried_line_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/siegfried_line_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/south_coast.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/stalingrad.jpg") {
+						doc.slides[key].entities[i].size_x = 950;
+						doc.slides[key].entities[i].size_y = 950;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/steppes.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/steppes_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/steppes_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/swamp.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/tundra.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/tundra_assault.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/tundra_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/tundra_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/westfield.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/westfield_assault.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/widepark.jpg") {
+						doc.slides[key].entities[i].size_x = 600;
+						doc.slides[key].entities[i].size_y = 600;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/windstorm.jpg") {
+						doc.slides[key].entities[i].size_x = 1000;
+						doc.slides[key].entities[i].size_y = 1000;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/winter_himmelsdorf.jpg") {
+						doc.slides[key].entities[i].size_x = 700;
+						doc.slides[key].entities[i].size_y = 700;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/winter_himmelsdorf_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 700;
+						doc.slides[key].entities[i].size_y = 700;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/winter_himmelsdorf_encounter.jpg") {
+						doc.slides[key].entities[i].size_x = 700;
+						doc.slides[key].entities[i].size_y = 700;
+					} else if (doc.slides[key].entities[i].path == "http://karellodewijk.github.io/maps/winter_ruinberg_attac_defence.jpg") {
+						doc.slides[key].entities[i].size_x = 800;
+						doc.slides[key].entities[i].size_y = 800;
+					}
+				}
+			}
+		}
+	}
+	if (modified) {
+		db.stored_tactics.update({_id:doc._id}, doc);
+	}
+});
+
+
