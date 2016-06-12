@@ -56,7 +56,7 @@
 	<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>
 	<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
 	<script defer type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/pixi.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/pixi.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
@@ -159,10 +159,10 @@
 			<hr>
 			
 			</div>
-			
 			<h4><%=l('User list')%> (<span id="user_count"></span>)</h4>
-			<p>
+				<p>
 		</div>
+
 		<div style="padding:10px; padding-top:0px; flex: 1 1 auto; overflow-y:auto; justify-content: flex-start;">
 			<div class="btn-group-vertical btn-group-xs userlist" role="group" id="userlist">
 			</div>
@@ -200,7 +200,7 @@
 					<div class="input-group dropdown" id="slide_static">
 						<input class="form-control" style="height:42px" type="text" id="slide_name_field2" placeholder="<%=l('Slide')%> 1" readonly/>
 					</div>
-					<div style="max-height:200px; overflow:auto">
+					<div id="slide_container" style="max-height:200px; overflow-y:scroll">
 						<table class="table table-bordered" id="slide_table1" style="text-align:left;">
 							<tbody class="ui-sortable" id="slide_table">
 							</tbody>
@@ -249,7 +249,14 @@
 				<% } %>					
 				</div>
 			</ul>
-		</nav>	
+		</nav>
+		
+		<div id="can_not_edit" style="padding-left: 10px;">
+			<h4><%=l('Tools')%></h4>
+			<p>
+			<%=l('You do not have permission to edit.')%>
+		</div>
+		
 		<div class="left_column">
 			<h4><%=l('Tools')%></h4>
 			<p>
@@ -344,11 +351,6 @@
 			<div id='icon_context'>
 					
 			<h4><%=l('Icon options')%> (<span id="icon_counter">0</span>)</h4>
-				<div id="icon_label_container">
-				<p>	
-				<small><%=l('Label')%></small> <input type="text" id="icon_label" />
-				<p>
-				</div>
 				
 				<%if (game == 'wot') { %>
 					<%include wot_icons.ejs%>
@@ -369,6 +371,7 @@
 				<%} %>
 				
 				<div id="icon_options">
+				
 				<select name="colorpicker" id="icon_colorpicker">
 					<option value="#ff0000"><%=l('Red')%></option>
 					<%if (game == 'aw') { %>
@@ -382,8 +385,28 @@
 					<option value="#ffffff"><%=l('White')%></option>
 				</select>
 				<input type="color">
-
-
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Icon size')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="icon_size" min="5" value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%> max="100" step="1" list="icon_size_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="icon_size_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>	
+				<br />
+				<h4><%=l('Label options')%></h4>
+				<div id="icon_label_container">
+				<p>	
+				<small><%=l('Label')%></small> <input type="text" id="icon_label" />
+				<p>
+				</div>
+				
+				<input type="checkbox" id="label_background" style="vertical-align:-2px;">&nbsp;<span><%=l('Add background')%></span>
+				<br /><br />
 				<div class="row">
 					<div class="col-sm-4">
 						<small><%=l('Label size')%></small>
@@ -396,18 +419,27 @@
 					</div>	
 				</div>	
 
-				<div class="row">
+				<div class="row" >
 					<div class="col-sm-4">
-						<small><%=l('Icon size')%></small>
+					<small><%=l('Label position')%></small>
 					</div>	
-					<div class="col-sm-6">
-						<input type="range" id="icon_size" min="5" value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%> max="100" step="1" list="icon_size_ticks">
-					</div>	
-					<div class="col-sm-2">
-						<input id="icon_size_text" class="slider_text_input" type="text"/>
+					<div class="col-sm-8" style="color:black;">
+						<table id="label_pos">
+							<tr>
+								<td><button id="pos_top_left" class="dir_btn btn menu_btn"></button><td><button id="pos_top" class="dir_btn btn menu_btn"></button><td><button id="pos_top_right" class="dir_btn btn menu_btn"></button>
+							</tr>
+							<tr>
+								<td><button id="pos_left" class="dir_btn btn menu_btn"></button><td><td><button id="pos_right" class="dir_btn btn menu_btn"></button>
+							</tr>
+							<tr>
+								<td><button id="pos_bottom_left" class="dir_btn btn menu_btn"></button><td><button id="pos_bottom" class="dir_btn btn menu_btn"></button><td><button id="pos_bottom_right" class="dir_btn btn menu_btn"></button>
+							</tr>
+						</table>
 					</div>
-				</div>	
-				</div>					
+				</div>
+				
+				
+				</div>
 			</div>
 			
 			<%if (game == 'sc2') {%>
@@ -920,6 +952,19 @@
 					<div class="icon icon-recticle_icon"></div>
 				</button>
 			</div>
+			
+			<br /><br />
+			<div class="row">
+				<div class="col-sm-2">
+					<small><%=l('Size')%></small></div>
+				<div class="col-sm-8">
+					<input type="range" id="track_size" min="1" value="10" max="20" step="1" list="track_size_ticks">
+				</div>
+				<div class="col-sm-2">
+					<input id="track_size_text" class="slider_text_input" type="text"/>
+				</div>
+			</div>
+			
 			</div>
 			
 			

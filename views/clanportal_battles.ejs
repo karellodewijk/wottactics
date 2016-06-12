@@ -4,7 +4,7 @@
 	<% include clanportal_headers.ejs %>
 	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.min.css" />
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js"></script>
-	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.23.5/js/jquery.tablesorter.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
 	<link rel="stylesheet" href="/stylesheets/tablesorter/style.css" />
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/globalize/1.0.0/globalize.js"></script>
 	<title><%=l('Clanportal')%><%if (clan) {%> - <%=clan.name;%><%}%> - <%=l('battles')%></title>
@@ -95,7 +95,7 @@
 						 <td><%=clan.battles[i].vs ? clan.battles[i].vs[1] : ""%></td>
 						 <td><%=(clan.battles[i].win == 0 ? "y" : "n")%></td>
 						 <td><%=clan.battles[i].map_name%></td>
-						 <td class="date"><%=clan.battles[i].time%></td>
+						 <td><span style="display:none"><%=new Date(clan.battles[i].time).getTime()%></span><span class="date"><%=clan.battles[i].time%></span></td>
 						 <td><%=clan.battles[i].commander[1]%></td>
 						 <td>
 							<% for (var j in clan.battles[i].players) { %>
@@ -417,7 +417,7 @@
 		$(".date").each(function () {
 		  $(this).html(new Date($(this).text()).toLocaleString()); 
 		});
-        $("#battle_list").tablesorter({sortList: [[5,1],[0,0],[1,0],[2,0],[3,0],[4,0],[6,0]]}); 
+        $("#battle_list").tablesorter({sortList: [[6,1],[0,0],[1,0],[2,0],[3,0],[4,0],[6,0]]}); 
     } 
 ); 
 	

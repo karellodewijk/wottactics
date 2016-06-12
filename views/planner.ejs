@@ -134,6 +134,13 @@
 	</div>
 	</nav>	
 		<div class="top">
+		
+			<div id="can_not_edit" style="padding-left: 10px;">
+				<h4><%=l('Tools')%></h4>
+				<%=l('You do not have permission to edit.')%>
+				<hr />
+			</div>
+		
 			<div class="left_column" style="width:350px; padding:20px">	
 				<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
 				<p>
@@ -174,7 +181,7 @@
 						<br /><input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span>Use wotbase maps</span>
 					<%} %>	
 				<hr>
-
+				
 				<h4><%=l('Tools')%></h4>
 				<p>
 					<div id="contexts">
@@ -265,89 +272,114 @@
 
 				<hr>
 				
-				<div id='icon_context'>
-						
-				<h4><%=l('Icon options')%> (<span id="icon_counter">0</span>)</h4>
-					<div id="icon_label_container">
-					<p>	
-					<small><%=l('Label')%></small> <input type="text" id="icon_label" />
-					<p>
+			<div id='icon_context'>
+					
+			<h4><%=l('Icon options')%> (<span id="icon_counter">0</span>)</h4>
+				
+				<%if (game == 'wot') { %>
+					<%include wot_icons.ejs%>
+				<%} else if (game == 'wows') { %>
+					<%include wows_icons.ejs%>
+				<%} else if (game == 'blitz') { %>
+					<%include blitz_icons.ejs%>
+				<%} else if (game == 'aw') { %>
+					<%include aw_icons.ejs%>
+				<%} else if (game == 'lol') { %>
+					<%include lol_icons.ejs%>
+				<%} else if (game == 'hots') { %>
+					<%include hots_icons.ejs%>
+				<%} else if (game == 'csgo') { %>
+					<%include csgo_icons.ejs%>
+				<%} else if (game == 'warface') { %>
+					<%include warface_icons.ejs%>
+				<%} %>
+				
+				<div id="icon_options">
+				
+				<select name="colorpicker" id="icon_colorpicker">
+					<option value="#ff0000"><%=l('Red')%></option>
+					<%if (game == 'aw') { %>
+					<option value="#70c5ea"><%=l('Cyan')%></option>
+					<% } %>
+					<option value="#00ff00"><%=l('Green')%></option>
+					<option value="#87CEFA"><%=l('Blue')%></option>
+					<%if (game != 'aw') { %>
+					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% } %>
+					<option value="#ffffff"><%=l('White')%></option>
+				</select>
+				<input type="color">
+				
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Icon size')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="icon_size" min="5" value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%> max="100" step="1" list="icon_size_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="icon_size_text" class="slider_text_input" type="text"/>
 					</div>
-					
-					<%if (game == 'wot') { %>
-						<%include wot_icons.ejs%>
-					<%} else if (game == 'wows') { %>
-						<%include wows_icons.ejs%>
-					<%} else if (game == 'blitz') { %>
-						<%include blitz_icons.ejs%>
-					<%} else if (game == 'aw') { %>
-						<%include aw_icons.ejs%>
-					<%} else if (game == 'lol') { %>
-						<%include lol_icons.ejs%>
-					<%} else if (game == 'hots') { %>
-						<%include hots_icons.ejs%>
-					<%} else if (game == 'csgo') { %>
-						<%include csgo_icons.ejs%>
-					<%} else if (game == 'warface') { %>
-						<%include warface_icons.ejs%>
-					<%} %>
-					
-					<div id="icon_options">
-					<select name="colorpicker" id="icon_colorpicker">
-						<option value="#ff0000"><%=l('Red')%></option>
-						<%if (game == 'aw') { %>
-						<option value="#70c5ea"><%=l('Cyan')%></option>
-						<% } %>
-						<option value="#00ff00"><%=l('Green')%></option>
-						<option value="#87CEFA"><%=l('Blue')%></option>
-						<%if (game != 'aw') { %>
-						<option value="#ffff00"><%=l('Yellow')%></option>
-						<% } %>
-						<option value="#ffffff"><%=l('White')%></option>
-					</select>
-					<input type="color">
-
-
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Label size')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"12"<%} else {%>"8"<%}%> max="100" step="1" list="label_font_size_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="label_font_size_text" class="slider_text_input" type="text"/>
-						</div>	
-					</div>	
-
-					<div class="row">
-						<div class="col-sm-4">
-							<small><%=l('Icon size')%></small>
-						</div>	
-						<div class="col-sm-6">
-							<input type="range" id="icon_size" min="5" value=<%if (game == 'blitz') { %>"35"<%} else if (game == 'wows') { %>"15"<% } else {%>"20"<%}%> max="100" step="1" list="icon_size_ticks">
-						</div>	
-						<div class="col-sm-2">
-							<input id="icon_size_text" class="slider_text_input" type="text"/>
-						</div>
-					</div>	
-					</div>					
+				</div>	
+				<br />
+				<h4><%=l('Label options')%></h4>
+				<div id="icon_label_container">
+				<p>	
+				<small><%=l('Label')%></small> <input type="text" id="icon_label" />
+				<p>
 				</div>
 				
-				<%if (game == 'sc2') {%>
-				<div id="icon_terran_context">
-				<h4><%=l('Terran Icon options')%></h4>
-					<%include sc2_terran_icons.ejs%><br/>
+				<input type="checkbox" id="label_background" style="vertical-align:-2px;">&nbsp;<span><%=l('Add background')%></span>
+				<br /><br />
+				<div class="row">
+					<div class="col-sm-4">
+						<small><%=l('Label size')%></small>
+					</div>	
+					<div class="col-sm-6">
+						<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"18"<%} else {%>"8"<%}%> max="100" step="1" list="label_font_size_ticks">
+					</div>	
+					<div class="col-sm-2">
+						<input id="label_font_size_text" class="slider_text_input" type="text"/>
+					</div>	
+				</div>	
+
+				<div class="row" >
+					<div class="col-sm-4">
+					<small><%=l('Label position')%></small>
+					</div>	
+					<div class="col-sm-8" style="color:black;">
+						<table id="label_pos">
+							<tr>
+								<td><button id="pos_top_left" class="dir_btn btn menu_btn"></button><td><button id="pos_top" class="dir_btn btn menu_btn"></button><td><button id="pos_top_right" class="dir_btn btn menu_btn"></button>
+							</tr>
+							<tr>
+								<td><button id="pos_left" class="dir_btn btn menu_btn"></button><td><td><button id="pos_right" class="dir_btn btn menu_btn"></button>
+							</tr>
+							<tr>
+								<td><button id="pos_bottom_left" class="dir_btn btn menu_btn"></button><td><button id="pos_bottom" class="dir_btn btn menu_btn"></button><td><button id="pos_bottom_right" class="dir_btn btn menu_btn"></button>
+							</tr>
+						</table>
+					</div>
 				</div>
-				<div id="icon_zerg_context">
-				<h4><%=l('Zerg Icon options')%></h4>
-					<%include sc2_zerg_icons.ejs%><br/>
+				
+				
 				</div>
-				<div id="icon_protoss_context">
-				<h4><%=l('Protoss Icon options')%></h4>
-					<%include sc2_protoss_icons.ejs%><br/>
-				</div>
-				<%}%>
+			</div>
+			
+			<%if (game == 'sc2') {%>
+			<div id="icon_terran_context">
+			<h4><%=l('Terran Icon options')%></h4>
+				<%include sc2_terran_icons.ejs%><br/>
+			</div>
+			<div id="icon_zerg_context">
+			<h4><%=l('Zerg Icon options')%></h4>
+				<%include sc2_zerg_icons.ejs%><br/>
+			</div>
+			<div id="icon_protoss_context">
+			<h4><%=l('Protoss Icon options')%></h4>
+				<%include sc2_protoss_icons.ejs%><br/>
+			</div>
+			<%}%>
 
 				
 				<div id='draw_context'>			
@@ -845,6 +877,19 @@
 						<div class="icon icon-recticle_icon"></div>
 					</button>
 				</div>
+				
+				<br /><br />
+				<div class="row">
+					<div class="col-sm-2">
+						<small><%=l('Size')%></small></div>
+					<div class="col-sm-8">
+						<input type="range" id="track_size" min="1" value="10" max="20" step="1" list="track_size_ticks">
+					</div>
+					<div class="col-sm-2">
+						<input id="track_size_text" class="slider_text_input" type="text"/>
+					</div>
+				</div>
+			
 				</div>
 				
 				
@@ -1046,7 +1091,7 @@
 			<div class="right_column">
 				<h4><%=l('User list')%> (<span id="user_count"></span>)</h4>
 				<p>
-				<div class="btn-group-vertical btn-group-xs" role="group" id="userlist" style="min-height:500px;"></div>
+				<div class="btn-group-vertical btn-group-xs" role="group" id="userlist" style="min-height:350px;"></div>
 			</div>
 			<% } %>
 			
@@ -1086,7 +1131,7 @@
 					<div class="input-group dropdown" id="slide_static">
 						<input class="form-control" style="height:42px" type="text" id="slide_name_field2" placeholder="<%=l('Slide')%> 1" readonly/>
 					</div>
-					<div style="max-height:150px; overflow:auto">
+					<div id="slide_container" style="max-height:150px; overflow:auto">
 						<table class="table table-bordered" id="slide_table1" style="text-align:left;">
 							<tbody class="ui-sortable" id="slide_table">
 							</tbody>
