@@ -751,6 +751,10 @@ function on_drag_start(e) {
 			move_selected = true;
 		}
 		
+		if (!move_selected) {
+			deselect_all();
+		}
+		
 		for (var i in selected_entities) {
 			selected_entities[i].origin_x = selected_entities[i].x;
 			selected_entities[i].origin_y = selected_entities[i].y;			
@@ -956,8 +960,6 @@ function render_scene() {
 
 var ping_texture_atlas = {}
 function ping(x, y, color, size) {	
-console.log($('#slide_container').scrollTop())
-
 	if (!ping_texture_atlas[color]) {
 		var temp = new PIXI.Sprite(ping_texture);
 		temp.tint = color;
@@ -1226,6 +1228,9 @@ var last_draw_time, last_point;
 function on_left_click(e) {
 	var mouse_location = e.data.getLocalPosition(background_sprite);
 	if (!can_edit()) {
+		setup_mouse_events(on_ruler_move, on_ruler_end);
+		init_canvases(0.1, 0xffffff, "full");
+		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];	
 		return;
 	}
 	try {
@@ -1800,11 +1805,15 @@ function on_ruler_move(e) {
 		temp_draw_context.lineWidth = to_x_local(0.5)/1000;
 		temp_draw_context.strokeStyle = "#000000";
 		temp_draw_context.fillStyle = "#FFFFFF";
-		var unit = "m";
+		var label = "";
 		if (game == "lol") {
-			unit = "u";
+			label += Math.round(10*length)/10 + "u";
+		} else if (game == "wows") {
+			label += Math.round(0.01*length)/10 + "km";
+		} else {
+			label += Math.round(10*length)/10 + "m";
 		}
-		temp_draw_context.fillText(""+Math.round(10*length)/10+unit, mid_line_x, mid_line_y);
+		temp_draw_context.fillText(label, mid_line_x, mid_line_y);
 	});
 }
 
@@ -1858,7 +1867,15 @@ function on_circle_move(e) {
 			temp_draw_context.lineWidth = to_x_local(0.5)/1000;
 			temp_draw_context.strokeStyle = "#000000";
 			temp_draw_context.fillStyle = "#FFFFFF";
-			temp_draw_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
+			var label = "";
+			if (game == "lol") {
+				label += Math.round(10*length)/10 + "u";
+			} else if (game == "wows") {
+				label += Math.round(0.01*length)/10 + "km";
+			} else {
+				label += Math.round(10*length)/10 + "m";
+			}	
+			temp_draw_context.fillText(label, mid_line_x, mid_line_y);
 			temp_draw_context.stroke();
 			temp_draw_context.restore();
 		}
@@ -1918,7 +1935,15 @@ function on_circle_end(e) {
 		temp_draw_context.lineWidth = to_x_local(0.5)/1000;
 		temp_draw_context.strokeStyle = "#000000";
 		temp_draw_context.fillStyle = "#FFFFFF";
-		temp_draw_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
+		var label = "";
+		if (game == "lol") {
+			label += Math.round(10*length)/10 + "u";
+		} else if (game == "wows") {
+			label += Math.round(0.01*length)/10 + "km";
+		} else {
+			label += Math.round(10*length)/10 + "m";
+		}
+		temp_draw_context.fillText(label, mid_line_x, mid_line_y);		
 		temp_draw_context.stroke();
 		temp_draw_context.restore();		
 		new_shape.draw_radius = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
@@ -2100,6 +2125,8 @@ function select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lo
 }
 
 function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) {
+	limit_rate(15, select_box_move_state, function() {});
+	
 	var mouse_location = renderer.plugins.interaction.eventData.data.global;
 	mouse_location.x = x_abs(from_x_local(mouse_location.x));
 	mouse_location.y = y_abs(from_y_local(mouse_location.y));
@@ -2114,7 +2141,7 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 		
 		var scale = entity.scale ? entity.scale : [1,1], x = entity.x, y = entity.y;
 		
-		origin = [x, y, [scale[0], scale[1]]];
+		var origin = [x, y, [scale[0], scale[1]]];
 		origin_entity_map.push([origin, selected_entities[i]]);
 		
 		if (!lock_x) {
@@ -2138,9 +2165,7 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 	select_box.mouseupoutside = undefined;
 	objectContainer.mouseup = undefined;
 	objectContainer.mouseupoutside = undefined;
-	
-	on_selectbox_move(e);
-	
+		
 	if (!lock_x) {
 		select_box.x = Math.min(ref_x, mouse_location.x);
 		select_box.width = Math.abs(ref_x - mouse_location.x);
@@ -2691,8 +2716,8 @@ function canvas2container(_context, _canvas, entity) {
 function create_line2(line) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = renderer.view.width;
-	_canvas.height = renderer.view.height;
+	_canvas.width = 2 * renderer.view.width;
+	_canvas.height = 2 * renderer.view.height;
 	_context = _canvas.getContext("2d");
 	
 	init_canvas(_context, line.thickness, line.color, line.style);
@@ -2731,8 +2756,8 @@ function init_shape_canvas(_context, shape) {
 function create_rectangle2(rectangle) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = renderer.view.width;
-	_canvas.height = renderer.view.height;
+	_canvas.width = 2 * renderer.view.width;
+	_canvas.height = 2 * renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, rectangle);
 
@@ -2745,8 +2770,8 @@ function create_rectangle2(rectangle) {
 function create_circle2(circle) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = renderer.view.width;
-	_canvas.height = renderer.view.height;
+	_canvas.width = 2 * renderer.view.width;
+	_canvas.height = 2 * renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, circle);
 
@@ -2773,7 +2798,15 @@ function create_circle2(circle) {
 		_context.lineWidth = to_x_local(0.5)/1000;
 		_context.strokeStyle = "#000000";
 		_context.fillStyle = "#FFFFFF";
-		_context.fillText(""+Math.round(10*length)/10+"m", mid_line_x, mid_line_y);
+		var label = "";
+		if (game == "lol") {
+			label += Math.round(10*length)/10 + "u";
+		} else if (game == "wows") {
+			label += Math.round(0.01*length)/10 + "km";
+		} else {
+			label += Math.round(10*length)/10 + "m";
+		}
+		_context.fillText(label, mid_line_x, mid_line_y);
 		_context.restore();
 	}
 	
@@ -2783,8 +2816,8 @@ function create_circle2(circle) {
 function create_polygon2(polygon) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = renderer.view.width;
-	_canvas.height = renderer.view.height;
+	_canvas.width = 2 * renderer.view.width;
+	_canvas.height = 2 * renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, polygon);
 
@@ -2805,8 +2838,8 @@ function create_polygon2(polygon) {
 function create_area2(area) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = renderer.view.width;
-	_canvas.height = renderer.view.height;
+	_canvas.width = 2 * renderer.view.width;
+	_canvas.height = 2 * renderer.view.height;
 	var _context = _canvas.getContext("2d");
 	init_shape_canvas(_context, area);
 
@@ -2820,8 +2853,8 @@ function create_area2(area) {
 function create_drawing2(drawing) {
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = renderer.view.width;
-	_canvas.height = renderer.view.height;
+	_canvas.width = 2 * renderer.view.width;
+	_canvas.height = 2 * renderer.view.height;
 	var _context = _canvas.getContext("2d");
 
 	init_canvas(_context, drawing.thickness, drawing.color, drawing.style);
@@ -2846,8 +2879,8 @@ function create_drawing2(drawing) {
 function create_curve2(drawing) {
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
-	_canvas.width = renderer.view.width;
-	_canvas.height = renderer.view.height;
+	_canvas.width = 2 * renderer.view.width;
+	_canvas.height = 2 * renderer.view.height;
 	var _context = _canvas.getContext("2d");
 
 	init_canvas(_context, drawing.thickness, drawing.color, drawing.style);
@@ -3346,7 +3379,7 @@ function create_entity(entity) {
 		create_area2(entity);
 	}
 
-	if (entity.scale) {
+	if (entity.scale && entity.container) {
 		entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
 		entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
 	}
@@ -3861,7 +3894,7 @@ function update_slide_buttons() {
 		
 	} while (current_slide_uid != 0);
 	
-	//TODO: Future me, figure out why it resets the scrollbar, I'm too stupid to figure it out
+	//TODO: Future me, figure out why it resets the scrollbar just AFTER this function ends, I'm too stupid to figure it out
 	var scrolltop = $('#slide_container').scrollTop();
 	setTimeout(function() {
 		$('#slide_container').scrollTop(scrolltop);
@@ -4153,9 +4186,6 @@ $(document).ready(function() {
 		alpha: false
 	});
 	
-	objectContainer.addChild(background_sprite);
-	objectContainer.addChild(fast_container);
-
 	//initialize grid layer
 	if (game == "aw") {
 		grid_layer = new PIXI.Sprite.fromImage(image_host + "aw_grid.png");
@@ -4164,7 +4194,10 @@ $(document).ready(function() {
 	}
 	grid_layer.height = renderer.height;
 	grid_layer.width = renderer.width;
+	
+	objectContainer.addChild(background_sprite);
 	objectContainer.addChild(grid_layer);
+	objectContainer.addChild(fast_container);
 	
 	objectContainer.interactive = true;
 	objectContainer.mousedown = on_left_click;
@@ -4207,7 +4240,6 @@ $(document).ready(function() {
 	$(renderer.view).parent().append(draw_canvas);
 	$(temp_draw_canvas).hide();
 	$(draw_canvas).hide();
-	
 	
 	loader.once('complete', function () {		
 		//generate ticks, leveraged from: http://thenewcode.com/864/Auto-Generate-Marks-on-HTML5-Range-Sliders-with-JavaScript
