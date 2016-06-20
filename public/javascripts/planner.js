@@ -191,6 +191,9 @@ var line_thickness;
 var icon_size;
 var ping_size;
 var track_size;
+var draw_end_size;
+var line_end_size;
+var curve_end_size;
 var rectangle_outline_thickness;
 var rectangle_outline_transparancy;
 var rectangle_fill_transparancy;
@@ -761,8 +764,10 @@ function on_drag_start(e) {
 			objectContainer.removeChild(selected_entities[i].container);
 			objectContainer.addChild(selected_entities[i].container);
 		}
-		_this.origin_x = x_rel(_this.x);
-		_this.origin_y = y_rel(_this.y);
+		if (_this.entity) {
+			_this.entity.origin_x = x_rel(_this.x);
+			_this.entity.origin_y = y_rel(_this.y);
+		}
 		
 		drag_in_progress = false;
 	
@@ -845,7 +850,7 @@ function on_drag_move(e) {
 function on_drag_end(e) {
 	limit_rate(15, drag_state, function() {});
 	$('html,body').css('cursor', 'initial');
-	if (this.entity && Math.abs(this.origin_x - this.entity.x) < EPSILON &&  Math.abs(this.origin_y - this.entity.y) < EPSILON) {	
+	if (this.entity && Math.abs(this.entity.origin_x - this.entity.x) < EPSILON &&  Math.abs(this.entity.origin_y - this.entity.y) < EPSILON) {	
 		if (context_before_drag == 'remove_context') {
 			remove(this.entity.uid);
 			undo_list.push(["remove", [this.entity]]);
@@ -855,23 +860,23 @@ function on_drag_end(e) {
 			deselect_all();
 		}
 	} else {
-		var origin_entity_map = [];
+		var undo_action = ["drag", []];
 		if (selected_entities.length > 0) {
 			for (var i in selected_entities) {
-				origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
-				origin_entity_map.push([origin, selected_entities[i]]);
+				var origin = [selected_entities[i].origin_x, selected_entities[i].origin_y];
+				undo_action[1].push([origin, selected_entities[i]]);
 				delete selected_entities[i].origin_x;
 				delete selected_entities[i].origin_y;
 				socket.emit("drag", room, selected_entities[i].uid, active_slide, selected_entities[i].x, selected_entities[i].y);
 			}
 		} else {
-			origin = [this.entity.origin_x, this.entity.origin_y];
-			origin_entity_map.push([origin, this.entity]);
+			var origin = [this.entity.origin_x, this.entity.origin_y];
+			undo_action[1].push([origin, this.entity]);
 			delete this.entity.origin_x;
 			delete this.entity.origin_y;
 			socket.emit("drag", room, this.entity.uid, active_slide, this.entity.x, this.entity.y);
 		}
-		undo_list.push(["drag", origin_entity_map]);
+		undo_list.push(undo_action);
 	}
 	
 	this.mouseup = undefined;
@@ -960,13 +965,8 @@ function render_scene() {
 
 var ping_texture_atlas = {}
 function ping(x, y, color, size) {	
-	if (!ping_texture_atlas[color]) {
-		var temp = new PIXI.Sprite(ping_texture);
-		temp.tint = color;
-		ping_texture_atlas[color] = temp.generateTexture(renderer);
-	}
-
-	var sprite = new PIXI.Sprite(ping_texture_atlas[color]);	
+	var sprite = new PIXI.Sprite(ping_texture);
+	sprite.tint = color;
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
 	
 	sprite.anchor.set(0.5);
@@ -976,7 +976,7 @@ function ping(x, y, color, size) {
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
 
-	fast_container.addChild(sprite);
+	objectContainer.addChild(sprite);
 	render_scene();
 	
 	var steps = 25;
@@ -990,7 +990,7 @@ function ping(x, y, color, size) {
 		steps--;
 		if (steps <= 0) {
 			clearInterval(loop)
-			fast_container.removeChild(sprite);
+			objectContainer.removeChild(sprite);
 			render_scene();			
 		}
 	}, 20);
@@ -1245,7 +1245,7 @@ function on_left_click(e) {
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
 		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]]};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]], end_size:draw_end_size};
 		init_canvases(parseFloat(draw_thickness), new_drawing.color, new_drawing.style);
 		draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		last_draw_time = Date.now();
@@ -1258,7 +1258,7 @@ function on_left_click(e) {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_line_end);
 			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:line_color, alpha:1, thickness:parseFloat(line_thickness) * zoom_level, path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style') };
+			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:line_color, alpha:1, thickness:parseFloat(line_thickness) * zoom_level, path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style'), end_size:line_end_size};
 			init_canvases(parseFloat(line_thickness), new_drawing.color, new_drawing.style);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 			just_activated = true;
@@ -1286,7 +1286,7 @@ function on_left_click(e) {
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
 			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:[1,1], color:curve_color, alpha:1, thickness:parseFloat(curve_thickness) * zoom_level, path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style') };
+			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:[1,1], color:curve_color, alpha:1, thickness:parseFloat(curve_thickness) * zoom_level, path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style'), end_size:curve_end_size};
 
 			init_canvases(parseFloat(curve_thickness), new_drawing.color, new_drawing.style);
 			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
@@ -2015,6 +2015,7 @@ function on_ping_move(e) {
 		var x = from_x_local(mouse_location.x);
 		var y = from_y_local(mouse_location.y);
 		ping(x, y, ping_color, ping_size);
+		//ping(x+0.2, y+0.2, 16711680/3, ping_size);
 		socket.emit('ping_marker', room, x, y, ping_color, ping_size);
 	});
 }
@@ -2135,15 +2136,17 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 	var scale_x = Math.abs(x_diff / ref_width);
 	var scale_y = Math.abs(y_diff / ref_height);
 		
-	var origin_entity_map = [];	
+	var undo_action = ["drag", []];	
 	for (var i in selected_entities) {
 		var entity = selected_entities[i];
 		
-		var scale = entity.scale ? entity.scale : [1,1], x = entity.x, y = entity.y;
-		
-		var origin = [x, y, [scale[0], scale[1]]];
-		origin_entity_map.push([origin, selected_entities[i]]);
-		
+		var scale = [1,1];
+		if (entity.scale) {
+			scale = [entity.scale[0], entity.scale[1]];
+		}
+		var origin = [entity.x, entity.y, [scale[0], scale[1]]];
+		undo_action[1].push([origin, entity]);	
+	
 		if (!lock_x) {
 			x = x_rel((entity.container.x_orig - ref_x) * scale_x + ref_x - entity.container.x_orig) + entity.x;
 			scale[0] = scale_x * entity.container.start_scale[0] / entity.container.orig_scale[0];
@@ -2156,8 +2159,9 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 		entity.container.y = entity.container.y_orig;
 		drag_entity(entity, x, y, scale);
 		socket.emit('drag', room, entity.uid, active_slide, x, y, scale);
+
 	}
-	undo_list.push(["drag", origin_entity_map]);
+	undo_list.push(undo_action);
 	
 	select_box.mousedown = undefined;
 	select_box.mousemove = on_selectbox_move;
@@ -2609,6 +2613,9 @@ function draw_end(context, drawing) {
 function draw_arrow2(context, drawing, i) {
 	var i = Math.max(0, drawing.path.length-i);
 	var size = (ARROW_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
+	if (drawing.end_size) {
+		size *= drawing.end_size / 10;
+	}	
 	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
 	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
@@ -2622,6 +2629,9 @@ function draw_arrow2(context, drawing, i) {
 
 function draw_arrow3(context, a, b, drawing) {
 	var size = (ARROW_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
+	if (drawing.end_size) {
+		size *= drawing.end_size / 10;
+	}
 	var x_diff = b[0] - a[0];
 	var y_diff = b[1] - a[1];
 	l = Math.sqrt(Math.pow(x_diff,2) + Math.pow(y_diff,2));
@@ -2634,6 +2644,9 @@ function draw_arrow3(context, a, b, drawing) {
 function draw_T2(context, drawing, i) {
 	var i = Math.max(0, drawing.path.length-i);
 	var size = (TEND_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
+	if (drawing.end_size) {
+		size *= drawing.end_size / 10;
+	}
 	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
 	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
 	l = Math.sqrt(Math.pow(x0,2) + Math.pow(y0,2));
@@ -2656,6 +2669,9 @@ function draw_T2(context, drawing, i) {
 
 function draw_T3(context, a, b, drawing) {
 	var size = (TEND_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
+	if (drawing.end_size) {
+		size *= drawing.end_size / 10;
+	}
 	var x_diff = b[0] - a[0];
 	var y_diff = b[1] - a[1];
 	l = Math.sqrt(Math.pow(x_diff,2) + Math.pow(y_diff,2));
@@ -3629,6 +3645,7 @@ function undo() {
 				var y = action[1][i][0][1];
 				var scale = action[1][i][0][2];
 				var uid = action[1][i][1].uid;
+				
 				if (room_data.slides[active_slide].entities[uid]) { //still exists
 					action[1][i][0][0] = room_data.slides[active_slide].entities[uid].x;
 					action[1][i][0][1] = room_data.slides[active_slide].entities[uid].y;
@@ -4447,7 +4464,10 @@ $(document).ready(function() {
 		initialize_slider("icon_size", "icon_size_text", "icon_size");
 		initialize_slider("ping_size", "ping_size_text", "ping_size");
 		initialize_slider("track_size", "track_size_text", "track_size");
-				
+		initialize_slider("draw_end_size", "draw_end_size_text", "draw_end_size");
+		initialize_slider("line_end_size", "line_end_size_text", "line_end_size");
+		initialize_slider("curve_end_size", "curve_end_size_text", "curve_end_size");
+		
 		$('html').click(function(e) {
 			if (e.target.id != 'tactic_name') {
 				$('[data-toggle="popover"]').popover('hide');
