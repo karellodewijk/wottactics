@@ -255,6 +255,15 @@ small {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.divider-vertical {
+	height: 50px;
+	width:50px;
+	margin: auto;
+	border-left: 0px solid black;
+	border-right: 0px solid white;
+	text-align:center;
+}
+
 .icon-trash:before {
     content: "\e906";
 }
