@@ -3488,11 +3488,11 @@ function create_icon_cont(icon, texture) {
 		
 		if (icon.label_background) {
 			var temp = text;
-			var shape = new PIXI.RoundedRectangle(0, 0, temp.width+(temp.height/1.5), temp.height+(temp.height/1.5), (temp.height/2));
+			var shape = new PIXI.Rectangle(0, 0, temp.width+(temp.height/1.5), temp.height+(temp.height/1.5));
 			text = draw_shape((temp.height/8), 1, 0, 1, 16777215, shape);
 			text.addChild(temp);
-			temp.x += (temp.height/3);
-			temp.y += (temp.height/3);	
+			temp.x += (temp.height/3) + (temp.height/16);
+			temp.y += (temp.height/3) + (temp.height/16);	
 		}			
 		
 		var label_pos = icon.label_pos;
