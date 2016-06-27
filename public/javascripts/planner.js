@@ -1,4 +1,5 @@
 var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
+//var servers = [location.host];
 
 var image_host;
 function is_safari() {
@@ -18,20 +19,26 @@ var game = $('meta[name=game]').attr("content");
 var loader = PIXI.loader;
 var assets = [];
 if (game == "wows") { //wows
+	assets.push(image_host+"rotate.png");
 	assets.push(image_host+"bb.png", image_host+"cv.png", image_host+"ca.png", image_host+"dd.png");
 	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "blitz") {
+	assets.push(image_host+"rotate.png");
 	assets.push(image_host+"light.png", image_host+"medium.png", image_host+"heavy.png", image_host+"td.png", image_host+"arty.png");	
 	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "aw") {
+	assets.push(image_host+"rotate.png");
 	loader.add("aw_assets.png", asset_host + "aw_assets.png");
 	loader.add("aw_assets.json",  asset_host +  "aw_assets.json");
 } else if (game == "lol") {
+	assets.push(image_host+"rotate.png");
 	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "hots") {
+	assets.push(image_host+"rotate.png");
 	loader.add("hots_assets.png", asset_host + "hots_assets.png");
 	loader.add("hots_assets.json",  asset_host +  "hots_assets.json");
 } else {
+	assets.push(image_host+"rotate.png");
 	loader.add("wot_assets.png", asset_host + "wot_assets.png");
 	loader.add("wot_assets.json",  asset_host +  "wot_assets.json");
 }
@@ -152,11 +159,13 @@ var ICON_SCALE = 0.025/20;
 var NOTE_SCALE = 0.03;
 var THICKNESS_SCALE = 0.0015;
 var FONT_SCALE = 0.002;
-var TEXT_QUALITY = 2;
+var TEXT_QUALITY = 8;
 var ARROW_SCALE = 0.008;
 var TEND_SCALE = 0.008;
 var MAGIC_NUMBER = 25;
 var EPSILON = 0.000000001;
+var ROTATE_ARROW_SCALE = 0.05;
+var ROTATE_ARROW_MARGIN = 0.02;
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -237,7 +246,12 @@ var ping_texture;
 var hovering_over;
 var just_activated;
 var select_box;
+var rotate_arrow0;
+var rotate_arrow1;
+var rotate_arrow2;
+var rotate_arrow3;
 var select_box_dirty = false;
+var select_center;
 var objectContainer;
 var fast_container;
 var background_sprite;
@@ -459,6 +473,8 @@ function resize_renderer(new_size_x, new_size_y) {
 	if (background_sprite.texture && (zoom_level - 1) < 0.0000001) {
 		background_sprite.width = new_size_x / objectContainer.scale.x;
 		background_sprite.height = new_size_y / objectContainer.scale.y;
+		grid_layer.width = background_sprite.width;
+		grid_layer.height = background_sprite.height;
 	}
 
 	renderer.resize(new_size_x, new_size_y);
@@ -709,6 +725,8 @@ function on_drag_start(e) {
 		active_context = "drag_context";
 	}
 	drag_timeout = setTimeout(function() {
+		objectContainer.buttonMode = true;
+		
 		var mouse_location = renderer.plugins.interaction.eventData.data.global;
 		last_drag_update = Date.now();
 		last_drag_position = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
@@ -849,6 +867,7 @@ function on_drag_move(e) {
 
 function on_drag_end(e) {
 	limit_rate(15, drag_state, function() {});
+	objectContainer.buttonMode = false;
 	$('html,body').css('cursor', 'initial');
 	if (this.entity && Math.abs(this.entity.origin_x - this.entity.x) < EPSILON &&  Math.abs(this.entity.origin_y - this.entity.y) < EPSILON) {	
 		if (context_before_drag == 'remove_context') {
@@ -927,6 +946,8 @@ function remove(uid, keep_entity) {
 	if (!keep_entity) {
 		delete room_data.slides[active_slide].entities[uid];	
 	}
+	
+	select_box_dirty = true;
 	render_scene();
 }
 
@@ -1769,7 +1790,8 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 	graphic.beginFill(fill_color, fill_opacity);
 	graphic.drawShape(shape);
 	graphic.endFill();
-	return graphic;
+	var sprite = new PIXI.Sprite(graphic.generateTexture(renderer));
+	return sprite;
 }
 
 var ruler_state = {}
@@ -2015,7 +2037,6 @@ function on_ping_move(e) {
 		var x = from_x_local(mouse_location.x);
 		var y = from_y_local(mouse_location.y);
 		ping(x, y, ping_color, ping_size);
-		//ping(x+0.2, y+0.2, 16711680/3, ping_size);
 		socket.emit('ping_marker', room, x, y, ping_color, ping_size);
 	});
 }
@@ -2061,11 +2082,20 @@ function on_select_end(e) {
 	
 	for (var key in room_data.slides[active_slide].entities) {
 		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
-			var entity = room_data.slides[active_slide].entities[key];			
-			var box_min_x = entity.container.x;
-			var box_min_y = entity.container.y;
-			var box_max_x = entity.container.x + entity.container.width;
-			var box_max_y = entity.container.y + entity.container.height;
+			var entity = room_data.slides[active_slide].entities[key];
+			var sprite = room_data.slides[active_slide].entities[key].container;
+			var rect = {};
+			
+			var angle = -sprite.rotation;		
+			rect.width = Math.abs(sprite.width * Math.cos(angle)) + Math.abs(sprite.height * Math.sin(angle));
+			rect.height = Math.abs(sprite.width * Math.sin(angle)) + Math.abs(sprite.height * Math.cos(angle));
+			rect.x = sprite.x - sprite.anchor.x * rect.width;
+			rect.y = sprite.y - sprite.anchor.y * rect.height;
+			
+			var box_min_x = rect.x;
+			var box_min_y = rect.y;
+			var box_max_x = rect.x + rect.width;
+			var box_max_y = rect.y + rect.height;
 			
 			//enable to visualise bounding boxes
 			// var shape = new PIXI.RoundedRectangle(0, 0, box_max_x - box_min_x, box_max_y - box_min_y, 5);
@@ -2112,12 +2142,14 @@ function select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lo
 		}
 		
 		if (!lock_x) {
-			select_box.x = Math.min(ref_x, mouse_location.x);
 			select_box.width = Math.abs(ref_x - mouse_location.x);
+			select_box.left_x = Math.min(ref_x, mouse_location.x);
+			select_box.x = select_box.left_x + select_box.width/2;
 		}
 		if (!lock_y) {
-			select_box.y = Math.min(ref_y, mouse_location.y);
 			select_box.height = Math.abs(ref_y - mouse_location.y);
+			select_box.upper_y = Math.min(ref_y, mouse_location.y);
+			select_box.y = select_box.upper_y + select_box.height/2;
 		}
 		
 		render_scene();
@@ -2147,6 +2179,8 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 		var origin = [entity.x, entity.y, [scale[0], scale[1]]];
 		undo_action[1].push([origin, entity]);	
 	
+		var x = entity.x;
+		var y = entity.y;
 		if (!lock_x) {
 			x = x_rel((entity.container.x_orig - ref_x) * scale_x + ref_x - entity.container.x_orig) + entity.x;
 			scale[0] = scale_x * entity.container.start_scale[0] / entity.container.orig_scale[0];
@@ -2171,12 +2205,15 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 	objectContainer.mouseupoutside = undefined;
 		
 	if (!lock_x) {
-		select_box.x = Math.min(ref_x, mouse_location.x);
 		select_box.width = Math.abs(ref_x - mouse_location.x);
+		select_box.left_x = Math.min(ref_x, mouse_location.x);
+		select_box.x = select_box.left_x + select_box.width/2;
+		
 	}
 	if (!lock_y) {
-		select_box.y = Math.min(ref_y, mouse_location.y);
 		select_box.height = Math.abs(ref_y - mouse_location.y);
+		select_box.upper_y = Math.min(ref_y, mouse_location.y);
+		select_box.y = select_box.upper_y  + select_box.height/2;
 	}
 	
 	render_scene();
@@ -2190,6 +2227,11 @@ function prepare_resize(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) 
 		entity.container.y_orig = entity.container.y;
 		entity.container.start_scale = [entity.container.scale.x, entity.container.scale.y];
 	}
+	
+	objectContainer.removeChild(rotate_arrow0);
+	objectContainer.removeChild(rotate_arrow1);
+	objectContainer.removeChild(rotate_arrow2);
+	objectContainer.removeChild(rotate_arrow3);
 	
 	objectContainer.mousedown = on_left_click;
 	select_box.mouseup = function(e) { select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
@@ -2208,20 +2250,21 @@ function on_selectbox_move(e) {
 		var mouse_location = renderer.plugins.interaction.eventData.data.global;
 		mouse_location.x = x_abs(from_x_local(mouse_location.x));
 		mouse_location.y = y_abs(from_y_local(mouse_location.y));
-				
-		mouse_location.x -= select_box.x;
-		mouse_location.y -= select_box.y;
+		
+		mouse_location.x -= select_box.left_x;
+		mouse_location.y -= select_box.upper_y;
 		mouse_location.x /= select_box.width;
 		mouse_location.y /= select_box.height;
 		
-		var margin = 0.1;
+		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+		var margin = y_abs(ROTATE_ARROW_MARGIN) / select_box.height * zoom_level;
 		
-		var left_x = select_box.x;
-		var top_y = select_box.y;
+		var left_x = select_box.left_x;
+		var top_y = select_box.upper_y;
 		var right_x = left_x + select_box.width;
 		var bottom_y = top_y + select_box.height;
 		
-		if (mouse_location.x < 0-0.1 || mouse_location.x > 1+0.1 || mouse_location.y < 0-0.1 || mouse_location.y > 1+0.1)  {
+		if (mouse_location.x < 0-margin || mouse_location.x > 1+margin || mouse_location.y < 0-margin || mouse_location.y > 1+margin)  {
 			on_select_out(e);
 			e.stopPropagation();
 			return;
@@ -2295,44 +2338,260 @@ function make_resizable(select_box) {
 
 function redraw_select_box() {
 	if (select_box) {
+		select_box.rotation = 0;
 		if (selected_entities.length > 0) {
 			var x_min = 99999, x_max = -99999, y_min = 99999, y_max = -99999;
 			for (var i in selected_entities) {
-				x_min = Math.min(selected_entities[i].container.x, x_min);
-				y_min = Math.min(selected_entities[i].container.y, y_min);
-				x_max = Math.max(selected_entities[i].container.x + selected_entities[i].container.width, x_max);
-				y_max = Math.max(selected_entities[i].container.y + selected_entities[i].container.height, y_max);	
+				var sprite = selected_entities[i].container;
+				var rect = {};
+						
+				var angle = -sprite.rotation;		
+				rect.width = Math.abs(sprite.width * Math.cos(angle)) + Math.abs(sprite.height * Math.sin(angle));
+				rect.height = Math.abs(sprite.width * Math.sin(angle)) + Math.abs(sprite.height * Math.cos(angle));
+				rect.x = sprite.x - sprite.anchor.x * rect.width;
+				rect.y = sprite.y - sprite.anchor.y * rect.height;
+				
+				x_min = Math.min(rect.x, x_min);
+				y_min = Math.min(rect.y, y_min);
+				x_max = Math.max(rect.x + rect.width, x_max);
+				y_max = Math.max(rect.y + rect.height, y_max);	
 			}
-			select_box.x = x_min;
+
+			select_center = [x_rel(x_min + (x_max - x_min)/2), y_rel(y_min + (y_max - y_min)/2)];
+			select_box.left_x = x_min;
+			select_box.upper_y = y_min;
+			
 			select_box.width = x_max - x_min;
-			select_box.y = y_min;
 			select_box.height = y_max - y_min;
+			select_box.x = x_min + select_box.width/2;
+			select_box.y = y_min + select_box.height/2;
+			
+			var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+			rotate_arrow0.x = x_min + select_box.width + rotate_arrow0.width/2 + y_abs(ROTATE_ARROW_MARGIN) * zoom_level;
+			rotate_arrow0.y = y_min + select_box.height/2;
+			rotate_arrow1.x = x_min + select_box.width/2;
+			rotate_arrow1.y = y_min - rotate_arrow1.width/2 - y_abs(ROTATE_ARROW_MARGIN) * zoom_level;
+			rotate_arrow2.x = x_min - rotate_arrow2.width/2 - y_abs(ROTATE_ARROW_MARGIN) * zoom_level;
+			rotate_arrow2.y = y_min + select_box.height/2;
+			rotate_arrow3.x = x_min + select_box.width/2;
+			rotate_arrow3.y = y_min + rotate_arrow3.width/2 +  select_box.height + y_abs(ROTATE_ARROW_MARGIN) * zoom_level;
+		
+			objectContainer.removeChild(rotate_arrow0);
+			objectContainer.removeChild(rotate_arrow1);
+			objectContainer.removeChild(rotate_arrow2);
+			objectContainer.removeChild(rotate_arrow3);
+			
+			objectContainer.addChild(rotate_arrow0);
+			objectContainer.addChild(rotate_arrow1);
+			objectContainer.addChild(rotate_arrow2);
+			objectContainer.addChild(rotate_arrow3);
+			
+			objectContainer.removeChild(select_box);
+			objectContainer.addChild(select_box);
+		} else {
+			remove_select_box();
 		}	
-		objectContainer.removeChild(select_box);
-		objectContainer.addChild(select_box);
 	}
+	select_box_dirty = false;
+}
+
+function start_rotate_selection(angle, e) {
+	limit_rate(15, drag_state, function() {});
+	setup_mouse_events(rotate_selection.bind(undefined, this, angle), stop_rotate_selection.bind(undefined, this, angle))
+	var mouse_location = e.data.getLocalPosition(background_sprite);
+	objectContainer.buttonMode = true;
+	last_mouse_location = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
+	for (var i in selected_entities) {
+		var sprite = room_data.slides[active_slide].entities[selected_entities[i].uid].container;
+		sprite.x_orig = sprite.x;
+		sprite.y_orig = sprite.y;
+		sprite.rotation_orig = sprite.rotation;
+	}
+	
+	objectContainer.removeChild(rotate_arrow0);
+	objectContainer.removeChild(rotate_arrow1);
+	objectContainer.removeChild(rotate_arrow2);
+	objectContainer.removeChild(rotate_arrow3);
+	objectContainer.addChild(this);
+	
+	e.stopPropagation();
+}
+
+function rotate_selection(base, angle, e) {
+	limit_rate(15, drag_state, function() {	
+		var mouse_location = e.data.getLocalPosition(background_sprite);
+		var mouse_new = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
+		
+		var delta_x = mouse_new[0] - last_mouse_location[0];
+		var delta_y = mouse_new[1] - last_mouse_location[1];
+		
+		base.x += x_abs(delta_x);
+		base.y += y_abs(delta_y);
+		
+		var v_x = mouse_new[0] - select_center[0];
+		var v_y = mouse_new[1] - select_center[1];
+				
+		var alpha = Math.atan2(-v_y, v_x);
+		
+		angle = alpha - angle; 
+
+		var sin_alpha = Math.sin(-angle);
+		var cos_alpha = Math.cos(-angle);
+		
+		for (var i in selected_entities) {
+			var sprite = room_data.slides[active_slide].entities[selected_entities[i].uid].container;
+			sprite.x = sprite.x_orig;
+			sprite.y = sprite.y_orig;
+			sprite.x -= x_abs(select_center[0]);
+			sprite.y -= y_abs(select_center[1]);
+			var temp = sprite.x;
+			sprite.x = sprite.x * cos_alpha - sprite.y * sin_alpha;
+			sprite.y = temp * sin_alpha + sprite.y * cos_alpha;
+			sprite.x += x_abs(select_center[0]);
+			sprite.y += y_abs(select_center[1]);
+			sprite.rotation = sprite.rotation_orig-angle;
+		}
+		
+		select_box.rotation = -angle;
+		last_mouse_location = mouse_new;
+		render_scene();		
+	});
+}
+
+function stop_rotate_selection(base, angle, e) {
+	limit_rate(15, drag_state, function() {});
+	objectContainer.buttonMode = false;
+	setup_mouse_events(undefined, undefined);
+
+	var mouse_location = e.data.getLocalPosition(background_sprite);
+	var mouse_new = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
+	
+	var delta_x = mouse_new[0] - last_mouse_location[0];
+	var delta_y = mouse_new[1] - last_mouse_location[1];
+	
+	base.x += x_abs(delta_x);
+	base.y += y_abs(delta_y);
+	
+	var v_x = mouse_new[0] - select_center[0];
+	var v_y = mouse_new[1] - select_center[1];
+			
+	var alpha = Math.atan2(-v_y, v_x);
+	
+	angle = alpha - angle; 
+
+	var sin_alpha = Math.sin(-angle);
+	var cos_alpha = Math.cos(-angle);
+
+	var undo_action = ["drag", []];
+	for (var i in selected_entities) {
+		var entity = room_data.slides[active_slide].entities[selected_entities[i].uid];
+		var sprite = entity.container;
+		var sprite = room_data.slides[active_slide].entities[selected_entities[i].uid].container;
+		sprite.x = sprite.x_orig;
+		sprite.y = sprite.y_orig;
+		sprite.x -= x_abs(select_center[0]);
+		sprite.y -= y_abs(select_center[1]);
+		var temp = sprite.x;
+		sprite.x = sprite.x * cos_alpha - sprite.y * sin_alpha;
+		sprite.y = temp * sin_alpha + sprite.y * cos_alpha;
+		sprite.x += x_abs(select_center[0]);
+		sprite.y += y_abs(select_center[1]);
+		
+		//TODO: really only this part is different from the rotate_selection function, you can do better
+		var scale = [1,1];
+		if (entity.scale) {
+			scale = [entity.scale[0], entity.scale[1]];
+		}
+		var orig_rotation = 0;
+		if (entity.rotation) {
+			orig_rotation = entity.rotation;
+		}
+		var origin = [entity.x, entity.y, [scale[0], scale[1]], orig_rotation];
+		undo_action[1].push([origin, entity]);
+		
+		var x_diff = sprite.x - sprite.x_orig;
+		var y_diff = sprite.y - sprite.y_orig;
+		sprite.x = sprite.x_orig;
+		sprite.y = sprite.y_orig;
+		if (!entity.rotation) {
+			entity.rotation = 0;
+		}
+		var rotation = (entity.rotation + angle) % (2*Math.PI);
+		socket.emit("drag", room, entity.uid, active_slide, x_rel(x_abs(entity.x) + x_diff), y_rel(y_abs(entity.y) + y_diff), entity.scale, rotation)
+		drag_entity(entity, x_rel(x_abs(entity.x) + x_diff), y_rel(y_abs(entity.y) + y_diff), entity.scale, rotation);
+	}
+	undo_list.push(undo_action);
+	select_box_dirty = true;
+	render_scene();	
 }
 
 function select_entities() {
 	remove_select_box();
 	var x_min = 99999, x_max = -99999, y_min = 99999, y_max = -99999;
 	for (var i in selected_entities) {
-		x_min = Math.min(x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.x), x_min);
-		y_min = Math.min(y_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.y), y_min);
-		x_max = Math.max(  x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.x)
-						 + x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.width), x_max);
-		y_max = Math.max(  x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.y)
-						 + x_rel(room_data.slides[active_slide].entities[selected_entities[i].uid].container.height), y_max);	
+		var sprite = room_data.slides[active_slide].entities[selected_entities[i].uid].container;
+		var rect = {};
+		
+		var angle = -sprite.rotation;		
+		rect.width = Math.abs(sprite.width * Math.cos(angle)) + Math.abs(sprite.height * Math.sin(angle));
+		rect.height = Math.abs(sprite.width * Math.sin(angle)) + Math.abs(sprite.height * Math.cos(angle));
+		rect.x = sprite.x - sprite.anchor.x * rect.width;
+		rect.y = sprite.y - sprite.anchor.y * rect.height;
+		
+		x_min = Math.min(x_rel(rect.x), x_min);
+		y_min = Math.min(y_rel(rect.y), y_min);
+		x_max = Math.max(  x_rel(rect.x)
+						 + x_rel(rect.width), x_max);
+		y_max = Math.max(  y_rel(rect.y)
+						 + y_rel(rect.height), y_max);	
 		room_data.slides[active_slide].entities[selected_entities[i].uid].container.alpha = select_alpha;
 	}
 	
 	if (selected_entities.length > 0) {
+		select_center = [x_min + (x_max - x_min)/2, y_min + (y_max - y_min)/2];
+
 		var shape = new PIXI.Rectangle(0, 0, x_abs(x_max - x_min), y_abs(y_max - y_min), 5);
 		select_box = draw_select_box(shape);
-		select_box.x = x_abs(x_min);
-		select_box.y = y_abs(y_min);
-		objectContainer.addChild(select_box);
+		select_box.anchor.x = 0.5;
+		select_box.anchor.y = 0.5;
+
+		var box_x = x_abs(x_min);
+		var box_y = y_abs(y_min);
+		select_box.left_x = box_x;
+		select_box.upper_y = box_y;
+		select_box.x = box_x + x_abs(x_max - x_min)/2;
+		select_box.y = box_y + y_abs(y_max - y_min)/2;
 		make_resizable(select_box);
+		
+		var texture = new PIXI.Texture.fromImage(image_host + "rotate.png");
+		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+
+		var ratio = texture.width / texture.height;
+		var arrow_height = y_abs(ROTATE_ARROW_SCALE) * zoom_level;
+		var arrow_width = arrow_height * ratio;
+		
+		var create_rotate_arrow = function(x, y, angle) {
+			var sprite = new PIXI.Sprite(texture);
+			sprite.anchor.x = 0.5, sprite.anchor.y = 0.5;
+			sprite.width = arrow_width;
+			sprite.height = arrow_height;		
+			sprite.interactive = true;
+			sprite.buttonMode = true;
+			sprite.draggable = true;
+			sprite.mousedown = start_rotate_selection.bind(sprite, angle);
+			sprite.rotation = -angle; //no idea why rotations are reversed, but they are
+			sprite.x = x;
+			sprite.y = y;
+			objectContainer.addChild(sprite);
+			return sprite;
+		}
+				
+		rotate_arrow0 = create_rotate_arrow(box_x + select_box.width + arrow_width/2 + y_abs(ROTATE_ARROW_MARGIN) * zoom_level, box_y + select_box.height/2, 0);
+		rotate_arrow1 = create_rotate_arrow(box_x + select_box.width/2, box_y - arrow_width/2 - y_abs(ROTATE_ARROW_MARGIN) * zoom_level, Math.PI/2);
+		rotate_arrow2 = create_rotate_arrow(box_x - arrow_width/2 - y_abs(ROTATE_ARROW_MARGIN) * zoom_level, box_y + select_box.height/2, Math.PI);
+		rotate_arrow3 = create_rotate_arrow(box_x + select_box.width/2, box_y + arrow_width/2 + select_box.height + y_abs(ROTATE_ARROW_MARGIN) * zoom_level, -Math.PI/2);
+
+		objectContainer.addChild(select_box);		
 	}
 
 	render_scene();
@@ -2345,7 +2604,8 @@ function draw_select_box(shape) {
 	graphic.beginFill(16777215, 0.2);
 	graphic.drawShape(shape);
 	graphic.endFill();
-	return graphic;
+	var sprite = new PIXI.Sprite(graphic.generateTexture(renderer));
+	return sprite;
 }
 
 function select_all() {
@@ -2371,6 +2631,10 @@ function remove_select_box() {
 		select_box.mouseupoutside = undefined;
 		objectContainer.mousedown = on_left_click;
 		objectContainer.removeChild(select_box);
+		objectContainer.removeChild(rotate_arrow0);
+		objectContainer.removeChild(rotate_arrow1);
+		objectContainer.removeChild(rotate_arrow2);
+		objectContainer.removeChild(rotate_arrow3);
 		delete select_box;
 		select_box = undefined;
 		render_scene();
@@ -2931,6 +3195,7 @@ function stop_drawing() {
 function snap_and_emit_entity(entity) {
 	move_entity(entity, 0, 0);
 	emit_entity(entity);
+	center_anchor(entity.container)
 	render_scene();
 }
 
@@ -2961,7 +3226,7 @@ function on_icon_end(e) {
 	var x = mouse_x_rel(mouse_location.x) - (size/2);
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
- 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size * zoom_level, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked}
+ 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size*zoom_level, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked}
 	
 	if (icon.label_background) {
 		icon.label_color = "#000000";
@@ -3084,11 +3349,12 @@ function create_text2(text_entity) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	_canvas.width = text_entity.text.length * text_entity.font_size /zoom_level * 1.5 * TEXT_QUALITY;
-	_canvas.height = text_entity.font_size /zoom_level * 2 * TEXT_QUALITY + 30;
-	var _context = _canvas.getContext("2d");
 	
-	_context.font = ""+text_entity.font_size*TEXT_QUALITY/zoom_level*x_abs(FONT_SCALE)+"px "+text_entity.font;
+	var scaling = background_sprite.scale.y * objectContainer.scale.y;
+	_canvas.width = 2 * text_entity.text.length * text_entity.font_size * scaling * 1.5 * TEXT_QUALITY;
+	_canvas.height = 2 * text_entity.font_size * scaling * 2 * TEXT_QUALITY + 30;
+	var _context = _canvas.getContext("2d");	
+	_context.font = ""+ 2 * text_entity.font_size * scaling * TEXT_QUALITY + "px "+text_entity.font;
 	
 	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
 	_context.fillStyle = fill_color;
@@ -3126,11 +3392,12 @@ function create_background_text2(text_entity) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	_canvas.width = text_entity.text.length * text_entity.font_size /zoom_level * 1.5 * TEXT_QUALITY;
-	_canvas.height = text_entity.font_size /zoom_level * 1.5 * TEXT_QUALITY + 30;
-	var _context = _canvas.getContext("2d");
+	var scaling = background_sprite.scale.y * objectContainer.scale.y;
 	
-	_context.font = ""+text_entity.font_size*TEXT_QUALITY/zoom_level*x_abs(FONT_SCALE)+"px "+text_entity.font;
+	_canvas.width = 2 * text_entity.text.length * text_entity.font_size * scaling * 1.5 * TEXT_QUALITY;
+	_canvas.height = 2 * text_entity.font_size * scaling * 2 * TEXT_QUALITY + 30;
+	var _context = _canvas.getContext("2d");	
+	_context.font = ""+ 2 * text_entity.font_size * scaling * TEXT_QUALITY + "px "+text_entity.font;
 	
 	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
 	_context.fillStyle = fill_color;
@@ -3148,12 +3415,15 @@ function create_background_text2(text_entity) {
 		
 		var shape = new PIXI.RoundedRectangle(0, 0, sprite.width+10, sprite.height+10, 5);
 		var container = draw_shape(1, 1, 0, 1, 16777215, shape);
-				
-		container.addChild(sprite);
-		sprite.x += 5;
-		sprite.y += 5;
+
 		container.x = x_abs(text_entity.x);
 		container.y = y_abs(text_entity.y);
+		
+		sprite.x -= sprite.width/2;
+		sprite.y -= sprite.height/2;
+		
+		container.addChild(sprite);
+
 		text_entity.container = container;		
 
 		objectContainer.addChild(container);
@@ -3169,30 +3439,36 @@ function create_background_text2(text_entity) {
 	}
 }
 
+function nearestPow2( aSize ){
+  return Math.pow( 2, Math.round( Math.log( aSize ) / Math.log( 2 ) ) ); 
+}
+
 function create_icon_cont(icon, texture) {
 	var sprite = new PIXI.Sprite(texture);
 	sprite.tint = icon.color;
 
 	var ratio = sprite.width / sprite.height;
-	sprite.height = x_abs(icon.size);
-	sprite.width = sprite.height * ratio;	
 	
-	icon.container = new PIXI.Container();
-	icon.container.addChild(sprite);
+	icon.container = sprite;
 	icon.container.x = x_abs(icon.x);
 	icon.container.y = y_abs(icon.y);
+
+	sprite.height = x_abs(icon.size);
+	sprite.width = sprite.height * ratio;
 	
 	if (icon.label && icon.label != "") {
 		var color = '#' + ('00000' + (icon.label_color | 0).toString(16)).substr(-6); 
 		var _canvas = document.createElement("canvas");
-		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-		var scale_up = (8/icon.label_font_size);
-		var scale_factor;
-		_canvas.width = scale_up * icon.label.length * icon.label_font_size * 1.5 * TEXT_QUALITY / zoom_level + 10;
-		_canvas.height = scale_up * icon.label_font_size * 1.5 * TEXT_QUALITY / zoom_level + 30;		
-		var _context = _canvas.getContext("2d");
 		
-		_context.font = ""+ scale_up * icon.label_font_size / zoom_level * TEXT_QUALITY * x_abs(FONT_SCALE)+"px "+icon.label_font;
+		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
+		
+		var scaling = 1 / sprite.scale.y;
+		_canvas.width = 1.8 * icon.label.length * icon.label_font_size * scaling * 1.5 * TEXT_QUALITY;
+		_canvas.height = 1.8 * icon.label_font_size * scaling * 2 * TEXT_QUALITY + 30;
+		var _context = _canvas.getContext("2d");
+		var final_font_size = Math.round(1.8 * icon.label_font_size * scaling * TEXT_QUALITY)
+		_context.font = ""+ final_font_size + "px " + icon.label_font;
+				
 		_context.fillStyle = icon.label_color;
 
 		if (!icon.label_background) {
@@ -3204,8 +3480,9 @@ function create_icon_cont(icon, texture) {
 		_context.fillText(icon.label, 0, _canvas.height - 15);
 		
 		var text = createSprite(_context, _canvas);
-		text.scale.x /= TEXT_QUALITY / zoom_level * scale_up;
-		text.scale.y /= TEXT_QUALITY / zoom_level * scale_up;
+		
+		text.scale.x /= TEXT_QUALITY;
+		text.scale.y /= TEXT_QUALITY;
 		text.x = 0;
 		text.y = 0;
 		
@@ -3217,44 +3494,48 @@ function create_icon_cont(icon, texture) {
 			temp.x += (temp.height/3);
 			temp.y += (temp.height/3);	
 		}			
-
-		icon['container'].addChild(text);
 		
 		var label_pos = icon.label_pos;
 		if (!label_pos) {
 			label_pos = "pos_bottom";
 		}
 		
+		var sprite_width = sprite.width / sprite.scale.x;
+		var sprite_height = sprite.height / sprite.scale.y;
+		
 		if (label_pos == 'pos_bottom') {
-			text.x -= text.width/2 - sprite.width/2;
-			text.y += sprite.height;
+			text.x -= text.width/2;
+			text.y += sprite_height/2;
 		} else if (label_pos == 'pos_top') {
-			text.x -= text.width/2 - sprite.width/2;
-			text.y -= text.height;
+			text.x -= text.width/2;
+			text.y -= text.height + sprite_height/2;
 		} else if (label_pos == 'pos_left') {
-			text.x -= text.width;
-			text.y += sprite.height/2 - text.height/2;
-		} else if (label_pos == 'pos_right') {
-			text.x += sprite.width;
-			text.y += sprite.height/2 - text.height/2;
-		} else if (label_pos == 'pos_top_left') {
-			text.x -= text.width;
+			text.x -= text.width + sprite_width/2;
 			text.y -= text.height/2;
+		} else if (label_pos == 'pos_right') {
+			text.x += sprite_width/2;
+			text.y -= text.height/2;
+		} else if (label_pos == 'pos_top_left') {
+			text.x -= text.width + sprite_width/2;
+			text.y -= sprite_height/2 + text.height/2;	
 		} else if (label_pos == 'pos_top_right') {
-			text.x += sprite.width;
-			text.y -= text.height/2;			
+			text.x += sprite_width/2;
+			text.y -= sprite_height/2 + text.height/2;			
 		} else if (label_pos == 'pos_bottom_left') {
-			text.x -= text.width;
-			text.y += sprite.height - text.height/2;		
+			text.x -= text.width + sprite_width/2;
 		} else if (label_pos == 'pos_bottom_right') {
-			text.x += sprite.width;
-			text.y += sprite.height - text.height/2;	
+			text.x += sprite_width/2;
 		}
+
+		icon.container.addChild(text);
 
 	}
 
+	
 	icon.container.entity = icon; 
 	icon.container.alpha = icon.alpha;
+	
+
 	
 	make_draggable(icon.container);	
 
@@ -3365,6 +3646,15 @@ function computeControlPoints(K) {
 	return {p1:p1, p2:p2};
 }
 
+function center_anchor(obj) {
+	var anchor_diff_x = 0.5 - obj.anchor.x;
+	var anchor_diff_y = 0.5 - obj.anchor.y;
+	obj.anchor.x = 0.5;
+	obj.anchor.y = 0.5;
+    obj.x += anchor_diff_x * obj.width;
+    obj.y += anchor_diff_y * obj.height;
+}
+
 function create_entity(entity) {
 	if (room_data.slides[active_slide].entities[entity.uid]) {
 		remove(entity.uid);
@@ -3395,14 +3685,24 @@ function create_entity(entity) {
 		create_area2(entity);
 	}
 
-	if (entity.scale && entity.container) {
-		entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
-		entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
-	}
+	if (entity.container) {
+		if (entity.scale) {
+			entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
+			entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
+		}
 	
-	if (entity.container && entity.type != 'background') {
-		entity.container.mouseover = function() {
-			hovering_over = entity;
+		if (entity.container.anchor) {
+			center_anchor(entity.container);
+		}
+		
+		if (entity.rotation) {
+			entity.container.rotation = -entity.rotation;
+		}
+	
+		if (entity.type != 'background') {
+			entity.container.mouseover = function() {
+				hovering_over = entity;
+			}
 		}
 	}
 }
@@ -3509,7 +3809,7 @@ function update_lock() {
 			stop_tracking();
 		}
 		if (active_context == 'ping_context') {
-			objectContainer.onmousemove = undefined;
+			objectContainer.mousemove = undefined;
 		}
 	} else {
 		$('.left_column').show();
@@ -3644,6 +3944,7 @@ function undo() {
 				var x = action[1][i][0][0];
 				var y = action[1][i][0][1];
 				var scale = action[1][i][0][2];
+				var rotation = action[1][i][0][3];
 				var uid = action[1][i][1].uid;
 				
 				if (room_data.slides[active_slide].entities[uid]) { //still exists
@@ -3654,9 +3955,12 @@ function undo() {
 					} else {
 						action[1][i][0][2] = [1,1]
 					}
-					drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale);
+					if (typeof room_data.slides[active_slide].entities[uid].rotation !== 'undefined') {
+						action[1][i][0][3] = room_data.slides[active_slide].entities[uid].rotation;
+					}
+					drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale, rotation);
 					render_scene();
-					socket.emit('drag', room, uid, active_slide, x, y, scale);
+					socket.emit('drag', room, uid, active_slide, x, y, scale, rotation);
 				}
 			}
 			redo_list.push(action);
@@ -3701,6 +4005,7 @@ function redo() {
 				var x = action[1][i][0][0];
 				var y = action[1][i][0][1];
 				var scale = action[1][i][0][2];
+				var rotation = action[1][i][0][3];
 				var uid = action[1][i][1].uid;
 				if (room_data.slides[active_slide].entities[uid]) { //still exists
 					action[1][i][0][0] = room_data.slides[active_slide].entities[uid].x;
@@ -3710,9 +4015,12 @@ function redo() {
 					} else {
 						action[1][i][0][2] = [1,1]
 					}
-					drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale);
+					if (typeof room_data.slides[active_slide].entities[uid].rotation !== 'undefined') {
+						action[1][i][0][3] = room_data.slides[active_slide].entities[uid].rotation;
+					}
+					drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale, rotation);
 					render_scene();
-					socket.emit('drag', room, uid, active_slide, x, y, scale);
+					socket.emit('drag', room, uid, active_slide, x, y, scale, rotation);
 				}
 			}
 			undo_list.push(action);
@@ -3762,12 +4070,16 @@ function clear_selected() {
 	}
 }
 
-function drag_entity(entity, x, y, scale) {
+function drag_entity(entity, x, y, scale, rotation) {
 	entity.container.x += x_abs(x-entity.x);
 	entity.container.y += y_abs(y-entity.y);
 	entity.x = x;
 	entity.y = y;
 	entity.scale = scale;
+	if (typeof rotation !== 'undefined' && rotation != null) {
+		entity.rotation = rotation;
+		entity.container.rotation = -rotation;
+	}
 	if (entity.type == 'note') {
 		align_note_text(entity);
 	}
@@ -4258,7 +4570,9 @@ $(document).ready(function() {
 	$(temp_draw_canvas).hide();
 	$(draw_canvas).hide();
 	
-	loader.once('complete', function () {		
+	loader.once('complete', function () {
+
+	
 		//generate ticks, leveraged from: http://thenewcode.com/864/Auto-Generate-Marks-on-HTML5-Range-Sliders-with-JavaScript
 		function ticks(element) {		
 			if ('list' in element && 'min' in element && 'max' in element && 'step' in element) {
@@ -5016,16 +5330,18 @@ $(document).ready(function() {
 		activity_animation(user_id)
 	});
 	
-	socket.on('drag', function(uid, slide, x, y, user_id, scale) {
-		if (room_data.slides[slide].entities[uid].x == x && room_data.slides[slide].entities[uid].y == y) {
-			return; //ignore, it's probably an echo of what I've sent
-		}
+	socket.on('drag', function(uid, slide, x, y, scale, rotation, user_id) {
 		if (slide != active_slide) {
 			room_data.slides[slide].entities[uid].x = x;
 			room_data.slides[slide].entities[uid].y = y;
-			room_data.slides[slide].entities[uid].scale = scale;
+			if (scale) {
+				room_data.slides[slide].entities[uid].scale = scale;
+			}
+			if (rotation) {
+				room_data.slides[slide].entities[uid].rotation = rotation;
+			}
 		} else {
-			drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale);
+			drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale, rotation);
 		}
 		activity_animation(user_id)
 	});
