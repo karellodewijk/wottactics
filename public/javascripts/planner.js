@@ -166,6 +166,7 @@ var MAGIC_NUMBER = 25;
 var EPSILON = 0.000000001;
 var ROTATE_ARROW_SCALE = 0.05;
 var ROTATE_ARROW_MARGIN = 0.02;
+var TEXT_BOX_QUALITY = 4;
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -346,15 +347,6 @@ function paste() {
 		top = Math.min(top, clipboard[i].y);
 		left = Math.min(left, clipboard[i].x);
 	}
-
-	//selection filter
-	var select_filter = new PIXI.filters.ColorMatrixFilter();
-	select_filter.matrix = [
-		1, 0, 0, 0, 0,
-		0, 1, 0, 0, 0,
-		0, 0, 1, 0, 0,
-		0, 0, 0, 0.5, 0
-	]
 	
 	var new_entities = [];
 	for (var i in clipboard) {
@@ -363,22 +355,15 @@ function paste() {
 		entity.x = mouse_x + (entity.x - left);
 		entity.y = mouse_y + (entity.y - top);
 		new_entities.push(entity);		
-		if (entity.type == "icon") {
-			create_icon(entity, function(entity) {
-				snap_and_emit_entity(entity);
-				entity.container.alpha = select_alpha;
-				render_scene();
-			});
-		} else {
-			create_entity(entity);
-			snap_and_emit_entity(entity);
-			entity.container.alpha = select_alpha;
-			render_scene();
-		}
+		create_entity(entity);
+		snap_and_emit_entity(entity);
 		selected_entities.push(entity);
+		render_scene();
 	}
 	
+	select_entities();
 	undo_list.push(["add", new_entities]);	
+
 
 }
 
@@ -783,8 +768,8 @@ function on_drag_start(e) {
 			objectContainer.addChild(selected_entities[i].container);
 		}
 		if (_this.entity) {
-			_this.entity.origin_x = x_rel(_this.x);
-			_this.entity.origin_y = y_rel(_this.y);
+			_this.entity.origin_x = _this.entity.x;
+			_this.entity.origin_y = _this.entity.y;
 		}
 		
 		drag_in_progress = false;
@@ -1790,6 +1775,7 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 	graphic.beginFill(fill_color, fill_opacity);
 	graphic.drawShape(shape);
 	graphic.endFill();
+	graphic.boundsPadding = 1;
 	var sprite = new PIXI.Sprite(graphic.generateTexture(renderer));
 	return sprite;
 }
@@ -2257,25 +2243,30 @@ function on_selectbox_move(e) {
 		mouse_location.y /= select_box.height;
 		
 		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-		var margin = y_abs(ROTATE_ARROW_MARGIN) / select_box.height * zoom_level;
+		var margin = y_abs(ROTATE_ARROW_MARGIN) * zoom_level;
+		var x_margin = margin/select_box.width;
+		var y_margin = margin/select_box.height;
 		
 		var left_x = select_box.left_x;
 		var top_y = select_box.upper_y;
 		var right_x = left_x + select_box.width;
 		var bottom_y = top_y + select_box.height;
 		
-		if (mouse_location.x < 0-margin || mouse_location.x > 1+margin || mouse_location.y < 0-margin || mouse_location.y > 1+margin)  {
+		if (mouse_location.x < 0-x_margin || mouse_location.x > 1+x_margin || mouse_location.y < 0-y_margin || mouse_location.y > 1+y_margin)  {
 			on_select_out(e);
 			e.stopPropagation();
 			return;
 		}
 		
-		if (mouse_location.x < margin) {
-			if (mouse_location.y < margin) { //top-left
+		x_margin = Math.min(x_margin, 0.25);
+		y_margin = Math.min(y_margin, 0.25);
+		
+		if (mouse_location.x < x_margin) {
+			if (mouse_location.y < y_margin) { //top-left
 				$('html,body').css('cursor', 'nw-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, bottom_y, select_box.width, select_box.height, false, false); };
 				select_box.mousedown = objectContainer.mousedown;
-			} else if (mouse_location.y > 1 - margin) { //bottom-left
+			} else if (mouse_location.y > 1 - y_margin) { //bottom-left
 				$('html,body').css('cursor', 'sw-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, top_y, select_box.width, select_box.height, false, false); };
 				select_box.mousedown = objectContainer.mousedown;
@@ -2284,12 +2275,12 @@ function on_selectbox_move(e) {
 				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, 0, select_box.width, select_box.height, false, true); };
 				select_box.mousedown = objectContainer.mousedown;
 			}
-		} else if (mouse_location.x > 1 - margin) { //right
-			if (mouse_location.y < margin) { //top-right
+		} else if (mouse_location.x > 1 - x_margin) { //right
+			if (mouse_location.y < y_margin) { //top-right
 				$('html,body').css('cursor', 'ne-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, left_x, bottom_y, select_box.width, select_box.height, false, false); };
 				select_box.mousedown = objectContainer.mousedown;
-			} else if (mouse_location.y > 1 - margin) { //bottom-right
+			} else if (mouse_location.y > 1 - y_margin) { //bottom-right
 				$('html,body').css('cursor', 'se-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, left_x, top_y, select_box.width, select_box.height, false, false); };
 				select_box.mousedown = objectContainer.mousedown;
@@ -2299,11 +2290,11 @@ function on_selectbox_move(e) {
 				select_box.mousedown = objectContainer.mousedown;
 			}
 		} else {			
-			if (mouse_location.y < margin) { //top
+			if (mouse_location.y < y_margin) { //top
 				$('html,body').css('cursor', 'n-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, 0, bottom_y, select_box.width, select_box.height, true, false); };
 				select_box.mousedown = objectContainer.mousedown;
-			} else if (mouse_location.y > 1 - margin) { //bottom
+			} else if (mouse_location.y > 1 - y_margin) { //bottom
 				$('html,body').css('cursor', 's-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, 0, top_y, select_box.width, select_box.height, true, false); };
 				select_box.mousedown = objectContainer.mousedown;
@@ -3195,7 +3186,6 @@ function stop_drawing() {
 function snap_and_emit_entity(entity) {
 	move_entity(entity, 0, 0);
 	emit_entity(entity);
-	center_anchor(entity.container)
 	render_scene();
 }
 
@@ -3209,6 +3199,7 @@ function emit_entity(entity) {
 	entity.container.mouseover = function() {
 		hovering_over = entity;
 	}
+	center_anchor(entity.container);
 }
 
 function on_icon_end(e) {	
@@ -3402,7 +3393,7 @@ function create_background_text2(text_entity) {
 	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
 	_context.fillStyle = fill_color;
 	
-	_context.fillText(text_entity.text, 0, _canvas.height - 15);
+	_context.fillText(text_entity.text, 0, _canvas.height/1.5);
 
 	var sprite = createSprite(_context, _canvas);
 		
@@ -3413,15 +3404,20 @@ function create_background_text2(text_entity) {
 		sprite.x = 0;
 		sprite.y = 0;
 		
-		var shape = new PIXI.RoundedRectangle(0, 0, sprite.width+10, sprite.height+10, 5);
-		var container = draw_shape(1, 1, 0, 1, 16777215, shape);
+		var shape = new PIXI.Rectangle(0, 0, TEXT_BOX_QUALITY * (sprite.width + (sprite.height/2)),TEXT_BOX_QUALITY * (sprite.height + (sprite.height/2)));
+		var container = draw_shape(TEXT_BOX_QUALITY * (sprite.height/8), 1, 0, 1, 16777215, shape);
 
-		container.x = x_abs(text_entity.x);
-		container.y = y_abs(text_entity.y);
-		
-		sprite.x -= sprite.width/2;
-		sprite.y -= sprite.height/2;
-		
+		container.x = x_abs(text_entity.x)
+		container.y = y_abs(text_entity.y)
+		container.width /= TEXT_BOX_QUALITY;
+		container.height /= TEXT_BOX_QUALITY;
+
+		sprite.width *= TEXT_BOX_QUALITY;
+		sprite.height *= TEXT_BOX_QUALITY;
+		sprite.x = -sprite.width/2 + (sprite.height/16); 
+		sprite.y = -sprite.height/2 + (sprite.height/16); 
+
+
 		container.addChild(sprite);
 
 		text_entity.container = container;		
@@ -3477,7 +3473,7 @@ function create_icon_cont(icon, texture) {
 		_context.shadowOffsetX = 1; 
 		_context.shadowOffsetY = 1; 
 		_context.shadowBlur = 7;
-		_context.fillText(icon.label, 0, _canvas.height - 15);
+		_context.fillText(icon.label, 0, _canvas.height/1.5);
 		
 		var text = createSprite(_context, _canvas);
 		
@@ -3488,11 +3484,16 @@ function create_icon_cont(icon, texture) {
 		
 		if (icon.label_background) {
 			var temp = text;
-			var shape = new PIXI.Rectangle(0, 0, temp.width+(temp.height/1.5), temp.height+(temp.height/1.5));
-			text = draw_shape((temp.height/8), 1, 0, 1, 16777215, shape);
+			var shape = new PIXI.Rectangle(0, 0, TEXT_BOX_QUALITY * (temp.width+(temp.height/1.5)), TEXT_BOX_QUALITY * (temp.height+(temp.height/1.5)));
+			text = draw_shape(TEXT_BOX_QUALITY*(temp.height/8), 1, 0, 1, 16777215, shape);
 			text.addChild(temp);
-			temp.x += (temp.height/3) + (temp.height/16);
-			temp.y += (temp.height/3) + (temp.height/16);	
+			text.width /= TEXT_BOX_QUALITY;
+			text.height /= TEXT_BOX_QUALITY;
+			
+			temp.width *= TEXT_BOX_QUALITY;
+			temp.height *= TEXT_BOX_QUALITY;
+			temp.x += (temp.height/3) + (temp.height/16) + 1;
+			temp.y += (temp.height/3) + (temp.height/16) + 1;
 		}			
 		
 		var label_pos = icon.label_pos;
