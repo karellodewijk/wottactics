@@ -944,8 +944,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				});
 			} else {
 				db.collection('tactics').findOne({_id:source}, function(err, result) {
-					if (!err && result) { 
-						copy_slides(result, target, res, slide);
+					if (!err && result) {
+						try {
+							if (!result.locked
+							  || result.lost_users[user.id] == "owner"
+							  || result.lost_identities[user.id].role == "owner") {
+								copy_slides(result, target, res, slide);
+							}
+						} catch(e) {
+							console.log(e);
+							res.send("Error: no permission");
+						}
 					} else {
 						res.send("Error: tactic not found");
 					}
@@ -1132,6 +1141,32 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 	}
 	
+	function create_empty_room(user, game) {
+		var room = {};
+		var slide0_uid = newUid();
+		room.slides = {};
+		room.slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid, z_top:0}
+		var background_uid = newUid();
+		if (game == 'lol') {
+			room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:secrets.static_host+"/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
+			room.locked = false;
+		} else {
+			room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"", z_index:0};
+			room.locked = true;
+		}
+		room.active_slide = slide0_uid;
+		room.trackers = {};
+		room.userlist = {};
+		room.lost_users = {};
+		room.lost_identities = {};
+		room.lost_users[user.id] = "owner";
+		if (user.identity) {
+			room.lost_identities[user.identity] = {role: "owner"};
+		}
+		room.game = game;
+		return room;
+	}
+	
 	//socket.io callbacks
 	io.sockets.on('connection', function(socket) { 
 		socket.on('join_room', function(room, game) {
@@ -1150,29 +1185,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 						}
 					} else {
 						if (!(room in room_data)) { //it may have been created already
-							room_data[room] = {};
-							var slide0_uid = newUid();
-							room_data[room].slides = {};
-							room_data[room].slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid, z_top:0}
-							var background_uid = newUid();
-							if (game == 'lol') {
-								room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:secrets.static_host+"/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
-								room_data[room].locked = false;
-							} else {
-								room_data[room].slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"", z_index:0};
-								room_data[room].locked = true;
-							}
-							room_data[room].active_slide = slide0_uid;
-							room_data[room].trackers = {};
-							room_data[room].userlist = {};
-							room_data[room].lost_users = {};
-							room_data[room].lost_identities = {};
 							var user = socket.request.session.passport.user;
-							room_data[room].lost_users[user.id] = "owner";
-							if (user.identity) {
-								room_data[room].lost_identities[user.identity] = {role: "owner"};
-							}
-							room_data[room].game = game;
+							room_data[room] = create_empty_room(user, game);
 						}
 					}
 					join_room(socket, room);
@@ -1440,8 +1454,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 		socket.on('store', function(room, name) {
 			var user = socket.request.session.passport.user;
-			console.log(room_data[room].userlist)
-			if (!room_data[room].locked || room_data[room].userlist[user.id].role) {
+			if (!room_data[room].locked || room_data[room].userlist[user.id].role == "owner") {
 				store_tactic(user, room, name);
 			}
 		});
@@ -1450,7 +1463,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			save_room(room, function(){});
 		});		
 		
-
+		socket.on('nuke_room', function(room, name) {
+			var user = socket.request.session.passport.user;
+			if (room_data[room].userlist[user.id] && room_data[room].userlist[user.id].role == 'owner') {
+				var tactic_name = "";
+				if (room_data[room].name) {
+					room_data[room].name;
+				}
+				room_data[room] = create_empty_room(user, room_data[room].game);
+				io.to(room).emit('room_data', room_data[room], user.id, tactic_name);
+			}
+		});
 
 		
 	});
