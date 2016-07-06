@@ -441,433 +441,439 @@ div.inline { display: inline-block; vertical-align: middle; }
   width: 22px;
   height: 22px;
 }
-.icon-csgo {
+.icon-copy {
   background-position: -0px -382px;
   width: 22px;
   height: 22px;
 }
-.icon-arrow {
+.icon-csgo {
   background-position: -0px -404px;
   width: 22px;
   height: 22px;
 }
-.icon-cursor_icon {
+.icon-arrow {
   background-position: -0px -426px;
   width: 22px;
   height: 22px;
 }
-.icon-curve {
+.icon-cursor_icon {
   background-position: -0px -448px;
   width: 22px;
   height: 22px;
 }
-.icon-curve_T {
+.icon-curve {
   background-position: -0px -470px;
   width: 22px;
   height: 22px;
 }
-.icon-curved_arrow {
+.icon-curve_T {
   background-position: -0px -492px;
   width: 22px;
   height: 22px;
 }
-.icon-curved_dashed_arrow {
+.icon-curved_arrow {
   background-position: -0px -514px;
   width: 22px;
   height: 22px;
 }
-.icon-curved_dashed_line {
+.icon-curved_dashed_arrow {
   background-position: -0px -536px;
   width: 22px;
   height: 22px;
 }
-.icon-curved_dotted_arrow {
+.icon-curved_dashed_line {
   background-position: -0px -558px;
   width: 22px;
   height: 22px;
 }
-.icon-curved_dotted_line {
+.icon-curved_dotted_arrow {
   background-position: -0px -580px;
   width: 22px;
   height: 22px;
 }
-.icon-curved_line {
+.icon-curved_dotted_line {
   background-position: -0px -602px;
   width: 22px;
   height: 22px;
 }
-.icon-cut {
+.icon-curved_line {
   background-position: -0px -624px;
   width: 22px;
   height: 22px;
 }
-.icon-dashed_arrow {
+.icon-cut {
   background-position: -0px -646px;
   width: 22px;
   height: 22px;
 }
-.icon-dashed_line {
+.icon-dashed_arrow {
   background-position: -0px -668px;
   width: 22px;
   height: 22px;
 }
-.icon-dot_icon {
+.icon-dashed_line {
   background-position: -0px -690px;
   width: 22px;
   height: 22px;
 }
-.icon-dotted_arrow {
+.icon-dot_icon {
   background-position: -0px -712px;
   width: 22px;
   height: 22px;
 }
-.icon-dotted_line {
+.icon-dotted_arrow {
   background-position: -0px -734px;
   width: 22px;
   height: 22px;
 }
-.icon-draw_circle_icon {
+.icon-dotted_line {
   background-position: -0px -756px;
   width: 22px;
   height: 22px;
 }
-.icon-draw_circle_radius_icon {
+.icon-draw_circle_icon {
   background-position: -0px -778px;
   width: 22px;
   height: 22px;
 }
-.icon-eraser {
+.icon-draw_circle_radius_icon {
   background-position: -0px -800px;
   width: 22px;
   height: 22px;
 }
-.icon-export {
+.icon-eraser {
   background-position: -0px -822px;
   width: 22px;
   height: 22px;
 }
-.icon-bin {
+.icon-export {
   background-position: -0px -844px;
   width: 22px;
   height: 22px;
 }
-.icon-floppy {
+.icon-bin {
   background-position: -0px -866px;
   width: 22px;
   height: 22px;
 }
-.icon-folder {
+.icon-floppy {
   background-position: -0px -888px;
   width: 22px;
   height: 22px;
 }
-.icon-archive_icon {
+.icon-folder {
   background-position: -0px -910px;
   width: 22px;
   height: 22px;
 }
-.icon-aw_icon {
+.icon-archive_icon {
   background-position: -0px -932px;
   width: 22px;
   height: 22px;
 }
-.icon-grid_icon {
+.icon-aw_icon {
   background-position: -0px -954px;
   width: 22px;
   height: 22px;
 }
-.icon-hots {
+.icon-grid_icon {
   background-position: -0px -976px;
   width: 22px;
   height: 22px;
 }
-.icon-circle_icon {
+.icon-hots {
   background-position: -0px -998px;
   width: 22px;
   height: 22px;
 }
-.icon-icon_icon {
+.icon-bomb {
   background-position: -0px -1020px;
   width: 22px;
   height: 22px;
 }
-.icon-line_T {
+.icon-icon_icon {
   background-position: -0px -1042px;
   width: 22px;
   height: 22px;
 }
-.icon-area {
+.icon-line_T {
   background-position: -0px -1064px;
   width: 22px;
   height: 22px;
 }
-.icon-link {
+.icon-area {
   background-position: -0px -1086px;
   width: 22px;
   height: 22px;
 }
-.icon-clear {
+.icon-link {
   background-position: -0px -1108px;
   width: 22px;
   height: 22px;
 }
-.icon-lock {
+.icon-circle_icon {
   background-position: -0px -1130px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_area {
+.icon-lock {
   background-position: -0px -1152px;
   width: 22px;
   height: 22px;
 }
-.icon-lol {
+.icon-clear {
   background-position: -0px -1174px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_circle {
+.icon-lol {
   background-position: -0px -1196px;
   width: 22px;
   height: 22px;
 }
-.icon-map_icon {
+.icon-clear_area {
   background-position: -0px -1218px;
   width: 22px;
   height: 22px;
 }
-.icon-move {
+.icon-map_icon {
   background-position: -0px -1240px;
   width: 22px;
   height: 22px;
 }
-.icon-note {
+.icon-move {
   background-position: -0px -1262px;
   width: 22px;
   height: 22px;
 }
-.icon-paste {
+.icon-note {
   background-position: -0px -1284px;
   width: 22px;
   height: 22px;
 }
-.icon-patreon {
+.icon-paste {
   background-position: -0px -1306px;
   width: 22px;
   height: 22px;
 }
-.icon-paypal {
+.icon-patreon {
   background-position: -0px -1328px;
   width: 22px;
   height: 22px;
 }
-.icon-pencil {
+.icon-paypal {
   background-position: -0px -1350px;
   width: 22px;
   height: 22px;
 }
-.icon-ping_icon {
+.icon-pencil {
   background-position: -0px -1372px;
   width: 22px;
   height: 22px;
 }
-.icon-polygon {
+.icon-ping_icon {
   background-position: -0px -1394px;
   width: 22px;
   height: 22px;
 }
-.icon-protoss {
+.icon-polygon {
   background-position: -0px -1416px;
   width: 22px;
   height: 22px;
 }
-.icon-rectangle {
+.icon-protoss {
   background-position: -0px -1438px;
   width: 22px;
   height: 22px;
 }
-.icon-recticle_icon {
+.icon-rectangle {
   background-position: -0px -1460px;
   width: 22px;
   height: 22px;
 }
-.icon-redo {
+.icon-recticle_icon {
   background-position: -0px -1482px;
   width: 22px;
   height: 22px;
 }
-.icon-remove_slide {
+.icon-redo {
   background-position: -0px -1504px;
   width: 22px;
   height: 22px;
 }
-.icon-ruler_icon {
+.icon-remove_slide {
   background-position: -0px -1526px;
   width: 22px;
   height: 22px;
 }
-.icon-save {
+.icon-ruler_icon {
   background-position: -0px -1548px;
   width: 22px;
   height: 22px;
 }
-.icon-save_as {
+.icon-save {
   background-position: -0px -1570px;
   width: 22px;
   height: 22px;
 }
-.icon-sc2 {
+.icon-save_as {
   background-position: -0px -1592px;
-  width: 21px;
-  height: 22px;
-}
-.icon-clear_curve {
-  background-position: -0px -1614px;
   width: 22px;
   height: 22px;
 }
-.icon-select {
+.icon-sc2 {
+  background-position: -0px -1614px;
+  width: 21px;
+  height: 22px;
+}
+.icon-clear_circle {
   background-position: -0px -1636px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_draw {
+.icon-select {
   background-position: -0px -1658px;
   width: 22px;
   height: 22px;
 }
-.icon-send_to_link_22 {
+.icon-clear_curve {
   background-position: -0px -1680px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_icon {
+.icon-send_to_link_22 {
   background-position: -0px -1702px;
   width: 22px;
   height: 22px;
 }
-.icon-ship_icon {
+.icon-clear_draw {
   background-position: -0px -1724px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_line {
+.icon-ship_icon {
   background-position: -0px -1746px;
   width: 22px;
   height: 22px;
 }
-.icon-tank_icon {
+.icon-clear_icon {
   background-position: -0px -1768px;
   width: 22px;
   height: 22px;
 }
-.icon-terran {
+.icon-tank_icon {
   background-position: -0px -1790px;
   width: 22px;
   height: 22px;
 }
-.icon-text_icon {
+.icon-terran {
   background-position: -0px -1812px;
   width: 22px;
   height: 22px;
 }
-.icon-text_on_background {
+.icon-text_icon {
   background-position: -0px -1834px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_note {
+.icon-text_on_background {
   background-position: -0px -1856px;
   width: 22px;
   height: 22px;
 }
-.icon-undo {
+.icon-clear_line {
   background-position: -0px -1878px;
   width: 22px;
   height: 22px;
 }
-.icon-unlock {
+.icon-undo {
   background-position: -0px -1900px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_polygon {
+.icon-unlock {
   background-position: -0px -1922px;
   width: 22px;
   height: 22px;
 }
-.icon-warface {
+.icon-clear_note {
   background-position: -0px -1944px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_rectangle {
+.icon-warface {
   background-position: -0px -1966px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_selected {
+.icon-clear_polygon {
   background-position: -0px -1988px;
   width: 22px;
   height: 22px;
 }
-.icon-clear_text {
+.icon-clear_rectangle {
   background-position: -0px -2010px;
   width: 22px;
   height: 22px;
 }
-.icon-copy {
+.icon-clear_selected {
   background-position: -0px -2032px;
   width: 22px;
   height: 22px;
 }
-.icon-zerg {
+.icon-clear_text {
   background-position: -0px -2054px;
   width: 22px;
   height: 22px;
 }
-.icon-cs {
+.icon-zerg {
   background-position: -0px -2076px;
+  width: 22px;
+  height: 22px;
+}
+.icon-cs {
+  background-position: -0px -2098px;
   width: 24px;
   height: 24px;
 }
 .icon-de {
-  background-position: -0px -2100px;
+  background-position: -0px -2122px;
   width: 24px;
   height: 24px;
 }
 .icon-en {
-  background-position: -0px -2124px;
+  background-position: -0px -2146px;
   width: 24px;
   height: 24px;
 }
 .icon-es {
-  background-position: -0px -2148px;
+  background-position: -0px -2170px;
   width: 24px;
   height: 24px;
 }
 .icon-fi {
-  background-position: -0px -2172px;
+  background-position: -0px -2194px;
   width: 24px;
   height: 24px;
 }
 .icon-fr {
-  background-position: -0px -2196px;
+  background-position: -0px -2218px;
   width: 24px;
   height: 24px;
 }
 .icon-pl {
-  background-position: -0px -2220px;
+  background-position: -0px -2242px;
   width: 24px;
   height: 24px;
 }
 .icon-ru {
-  background-position: -0px -2244px;
+  background-position: -0px -2266px;
   width: 24px;
   height: 24px;
 }
 .icon-sr {
-  background-position: -0px -2268px;
+  background-position: -0px -2290px;
   width: 24px;
   height: 24px;
 }
+

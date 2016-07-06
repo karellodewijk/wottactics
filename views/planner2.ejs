@@ -228,7 +228,7 @@
 
 	<div id="right_side_bar" style="height:100%; max-width:304px; display: inline-block; vertical-align:top;">
 		<nav id="right_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
-			<ul class="nav navbar-nav navbar-left container-fluid">
+			<ul class="nav navbar-nav navbar-left container-fluid" style="margin-left:-10px; margin-right:-10px; padding-left:0px; padding-right:0px">
 				<div class="btn-group">
 				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<div class="icon icon-save"></div>
@@ -246,7 +246,10 @@
 					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
 						<div class="icon icon-grid_icon"></div>
 					</button>
-				<% } %>					
+				<% } %>
+				<button id="nuke_room" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Empty room')%>">
+					<div class="icon icon-bomb"></div>
+				</button>				
 				</div>
 			</ul>
 		</nav>
