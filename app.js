@@ -1439,8 +1439,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 
 		socket.on('store', function(room, name) {
-			var user = socket.request.session.passport.user;			
-			store_tactic(user, room, name);
+			var user = socket.request.session.passport.user;
+			console.log(room_data[room].userlist)
+			if (!room_data[room].locked || room_data[room].userlist[user.id].role) {
+				store_tactic(user, room, name);
+			}
 		});
 
 		socket.on('save_room', function(room, name) {
