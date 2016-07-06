@@ -3787,9 +3787,6 @@ function update_lock() {
 		$('#slide_table1').hide();
 		$('#can_not_edit').show();
 		$('#map_select_box').hide();
-		$('#export_tab_button').hide();
-		$("#store_tactic_popover").hide();
-		$("#save").hide();
 		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 				if (room_data.slides[active_slide].entities[i].container) {
@@ -3811,16 +3808,6 @@ function update_lock() {
 		$('#slide_table1').show();
 		$('#can_not_edit').hide();
 		$('#map_select_box').show();
-		$('#export_tab_button').show();
-		if (my_user.logged_in) { //logged in
-			$("#store_tactic_popover").show();
-			if (tactic_name && tactic_name != "") {
-				$("#save").show();
-			}
-		} else {
-			$("#store_tactic_popover").hide();
-			$("#save").hide();
-		}
 		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 				if (room_data.slides[active_slide].entities[i].container) {
@@ -3831,10 +3818,31 @@ function update_lock() {
 		}
 	}
 	
+	if (my_user.role == "owner" || !is_room_locked) {
+		if (my_user.logged_in) { //logged in
+			$("#store_tactic_popover").show();
+			if (tactic_name && tactic_name != "") {
+				$("#save").show();
+			}
+		} else {
+			$("#store_tactic_popover").hide();
+			$("#save").hide();
+		}
+		$('#export_tab_button').show();		
+	} else {
+		$("#store_tactic_popover").hide();
+		$("#save").hide();
+		$('#export_tab_button').hide();		
+	}
+	
 	if (my_user.role == "owner") {
 		$('#lock').show();
+		$('#nuke_room').show();
+
 	} else {
 		$('#lock').hide();
+		$('#nuke_room').hide();
+
 	}
 }
 
@@ -5249,7 +5257,13 @@ $(document).ready(function() {
 		});
 		$('#clear_note').click(function() {
 			clear("note");
-		});		
+		});	
+		$('#nuke_room').click(function() {
+			var r = confirm("Warning: all unsaved data will be lost");
+			if (r == true) {
+				socket.emit('nuke_room', room, game);
+			}
+		});
 
 		//tank icon select
 		$('body').on('click', '.tank_select', function() {
