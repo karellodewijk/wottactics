@@ -79,21 +79,12 @@
 			</div>
 		<%} else { %>
 		<div class="col-md-4">
-			<h2>New interface</h2>
-			<p>The new ui has been available as an alternative for a little while. I've asked around and most people seem to prefer it, so I've decided to make it the default.
-			
-			<p>It adresses a few concerns:
-			
-			<ul>
-				<li>The map is now more centered.
-				<li>Darker background draws more focus to the map.
-				<li>Changing tools doesn't cause the chat/slide/export pannel to jump around.
-				<li>It adapts to a wider number of screen sizes and resolutions.
-			</ul>
-
-			<p>I've left the original ui as an option and I'll continue to update it for the near future and monitor how many people keep using it. 
-
-			<p>I hope you like it. And if there are any issues please let me know.
+			<h2><%=game.toUpperCase()%> <%=l('Tactics')%> visited 1,000,000 times</h2>
+			<p>Since the beginning of March, when i started monitoring traffic, 178,933 users have visitited <%=game.toUpperCase()%> <%=l('tactics')%> a total of 1,069,856 times, viewing 2,072,324 pages. At least 189,509 rooms have been created and 25,218 tactics have been stored.
+	
+			<p>Thank you for your support. I think that's pretty amazing.
+	
+			<p>For more details here's a google analytics <a href="http://karellodewijk.github.io/total_visitors.pdf">report</a>.
 	
 		</div>
 		<% } %>

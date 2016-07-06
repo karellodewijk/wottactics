@@ -283,30 +283,29 @@ $(document).on('keyup keydown', function(e) {
 	if (document.activeElement.localName != "input") {
 		if (e.type == "keydown") {
 			if (e.ctrlKey) {
-				if (e.keyCode==90) {
+				if (e.keyCode==90) { //z
 					undo();
-				} else if (e.keyCode==89) {
+				} else if (e.keyCode==89) { //y
 					redo();
-				} else if (e.keyCode==65) {
+				} else if (e.keyCode==65) { //a
 					select_all();
 					e.preventDefault();
-				} else if (e.keyCode==83) {
+				} else if (e.keyCode==83) { //s
 					if (my_user.logged_in && tactic_name && tactic_name != "" && socket) {
 						socket.emit("store", room, tactic_name);
 					}
-				} else if (e.keyCode==67) {
+				} else if (e.keyCode==67) { //c
 					copy();
-				} else if (e.keyCode==88) {
+				} else if (e.keyCode==88) { //x
 					cut();
-				} else if (e.keyCode==86) {
+				} else if (e.keyCode==86) { //v
 					paste();
 				}
 			}
-		}
-		if (e.type == "keyup") {
-			if (e.keyCode==46) {
+		} else if (e.type == "keyup") {
+			if (e.keyCode==46) { //del
 				clear_selected();
-			} else if (e.keyCode==16) {
+			} else if (e.keyCode==16) { //shift
 				if (active_context == 'line_context' && new_drawing) {
 					on_line_end(e);
 				}
@@ -363,8 +362,6 @@ function paste() {
 	
 	select_entities();
 	undo_list.push(["add", new_entities]);	
-
-
 }
 
 function zoom(amount, isZoomIn, e) {
@@ -458,10 +455,11 @@ function resize_renderer(new_size_x, new_size_y) {
 	if (background_sprite.texture && (zoom_level - 1) < 0.0000001) {
 		background_sprite.width = new_size_x / objectContainer.scale.x;
 		background_sprite.height = new_size_y / objectContainer.scale.y;
-		grid_layer.width = background_sprite.width;
-		grid_layer.height = background_sprite.height;
 	}
 
+	grid_layer.width = background_sprite.width;
+	grid_layer.height = background_sprite.height;
+	
 	renderer.resize(new_size_x, new_size_y);
 	$("#edit_window").attr('style', 'padding:0; margin:0; border:0; height:'+ new_size_y +'px; width:' + new_size_x + 'px;');
 	
@@ -955,18 +953,9 @@ function move_tracker(uid, delta_x, delta_y) {
 	}, 15);
 }
 
-var render_state = {}
-function update_render() {
-	limit_rate(5, render_state, function() {
-		if (select_box_dirty) {
-			redraw_select_box();
-		}
-		renderer.render(objectContainer);
-	});
-}
-
+var scene_dirty = false;
 function render_scene() {
-	requestAnimationFrame(update_render)
+	scene_dirty = true;
 }
 
 var ping_texture_atlas = {}
@@ -3798,6 +3787,9 @@ function update_lock() {
 		$('#slide_table1').hide();
 		$('#can_not_edit').show();
 		$('#map_select_box').hide();
+		$('#export_tab_button').hide();
+		$("#store_tactic_popover").hide();
+		$("#save").hide();
 		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 				if (room_data.slides[active_slide].entities[i].container) {
@@ -3819,6 +3811,16 @@ function update_lock() {
 		$('#slide_table1').show();
 		$('#can_not_edit').hide();
 		$('#map_select_box').show();
+		$('#export_tab_button').show();
+		if (my_user.logged_in) { //logged in
+			$("#store_tactic_popover").show();
+			if (tactic_name && tactic_name != "") {
+				$("#save").show();
+			}
+		} else {
+			$("#store_tactic_popover").hide();
+			$("#save").hide();
+		}
 		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
 				if (room_data.slides[active_slide].entities[i].container) {
@@ -4570,6 +4572,18 @@ $(document).ready(function() {
 	$(renderer.view).parent().append(draw_canvas);
 	$(temp_draw_canvas).hide();
 	$(draw_canvas).hide();
+	
+	function animate() {
+		if (scene_dirty) {
+			if (select_box_dirty) {
+				redraw_select_box();
+			}
+			renderer.render(objectContainer);
+			scene_dirty = false;
+		}
+		requestAnimationFrame(animate);
+	}
+	animate();
 	
 	loader.once('complete', function () {
 
