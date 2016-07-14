@@ -23,7 +23,7 @@
     "passport": "^0.2.2",
     "passport-bnet": "^1.2.1",
     "passport-facebook": "^2.1.0",
-    "passport-google-openidconnect": "0.0.4",
+    "passport-google-oauth2": "^0.1.6",
     "passport-openid": "git://github.com/jfaissolle/passport-openid.git#flexible-urls",
     "passport-strategy": "^1.0.0",
     "passport-twitter": "^1.0.4",
