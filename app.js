@@ -22,6 +22,7 @@ var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var passport = require('passport');
+var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru'];
 
 var app = express();
 app.use(compress());
@@ -48,7 +49,6 @@ var io = require('socket.io')({
 
 //configure localization support
 var i18n = require('i18n');
-var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru'];
 i18n.configure({
 	locales: locales,
 	directory: __dirname + "/locales",
@@ -667,7 +667,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	OpenIDStrategy = require('passport-openid').Strategy;
 	passport.use('openid', new OpenIDStrategy({
 			returnURL: function(req) { 
-				return "http://" + req.hostname + "/auth/openid/callback"; 
+				return 'http://'+req.fullUrl.split("/")[0]+"/auth/openid/callback";
 			},
 			passReqToCallback: true,
 			stateless: true
@@ -693,15 +693,16 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
 	
 	if (secrets.google.client_id != "") {
-		StrategyGoogle = require('passport-google-openidconnect').Strategy;
+		StrategyGoogle = require('passport-google-oauth2').Strategy;
 		passport.use('google', new StrategyGoogle({
 			clientID: secrets.google.client_id,
 			clientSecret: secrets.google.secret,
 			callbackURL: '/auth/google/callback',
+			scope: 'https://www.googleapis.com/auth/userinfo.profile',
 			passReqToCallback:true,
 			stateless: true
 		  },
-		  function(req, iss, sub, profile, accessToken, refreshToken, done) {
+		  function(req, accessToken, refreshToken, profile, done) {
 			var user = {};
 			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 				user.id = req.session.passport.user.id;
@@ -716,7 +717,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		));
 		
 		//google
-		router.post('/auth/google', save_return, passport.authenticate('google'));
+		router.post('/auth/google', save_return, function(req,res,next) { passport.authenticate('google', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/google/callback' })(req, res, next); } );
 		router.get('/auth/google/callback', passport.authenticate('google'), redirect_return);
 	}
 	
@@ -744,7 +745,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		));
 		
 		//vk
-		router.post('/auth/vk', save_return, passport.authenticate('vk'));
+		router.post('/auth/vk', save_return, function(req,res,next) { passport.authenticate('vk', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/vk/callback' })(req, res, next); } );
 		router.get('/auth/vk/callback', passport.authenticate('vk'), redirect_return);
 	}
 	
@@ -772,7 +773,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		));	
 		
 		//battle.net
-		router.post('/auth/battlenet', save_return, passport.authenticate('battlenet'));
+		router.post('/auth/battlenet', save_return, function(req,res,next) { passport.authenticate('battlenet', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/battlenet/callback' })(req, res, next); } );
 		router.get('/auth/battlenet/callback', passport.authenticate('battlenet'), redirect_return);
 	}
 
@@ -800,7 +801,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		));
 		
 		//facebook
-		router.post('/auth/facebook', save_return, passport.authenticate('facebook'));
+		router.post('/auth/facebook', save_return, function(req,res,next) { passport.authenticate('facebook', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/facebook/callback' })(req, res, next); } );
 		router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
 	}
 
@@ -828,7 +829,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		));	
 		
 		//twitter
-		router.post('/auth/twitter', save_return, passport.authenticate('twitter'));
+		router.post('/auth/twitter', save_return, function(req,res,next) { passport.authenticate('twitter', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/twitter/callback' })(req, res, next); } );
 		router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
 	}
 
