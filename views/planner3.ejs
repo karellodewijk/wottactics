@@ -53,29 +53,36 @@
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 		<link rel="stylesheet" href="<%=static_host%>/warface_icons.css">
 	<% } %>
-
-	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+	
 	<script defer type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.22.0/mediaelement-and-player.min.js"></script>
 	
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
-	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
-
+	
 	<%if (false) {%>
-	<script defer src="<%=static_host%>/javascripts/lib/ntp.js"></script>	
-	<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>
-	<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
-	<script defer src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
-	<script defer src="<%=static_host%>/javascripts/lib/curve.js"></script>
+		<script defer src="<%=static_host%>/javascripts/lib/FastPriorityQueue.js"></script>
+		<script defer src="<%=static_host%>/javascripts/lib/curve.js"></script>
+		<script defer src="<%=static_host%>/javascripts/lib/pixi.min.js"></script>
+		<script defer src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
+		<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
+		<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>
+		<script defer src="<%=static_host%>/javascripts/lib/ntp.js"></script>
 	<%}%>
 	
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/planner.js"></script>
+
+	
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.22.0/mediaelementplayer.css" />
+
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
 	<script id="static_host" data-static_host="<%=static_host%>"></script>
 	<script id="socket_io_servers" data-socket_io_servers="<%=socket_io_servers%>"></script>
 </head>
-<body style="width:100%; background-color:#333333; padding:0px; margin:0px; border:0; color:white; min-width: 100%; height:100%; display: inline-block;">
+<body style="width:100%; background-color:#333333; padding:0px; margin:0px; border:0; color:white; min-width: 100%; height:100%; display: inline-block; overflow: hidden;">
 	<style>
 	input, textarea, .chatmsg, .userlist {
 	  color : black;
@@ -84,9 +91,16 @@
 		color:white;
 	}
 	</style>
+	
+	<div id="left_detect" style="position:fixed; left:0px; top:0px; width:10px; height:97%; opacity:0; z-index:20"></div>
+	<div id="right_detect" style="position:fixed; right:0px; top:0px; width:10px; height:97%; opacity:0;  z-index:20"></div>
 
-	<div id="left_side_bar" style="max-width:340px; height:100%; vertical-align:top; float:left; display:flex; flex-direction:column; padding:0px; margin:0px;">
-		<div style="flex: 0 1 auto; justify-content: flex-start;">
+	<div id="edit_window" class="edit_window" style="height:100%; width:calc(100vh); display: inline-block; vertical-align:top; padding:0px; margin:0px; border:0; position:absolute">
+		<div id="video_div" style="height:100%; width:100%; position:absolute;"></div>
+	</div>
+	
+	<div id="left_side_bar" style="max-width:340px; height:97%; display:flex; flex-direction:column; top:0px; position:absolute; left:0px; background-color:rgba(0,0,0,0.5); z-index:10;">
+		<div style="flex: 0 1 auto;">
 			<nav id="left_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
 				<div id="home_button" class="navbar-header">
 					<button class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -125,44 +139,12 @@
 				</div>
 			</nav>	
 		</div>
-		<div id="map_select_section" style="padding:10px; padding-top:0px; flex: 0 1 auto; justify-content: flex-start;">
+		<div id="map_select_section" style="padding:10px; padding-top:0px; flex: 0 1 auto;">
 			<div id="map_select_box">
-			<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
-			<div class="dropdown inline" id="map_select_container">
-				<select class="selectpicker" id="map_select">
-				<%if (game == 'wot') { %>
-					<%include wot_maps.ejs %>	
-				<%} else if (game == 'wows') { %>	
-					<%include wows_maps.ejs%>
-				<%} else if (game == 'lol') { %>
-					<%include lol_maps.ejs%>
-				<%} else if (game == 'hots') { %>
-					<%include hots_maps.ejs%>
-				<%} else if (game == 'sc2') { %>
-					<%include sc2_maps.ejs%>
-				<%} else if (game == 'csgo') { %>
-					<%include csgo_maps.ejs%>
-				<%} else if (game == 'warface') { %>
-					<%include warface_maps.ejs%>
-				<%} else if (game == 'blitz') { %>	
-					<%include blitz_maps.ejs %>	
-				<%} else if (game == 'aw') { %>	
-					<%include aw_maps.ejs %>	
-				<%} %>	
-				</select>
-			</div>
-			
-			<%if (game == 'wot') { %>
-				<div class="dropdown inline" style="display:none" id="wotbase_map_select_container">
-					<select class="selectpicker" id="map_select_wotbase"><%include wotbase_wot_maps.ejs%></select>
-				</div>
-			<%} %>
+			<h4><%=l('Load video')%>&nbsp;<span id="map_size"></span></h4>
 			<button class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
-				<div class="icon icon-link_sm"></div>
+				Load video
 			</button>
-			<%if (game == 'wot') { %>
-				<br /><input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span>Use wotbase maps</span>
-			<%} %>	
 		
 			<hr>
 			
@@ -171,12 +153,12 @@
 				<p>
 		</div>
 
-		<div style="padding:10px; padding-top:0px; flex: 1 1 auto; overflow-y:auto; justify-content: flex-start;">
+		<div style="padding:10px; padding-top:0px; flex: 1 1 auto; overflow-y:auto;">
 			<div class="btn-group-vertical btn-group-xs userlist" role="group" id="userlist">
 			</div>
 		</div>
 		
-		<div style="padding:10px; justify-content: flex-end; flex: 0 1 300px;">		
+		<div style="padding:10px; justify-content: flex-end; flex: 0 1 300px;">
 			<ul class="nav nav-tabs" id="bottom_tabs">
 			  <li class="active"><a data-toggle="tab" href="#chat_tab"><%=l('Chat')%></a></li>
 			  <li id="slide_tab_button"><a data-toggle="tab" href="#slide_tab"><%=l('Slides')%></a></li>
@@ -232,16 +214,15 @@
 		</div>
 	</div>	
 	
-	<div id="edit_window" class="edit_window" style="height:100%; width:calc(100vh); display: inline-block; vertical-align:top; padding:0px; margin:0px; border:0;"></div>
-
-	<div id="right_side_bar" style="height:100%; max-width:304px; display: inline-block; vertical-align:top;">
+	<div id="right_side_bar" style="height:97%; max-width:304px; display:flex; flex-direction:column; top:0px; position:absolute; right:0px; background-color:rgba(0,0,0,0.5); z-index:11">
+		<div style="flex: 0 1 auto;">
 		<nav id="right_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
 			<ul class="nav navbar-nav navbar-left container-fluid" style="margin-left:-10px; margin-right:-10px; padding-left:0px; padding-right:0px">
 				<div class="btn-group">
 				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<div class="icon icon-save"></div>
 				</button>
-				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
+				<button id='store_tactic_popover' data-placement="left" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<div class="icon icon-save_as"></div>
 				</button>
 				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
@@ -261,14 +242,15 @@
 				</div>
 			</ul>
 		</nav>
+		</div>
 		
-		<div id="can_not_edit" style="padding-left: 10px;">
+		<div id="can_not_edit" style="padding-left: 10px; flex: 1 1 auto;" >
 			<h4><%=l('Tools')%></h4>
 			<p>
 			<%=l('You do not have permission to edit.')%>
 		</div>
 		
-		<div class="left_column">
+		<div class="left_column" style="flex: 1 1 auto;">
 			<h4><%=l('Tools')%></h4>
 			<p>
 				<div id="contexts">
@@ -408,7 +390,6 @@
 						<input id="icon_size_text" class="slider_text_input" type="text"/>
 					</div>
 				</div>	
-				<br />
 				<h4><%=l('Label options')%></h4>
 				<div id="icon_label_container">
 				<p>	
@@ -1184,6 +1165,19 @@
 					</tr>
 				</table>
 			</div>
+		</div>
+		<div class="left_column" style="justify-content: flex-end; flex: 0 1; padding-right: 10px; padding-bottom:20px">
+			<div class="clearfix" style="margin-left:-15px">
+				<div class="col-sm-4">
+					<small><%=l('Delay')%></small>
+				</div>
+				<div class="col-sm-6">
+					<input type="range" id="delay" min="1" value="3" max="20" step="1" list="delay_ticks">
+				</div>
+				<div class="col-sm-2">
+					<input id="delay_text" class="slider_text_input" type="text"/>
+				</div>
+			</div>		
 		</div>
 	</div>
 

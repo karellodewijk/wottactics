@@ -154,7 +154,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	function push_tactic_to_db(user, room, name, uid) {
 		//store a link to the tacticn in user data
-		db.collection('users').update({_id:user.identity}, {$push:{tactics:{name:name, date:Date.now(), game:room_data[room].game, uid:uid}}}, {upsert: true});		
+		db.collection('users').update({_id:user.identity}, {$push:{tactics:{name:name, date:Date.now(), game:room_data[room].game, uid:uid, is_video:(typeof room_data[room].playing != 'undefined')}}}, {upsert: true});		
 		//store the tactic in the stored_tactics list
 		var data = JSON.parse(JSON.stringify(room_data[room]));
 		data.name = name;
@@ -477,7 +477,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  } else if (!req.query.room) {
 		  res.redirect(game + template + '.html?room='+newUid());
 	  }	else {
-		  res.cookie('room',req.query.room , { maxAge: 30 * 86400 * 1000 });
 		  req.session.game = game;
 		  res.render(template, { game: req.session.game, 
 								 user: req.session.passport.user,
@@ -557,6 +556,34 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	router.get('/warfaceplanner2.html', function(req, res, next) {
 	  planner_redirect(req, res, 'warface', 'planner2');
+	});
+	
+	router.get('/wotplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'wot', 'planner3');
+	});
+	router.get('/awplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'aw', 'planner3');
+	});
+	router.get('/wowsplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'wows', 'planner3');
+	});
+	router.get('/blitzplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'blitz', 'planner3');
+	});
+	router.get('/lolplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'lol', 'planner3');
+	});
+	router.get('/hotsplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'hots', 'planner3');
+	});
+	router.get('/sc2planner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'sc2', 'planner3');
+	});
+	router.get('/csgoplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'csgo', 'planner3');
+	});
+	router.get('/warfaceplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'warface', 'planner3');
 	});
 	
 	router.get('/about.html', function(req, res, next) {
@@ -1167,9 +1194,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		room.game = game;
 		return room;
 	}
+
+	var ntp = require('socket-ntp');
 	
 	//socket.io callbacks
-	io.sockets.on('connection', function(socket) { 
+	io.sockets.on('connection', function(socket) {
+		ntp.sync(socket);
 		socket.on('join_room', function(room, game) {
 			if (!socket.request.session.passport || !socket.request.session.passport.user) {
 				create_anonymous_user(socket.request);
@@ -1475,7 +1505,31 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				io.to(room).emit('room_data', room_data[room], user.id, tactic_name);
 			}
 		});
+		
+		socket.on('play_video', function(room, frame) {
+			room_data[room].playing = true;
+			io.to(room).emit('play_video', frame, Date.now()+200, socket.request.session.passport.user.id);
+		});
+		
+		socket.on('pause_video', function(room, frame) {
+			room_data[room].last_sync = [frame, Date.now()];
+			room_data[room].playing = false;
+			io.to(room).emit('pause_video', frame, socket.request.session.passport.user.id);
+		});
 
+		socket.on('sync_video', function(room, frame, timestamp) {
+			room_data[room].last_sync = [frame, timestamp];
+			io.to(room).emit('sync_video', frame, timestamp, socket.request.session.passport.user.id);
+		});
+
+		socket.on('seek_video', function(room, frame, timestamp) {
+			room_data[room].last_sync = [frame, timestamp];
+			socket.broadcast.to(room).emit('seek_video', frame, timestamp, socket.request.session.passport.user.id);
+		});
+		
+		socket.on('request_sync', function(room) {
+			socket.broadcast.to(room).emit('request_sync');
+		});
 		
 	});
 	

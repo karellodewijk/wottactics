@@ -425,5 +425,12 @@
 	"Erase": "Erase",
 	"Grey": "Grey",
 	"Transparancy": "Transparancy",
-	"Annotated": "Annotated"
+	"Annotated": "Annotated",
+	"Football": "Football",
+	"Empty room": "Empty room",
+	"You do not have permission to edit.": "You do not have permission to edit.",
+	"Label options": "Label options",
+	"Add background": "Add background",
+	"Label position": "Label position",
+	"End size": "End size"
 }
