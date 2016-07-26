@@ -1199,7 +1199,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//socket.io callbacks
 	io.sockets.on('connection', function(socket) {
-		ntp.sync(socket);
+		//ntp.sync(socket);
 		socket.on('join_room', function(room, game) {
 			if (!socket.request.session.passport || !socket.request.session.passport.user) {
 				create_anonymous_user(socket.request);
@@ -1506,6 +1506,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 		
+		/*
+		
 		socket.on('play_video', function(room, frame) {
 			room_data[room].playing = true;
 			io.to(room).emit('play_video', frame, Date.now()+200, socket.request.session.passport.user.id);
@@ -1530,6 +1532,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('request_sync', function(room) {
 			socket.broadcast.to(room).emit('request_sync');
 		});
+		
+		*/
 		
 	});
 	
