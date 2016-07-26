@@ -702,6 +702,7 @@ function init_video_controls() {
 }
 
 function start_syncing() {
+	/*
 	clearInterval(sync_event);
 	im_syncing = true;
 	for (var i = 0; i < 10; i++) { //send 10 syncs in quick succession
@@ -714,6 +715,7 @@ function start_syncing() {
 		var frame = video_media.currentTime;
 		socket.emit("sync_video", room, frame, Date.now() + get_offset());
 	}, 10000);
+	*/
 }
 
 function play_video_controls() {
