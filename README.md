@@ -27,14 +27,14 @@ If you want facebook/google/twitter/battlesnet/vk/steam login to work, you need 
 
 Other optional options:
 
-static_host: This is for using a CDN. Upload the contents of the public map to your cdn and fill in a the full url here e.g.: "static_host": "http://some_address/public". Clients will now prefer to load all statics files (icons/js/stylesheets/maps) from that adress. 
+static_host: This is for using a CDN. Upload the contents of the public map to your cdn and fill in a the full url here e.g.: "static_host": "http://some_address/public". Clients will now prefer to load all statics files (icons/js/stylesheets/maps) from that address. 
 
 ga_id: Your google analytics unique id if you want to enable google analytics tracking.
 
 
 Caveats:
 
-Use the stable/lts node releases (v4.*.*), some of the libraries have issues with (v6.*.*).
+Use the stable/lts node releases (v4), some of the libraries have issues with (v6).
 
 Putting a public address for your host under socket_io_servers in secrets.txt is not optional. The client will try to open a websocket to this address, it won't work if this fails. I also recommends you make it an url and not an ip address as some clients security configurations do not like it when you connect to an ip without a prior dns request.
 

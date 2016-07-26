@@ -43,7 +43,7 @@
 				<%if (game == tactics[i].game) { %>
 					<tr class="file" data-tt-id="<%=tactics[i].name%>" data-tt-parent-id="<%=tactics[i].name.substring(0,tactics[i].name.lastIndexOf("/"))%>" id="<%=tactics[i].uid%>">
 						<td><div class="inline icon icon-map_icon"></div><%=tactics[i].name.substring(tactics[i].name.lastIndexOf("/")+1)%></td>
-						<td><a class="btn btn-primary btn-sm" href="<%=game%>planner2.html?restore=<%=tactics[i].uid%>" id="<%=tactics[i].uid%>" role="button">Launch&raquo;</a></td>
+						<td><a class="btn btn-primary btn-sm" href="<%=game%><%if (tactics[i].is_video) {%>planner3.html<%} else {%>planner2.html<%}%>?restore=<%=tactics[i].uid%>" id="<%=tactics[i].uid%>" role="button">Launch&raquo;</a></td>
 						<td class='date'><%=tactics[i].date;%></td>
 						
 						<td><button class="btn btn-default btn-sm share_tactic" data-toggle="tooltip" title="<%=l('Share this tactic')%>"
