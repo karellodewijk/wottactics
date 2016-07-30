@@ -95,25 +95,7 @@
 						<span class="icon-bar"></span>
 					</button>
 					<a class="navbar-brand" style="padding-left:0px"
-						<% if (game == 'wot') { %>
-							href="/">
-						<% } else if (game == 'wows') { %>
-							href="/">
-						<% } else if (game == 'blitz') { %>
-							href="/blitz.html">
-						<% } else if (game == 'lol') { %>
-							href="/lol">
-						<% } else if (game == 'hots') { %>
-							href="/hots">
-						<% } else if (game == 'sc2') { %>
-							href="/sc2">
-						<% } else if (game == 'csgo') { %>
-							href="/csgo">
-						<% } else if (game == 'warface') { %>
-							href="/warface">
-						<% } else if (game == 'aw') { %>
-							href="/">
-						<% } %><i class="fa-lg icon-home"></i>
+						href="/<%=game%>"><i class="fa-lg icon-home "></i>
 					</a>
 				</div>
 
@@ -1076,7 +1058,7 @@
 						<small><%=l('Size')%></small>
 					</div>
 					<div class="col-sm-6">
-						<input type="range" id="font_size" min="5" value="12" max="100" step="1" list="font_size_ticks">
+						<input type="range" id="font_size" min="5" value="12" max="48" step="1" list="font_size_ticks">
 					</div>
 					<div class="col-sm-2">
 						<input id="font_size_text" class="slider_text_input" type="text"/>
@@ -1107,7 +1089,7 @@
 						<small><%=l('Size')%></small>
 					</div>
 					<div class="col-sm-6">
-						<input type="range" id="background_font_size" min="5" value="10" max="100" step="1" list="background_font_size_ticks">
+						<input type="range" id="background_font_size" min="5" value="10" max="48" step="1" list="background_font_size_ticks">
 					</div>
 					<div class="col-sm-2">
 						<input id="background_font_size_text" class="slider_text_input" type="text"/>
