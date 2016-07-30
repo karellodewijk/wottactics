@@ -1,4 +1,6 @@
 var fs = require('fs');
+var profiler = require('v8-profiler');
+var _datadir = null;
 var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
 var http = require('http');
 var escaper = require('mongo-key-escape');
@@ -120,10 +122,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	function save_room(room, cb) {
-		room_data[room]._id = room;
-		db.collection('tactics').update({_id:room}, room_data[room], {upsert: true}, function (err, result) {
-		  cb();
-		});
+		if (room_data[room]) {
+			room_data[room]._id = room;
+			db.collection('tactics').update({_id:room}, room_data[room], {upsert: true}, function (err, result) {
+			  cb();
+			});
+		}
 	}
 	
 	function get_tactics(identity, game, cb) {
@@ -308,6 +312,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				req.session.locale = "en";
 			}
 		}
+		
+		if (req.query.game) {
+			req.session.game = req.query.game;
+		}
+		
 		req.fullUrl = subDomain.join('.') + req.originalUrl;
 		next();
 	});
@@ -328,7 +337,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	// session support for socket.io
 	
 	function session_from_sessionid_host(sessionId, host, cb) {
-		if (sessionId && mwCache[host]) {
+		if (!mwCache[host]) {
+			var store = new RedisStore(secrets.redis_options);
+			mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: store});
+			mwCache[host].store = store;
+		}
+		if (sessionId) {
 			mwCache[host].store.get(sessionId, function(err, data) {
 				if (!err) {
 					cb(data);
@@ -380,9 +394,26 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
                             static_host: secrets.static_host, 
 							ga_id:secrets.ga_id});
 	});
-	
+	router.get('/wot', function(req, res, next) {
+	  req.session.game = 'wot';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl,
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
+	});	
 	router.get('/wot.html', function(req, res, next) {
 	  req.session.game = 'wot';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl,
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
+	});
+	router.get('/aw', function(req, res, next) {
+	  req.session.game = 'aw';
 	  res.render('index', { game: req.session.game, 
 							user: req.session.passport.user,
 							locale: req.session.locale,
@@ -399,8 +430,26 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							static_host: secrets.static_host, 
 							ga_id:secrets.ga_id});
 	});
+	router.get('/wows', function(req, res, next) {
+	  req.session.game = 'wows';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl,
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
+	});
 	router.get('/wows.html', function(req, res, next) {
 	  req.session.game = 'wows';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl,
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
+	});
+	router.get('/blitz', function(req, res, next) {
+	  req.session.game = 'blitz';
 	  res.render('index', { game: req.session.game, 
 							user: req.session.passport.user,
 							locale: req.session.locale,
@@ -1035,9 +1084,59 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 	});
 
+	/**
+	 * Starts profiling and schedules its end
+	 */
+	function startProfiling(time, cb) {
+		var stamp = Date.now();
+		var id = 'profile-' + stamp;
+
+		// Use stdout directly to bypass eventloop
+		fs.writeSync(1, 'Start profiler with Id [' + id + ']\n');
+
+		// Start profiling
+		profiler.startProfiling(id);
+
+
+		// Schedule stop of profiling in x seconds
+		setTimeout(function () {
+			stopProfiling(id, cb)
+		}, time);
+	}
+
+	/**
+	 * Stops the profiler and writes the data to a file
+	 * @param id the id of the profiler process to stop
+	 */
+	function stopProfiling(id, cb) {
+		var profile = profiler.stopProfiling(id);
+		var profile_data = JSON.stringify(profile);
+		fs.writeFile('./' + id + '.cpuprofile', JSON.stringify(profile), function () {
+			console.log('Profiler data written');
+			cb(profile_data);
+		});
+	}
+	
+	//force saves all rooms to DB, run before a restart/shutdown
+	router.get('/profile', function(req, res, next) {
+		if (req.query.pw == secrets.mongodb_password) {
+			var time;
+			if (req.query.time) {
+				var time = parseFloat(req.query.times);
+			} else {
+				var time = 5000;
+			}
+			startProfiling(5000, function(profile_data) {
+				res.send(profile_data);
+			});
+		}
+	});
+
 	//some basic logging data
 	router.get('/log', function(req, res, next) {
-		res.send("Active rooms: " + Object.keys(room_data).length);
+		var log_data = "Active rooms: " + Object.keys(room_data).length + "<br />\n";
+		log_data += "#clients: " + io.engine.clientsCount + "<br />\n";	
+		res.send(log_data);
 	});
 	
 	//reloads templates, so I don't have to restart the server to add basic content
@@ -1195,11 +1294,13 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		return room;
 	}
 
-	var ntp = require('socket-ntp');
-	
 	//socket.io callbacks
-	io.sockets.on('connection', function(socket) {
-		//ntp.sync(socket);
+	io.sockets.on('connection', function(socket) {	
+	
+		socket.on('sync_clock', function() {
+			socket.emit('sync_clock', Date.now());
+		});
+		
 		socket.on('join_room', function(room, game) {
 			if (!socket.request.session.passport || !socket.request.session.passport.user) {
 				create_anonymous_user(socket.request);
@@ -1229,6 +1330,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 
+		
 		socket.onclose = function(reason) {
 			//hijack the onclose event because otherwise we lose socket.rooms data
 			var user = socket.request.session.passport.user;
@@ -1506,11 +1608,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 		
-		/*
-		
 		socket.on('play_video', function(room, frame) {
 			room_data[room].playing = true;
-			io.to(room).emit('play_video', frame, Date.now()+200, socket.request.session.passport.user.id);
+			io.to(room).emit('play_video', frame, Date.now()+500, socket.request.session.passport.user.id);
 		});
 		
 		socket.on('pause_video', function(room, frame) {
@@ -1532,8 +1632,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('request_sync', function(room) {
 			socket.broadcast.to(room).emit('request_sync');
 		});
-		
-		*/
+
 		
 	});
 	

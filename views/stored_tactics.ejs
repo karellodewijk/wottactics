@@ -39,6 +39,7 @@
 				</tr>
 			</thead>
 			<tbody style="vertical-align: middle;"> 
+			<%var other_games = {}%>
 			<% for (var i in tactics) {%>
 				<%if (game == tactics[i].game) { %>
 					<tr class="file" data-tt-id="<%=tactics[i].name%>" data-tt-parent-id="<%=tactics[i].name.substring(0,tactics[i].name.lastIndexOf("/"))%>" id="<%=tactics[i].uid%>">
@@ -54,6 +55,8 @@
 						<td><a type="button" data-uid="<%=tactics[i].uid%>" class="btn btn-default btn-sm send_to_link" data-toggle="tooltip" title="<%=l('Send to room')%>"><div class="icon icon-send_to_link"></div></a></td>
 						<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" data-uid="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><b>X</b></a></td>
 					</tr>
+				<% } else { %>
+				<%	other_games[tactics[i].game] = true; %>
 				<% } %>
 			<% } %>	
 			</tbody>
@@ -68,6 +71,13 @@
 				</div>
 			</div>
 		</div>
+		
+		<%if (Object.keys(other_games).length != 0) { %>
+			<p>You also have tactics for <%=other_games.length%>
+		<%	for (var key in other_games) {  %>
+				<a href="?game=<%=key%>"><%=key%></a>
+		<%	} %>			
+		<%}%>
 		
 		<div class="input-group" id="notification_box" style="visibility:hidden;">
 			<span><label id="notification"></label></span>
