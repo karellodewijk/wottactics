@@ -1,6 +1,16 @@
 var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
 //var servers = [location.host];
 
+var is_video_replay = false;
+if (location.pathname.indexOf('planner3') != -1) {
+	is_video_replay = true;
+}
+
+if (is_video_replay) {
+	//servers = ['localhost'];
+	servers = ['server2.wottactic.eu'];
+}
+
 var image_host;
 function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
@@ -108,8 +118,6 @@ try {
 	console.log(e);
 }
 
-ntp.init(socket);  
-
 //generates unique ids
 function newUid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
@@ -151,7 +159,7 @@ function random_color(){
     return '#' + ("00" + r.toString(16)).slice(-2) + ("00" + g.toString(16)).slice(-2) + ("00" + b.toString(16)).slice(-2);
 }
 
-var ARROW_LOOKBACK = 6;
+var ARROW_LOOKBACK = 4;
 var MOUSE_DRAW_SMOOTHING = 0.5;
 var LEFT_BAR_MIN_WIDTH = 340;
 var RIGHT_BAR_MIN_WIDTH = 302;
@@ -170,7 +178,9 @@ var THICKNESS_SCALE = 0.0015;
 var FONT_SCALE = 0.002;
 var TEXT_QUALITY = 8;
 var ARROW_SCALE = 0.008;
+var ARROW_SCALE2 = 1.7;
 var TEND_SCALE = 0.008;
+var TEND_SCALE2 = 1.5;
 var MAGIC_NUMBER = 25;
 var EPSILON = 0.000000001;
 var ROTATE_ARROW_SCALE = 0.05;
@@ -178,6 +188,8 @@ var ROTATE_ARROW_MARGIN = 0.02;
 var TEXT_BOX_QUALITY = 4;
 var VIDEO_EXTENSIONS = ['mp4','webgl','avi'];
 var VIDEO_SYNC_DELAY = 10000; //in ms
+var MOUSE_IDLE_HIDE_TIME = 5000;
+var MAX_CANVAS_SIZE = 4096;
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -280,11 +292,16 @@ var temp_draw_canvas;
 var draw_context;
 var temp_draw_context;
 var grid_layer;
+
 var offset = 0; // time offset from the server in ms 
+var sync_start_time;
+var progress = 0;
+var progress_update = Date.now();
 var video_layer;
 var manual_pause = false;
 var sync_seek = false;
 var sync_event;
+var clock_sync_event;
 var last_video_sync = null;
 var timeline;
 var timeline_entities = {}; //time->entity map
@@ -292,6 +309,7 @@ var video_ready = false;
 var video_paused = true;
 var initiated_play = false;
 var im_syncing = false;
+var idleMouseTimer;
 
 var mouse_down_interrupted;
 document.body.onmouseup = function() {
@@ -678,6 +696,8 @@ function reset_background() {
 	$('#right_side_bar').unbind('mouseleave');
 	$('#left_side_bar').show();
 	$('#right_side_bar').show();
+	
+	clearTimeout(idleMouseTimer);
 }
 
 var video_player;
@@ -702,20 +722,18 @@ function init_video_controls() {
 }
 
 function start_syncing() {
-	/*
 	clearInterval(sync_event);
 	im_syncing = true;
-	for (var i = 0; i < 10; i++) { //send 10 syncs in quick succession
+	for (var i = 0; i < 5; i++) { //send 10 syncs in quick succession
 		setTimeout(function() {
-			var frame = video_media.currentTime;
-			socket.emit("sync_video", room, frame, Date.now() + get_offset());
-		}, i*1000);
+			var frame = video_progress();
+			socket.emit("sync_video", room, frame, get_server_time());
+		}, i*2000);
 	}
 	sync_event = setInterval(function() { //sync every 10s
-		var frame = video_media.currentTime;
-		socket.emit("sync_video", room, frame, Date.now() + get_offset());
+		var frame = video_progress();
+		socket.emit("sync_video", room, frame, get_server_time());
 	}, 10000);
-	*/
 }
 
 function play_video_controls() {
@@ -742,7 +760,7 @@ function pause_video_controls() {
 function toggle_play() {
 	if (background.is_video) {
 		if (video_media.paused) {
-			var frame = video_media.currentTime;
+			var frame = video_progress();
 			socket.emit("play_video", room, frame);
 			initiated_play = true;
 			play_video_controls()
@@ -758,9 +776,8 @@ var ignore_jump = false;
 function init_video_triggers() {
 	video_media.addEventListener('pause', function(e) {
 		if (manual_pause) {
-			clearInterval(sync_event);
-			im_syncing = false;
-			socket.emit("pause_video", room, video_media.currentTime);
+			stop_syncing();
+			socket.emit("pause_video", room, video_progress());
 			manual_pause = false;
 		}
 	});
@@ -781,16 +798,22 @@ function init_video_triggers() {
 		}
 	});
 	
+	video_media.addEventListener('timeupdate', function(e) {
+		progress = video_media.currentTime;
+		progress_update = Date.now();
+	})
+	
 	$('.mejs-playpause-button').unbind('click');
 	$('.mejs-playpause-button').click(function(e) {
 		toggle_play();
+		e.preventDefault();
+		return false;
 	});
 	
 	//little bit of a hack to detect seeks, cause the seeked event doesn't work so well
 	$(".mejs-time-rail").on('mousedown', function() {
 		wait_for_seek(function() {
-			console.log('seek')
--			socket.emit("seek_video", room, video_media.currentTime, Date.now() + get_offset());
+-			socket.emit("seek_video", room, video_progress(), get_server_time());
 			start_syncing();
 			rebuild_timeline();
 		})
@@ -801,10 +824,10 @@ function init_video_triggers() {
 
 function wait_for_seek(cb) {
 	var start_time = Date.now();
-	var start_frame = video_media.currentTime;
+	var start_frame = video_progress();
 	var changed = setInterval(function() {
-		var current_frame = video_media.currentTime;
-		if (Math.abs(video_media.currentTime - (start_frame + (Date.now() - start_time)/1000)) > 0.05) {
+		var current_frame = video_progress();
+		if (Math.abs(video_progress() - (start_frame + (Date.now() - start_time)/1000)) > 0.05) {
 			cb();
 			clearInterval(changed);
 		}
@@ -916,6 +939,7 @@ function set_background(new_background, cb) {
 			
 			video_layer.mediaelementplayer({
 				videoHeight: '100%',
+				loop:false,
 				enableAutosize: true,
 				alwaysShowControls: true,
 				features: ['playpause','progress','current','duration','tracks','volume'],
@@ -950,7 +974,25 @@ function set_background(new_background, cb) {
 							video_player.pause();
 						}
 					}
-					socket.emit('request_sync', room)
+					
+					var forceMouseHide = false;
+					$(renderer.view).css('cursor', 'none');
+					$(renderer.view).mousemove(function(ev) {
+						if(!forceMouseHide) {
+							$(renderer.view).css('cursor', 'default');
+							clearTimeout(idleMouseTimer);
+							idleMouseTimer = setTimeout(function() {
+								$(renderer.view).css('cursor', 'none');
+								forceMouseHide = true;
+								setTimeout(function() {
+									forceMouseHide = false;
+								}, 200);
+							}, MOUSE_IDLE_HIDE_TIME);
+						}
+					});
+					
+					
+					socket.emit('request_sync', room);
 					done();
 				}
 			});
@@ -1283,12 +1325,17 @@ function render_scene() {
 }
 
 function get_offset() {
-	if (isNaN(ntp.offset())) {
-		return 0;
-	} else {
-		return ntp.offset();
-	}
+	return offset;
 }
+
+function get_server_time() {
+	return Date.now() + offset;
+}
+
+function get_local_time(timestamp) {
+	return timestamp - offset;
+}
+
 
 var ping_texture_atlas = {}
 function ping(x, y, color, size) {	
@@ -1347,148 +1394,32 @@ function align_note_text(entity) {
 }
 
 //borrowed from http://www.dbp-consulting.com/tutorials/canvas/CanvasArrow.html
-var drawHead=function(ctx,x0,y0,x1,y1,x2,y2,style)
-{
-  'use strict';
-  if(typeof(x0)=='string') x0=parseInt(x0);
-  if(typeof(y0)=='string') y0=parseInt(y0);
-  if(typeof(x1)=='string') x1=parseInt(x1);
-  if(typeof(y1)=='string') y1=parseInt(y1);
-  if(typeof(x2)=='string') x2=parseInt(x2);
-  if(typeof(y2)=='string') y2=parseInt(y2);
-  var radius=3;
-  var twoPI=2*Math.PI;
-
-  // all cases do this.
-  ctx.beginPath();
-  ctx.moveTo(x0,y0);
-  ctx.lineTo(x1,y1);
-  ctx.lineTo(x2,y2);
-  switch(style){
-    case 0:
-      // curved filled, add the bottom as an arcTo curve and fill
-      var backdist=Math.sqrt(((x2-x0)*(x2-x0))+((y2-y0)*(y2-y0)));
-      ctx.arcTo(x1,y1,x0,y0,.55*backdist);
-      ctx.fill();
-      break;
-    case 1:
-      // straight filled, add the bottom as a line and fill.
-      ctx.beginPath();
-      ctx.moveTo(x0,y0);
-      ctx.lineTo(x1,y1);
-      ctx.lineTo(x2,y2);
-      ctx.lineTo(x0,y0);
-      ctx.fill();
-      break;
-    case 2:
-      // unfilled head, just stroke.
-      ctx.stroke();
-      break;
-    case 3:
-      //filled head, add the bottom as a quadraticCurveTo curve and fill
-      var cpx=(x0+x1+x2)/3;
-      var cpy=(y0+y1+y2)/3;
-      ctx.quadraticCurveTo(cpx,cpy,x0,y0);
-      ctx.fill();
-      break;
-    case 4:
-      //filled head, add the bottom as a bezierCurveTo curve and fill
-      var cp1x, cp1y, cp2x, cp2y,backdist;
-      var shiftamt=5;
-      if(x2==x0){
-	// Avoid a divide by zero if x2==x0
-	backdist=y2-y0;
-	cp1x=(x1+x0)/2;
-	cp2x=(x1+x0)/2;
-	cp1y=y1+backdist/shiftamt;
-	cp2y=y1-backdist/shiftamt;
-      }else{
-	backdist=Math.sqrt(((x2-x0)*(x2-x0))+((y2-y0)*(y2-y0)));
-	var xback=(x0+x2)/2;
-	var yback=(y0+y2)/2;
-	var xmid=(xback+x1)/2;
-	var ymid=(yback+y1)/2;
-
-	var m=(y2-y0)/(x2-x0);
-	var dx=(backdist/(2*Math.sqrt(m*m+1)))/shiftamt;
-	var dy=m*dx;
-	cp1x=xmid-dx;
-	cp1y=ymid-dy;
-	cp2x=xmid+dx;
-	cp2y=ymid+dy;
-      }
-
-      ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x0,y0);
-      ctx.fill();
-      break;
-  }
-};
+//but stripped a bit
 var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d) {
-  'use strict';
-  // Ceason pointed to a problem when x1 or y1 were a string, and concatenation
-  // would happen instead of addition
-  if(typeof(x1)=='string') x1=parseInt(x1);
-  if(typeof(y1)=='string') y1=parseInt(y1);
-  if(typeof(x2)=='string') x2=parseInt(x2);
-  if(typeof(y2)=='string') y2=parseInt(y2);
-  style=typeof(style)!='undefined'? style:3;
-  which=typeof(which)!='undefined'? which:1; // end point gets arrow
-  angle=typeof(angle)!='undefined'? angle:Math.PI/8;
-  d    =typeof(d)    !='undefined'? d    :10;
-  // default to using drawHead to draw the head, but if the style
-  // argument is a function, use it instead
-  var toDrawHead=typeof(style)!='function'?drawHead:style;
+	'use strict';
+	// calculate the angle of the line
+	var lineangle=Math.atan2(y2-y1,x2-x1);
+	
+	
+	var h=Math.abs(d/Math.cos(angle));
+	var angle1=lineangle+Math.PI+angle;
+	var topx=x2+Math.cos(angle1)*h;
+	var topy=y2+Math.sin(angle1)*h;
+	var angle2=lineangle+Math.PI-angle;
+	var botx=x2+Math.cos(angle2)*h;
+	var boty=y2+Math.sin(angle2)*h;
+	
+	ctx.beginPath();
+	ctx.moveTo(topx,topy);
+	ctx.lineTo(x1,y1);
+	ctx.lineTo(botx,boty);
+	var cpx=(topx+x1+botx)/3;
+	var cpy=(topy+y1+boty)/3;
+	ctx.quadraticCurveTo(cpx,cpy,topx,topy);
+		
+	ctx.stroke();	
+	ctx.fill();
 
-  // For ends with arrow we actually want to stop before we get to the arrow
-  // so that wide lines won't put a flat end on the arrow.
-  //
-  var dist=Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
-  var ratio=(dist-d/3)/dist;
-  var tox, toy,fromx,fromy;
-  if(which&1){
-    tox=Math.round(x1+(x2-x1)*ratio);
-    toy=Math.round(y1+(y2-y1)*ratio);
-  }else{
-    tox=x2;
-    toy=y2;
-  }
-  if(which&2){
-    fromx=x1+(x2-x1)*(1-ratio);
-    fromy=y1+(y2-y1)*(1-ratio);
-  }else{
-    fromx=x1;
-    fromy=y1;
-  }
-
-  // Draw the shaft of the arrow
-  // ctx.beginPath();
-  // ctx.moveTo(fromx,fromy);
-  // ctx.lineTo(tox,toy);
-  // ctx.stroke();
-
-  // calculate the angle of the line
-  var lineangle=Math.atan2(y2-y1,x2-x1);
-  // h is the line length of a side of the arrow head
-  var h=Math.abs(d/Math.cos(angle));
-
-  if(which&1){	// handle far end arrow head
-    var angle1=lineangle+Math.PI+angle;
-    var topx=x2+Math.cos(angle1)*h;
-    var topy=y2+Math.sin(angle1)*h;
-    var angle2=lineangle+Math.PI-angle;
-    var botx=x2+Math.cos(angle2)*h;
-    var boty=y2+Math.sin(angle2)*h;
-    toDrawHead(ctx,topx,topy,x2,y2,botx,boty,style);
-  }
-  if(which&2){ // handle near end arrow head
-    var angle1=lineangle+angle;
-    var topx=x1+Math.cos(angle1)*h;
-    var topy=y1+Math.sin(angle1)*h;
-    var angle2=lineangle-angle;
-    var botx=x1+Math.cos(angle2)*h;
-    var boty=y1+Math.sin(angle2)*h;
-    toDrawHead(ctx,topx,topy,x1,y1,botx,boty,style);
-  }
 }
 
 function hexToRGBA(hex, alpha) {
@@ -1571,7 +1502,7 @@ function on_left_click(e) {
 		setup_mouse_events(on_draw_move, on_draw_end);
 		point_buffer = [];
 		var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]], end_size:draw_end_size * zoom_level};
+		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]], end_size:draw_end_size};
 		init_canvases(parseFloat(draw_thickness), new_drawing.color, new_drawing.style);
 		draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
 		last_draw_time = Date.now();
@@ -3085,8 +3016,7 @@ function smooth_draw(context, point_buffer, closed) {
 	context.stroke();
 }
 
-function smooth_draw_incremental(context1, context2, point_buffer, x, y, temp_x, temp_y) {
-	point_buffer.push(x, y, temp_x, temp_y);
+function smooth_draw_incremental(context1, context2, point_buffer, complete) {
 	var splinePoints = getCurvePoints(point_buffer, INTERPOLATION_TENSION, INTERPOLATION_RESOLUTION);
 	
 	var start_i = INTERPOLATION_LOOKBACK * INTERPOLATION_RESOLUTION;
@@ -3096,42 +3026,39 @@ function smooth_draw_incremental(context1, context2, point_buffer, x, y, temp_x,
 	if (point_buffer.length == 3 * INTERPOLATION_LOOKBACK) {
 		start_i = 2 * INTERPOLATION_LOOKBACK * INTERPOLATION_RESOLUTION;
 	}
-
+	
 	context2.moveTo(splinePoints[start_i], splinePoints[start_i+1]);
-	context2.beginPath();
+	context2.beginPath();		
 	for (var i = start_i+2; i < splinePoints.length; i+=2) {
 		context2.lineTo(splinePoints[i], splinePoints[i+1]);
 	}
 	context2.stroke();
 	
-
-	
-	if (point_buffer.length == 2*INTERPOLATION_LOOKBACK || point_buffer.length == 3*INTERPOLATION_LOOKBACK) {
-		var start_i = INTERPOLATION_LOOKBACK * INTERPOLATION_RESOLUTION;	
+	if (point_buffer.length == 2*INTERPOLATION_LOOKBACK || point_buffer.length == 3*INTERPOLATION_LOOKBACK || complete) {
+		var start_i = INTERPOLATION_LOOKBACK * INTERPOLATION_RESOLUTION;
+		var end_i = complete ? splinePoints.length : splinePoints.length-((INTERPOLATION_LOOKBACK-2) * INTERPOLATION_RESOLUTION);
 
 		if (point_buffer.length == 2*INTERPOLATION_LOOKBACK) {
 			start_i = 2;
+			context1.beginPath();
 			context1.moveTo(splinePoints[0], splinePoints[1]);
 		}
-
-		context1.beginPath();
+		
+		//I prefer the beginpath option, but I can't get linedash patterns to line up
+		//context1.beginPath();
+		context1.clearRect(0, 0, context1.canvas.width, context1.canvas.height);
+		
 		var i;
-		for (i = start_i; i < splinePoints.length-((INTERPOLATION_LOOKBACK-2) * INTERPOLATION_RESOLUTION); i+=2) {
+		for (i = start_i; i < end_i; i+=2) {
 			context1.lineTo(splinePoints[i], splinePoints[i+1]);
 		}
-		//context1.strokeStyle = random_color();
-		context1.stroke();
-		context1.moveTo(splinePoints[i-2], splinePoints[i-1]);
 		
+		context1.stroke();
+
 		if (point_buffer.length == 3 * INTERPOLATION_LOOKBACK) {
 			point_buffer.splice(0, INTERPOLATION_LOOKBACK);
 		}
 	}
-
-
-	point_buffer.pop();
-	point_buffer.pop();	
-	
 }
 
 var draw_state = {}
@@ -3145,8 +3072,12 @@ function on_draw_move(e) {
 		new_drawing.path.push([from_x_local(new_x) - new_drawing.x, from_y_local(new_y) - new_drawing.y]);
 		
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
-		smooth_draw_incremental(draw_context, temp_draw_context, point_buffer, new_x, new_y, mouse_location.x, mouse_location.y);
 		
+		point_buffer.push(new_x, new_y, mouse_location.x, mouse_location.y);
+		smooth_draw_incremental(draw_context, temp_draw_context, point_buffer);
+		point_buffer.pop();
+		point_buffer.pop();
+
 		new_drawing.path.push([from_x_local(mouse_location.x) - new_drawing.x, from_y_local(mouse_location.y) - new_drawing.y]);
 		draw_end(temp_draw_context, new_drawing);
 		new_drawing.path.pop();
@@ -3161,9 +3092,13 @@ function on_draw_end(e) {
 	var mouse_location = renderer.plugins.interaction.eventData.data.global;
 	var new_x = last_point[0];
 	var new_y = last_point[1];	
-	smooth_draw_incremental(draw_context, draw_context, point_buffer, new_x, new_y, mouse_location.x, mouse_location.y);
+	
+	point_buffer.push(new_x, new_y, mouse_location.x, mouse_location.y);
+	smooth_draw_incremental(draw_context, temp_draw_context, point_buffer, true);
+	
 	new_drawing.path.push([from_x_local(mouse_location.x) - new_drawing.x, from_y_local(mouse_location.y) - new_drawing.y]);
 	
+	draw_context.beginPath();
 	draw_end(draw_context, new_drawing);
 	
 	var success = canvas2container(draw_context, draw_canvas, new_drawing);
@@ -3172,10 +3107,10 @@ function on_draw_end(e) {
 		undo_list.push(["add", [new_drawing]]);
 	}
 	
-	temp_draw_context.beginPath();
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
-	draw_context.beginPath();
 	draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);
+	draw_context.beginPath();
+	temp_draw_context.beginPath();
 	
 	setup_mouse_events(undefined, undefined);
 	new_drawing = null;	
@@ -3268,7 +3203,7 @@ function draw_arrow2(context, drawing, i) {
 	var i = Math.max(0, drawing.path.length-i);
 	var size = (ARROW_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
 	if (drawing.end_size) {
-		size *= drawing.end_size / 10;
+		size = drawing.end_size * ARROW_SCALE2;
 	}	
 	var x0 = x_abs(drawing.path[i][0] - drawing.path[drawing.path.length-1][0]);
 	var y0 = y_abs(drawing.path[i][1] - drawing.path[drawing.path.length-1][1]);
@@ -3277,30 +3212,30 @@ function draw_arrow2(context, drawing, i) {
 	y0 /= l;
 	start_x = to_x_local(drawing.path[drawing.path.length-1][0] + drawing.x);
 	start_y = to_y_local(drawing.path[drawing.path.length-1][1] + drawing.y);
-	drawArrow(context, start_x, start_y, start_x-(drawing.thickness*x0),start_y-(drawing.thickness*y0), 3, 1, Math.PI/8, size);	
-	context.fill();
+	
+	drawArrow(context, start_x, start_y, start_x-x0,start_y-y0, 3, 1, Math.PI/8, size);	
 }
 
 
 function draw_arrow3(context, a, b, drawing) {
 	var size = (ARROW_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
 	if (drawing.end_size) {
-		size *= drawing.end_size / 10;
+		size = drawing.end_size * ARROW_SCALE2;
 	}
 	var x_diff = b[0] - a[0];
 	var y_diff = b[1] - a[1];
 	l = Math.sqrt(Math.pow(x_diff,2) + Math.pow(y_diff,2));
 	x_diff /= l;
 	y_diff /= l;
-	drawArrow(context, b[0], b[1], b[0]+(drawing.thickness*x_diff), b[1]+(drawing.thickness*y_diff), 3, 1, Math.PI/8, size);
-	context.fill();
+	
+	drawArrow(context, b[0], b[1], b[0]+x_diff, b[1]+y_diff, 3, 1, Math.PI/8, size);
 }
 
 function draw_T2(context, drawing, i) {
 	var i = Math.max(0, drawing.path.length-i);
 	var size = (TEND_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
 	if (drawing.end_size) {
-		size *= drawing.end_size / 10;
+		size = drawing.end_size * TEND_SCALE2;
 	}
 	var x0 = drawing.path[i][0] - drawing.path[drawing.path.length-1][0];
 	var y0 = drawing.path[i][1] - drawing.path[drawing.path.length-1][1];
@@ -3325,7 +3260,7 @@ function draw_T2(context, drawing, i) {
 function draw_T3(context, a, b, drawing) {
 	var size = (TEND_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
 	if (drawing.end_size) {
-		size *= drawing.end_size / 10;
+		size = drawing.end_size * TEND_SCALE2;
 	}
 	var x_diff = b[0] - a[0];
 	var y_diff = b[1] - a[1];
@@ -3411,10 +3346,8 @@ function create_line2(line) {
 	var b = [to_x_local(last(line.path)[0] + line.x), to_y_local(last(line.path)[1] + line.y)];
 	if (line.end == "arrow") {	
 		draw_arrow3(_context, a, b, line);
-		_context.fill();
 	} else if (line.end == "T") {
 		draw_T3(_context, a, b, line);
-		_context.stroke();			
 	}
 	
 	canvas2container(_context, _canvas, line);
@@ -3586,11 +3519,19 @@ function snap_and_emit_entity(entity) {
 }
 
 function update_timeline(entity) {
-	if (entity.start_time) {
-		timeline.add(entity.start_time);
-		timeline.add(entity.end_time)
-		timeline_entities[entity.start_time] = entity;
-		timeline_entities[entity.end_time] = entity;
+	if (entity.start_time) {	
+		var time = entity.start_time;
+		while (timeline_entities[time]) {
+			time += EPSILON;
+		}
+		timeline.add(time);
+		timeline_entities[time] = entity;
+		time = entity.end_time;
+		while (timeline_entities[time]) {
+			time += EPSILON;
+		}
+		timeline.add(time)
+		timeline_entities[time] = entity;
 	}
 }
 
@@ -3609,12 +3550,12 @@ function rebuild_timeline(entity) {
 
 function progress_timeline() {
 	if (timeline.isEmpty()) return;
-	var time = video_media.currentTime;
+	var time = video_progress();
 	var next_event_time = timeline.peek();
 	
 	while (time >= next_event_time) {
 		var entity = timeline_entities[next_event_time];
-		if (video_media.currentTime >= entity.end_time) {
+		if (video_progress() >= entity.end_time) {
 			if (entity.container) {
 				remove(entity.uid, true);
 			}
@@ -3632,8 +3573,8 @@ function progress_timeline() {
 function emit_entity(entity) {
 	var container = entity.container;
 	if (background.is_video) {
-		entity.start_time = video_media.currentTime;
-		entity.end_time = video_media.currentTime + delay;
+		entity.start_time = video_progress();
+		entity.end_time = video_progress() + delay;
 		update_timeline(entity);
 	}	
 	entity.container = undefined;
@@ -3675,12 +3616,14 @@ function on_icon_end(e) {
 }
 
 function on_text_end(e) {
+	var msg = $('#text_tool_text').val();
 	setup_mouse_events(undefined, undefined);
+	if (msg == "") return;
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:[1,1], color:text_color, alpha:1, text:$('#text_tool_text').val(), font_size:font_size * zoom_level, font:'Arial'};
+	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:[1,1], color:text_color, alpha:1, text:msg, font_size:font_size * zoom_level, font:'Arial'};
 	undo_list.push(["add", [text]]);
 	current_text_element = text;
 	create_text2(text);
@@ -3713,16 +3656,20 @@ function on_line_move(e) {
 		var b = [to_x_local(mouse_x_rel(mouse_location.x)) , to_y_local(mouse_y_rel(mouse_location.y))];
 		
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width, temp_draw_canvas.height);
-		if (new_drawing.end == "arrow") {
-			draw_arrow3(temp_draw_context, a, b, new_drawing);
-		} else if (new_drawing.end == "T") {
-			draw_T3(temp_draw_context, a, b, new_drawing);
-			temp_draw_context.stroke();
-		}
+
 		temp_draw_context.beginPath();
 		temp_draw_context.moveTo(a[0], a[1]);		
 		temp_draw_context.lineTo(b[0], b[1]);
 		temp_draw_context.stroke();
+		
+		if (new_drawing.end == "arrow") {
+			draw_arrow3(temp_draw_context, a, b, new_drawing);
+		} else if (new_drawing.end == "T") {
+			draw_T3(temp_draw_context, a, b, new_drawing);
+		}
+		
+		
+		
 	});
 }
 
@@ -3765,10 +3712,8 @@ function on_line_end(e) {
 	if (!shifted) {
 		if (new_drawing.end == "arrow") {
 			draw_arrow3(draw_context, a, b, new_drawing);
-			draw_context.fill();
 		} else if (new_drawing.end == "T") {
 			draw_T3(draw_context, a, b, new_drawing);
-			draw_context.stroke();			
 		}
 
 		var success = canvas2container(draw_context, draw_canvas, new_drawing);
@@ -3787,20 +3732,30 @@ function create_text2(text_entity) {
 	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
 	var _canvas = document.createElement("canvas");
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
-	
 	var scaling = background_sprite.scale.y * objectContainer.scale.y;
-	_canvas.width = 2 * text_entity.text.length * text_entity.font_size * scaling * 1.5 * TEXT_QUALITY;
-	_canvas.height = 2 * text_entity.font_size * scaling * 2 * TEXT_QUALITY + 30;
-	var _context = _canvas.getContext("2d");	
-	_context.font = ""+ 2 * text_entity.font_size * scaling * TEXT_QUALITY + "px "+text_entity.font;
+
+	var _context = _canvas.getContext("2d");
+
+	var text_quality = TEXT_QUALITY;
+	_context.font = ""+ 2 * (text_entity.font_size+1) * scaling * text_quality + "px "+text_entity.font;
 	
+    var metrics = _context.measureText(text);
+	while (metrics.width > MAX_CANVAS_SIZE) {	
+		text_quality /= 2;
+		_context.font = ""+ 2 * (text_entity.font_size+1) * scaling * text_quality + "px "+text_entity.font;
+		metrics = _context.measureText(text);
+	}
+
+	_canvas.width = metrics.width;
+	_canvas.height = text_entity.font_size * scaling * text_quality * 3;	
+
 	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
 	_context.fillStyle = fill_color;
-
 	_context.shadowColor = "black";
 	_context.shadowOffsetX = 1; 
 	_context.shadowOffsetY = 1; 
 	_context.shadowBlur = 7;
+	_context.font = ""+ 2 * text_entity.font_size * scaling * text_quality + "px "+text_entity.font;
 	
 	_context.fillText(text_entity.text, 0, _canvas.height/2);
 
@@ -3809,8 +3764,8 @@ function create_text2(text_entity) {
 	if (sprite) {
 		text_entity.container = sprite;		
 		//rescale to objectContainer
-		sprite.height /= objectContainer.scale.x * TEXT_QUALITY;
-		sprite.width /= objectContainer.scale.y * TEXT_QUALITY;
+		sprite.height /= objectContainer.scale.x * text_quality;
+		sprite.width /= objectContainer.scale.y * text_quality;
 		sprite.x = x_abs(text_entity.x);
 		sprite.y = y_abs(text_entity.y);
 		objectContainer.addChild(sprite);
@@ -3831,23 +3786,38 @@ function create_background_text2(text_entity) {
 	var _canvas = document.createElement("canvas");
 	var zoom_level = size_x / (background_sprite.height * objectContainer.scale.y);
 	var scaling = background_sprite.scale.y * objectContainer.scale.y;
+
+	var _context = _canvas.getContext("2d");
+
+	var text_quality = TEXT_QUALITY;
+	_context.font = ""+ 2 * (text_entity.font_size+1) * scaling * text_quality + "px "+text_entity.font;
 	
-	_canvas.width = 2 * text_entity.text.length * text_entity.font_size * scaling * 1.5 * TEXT_QUALITY;
-	_canvas.height = 2 * text_entity.font_size * scaling * 2 * TEXT_QUALITY + 30;
-	var _context = _canvas.getContext("2d");	
-	_context.font = ""+ 2 * text_entity.font_size * scaling * TEXT_QUALITY + "px "+text_entity.font;
-	
+    var metrics = _context.measureText(text);
+	while (metrics.width > MAX_CANVAS_SIZE) {	
+		text_quality /= 2;
+		_context.font = ""+ 2 * (text_entity.font_size+1) * scaling * text_quality + "px "+text_entity.font;
+		metrics = _context.measureText(text);
+	}
+
+	_canvas.width = metrics.width;
+	_canvas.height = text_entity.font_size * scaling * text_quality * 3;	
+
 	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
 	_context.fillStyle = fill_color;
+	_context.shadowColor = "black";
+	_context.shadowOffsetX = 1; 
+	_context.shadowOffsetY = 1; 
+	_context.shadowBlur = 7;
+	_context.font = ""+ 2 * text_entity.font_size * scaling * text_quality + "px "+text_entity.font;
 	
-	_context.fillText(text_entity.text, 0, _canvas.height/1.5);
+	_context.fillText(text_entity.text, 0, _canvas.height/2);
 
 	var sprite = createSprite(_context, _canvas);
 		
 	if (sprite) {
 		//rescale to objectContainer
-		sprite.height /= objectContainer.scale.x * TEXT_QUALITY;
-		sprite.width /= objectContainer.scale.y * TEXT_QUALITY;
+		sprite.height /= objectContainer.scale.x * text_quality;
+		sprite.width /= objectContainer.scale.y * text_quality;
 		sprite.x = 0;
 		sprite.y = 0;
 		
@@ -4960,26 +4930,40 @@ function cleanup() {
 	room_data = {};
 }
 
+function stop_syncing() {
+	im_syncing = false;
+	clearInterval(sync_event);
+	sync_event = setInterval(function() {
+		im_syncing = false;
+		if (Date.now() - get_local_time(last_video_sync[1]) > 20000) {
+			start_syncing();
+		}
+	}, 10000 +  Math.random() * 5000);
+}
+
 function handle_play(frame, timestamp) {
 	video_paused = false;
 	last_video_sync = [frame, timestamp]
 	var time = Date.now();
-	var timer = time - (timestamp - get_offset());
-	video_media.setCurrentTime(frame + (Date.now() - (timestamp - get_offset()))/1000);
+	var timer = time - get_local_time(timestamp);
+	video_media.setCurrentTime(frame);
+	if (timer <= 0) {
+		video_player.play();
+	} else {
+		setTimeout(function() {
+			video_player.play();
+		}, timer)
+	}
+	
 	video_player.play();
-	clearInterval(sync_event);
-	sync_event = setInterval(function() {
-		if (Date.now() - (last_video_sync[1] - get_offset()) > 20000) {
-			start_syncing();
-		}
-	}, 10000 +  Math.random() * 5000);
+	stop_syncing();
 	play_video_controls();
 }
 
 function handle_pause(frame, timestamp) {
 	if (!video_paused) {
 		video_paused = true;
-		clearInterval(sync_event);
+		stop_syncing();
 		video_media.setCurrentTime(frame);
 		video_player.pause();
 		pause_video_controls();
@@ -4988,20 +4972,14 @@ function handle_pause(frame, timestamp) {
 
 function sync_video(frame, timestamp) {	
 	var time = Date.now();
-	var elapsed_time = time - (timestamp - get_offset());
+	var elapsed_time = time - get_local_time(timestamp);
 	var estimated_frame = frame + elapsed_time / 1000.0;
-	
-	console.log('elapsed time:', elapsed_time)
-	
-	var lag = video_media.currentTime-estimated_frame;
+	var lag = video_progress()-estimated_frame;
 	
 	console.log('lag: ', lag)
-	
-	console.log(video_media.currentTime, elapsed_time, estimated_frame)
-	
+		
 	if (Math.abs(lag) > 0.1) {
 		hard_sync_video(frame, timestamp);
-		//video_media.setCurrentTime(video_media.currentTime-lag);
 	} else {	
 		//should allow it to catch up over the course of VIDEO_SYNC_DELAY ms 
 		//Not supported for youtube videos unfortunately
@@ -5015,42 +4993,52 @@ function sync_video(frame, timestamp) {
 	}
 }
 
+function video_progress() {
+	if (video_paused) {
+		return video_media.currentTime;
+	} else {
+		return progress+(Date.now() - progress_update)/1000.0;
+	}
+}
+
 var sync_in_progress = false;
+var press_play_delay = 0;
 function hard_sync_video(frame, timestamp) {
 	if (sync_in_progress) return;
 	sync_in_progress = true;
 		
 	var time = Date.now();
-	var elapsed_time = time - (timestamp - get_offset());		
+	var elapsed_time = time - get_local_time(timestamp);		
 	var estimated_frame = frame + elapsed_time / 1000;
-	var lag = video_media.currentTime-estimated_frame;
-	
-	if (lag > 0) {
+	var lag = video_progress()-estimated_frame;
+
+	if (lag < 0 || lag > 3) {	
+		video_media.setCurrentTime(estimated_frame + 0.5);
+		sync_in_progress = false;
+	} else {
 		video_player.pause();
-		console.log('')
 		setTimeout(function() {
 			if (!video_paused) {
 				video_player.play();
+				sync_in_progress = false;
+				var play_start = Date.now();
+				var play_delay_listener = function(e) {
+					press_play_delay = Date.now() - play_start;
+					video_media.removeEventListener('play', play_delay_listener);
+				}
+				video_media.addEventListener('play', play_delay_listener);
 			}
-			sync_in_progress = false;
-		}, lag * 1000);	
-	} else {
-		video_media.setCurrentTime(estimated_frame+1);
-		sync_in_progress = false;
+		}, Math.max(0, lag * 1000 - press_play_delay));	
 	}
 }
 
 function handle_sync(frame, timestamp, user_id) {
-	if (video_paused) return;
-	
-	if (user_id != my_user.id && !video_paused)  {
-		clearInterval(sync_event);
+	if (video_paused) {
 		im_syncing = false;
-		sync_event = setInterval(function() {
-			if (Date.now() - (last_video_sync[1] - get_offset()) > 20000) {
-				start_syncing();
-			}
-		}, 10000 +  Math.random() * 5000);
+		return;
+	}	
+	if (user_id != my_user.id)  {
+		stop_syncing(); //if we get a sync from soemone else we stop syncing
 	}
 	
 	last_video_sync = [frame, timestamp];
@@ -5930,7 +5918,15 @@ $(document).ready(function() {
 			start_tracking({x:2000,y:2000});
 		}
 		
-
+		if (is_video_replay) {
+			sync_start_time = Date.now();
+			socket.emit('sync_clock');
+			clearInterval(clock_sync_event);
+			clock_sync_event = setInterval(function() {
+				sync_start_time = Date.now();
+				socket.emit('sync_clock');
+			}, 20000);
+		}
 		
 		render_scene();
 	});
@@ -6078,13 +6074,19 @@ $(document).ready(function() {
 
 	socket.on('request_sync', function() {
 		if (im_syncing) {
-			for (var i = 1; i <= 10; i++) {
+			for (var i = 0; i <= 5; i++) {
 				setTimeout(function() {
-					var frame = video_media.currentTime;
-					socket.emit("sync_video", room, frame, Date.now() + get_offset());
+					var frame = video_progress();
+					socket.emit("sync_video", room, frame, get_server_time());
 				}, i*2000);
-			}			
+			}
 		}
+	});
+	
+	socket.on('sync_clock', function(server_timestamp) {
+		var time = Date.now();
+		var server_time = server_timestamp + (time - sync_start_time)/2;
+		offset = server_time - time;
 	});
 	
 	socket.on('seek_video', function(frame, timestamp, user_id) {

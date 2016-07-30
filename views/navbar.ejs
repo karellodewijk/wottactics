@@ -1,17 +1,4 @@
-<%home = "/" %>
-<%if (game == 'blitz') { %>
-<%	home = "blitz.html" %>
-<%} else if (game == 'lol') { %>
-<%	home = "lol" %>
-<%} else if (game == 'hots') { %>
-<%	home = "hots" %>
-<%} else if (game == 'sc2') { %>
-<%	home = "sc2" %>
-<%} else if (game == 'csgo') { %>
-<%	home = "csgo" %>
-<%} else if (game == 'warface') { %>
-<%	home = "warface" %>
-<%} %>
+<%home = "/"+game%>
 
 <nav class="navbar navbar-inverse navbar-fixed-top container-fluid">
 	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">

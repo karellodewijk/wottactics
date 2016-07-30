@@ -7,10 +7,16 @@
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy planner.')%>">
 </head>
 <body>
+	<% include navbar.ejs %>
+	<style>
+		#banner {
+			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
+			background-size: cover, cover;
+		}
+	</style>
+
 	<div class="container" style='width:100%;'>
-    <div id="call_to_action" class="jumbotron side_bar" style='width:100%;'>
-	
-		<% include navbar.ejs %>
+    <div id="banner" class="jumbotron side_bar call_to_action" style='width:100%;'>
 
 		<div class="container" id="big_button_frame" style="text-align:center">
 			<h1>
@@ -35,7 +41,7 @@
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a></p>
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
 			<script type="text/javascript">
 				function newUid() {
 				  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,

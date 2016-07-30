@@ -8,16 +8,9 @@
 </head>
 <body>
 	<% include navbar.ejs %>
-	
-	<style>
-		#banner {
-			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
-			background-size: cover, cover;
-		}
-	</style>
 
 	<div class="container" style='width:100%;'>
-    <div id="banner" class="jumbotron side_bar call_to_action" style='width:100%;'>
+    <div id="call_to_action" class="jumbotron side_bar" style='width:100%;'>
 		<div class="container" id="big_button_frame" style="text-align:center">
 			<h1>
 				<% if (game == 'wot') { %>
@@ -41,7 +34,7 @@
 				<% } %>	
 			</h1>
 			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
+			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a>  <br /><br />
 			(<a href="<%=game%>planner.html" id="new_room2" role="button" style="color:#ADD8E6"><%= l('Use original ui')%></a>)<br />(<a href="<%=game%>planner3.html?restore=949AE554-3EB0-41B4-AFBA-6C34851953AB" style="color:#ADD8E6">Video replay instructions</a>)</p>
 			<script type="text/javascript">
 				function newUid() {
@@ -105,10 +98,8 @@
 	</div>
 	<div class="row">
 		<div class="col-md-4">
-			<h2>Recent problems</h2>
-			<p>Yesterday (July 26 20:00-22:00 CET) there were some server issues, sorry for the problems. It should be all fixed now.
-			
-			<p>As you probably have guessed it was related with the new video replay room feature I was trying out. I released it again with some changes and on a different server so it doesn't interfere with normal operations. Give it a try.
+			<h2>Video tutorial</h2>
+			<p>I've created a <a href="https://youtu.be/K-yl_WNjvwk">tutorial</a> explaining all the tools and features of <%=url.split('/')[0]%>. And here's another <a href="https://www.youtube.com/watch?v=sLWv7yXYQ-c">tutorial</a> by Stewiejp.
 		</div>
 		
 		<div class="col-md-4">
@@ -125,19 +116,19 @@
 			<h2>Latest changes</h2>
 			<p>
 			<ul>
-				<li>Limited max font size to 48, but made sure it can always be rendered properly regardless of length.
-				<li>Added "You also have tactics for: ..." to the stored tactics page
-				<li>Added video replay room
-				<li>Changed arrow draw code
-				<li>Updated smooth draw code yet again
+				<li>Updated wows maps for v0.5.8
+				<li>Updated security a bit. People who are not the owner (green) can no longer export/save a tactic if the room is locked. The owner now has a button to wipe the room.
+				<li>Added rotation to the select tool
+				<li>Fixed some of the resize quirks.
+				<li>Updated wows maps and added dimensions so the ruler tool works.
 			</ul> 
 			On the bug hunting front:
 			<ul>
-				<li>Arrows were drawn way too small when zoomed in
 				<li>Notes wouldn't open.
 				<li>Fixed bug where multiple people simultaneously pinging would make the colors switch.
 				<li>Fixed bug where icons would dissapear after undoing a move.
 				<li>Fixed bug on IE where sometimes pings would be hidden after switching maps.
+				<li>I think/hope I fixed the bug where the map would remain grey sometimes for some people. I can't really reproduce it, so let me know if it still happens.
 			</ul>
 			If you find anything else, however small, that is broken, pls let me know. 
 		</div>
