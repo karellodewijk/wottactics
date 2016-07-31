@@ -1608,9 +1608,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 		
-		socket.on('play_video', function(room, frame) {
+		socket.on('play_video', function(room, frame, rate) {
 			room_data[room].playing = true;
-			io.to(room).emit('play_video', frame, Date.now()+500, socket.request.session.passport.user.id);
+			io.to(room).emit('play_video', frame, Date.now()+500, rate, socket.request.session.passport.user.id);
 		});
 		
 		socket.on('pause_video', function(room, frame) {
@@ -1631,6 +1631,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		
 		socket.on('request_sync', function(room) {
 			socket.broadcast.to(room).emit('request_sync');
+		});
+
+		socket.on('change_rate', function(room, rate) {
+			room_data[room].playback_rate = rate;
+			socket.broadcast.to(room).emit('change_rate', rate);
 		});
 
 		
