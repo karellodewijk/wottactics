@@ -105,16 +105,22 @@
 	</div>
 	<div class="row">
 		<div class="col-md-4">
-			<h2>Recent problems</h2>
-			<p>Yesterday (July 26 20:00-22:00 CET) there were some server issues, sorry for the problems. It should be all fixed now.
+			<h2>Video replay room</h2>
+			<p>As you may have noticed there is a new 'video replay room' button next to the new room button. It's something new I'm experimenting with.
 			
-			<p>As you probably have guessed it was related with the new video replay room feature I was trying out. I released it again with some changes and on a different server so it doesn't interfere with normal operations. Give it a try.
+			<p>I was watching a League of Legends match and afterwards they were showing some replays to hilight certain things. I figured being to do that live and online is not something that exists yet and may be useful. 
+
+			<p>Now, I'm not saying it's perfect. The drawing part is not a problem, but starting and keeping videos in sync especially through the youtube api is tricky. And I don't think it's something I can improve upon greatly. Basically the youtube API is just lacking the nescessary tools (no fine grained playback rate control, course seek function and play/pause delays).
+			
+			<p>A direct link to a supported video file (anything supported by your browser) will work better. But is there a even free video service that allows you to access video files directly and embed them remotely ?
+			
+			<p>Anyway give it a try and give me some feedback. Do you like the idea, do you have a use for it ? Does it work for you or your team ? What problems are you experiencing ? Does youtube video synchronization well enough or do you consider it unusable as it is ?
 		</div>
 		
 		<div class="col-md-4">
 			<h2>Future plans</h2>
 			<ul>
-				<li>Add options to scale/modify/rotate existing items
+				<li style="text-decoration: line-through;">Add options to scale/modify/rotate existing items
 				<li>Write text directly on the map
 				<li>Share folders in addition to just tactics
 			</ul>
@@ -125,11 +131,11 @@
 			<h2>Latest changes</h2>
 			<p>
 			<ul>
+				<li>Added wows plane icons
 				<li>Limited max font size to 48, but made sure it can always be rendered properly regardless of length.
 				<li>Added "You also have tactics for: ..." to the stored tactics page
 				<li>Added video replay room
 				<li>Changed arrow draw code
-				<li>Updated smooth draw code yet again
 			</ul> 
 			On the bug hunting front:
 			<ul>
