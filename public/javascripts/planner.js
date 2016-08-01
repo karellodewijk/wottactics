@@ -6,11 +6,6 @@ if (location.pathname.indexOf('planner3') != -1) {
 	is_video_replay = true;
 }
 
-if (is_video_replay) {
-	servers = ['localhost'];
-	//servers = ['server2.wottactic.eu'];
-}
-
 var image_host;
 function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
@@ -760,17 +755,14 @@ function pause_video_controls() {
 }
 
 function toggle_play() {
-	console.log('pressed play')
 	if (background.is_video) {
-		console.log('is_video')
-		if (video_media.paused) {
-			console.log('play')
+		if (video_paused) {
 			var frame = video_progress();
 			socket.emit("play_video", room, frame, base_playback_rate);
 			initiated_play = true;
 			play_video_controls()
+			start_syncing();
 		} else {
-			console.log('puase')
 			manual_pause = true;
 			video_player.pause();
 			pause_video_controls();
@@ -782,7 +774,9 @@ var ignore_jump = false;
 function init_video_triggers() {
 	video_media.addEventListener('pause', function(e) {
 		if (manual_pause) {
-			stop_syncing();
+			clearInterval(sync_event);
+			im_syncing = false;
+			video_paused = true;
 			socket.emit("pause_video", room, video_progress());
 			manual_pause = false;
 		}
@@ -792,6 +786,8 @@ function init_video_triggers() {
 		if (initiated_play) {	
 			start_syncing();
 			initiated_play = false;
+		} else {
+			stop_syncing();
 		}
 		//TODO: fix dirty hack because the youtube player starts playing when you seek regradless
 		if (video_paused) {
@@ -801,6 +797,7 @@ function init_video_triggers() {
 			} else {
 				video_media.currentTime = 0;
 			} 
+			video_player.pause();
 		}
 	});
 	
@@ -826,7 +823,9 @@ function init_video_triggers() {
 	$(".mejs-time-rail").on('mousedown', function() {
 		wait_for_seek(function() {
 -			socket.emit("seek_video", room, video_progress(), get_server_time());
-			start_syncing();
+			if (!video_paused) {
+				start_syncing();
+			}
 			rebuild_timeline();
 		})
 	});	
@@ -1008,6 +1007,7 @@ function set_background(new_background, cb) {
 						var newSpeed = parseFloat($(this).attr('value'));
 						socket.emit('change_rate', room, newSpeed);
 						set_playback_rate(newSpeed, newSpeed);
+						start_syncing();
 					});
 										
 					var forceMouseHide = false;
@@ -1318,7 +1318,7 @@ function remove(uid, keep_entity) {
 		if (room_data.slides[active_slide].entities[uid] && room_data.slides[active_slide].entities[uid].type == "icon") {
 			try {
 				var counter = $('button[id*="'+room_data.slides[active_slide].entities[uid].tank+'"]').find("span");
-				counter.text((parseInt(counter.text())-1).toString());		
+				counter[0].innerHTML = parseInt(counter[0].innerHTML)-1;	
 				counter = $("#icon_context").find("span").first();
 				counter.text((parseInt(counter.text())-1).toString());
 			} catch (e) {}
@@ -4006,7 +4006,7 @@ function create_icon_cont(icon, texture) {
 function create_icon(icon, cb_after) {
 	try {
 		var counter = $('button[id*="'+icon.tank+'"]').find("span");
-		counter.text((parseInt(counter.text())+1).toString());		
+		counter[0].innerHTML = parseInt(counter[0].innerHTML)+1;
 		counter = $("#icon_counter");
 		counter.text((parseInt(counter.text())+1).toString());
 	} catch(e) {}
@@ -4971,11 +4971,17 @@ function cleanup() {
 	room_data = {};
 }
 
+//maybe a little bit of a misnomer, stop_syncing means don't send sync events, but if no sync events were received while playing
+//do start syncing. The try stop_syncing is clearInterval(sync_event); im_syncing = false;
 function stop_syncing() {
 	im_syncing = false;
 	clearInterval(sync_event);
 	sync_event = setInterval(function() {
 		im_syncing = false;
+		if (video_paused) {
+			clearInterval(sync_event);
+			return;
+		}
 		if (Date.now() - get_local_time(last_video_sync[1]) > 20000) {
 			start_syncing();
 		}
@@ -5002,13 +5008,12 @@ function handle_play(frame, timestamp) {
 }
 
 function handle_pause(frame, timestamp) {
-	if (!video_paused) {
-		video_paused = true;
-		stop_syncing();
-		video_media.setCurrentTime(frame);
-		video_player.pause();
-		pause_video_controls();
-	}
+	video_paused = true;
+	clearInterval(sync_event);
+	im_syncing = false;
+	video_media.setCurrentTime(frame);
+	video_player.pause();
+	pause_video_controls();
 }
 
 function sync_video(frame, timestamp) {	
@@ -5044,23 +5049,21 @@ function hard_sync_video(frame, timestamp) {
 	if (sync_in_progress) return;
 	sync_in_progress = true;
 		
-	
-		
 	var time = Date.now();
 	var elapsed_time = time - get_local_time(timestamp);		
 	var estimated_frame = frame + elapsed_time * base_playback_rate / 1000;
 	var lag = video_progress()-estimated_frame;
 	
 	if (lag < 0 || lag > 3) {	
-		video_media.setCurrentTime(estimated_frame + base_playback_rate * 0.5);
+		video_media.setCurrentTime(estimated_frame + 1);
 		sync_in_progress = false;
 	} else {
 		var prog = video_progress();
 		video_player.pause();
 		setTimeout(function() {
+			sync_in_progress = false;
 			if (!video_paused) {
 				video_player.play();
-				sync_in_progress = false;
 				var play_start = Date.now();
 				var play_delay_listener = function(e) {
 					press_play_delay = Date.now() - play_start;
@@ -5078,7 +5081,7 @@ function handle_sync(frame, timestamp, user_id) {
 		return;
 	}	
 	if (user_id != my_user.id)  {
-		stop_syncing(); //if we get a sync from soemone else we stop syncing
+		stop_syncing(); //if we get a sync from someone else we stop syncing
 	}
 	
 	last_video_sync = [frame, timestamp];

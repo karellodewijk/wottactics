@@ -1616,7 +1616,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('pause_video', function(room, frame) {
 			room_data[room].last_sync = [frame, Date.now()];
 			room_data[room].playing = false;
-			io.to(room).emit('pause_video', frame, socket.request.session.passport.user.id);
+			socket.broadcast.to(room).emit('pause_video', frame, socket.request.session.passport.user.id);
 		});
 
 		socket.on('sync_video', function(room, frame, timestamp) {
