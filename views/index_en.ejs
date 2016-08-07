@@ -44,13 +44,14 @@
 			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
 			(<a href="<%=game%>planner.html" id="new_room2" role="button" style="color:#ADD8E6"><%= l('Use original ui')%></a>)<br /></p>
 			<script type="text/javascript">
+				//generate unique id
+				var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
 				function newUid() {
-				  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
-					function(c) {
-					  r = Math.random() * 16 | 0,
-						v = c == 'x' ? r : (r & 0x3 | 0x8);
-					  return v.toString(16);
-					}).toUpperCase();
+					var text = "";
+					for(var i=0; i < 14; i++ ) {
+						text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+					}
+					return text;
 				}
 				window.onload = function() {
 					var el = document.getElementById('new_room');
@@ -131,6 +132,7 @@
 			<h2>Latest changes</h2>
 			<p>
 			<ul>
+				<li>Shortened all uids to 14 char random string. It's long enough to avoid collisions and makes links shorter.
 				<li>Added wows plane icons
 				<li>Limited max font size to 48, but made sure it can always be rendered properly regardless of length.
 				<li>Added "You also have tactics for: ..." to the stored tactics page
@@ -139,11 +141,11 @@
 			</ul> 
 			On the bug hunting front:
 			<ul>
+				<li>Switching slides would sometime break things
 				<li>Arrows were drawn way too small when zoomed in
 				<li>Notes wouldn't open.
 				<li>Fixed bug where multiple people simultaneously pinging would make the colors switch.
 				<li>Fixed bug where icons would dissapear after undoing a move.
-				<li>Fixed bug on IE where sometimes pings would be hidden after switching maps.
 			</ul>
 			If you find anything else, however small, that is broken, pls let me know. 
 		</div>
