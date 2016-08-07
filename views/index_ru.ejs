@@ -43,13 +43,13 @@
 			<p><span id="quote"></span></p>
 			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
 			<script type="text/javascript">
+				var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
 				function newUid() {
-				  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
-					function(c) {
-					  r = Math.random() * 16 | 0,
-						v = c == 'x' ? r : (r & 0x3 | 0x8);
-					  return v.toString(16);
-					}).toUpperCase();
+					var text = "";
+					for(var i=0; i < 14; i++ ) {
+						text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+					}
+					return text;
 				}
 				window.onload = function() {
 					var el = document.getElementById('new_room');
