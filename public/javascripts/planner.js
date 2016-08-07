@@ -6,10 +6,12 @@ if (location.pathname.indexOf('planner3') != -1) {
 	is_video_replay = true;
 }
 
+/*
 if (is_video_replay) {
 	//servers = ['localhost'];
 	servers = ['server2.wottactic.eu'];
 }
+*/
 
 var image_host;
 function is_safari() {
@@ -1104,6 +1106,7 @@ function on_drag_start(e) {
 		if (_this == select_box) {
 			clear_selected();
 		}
+		e.stopPropagation();
 		return;
 	} else if (active_context != "select_context" && active_context != "icon_context" && active_context != "text_context" && active_context != "background_text_context" && active_context != "note_context" && active_context != "ping_context" && active_context != "track_context") {
 		return;
@@ -1113,9 +1116,10 @@ function on_drag_start(e) {
 		}
 		active_context = "drag_context";
 	}
+	e.stopPropagation();
 	drag_timeout = setTimeout(function() {
 		objectContainer.buttonMode = true;
-		dragged_entity = _this.entity;
+		dragged_entity = _this;
 		
 		var mouse_location = renderer.plugins.interaction.eventData.data.global;
 		last_drag_update = Date.now();
@@ -1289,14 +1293,8 @@ function on_drag_end(e) {
 		}
 		undo_list.push(undo_action);
 	}
-	
-	this.mouseup = undefined;
-	this.touchend = undefined;
-	this.mouseupoutside = undefined;
-	this.touchendoutside = undefined;
-	this.mousemove = undefined;
-	this.touchmove = undefined;
-	active_context = context_before_drag;
+
+	cancel_drag();
 	
 	if (this == select_box) {
 		make_resizable(select_box);
@@ -1308,19 +1306,20 @@ function on_drag_end(e) {
 }
 
 function remove(uid, keep_entity) {
-	if (room_data.slides[active_slide].entities[uid] && room_data.slides[active_slide].entities[uid].container) {
-		if (dragged_entity && dragged_entity.uid == uid) {
-			on_drag_end.call(dragged_entity.container)
+	var entity = room_data.slides[active_slide].entities[uid];
+	if (entity && entity.container) {
+		if (dragged_entity && dragged_entity.entity && dragged_entity.entity.uid == uid) {
+			on_drag_end.call(dragged_entity)
 		}
 		
-		if (room_data.slides[active_slide].entities[uid].type == "note") {
-			room_data.slides[active_slide].entities[uid].container.menu.remove();
+		if (entity.type == "note") {
+			entity.container.menu.remove();
 		}
 		
-		objectContainer.removeChild(room_data.slides[active_slide].entities[uid].container);
-		delete room_data.slides[active_slide].entities[uid].container;
+		objectContainer.removeChild(entity.container);
+		delete entity.container;
 		
-		if (room_data.slides[active_slide].entities[uid] && room_data.slides[active_slide].entities[uid].type == "icon") {
+		if (entity.type == "icon") {
 			try {
 				var counter = $('button[id*="'+room_data.slides[active_slide].entities[uid].tank+'"]').find("span");
 				counter[0].innerHTML = parseInt(counter[0].innerHTML)-1;	
@@ -1330,13 +1329,15 @@ function remove(uid, keep_entity) {
 		}
 	}
 	
-
-	
 	//if an item is removed, remove them from selected_entities
 	var i = selected_entities.length
 	while (i--) {
 		if (selected_entities[i].uid == uid) {
 			selected_entities.splice(i, 1);
+			if (active_context == 'drag_context' && move_selected) {
+				cancel_drag();
+			}
+			break;
 		}
 	}
 	
@@ -1530,6 +1531,9 @@ function t2o(transparancy) {
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_draw_time, last_point;
 function on_left_click(e) {
+	if (active_context == "drag_context") {
+		cancel_drag();
+	}
 	var mouse_location = e.data.getLocalPosition(background_sprite);
 	if (!can_edit()) {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
@@ -1824,9 +1828,9 @@ var track_state = {}
 function on_track_move(e) {
 	limit_rate(15, track_state, function() {		
 		clearTimeout(track_timeout);	
-		var mouse_location = e.data.getLocalPosition(background_sprite);	
-		var x = mouse_x_rel(mouse_location.x);
-		var y = mouse_y_rel(mouse_location.y);
+		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var x = from_x_local(mouse_location.x);
+		var y = from_y_local(mouse_location.y);
 		my_tracker.x = x;
 		my_tracker.y = y;
 		my_tracker.container.x = x_abs(x);
@@ -2372,25 +2376,33 @@ function on_select_end(e) {
 		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
 			var entity = room_data.slides[active_slide].entities[key];
 			var sprite = room_data.slides[active_slide].entities[key].container;
-			var rect = {};
 			
-			var angle = -sprite.rotation;		
-			rect.width = Math.abs(sprite.width * Math.cos(angle)) + Math.abs(sprite.height * Math.sin(angle));
-			rect.height = Math.abs(sprite.width * Math.sin(angle)) + Math.abs(sprite.height * Math.cos(angle));
-			rect.x = sprite.x - sprite.anchor.x * rect.width;
-			rect.y = sprite.y - sprite.anchor.y * rect.height;
+			//var rect = {};
+			//var angle = -sprite.rotation;		
+			//rect.width = Math.abs(sprite.width * Math.cos(angle)) + Math.abs(sprite.height * Math.sin(angle));
+			//rect.height = Math.abs(sprite.width * Math.sin(angle)) + Math.abs(sprite.height * Math.cos(angle));
+			//rect.x = sprite.x - sprite.anchor.x * rect.width;
+			//rect.y = sprite.y - sprite.anchor.y * rect.height;
+
+			var rect = sprite.getBounds();
+			rect.width /= objectContainer.scale.x;
+			rect.height /= objectContainer.scale.y;
+			rect.x = (-objectContainer.x + rect.x) / objectContainer.scale.x;
+			rect.y = (-objectContainer.y + rect.y) / objectContainer.scale.y;
+
+			//enable to visualise bounding boxes
+			//var shape = new PIXI.Rectangle(0, 0, rect.width, rect.height);
+			//var container = draw_shape(1, 1, 0, 0, 16777215, shape);
+			//container.x = rect.x;
+			//container.y = rect.y;
+			//objectContainer.addChild(container)
 			
 			var box_min_x = rect.x;
 			var box_min_y = rect.y;
 			var box_max_x = rect.x + rect.width;
 			var box_max_y = rect.y + rect.height;
 			
-			//enable to visualise bounding boxes
-			// var shape = new PIXI.RoundedRectangle(0, 0, box_max_x - box_min_x, box_max_y - box_min_y, 5);
-			// var container = draw_shape(1, 1, 0, 0, 16777215, shape);
-			// container.x = box_min_x;
-			// container.y = box_min_y;
-			// objectContainer.addChild(container)
+
 			
 			if (box_min_x > x_min && box_min_y > y_min && box_max_x < x_max && box_max_y < y_max) {
 				selected_entities.push(room_data.slides[active_slide].entities[key]);
@@ -4055,6 +4067,14 @@ function make_draggable(root) {
 	root.orig_scale = [root.scale.x, root.scale.y];
 }
 
+function make_undraggable(root) {
+	root.interactive = false;
+    root.buttonMode = false;
+	root.draggable = false;
+	delete root.mousedown;
+	delete root.touchstart;
+}
+
 /*computes control points given knots K, this is the brain of the operation*/
 function computeControlPoints(K) {
 	var p1=new Array();
@@ -4555,7 +4575,7 @@ function clear_selected() {
 	selected_entities = [];
 	undo_list.push(["remove", cleared_entities]);
 	if (active_context == "drag_context") {
-		active_context = context_before_drag;
+		cancel_drag();
 	}
 }
 
@@ -4800,14 +4820,39 @@ function transition(slide) {
 	}
 }
 
+function cancel_drag() {
+	clearTimeout(drag_timeout);
+	if (context_before_drag) {
+		active_context = context_before_drag;
+	}
+	context_before_drag = null;
+	dragged_entity.mouseup = undefined;
+	dragged_entity.touchend = undefined;
+	dragged_entity.mouseupoutside = undefined;
+	dragged_entity.touchendoutside = undefined;
+	dragged_entity.mousemove = undefined;
+	dragged_entity.touchmove = undefined;
+	dragged_entity = null;
+}
+
 function change_slide(slide) {
 	if (active_slide == slide) {
 		return;
 	}
+	if (active_context == "drag_context") {
+		cancel_drag();
+	}
 	undo_list = [];
 	redo_list = [];
 	deselect_all();
-	transition(slide);	
+	transition(slide);
+	//sometimes it seems to be confused which context we were in.
+	var context_node = $('#contexts').find(".active");
+	var new_context = context_node.attr('id')+"_context";
+	if ($(this).attr('data-context')) {
+		new_context = context_node.attr('data-context')+"_context";
+	}
+	active_context = new_context;
 }
 
 //create a new slide based on slide
@@ -5513,6 +5558,12 @@ $(document).ready(function() {
 			rename_slide(active_slide, $(this).val());
 			socket.emit("rename_slide", room, active_slide, $(this).val());
 		}); 
+		$("#slide_name_field").keyup(function(event){
+			if(event.keyCode == 13) { //enter
+				rename_slide(active_slide, $(this).val());
+				socket.emit("rename_slide", room, active_slide, $(this).val());
+			}
+		});
 
 		$('#link').click(function() { 
 			var copySupported = document.queryCommandSupported('copy');
@@ -5917,6 +5968,7 @@ $(document).ready(function() {
 		assets_loaded = true;
 		
 		socket.on('connect', function() { 
+			console.log('reconnecting')
 			socket.emit('join_room', room, game);
 		});
 		
@@ -6009,16 +6061,20 @@ $(document).ready(function() {
 	
 	socket.on('drag', function(uid, slide, x, y, scale, rotation, user_id) {
 		if (slide != active_slide) {
-			room_data.slides[slide].entities[uid].x = x;
-			room_data.slides[slide].entities[uid].y = y;
-			if (scale) {
-				room_data.slides[slide].entities[uid].scale = scale;
-			}
-			if (rotation) {
-				room_data.slides[slide].entities[uid].rotation = rotation;
+			if (room_data.slides[slide].entities[uid]) {
+				room_data.slides[slide].entities[uid].x = x;
+				room_data.slides[slide].entities[uid].y = y;
+				if (scale) {
+					room_data.slides[slide].entities[uid].scale = scale;
+				}
+				if (rotation) {
+					room_data.slides[slide].entities[uid].rotation = rotation;
+				}
 			}
 		} else {
-			drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale, rotation);
+			if (room_data.slides[slide].entities[uid]) {
+				drag_entity(room_data.slides[active_slide].entities[uid], x, y, scale, rotation);
+			}
 		}
 		activity_animation(user_id)
 	});
