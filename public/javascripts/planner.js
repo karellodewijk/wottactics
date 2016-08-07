@@ -1115,9 +1115,9 @@ function on_drag_start(e) {
 			context_before_drag = active_context;
 		}
 		active_context = "drag_context";
+		e.stopPropagation();
 	}
 	drag_timeout = setTimeout(function() {
-		
 		if (mouse_down_interrupted) {
 			drag_in_progress = false;
 			deselect_all();
@@ -1132,7 +1132,7 @@ function on_drag_start(e) {
 		dragged_entity = _this;
 		
 		if (is_room_locked && !my_user.role) {
-			if (_this.entity && _this.entity.type == 'note') {	
+			if (_this.entity && _this.entity.type == 'note') {
 				_this.mouseup = toggle_note;
 				_this.touchend = toggle_note;
 				_this.mouseupoutside = toggle_note;
@@ -4826,13 +4826,15 @@ function cancel_drag() {
 		active_context = context_before_drag;
 	}
 	context_before_drag = null;
-	dragged_entity.mouseup = undefined;
-	dragged_entity.touchend = undefined;
-	dragged_entity.mouseupoutside = undefined;
-	dragged_entity.touchendoutside = undefined;
-	dragged_entity.mousemove = undefined;
-	dragged_entity.touchmove = undefined;
-	dragged_entity = null;
+	if (dragged_entity) {
+		dragged_entity.mouseup = undefined;
+		dragged_entity.touchend = undefined;
+		dragged_entity.mouseupoutside = undefined;
+		dragged_entity.touchendoutside = undefined;
+		dragged_entity.mousemove = undefined;
+		dragged_entity.touchmove = undefined;
+		dragged_entity = null;
+	}
 }
 
 function change_slide(slide) {
