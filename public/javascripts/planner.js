@@ -121,7 +121,7 @@ try {
 }
 
 //generate unique id
-var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 function newUid() {
 	var text = "";
 	for(var i=0; i < 14; i++ ) {
@@ -1116,20 +1116,20 @@ function on_drag_start(e) {
 		}
 		active_context = "drag_context";
 	}
-	e.stopPropagation();
 	drag_timeout = setTimeout(function() {
-		objectContainer.buttonMode = true;
-		dragged_entity = _this;
 		
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
-		last_drag_update = Date.now();
-		last_drag_position = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
-				
 		if (mouse_down_interrupted) {
 			drag_in_progress = false;
 			deselect_all();
 			return;
 		}
+		
+		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		last_drag_update = Date.now();
+		last_drag_position = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
+			
+		objectContainer.buttonMode = true;
+		dragged_entity = _this;
 		
 		if (is_room_locked && !my_user.role) {
 			if (_this.entity && _this.entity.type == 'note') {	
@@ -1264,7 +1264,6 @@ function on_drag_move(e) {
 function on_drag_end(e) {
 	limit_rate(15, drag_state, function() {});
 	objectContainer.buttonMode = false;
-	$('html,body').css('cursor', 'initial');
 	if (this.entity && Math.abs(this.entity.origin_x - this.entity.x) < EPSILON &&  Math.abs(this.entity.origin_y - this.entity.y) < EPSILON) {	
 		if (context_before_drag == 'remove_context') {
 			remove(this.entity.uid);
@@ -4822,6 +4821,7 @@ function transition(slide) {
 
 function cancel_drag() {
 	clearTimeout(drag_timeout);
+	$('html,body').css('cursor', 'initial');
 	if (context_before_drag) {
 		active_context = context_before_drag;
 	}
