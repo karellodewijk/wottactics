@@ -24112,28 +24112,39 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         interactiveParent = false;
     }
 
-    // ** FREE TIP **! If an object is not interacttive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
+    // ** FREE TIP **! If an object is not interactive or has no buttons in it (such as a game scene!) set interactiveChildren to false for that displayObject.
     // This will allow pixi to completly ignore and bypass checking the displayObjects children.
     if(displayObject.interactiveChildren)
-    {       
+    {
         var children = displayObject.children;
-        
+
         for (var i = children.length-1; i >= 0; i--)
         {
+            var child = children[i];
+
             // time to get recursive.. if this function will return if somthing is hit..
-            if( this.processInteractive(point, children[i], func, hitTest, interactiveParent) )
+            if(this.processInteractive(point, child, func, hitTest, interactiveParent))
             {
+                // its a good idea to check if a child has lost its parent.
+                // this means it has been removed whilst looping so its best
+                if(!child.parent)
+                {
+                    continue;
+                }
+
                 hit = true;
 
                 // we no longer need to hit test any more objects in this container as we we now know the parent has been hit
                 interactiveParent = false;
-                
-                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object. 
+
+                // If the child is interactive , that means that the object hit was actually interactive and not just the child of an interactive object.
                 // This means we no longer need to hit test anything else. We still need to run through all objects, but we don't need to perform any hit tests.
-                if(children[i].interactive)
-                {
-                    hitTest = false;
-                }
+
+                //{
+                hitTest = false;
+                //}
+
+                // we can break now as we have hit an object.
             }
         }
     }
