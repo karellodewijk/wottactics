@@ -1,0 +1,2 @@
+java -jar closure.jar -O SIMPLE --js='jquery.simplecolorpicker.js' --js='pixi.js' --js='TransparencyHitArea.js' --js='curve.js' --js_output_file combined_mini.js --create_source_map='combined_mini.js.map' --source_map_format=V3
+printf "\n//# sourceMappingURL=combined_mini.js.map" >> combined_mini.js 

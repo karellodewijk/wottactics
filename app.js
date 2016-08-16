@@ -511,6 +511,16 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							static_host: secrets.static_host, 
 							ga_id:secrets.ga_id});
 	});
+	router.get('/squad', function(req, res, next) {
+	  req.session.game = 'squad';
+	  res.render('index', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl,
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
+	});
+	
 	router.get('/health_check.html', function(req, res, next) {
 	  res.sendStatus(200);
 	});	
@@ -578,6 +588,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.get('/warfaceplanner.html', function(req, res, next) {
 	  planner_redirect(req, res, 'warface', 'planner');
 	});
+	router.get('/squadplanner.html', function(req, res, next) {
+	  planner_redirect(req, res, 'squad', 'planner');
+	});
 	
 	router.get('/wotplanner2.html', function(req, res, next) {
 	  planner_redirect(req, res, 'wot', 'planner2');
@@ -606,6 +619,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.get('/warfaceplanner2.html', function(req, res, next) {
 	  planner_redirect(req, res, 'warface', 'planner2');
 	});
+	router.get('/squadplanner2.html', function(req, res, next) {
+	  planner_redirect(req, res, 'squad', 'planner2');
+	});
 	
 	router.get('/wotplanner3.html', function(req, res, next) {
 	  planner_redirect(req, res, 'wot', 'planner3');
@@ -633,6 +649,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	router.get('/warfaceplanner3.html', function(req, res, next) {
 	  planner_redirect(req, res, 'warface', 'planner3');
+	});
+	router.get('/squadplanner3.html', function(req, res, next) {
+	  planner_redirect(req, res, 'squad', 'planner3');
 	});
 	
 	router.get('/about.html', function(req, res, next) {
