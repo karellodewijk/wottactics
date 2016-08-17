@@ -422,8 +422,6 @@ function paste() {
 }
 
 function zoom(amount, isZoomIn, e) {
-	var old_zoom_level = zoom_level;
-	
 	var direction = isZoomIn ? 1 : -1;
 	var factor = (1 + amount * direction);
 	
@@ -445,11 +443,16 @@ function emit_pan_zoom() {
 }
 
 function pan_zoom(new_zoom_level, x, y) {
-	var zoom_amount = zoom_level / new_zoom_level - 1;
-	zoom(Math.abs(zoom_amount), zoom_amount > 0);
+	var zoom_factor = zoom_level / new_zoom_level;
+	
+	objectContainer.scale.x *= zoom_factor;
+	objectContainer.scale.y *= zoom_factor;	
+	
 	objectContainer.x = to_x_local_vect(x);
 	objectContainer.y = to_y_local_vect(y);
-	correct();
+	
+	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+	render_scene();
 }
 
 function correct() {
@@ -716,7 +719,7 @@ function get_video_type(path) {
 }
 
 function reset_background() {
-	//pan_zoom(1,0,0);
+	pan_zoom(1,0,0);
 	video_ready = false;
 	if (video_media) {
 		video_media.setCurrentTime(0);
