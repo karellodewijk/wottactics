@@ -1479,6 +1479,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('change_slide', function(room, uid) {
 			if (room_data[room]) {
 				if (room_data[room].slides[uid]) {
+					if (room_data[room].pan_zoom) {
+						room_data[room].pan_zoom = [1, 0, 0];
+					}
 					room_data[room].active_slide = uid;
 					io.to(room).emit('change_slide', uid); 
 				} else {
@@ -1655,6 +1658,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		socket.on('change_rate', function(room, rate) {
 			room_data[room].playback_rate = rate;
 			socket.broadcast.to(room).emit('change_rate', rate);
+		});
+		
+		socket.on('pan_zoom', function(room, zoom_level, x, y) {
+			room_data[room].pan_zoom = [zoom_level, x, y];
+			socket.broadcast.to(room).emit('pan_zoom', zoom_level, x, y, socket.request.session.passport.user.id);
 		});
 
 		
