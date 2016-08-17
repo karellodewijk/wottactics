@@ -295,7 +295,9 @@ var draw_context;
 var temp_draw_context;
 var grid_layer;
 var zoom_level = 1;
+var control_camera = false;
 
+//these variables are only for the video replay room
 var offset = 0; // time offset from the server in ms 
 var sync_start_time;
 var progress = 0;
@@ -419,7 +421,9 @@ function paste() {
 	undo_list.push(clone_action(["add", new_entities]));	
 }
 
-function zoom(amount, isZoomIn, e) {	
+function zoom(amount, isZoomIn, e) {
+	var old_zoom_level = zoom_level;
+	
 	var direction = isZoomIn ? 1 : -1;
 	var factor = (1 + amount * direction);
 	
@@ -434,6 +438,18 @@ function zoom(amount, isZoomIn, e) {
 	correct();
 	
 	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+}
+
+function emit_pan_zoom() {
+	socket.emit('pan_zoom', room, zoom_level, from_x_local_vect(objectContainer.x), from_y_local_vect(objectContainer.y));
+}
+
+function pan_zoom(new_zoom_level, x, y) {
+	var zoom_amount = zoom_level / new_zoom_level - 1;
+	zoom(Math.abs(zoom_amount), zoom_amount > 0);
+	objectContainer.x = to_x_local_vect(x);
+	objectContainer.y = to_y_local_vect(y);
+	correct();
 }
 
 function correct() {
@@ -700,6 +716,7 @@ function get_video_type(path) {
 }
 
 function reset_background() {
+	pan_zoom(1,0,0);
 	video_ready = false;
 	if (video_media) {
 		video_media.setCurrentTime(0);
@@ -4163,11 +4180,12 @@ function update_lock() {
 	if (my_user.role == "owner") {
 		$('#lock').show();
 		$('#nuke_room').show();
+		$('#lock_camera').show();
 
 	} else {
 		$('#lock').hide();
 		$('#nuke_room').hide();
-
+		$('#lock_camera').hide();
 	}
 }
 
@@ -5044,6 +5062,9 @@ $(document).ready(function() {
 	
 	renderer.view.addEventListener("wheel", function(e) {
 		zoom(0.1, e.deltaY < 0, e);
+		if (control_camera) {
+			emit_pan_zoom();
+		}
 		e.preventDefault();
 	});
 
@@ -5087,6 +5108,9 @@ $(document).ready(function() {
 
 	renderer.view.addEventListener('contextmenu', function(e) {
 		setup_mouse_events(undefined);
+		if (control_camera) {
+			emit_pan_zoom();
+		}
 		e.preventDefault();
 	});
 
@@ -5094,6 +5118,9 @@ $(document).ready(function() {
 	$(renderer.view).mouseup(function(e) {
 		if (e.which === 3 || e.which === 2) {
 			setup_mouse_events(undefined);
+			if (control_camera) {
+				emit_pan_zoom();
+			}
 			e.preventDefault();
 		}
 	});
@@ -5581,6 +5608,18 @@ $(document).ready(function() {
 			socket.emit("lock_room", room, is_room_locked);
 		});
 		
+		$('#lock_camera').click(function () {
+			var node = $(this).find('div');	
+			if (node.hasClass('icon-lock_camera')) {
+				node.removeClass('icon-lock_camera').addClass('icon-unlock_camera');
+				emit_pan_zoom();
+				control_camera = true;
+			} else {
+				node.removeClass('icon-unlock_camera').addClass('icon-lock_camera');
+				control_camera = false;
+			}
+		});
+		
 		$('#grid').click(function () {
 			grid_layer.visible = !grid_layer.visible;
 			room_data.slides[active_slide].show_grid = grid_layer.visible;
@@ -5872,6 +5911,12 @@ $(document).ready(function() {
 			})
 		} catch (e) {}
 		
+		var on_done = function() {
+			if (room_data.pan_zoom) {
+				pan_zoom(room_data.pan_zoom[0], room_data.pan_zoom[1], room_data.pan_zoom[2]);
+			}
+		}
+		
 		if (background_entity) {
 			//we need to set the background before we add other entities
 			set_background(background_entity, function() {
@@ -5885,7 +5930,10 @@ $(document).ready(function() {
 						set_playback_rate(room_data.playback_rate, room_data.playback_rate);
 					}
 				}
+				on_done();
 			});
+		} else {
+			on_done();
 		}
 						
 		for (var key in room_data.trackers) {
@@ -6041,6 +6089,11 @@ $(document).ready(function() {
 		activity_animation(user_id)
 	});
 	
+	socket.on('pan_zoom', function(new_zoom_level, x, y, user_id) {
+		activity_animation(new_zoom_level, x, y);
+		pan_zoom(new_zoom_level, x, y);
+	});
+	
 	socket.on('force_reconnect', function() {
 		location.reload();
 	});
@@ -6093,5 +6146,5 @@ $(document).ready(function() {
 	socket.on('change_rate', function(rate) {
 		set_playback_rate(rate, rate);
 	});
-
+	
 });
