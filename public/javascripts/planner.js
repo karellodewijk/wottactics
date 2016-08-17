@@ -716,7 +716,7 @@ function get_video_type(path) {
 }
 
 function reset_background() {
-	pan_zoom(1,0,0);
+	//pan_zoom(1,0,0);
 	video_ready = false;
 	if (video_media) {
 		video_media.setCurrentTime(0);
