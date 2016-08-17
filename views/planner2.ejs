@@ -69,12 +69,13 @@
 	<script defer src="<%=static_host%>/javascripts/lib/curve.js"></script>	
 	<%}%>
 	
-	<%if (false) {%>
+	
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
-	<%}%>
 	
+	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
+	<%}%>
 	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
@@ -94,7 +95,7 @@
 
 	<div id="left_side_bar" style="max-width:340px; height:100%; vertical-align:top; float:left; display:flex; flex-direction:column; padding:0px; margin:0px;">
 		<div style="flex: 0 1 auto; justify-content: flex-start;">
-			<nav id="left_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
+			<nav id="left_navbar" class="navbar navbar-inverse container-fluid" style="margin-left:5px; margin-right:5px; padding-left:0px; padding-right:0px">
 				<div id="home_button" class="navbar-header">
 					<button class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
 						<span class="icon-bar"></span>
@@ -105,7 +106,14 @@
 						href="/<%=game%>"><i class="fa-lg icon-home "></i>
 					</a>
 				</div>
-
+				<div class="btn-group pull-left">
+					<button id="lock" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
+						<div class="icon icon-lock"></div>
+					</button>
+					<button id="link" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
+						<div class="icon icon-link"></div>
+					</button>
+				</div>
 				<div class="collapse navbar-collapse" id="myNavbar">
 				<ul class="nav navbar-nav navbar-right container-fluid" style="padding-right: 0;">
 					<% include language_select.ejs %>
@@ -209,17 +217,11 @@
 		<nav id="right_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
 			<ul class="nav navbar-nav navbar-left container-fluid" style="margin-left:-10px; margin-right:-10px; padding-left:0px; padding-right:0px">
 				<div class="btn-group">
-				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
+				<button id="save" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<div class="icon icon-save"></div>
 				</button>
-				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
+				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' style='border-radius: 0px;' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<div class="icon icon-save_as"></div>
-				</button>
-				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
-					<div class="icon icon-lock"></div>
-				</button>
-				<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
-					<div class="icon icon-link"></div>
 				</button>
 				<% if (game == 'wot' || game == 'wows' || game == 'aw') { %>
 					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
@@ -228,7 +230,10 @@
 				<% } %>
 				<button id="nuke_room" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Empty room')%>">
 					<div class="icon icon-bomb"></div>
-				</button>				
+				</button>	
+				<button id="lock_camera" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('locks the view (zoom/pan) of all users to yours')%>">
+					<div class="icon icon-lock_camera"></div>
+				</button>
 				</div>
 			</ul>
 		</nav>

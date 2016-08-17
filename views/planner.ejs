@@ -103,10 +103,10 @@
 			<%if (game != 'blitz') { %>
 				<li>
 				<div class="btn-group">
-				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
+				<button id="save" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<div class="icon icon-save"></div>
 				</button>
-				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
+				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' style='border-radius: 0px;' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<div class="icon icon-save_as"></div>
 				</button>
 				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
@@ -122,6 +122,9 @@
 				<% } %>
 				<button id="nuke_room" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Empty room')%>">
 					<div class="icon icon-bomb"></div>
+				</button>		
+				<button id="lock_camera" style='border-radius: 0px;' class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('locks the view (zoom/pan) of all users to yours')%>">
+					<div class="icon icon-lock_camera"></div>
 				</button>				
 				</div>
 				</li>
