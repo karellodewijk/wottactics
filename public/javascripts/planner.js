@@ -6,13 +6,6 @@ if (location.pathname.indexOf('planner3') != -1) {
 	is_video_replay = true;
 }
 
-/*
-if (is_video_replay) {
-	//servers = ['localhost'];
-	servers = ['server2.wottactic.eu'];
-}
-*/
-
 var image_host;
 function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
@@ -75,6 +68,7 @@ function setup_assets() {
 
 var room = location.search.split('room=')[1].split("&")[0];	
 var nowebgl = location.search.indexOf('nowebgl') != -1;	
+var wot_live = location.search.indexOf('wot_live') != -1;	
 
 function hashstring(str) {
 	var sum = 0;
@@ -192,6 +186,9 @@ var VIDEO_EXTENSIONS = ['mp4','webgl','avi'];
 var VIDEO_SYNC_DELAY = 10000; //in ms
 var MOUSE_IDLE_HIDE_TIME = 5000;
 var MAX_CANVAS_SIZE = 4096;
+var ICON_LABEL_SCALE = 1.5;
+var TEXT_SCALE = 0.75;
+var BACKGROUND_TEXT_SCALE = 0.75;
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -422,6 +419,7 @@ function paste() {
 }
 
 function zoom(amount, isZoomIn, e) {
+	var old_zoom_level = zoom_level
 	var direction = isZoomIn ? 1 : -1;
 	var factor = (1 + amount * direction);
 	
@@ -434,8 +432,13 @@ function zoom(amount, isZoomIn, e) {
 	objectContainer.y -= y_abs(from_y_local(mouse_location.y) * (factor - 1) * objectContainer.scale.y);
 
 	correct();
-	
+
 	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+	var zoom_factor = old_zoom_level / zoom_level;
+	
+	if (wot_live) {
+		wot_scale(zoom_factor);
+	}
 }
 
 function emit_pan_zoom() {
@@ -545,14 +548,14 @@ function resize_renderer(new_size_x, new_size_y) {
 
 	objectContainer.scale.x *= size_y/last_size_y;
 	objectContainer.scale.y *= size_y/last_size_y;
-	
-	grid_layer.width = background_sprite.width;
-	grid_layer.height = background_sprite.height;
 
 	$("#edit_window").css('width', '' + new_size_x + 'px');
 	$("#edit_window").css('height', '' + new_size_y + 'px');
 
 	renderer.resize(new_size_x, new_size_y);
+
+	grid_layer.width = background_sprite.width;
+	grid_layer.height = background_sprite.height;
 	
 	zoom(0,true);
 };
@@ -936,6 +939,9 @@ function set_background(new_background, cb) {
 
 				background_sprite.width = renderer.view.width / objectContainer.scale.x;
 				background_sprite.height = renderer.view.height / objectContainer.scale.y;
+				grid_layer.width = background_sprite.width;
+				grid_layer.height = background_sprite.height;
+				
 				zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
 				
 				render_scene();
@@ -3137,7 +3143,7 @@ function draw_end_path(context, drawing) {
 
 //draw end. The default scale is if you are drawing on a canvas the exact size of the render window
 function draw_end(context, drawing, a, b, scale = 1/zoom_level) {
-	var size = (ARROW_SCALE * drawing.thickness * background_sprite.height) * objectContainer.scale.y;
+	var size = 10 * (size_y/1000) * scale;
 	if (drawing.end_size) {			
 		size = drawing.end_size * (size_y/1000) * scale;
 	}
@@ -3584,7 +3590,7 @@ function on_icon_end(e) {
 	var x = mouse_x_rel(mouse_location.x) - (size/2);
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
- 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size*zoom_level, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked}
+ 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked}
 	
 	if (icon.label_background) {
 		icon.label_color = "#000000";
@@ -3689,45 +3695,67 @@ function on_line_end(e) {
 	}
 }
 
-function create_text2(text_entity) {
-	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
+
+function create_text_sprite(msg, color, font_size, font, background, label_shadow, font_modifier = "") {
 	var _canvas = document.createElement("canvas");
 	var scaling = objectContainer.scale.y;
-	
 	var _context = _canvas.getContext("2d");
 
 	var text_quality = TEXT_QUALITY;
-	_context.font = ""+ 2 * (text_entity.font_size+1) * scaling * text_quality + "px "+text_entity.font;
+	_context.font = font_modifier + " " + 2 * font_size * scaling * text_quality + "px "+font;
 	
-    var metrics = _context.measureText(text_entity.text);
+    var metrics = _context.measureText(msg);
 	while (metrics.width > MAX_CANVAS_SIZE) {	
 		text_quality /= 2;
-		_context.font = ""+ 2 * (text_entity.font_size+1) * scaling * text_quality + "px "+text_entity.font;
-		metrics = _context.measureText(text_entity.text);
+		_context.font = font_modifier + " " + 2 * font_size * scaling * text_quality + "px "+font;
+		metrics = _context.measureText(msg);
 	}
+	metrics = _context.measureText(msg);
 
-	_canvas.width = metrics.width;
-	_canvas.height = text_entity.font_size * scaling * text_quality * 3;	
-
-	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
-	_context.fillStyle = fill_color;
-	_context.shadowColor = "black";
-	_context.shadowOffsetX = 1; 
-	_context.shadowOffsetY = 1; 
-	_context.shadowBlur = 7;
-	_context.font = ""+ 2 * text_entity.font_size * scaling * text_quality + "px "+text_entity.font;
+	_canvas.height = font_size * scaling * text_quality * 2.5;	
+	_canvas.width = metrics.width + _canvas.height*0.2;
 	
-	_context.fillText(text_entity.text, 0, _canvas.height/2);
+	if (background) {
+		_context.fillStyle = "#ffffff"
+		_context.lineWidth = 25
+		_context.fillRect(0, 0, metrics.width + _canvas.height*0.2, _canvas.height);
+		_context.strokeRect(0, 0, metrics.width + _canvas.height*0.2, _canvas.height);
+		
+	}
+	_context.fillStyle = color;
+	
+	if (label_shadow) {
+		_context.shadowColor = "black";
+		_context.shadowOffsetX = 5; 
+		_context.shadowOffsetY = 5; 
+		_context.shadowBlur = 50;
+	}
+	_context.font = font_modifier + " " + 2 * font_size * scaling * text_quality + "px "+font;
+	_context.fillText(msg, _canvas.height*0.1, _canvas.height/1.5+_canvas.height*0.1);
 
 	var sprite = createSprite(_context, _canvas);
 		
 	if (sprite) {
-		text_entity.container = sprite;		
 		//rescale to objectContainer
 		sprite.height /= objectContainer.scale.x * text_quality;
 		sprite.width /= objectContainer.scale.y * text_quality;
-		sprite.x = x_abs(text_entity.x);
-		sprite.y = y_abs(text_entity.y);
+		sprite.x = 0;
+		sprite.y = 0;
+		return sprite;
+	} else {
+		return false;
+	}
+}
+
+function create_text2(text_entity) {
+	var color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6); 
+	var sprite = create_text_sprite(text_entity.text, color, TEXT_SCALE * text_entity.font_size, text_entity.font, false, true)
+	
+	if (sprite) {
+		text_entity.container = sprite;		
+		sprite.x = x_abs(text_entity.x)
+		sprite.y = y_abs(text_entity.y)
+		
 		objectContainer.addChild(sprite);
 		
 		//make draggable
@@ -3742,68 +3770,20 @@ function create_text2(text_entity) {
 }
 
 function create_background_text2(text_entity) {
-	var color = '#' + ('00000' + (line.color | 0).toString(16)).substr(-6); 
-	var _canvas = document.createElement("canvas");
-	var scaling = objectContainer.scale.y;
-
-	var _context = _canvas.getContext("2d");
-
-	var text_quality = TEXT_QUALITY;
-	_context.font = ""+ 2 * (text_entity.font_size+1) * scaling * text_quality + "px "+text_entity.font;
+	var color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6); 
+	var sprite = create_text_sprite(text_entity.text, color, BACKGROUND_TEXT_SCALE * text_entity.font_size, text_entity.font, true, false)
 	
-    var metrics = _context.measureText(text_entity.text);
-	while (metrics.width > MAX_CANVAS_SIZE) {	
-		text_quality /= 2;
-		_context.font = ""+ 2 * (text_entity.font_size+1) * scaling * text_quality + "px "+text_entity.font;
-		metrics = _context.measureText(text_entity.text);
-	}
-
-	_canvas.width = metrics.width;
-	_canvas.height = text_entity.font_size * scaling * text_quality * 3;	
-
-	var fill_color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6);
-	_context.fillStyle = fill_color;
-	_context.shadowColor = "black";
-	_context.shadowOffsetX = 1; 
-	_context.shadowOffsetY = 1; 
-	_context.shadowBlur = 7;
-	_context.font = ""+ 2 * text_entity.font_size * scaling * text_quality + "px "+text_entity.font;
-	
-	_context.fillText(text_entity.text, 0, _canvas.height/2);
-
-	var sprite = createSprite(_context, _canvas);
-		
 	if (sprite) {
-		//rescale to objectContainer
-		sprite.height /= objectContainer.scale.x * text_quality;
-		sprite.width /= objectContainer.scale.y * text_quality;
-		sprite.x = 0;
-		sprite.y = 0;
+		text_entity.container = sprite;		
+		sprite.x = x_abs(text_entity.x)
+		sprite.y = y_abs(text_entity.y)
 		
-		var shape = new PIXI.Rectangle(0, 0, TEXT_BOX_QUALITY * (sprite.width + (sprite.height/2)),TEXT_BOX_QUALITY * (sprite.height + (sprite.height/2)));
-		var container = draw_shape(TEXT_BOX_QUALITY * (sprite.height/8), 1, 0, 1, 16777215, shape);
-
-		container.x = x_abs(text_entity.x)
-		container.y = y_abs(text_entity.y)
-		container.width /= TEXT_BOX_QUALITY;
-		container.height /= TEXT_BOX_QUALITY;
-
-		sprite.width *= TEXT_BOX_QUALITY;
-		sprite.height *= TEXT_BOX_QUALITY;
-		sprite.x = -sprite.width/2 + (sprite.height/16); 
-		sprite.y = -sprite.height/2 + (sprite.height/16); 
-
-
-		container.addChild(sprite);
-
-		text_entity.container = container;		
-
-		objectContainer.addChild(container);
+		objectContainer.addChild(sprite);
 		
 		//make draggable
 		sprite.texture.baseTexture.source.src = text_entity.uid;
-		make_draggable(container);
-		container.entity = text_entity;
+		make_draggable(sprite);
+		sprite.entity = text_entity;
 		
 		//send off
 		room_data.slides[active_slide].entities[text_entity.uid] = text_entity;
@@ -3828,55 +3808,18 @@ function create_icon_cont(icon, texture) {
 	sprite.height = x_abs(icon.size);
 	sprite.width = sprite.height * ratio;
 	
+	center_anchor(sprite);
+	
 	if (icon.label && icon.label != "") {
-		var color = '#' + ('00000' + (icon.label_color | 0).toString(16)).substr(-6); 
-		var _canvas = document.createElement("canvas");
-				
-		var scaling = 1 / sprite.scale.y;
-		_canvas.width = 1.8 * icon.label.length * icon.label_font_size * scaling * 1.5 * TEXT_QUALITY;
-		_canvas.height = 1.8 * icon.label_font_size * scaling * 2 * TEXT_QUALITY + 30;
-		var _context = _canvas.getContext("2d");
-		var final_font_size = Math.round(1.8 * icon.label_font_size * scaling * TEXT_QUALITY)
-		_context.font = ""+ final_font_size + "px " + icon.label_font;
-				
-		_context.fillStyle = icon.label_color;
-
-		if (!icon.label_background) {
-			_context.shadowColor = "black";
-		}
-		_context.shadowOffsetX = 1; 
-		_context.shadowOffsetY = 1; 
-		_context.shadowBlur = 7;
-		_context.fillText(icon.label, 0, _canvas.height/1.5);
-		
-		var text = createSprite(_context, _canvas);
-		
-		text.scale.x /= TEXT_QUALITY;
-		text.scale.y /= TEXT_QUALITY;
-		text.x = 0;
-		text.y = 0;
-		
-		if (icon.label_background) {
-			var temp = text;
-			var shape = new PIXI.Rectangle(0, 0, TEXT_BOX_QUALITY * (temp.width+(temp.height/1.5)), TEXT_BOX_QUALITY * (temp.height+(temp.height/1.5)));
-			text = draw_shape(TEXT_BOX_QUALITY*(temp.height/8), 1, 0, 1, 16777215, shape);
-			text.addChild(temp);
-			text.width /= TEXT_BOX_QUALITY;
-			text.height /= TEXT_BOX_QUALITY;
-			
-			temp.width *= TEXT_BOX_QUALITY;
-			temp.height *= TEXT_BOX_QUALITY;
-			temp.x += (temp.height/3) + (temp.height/16) + 1;
-			temp.y += (temp.height/3) + (temp.height/16) + 1;
-		}			
+		var text = create_text_sprite(icon.label, icon.label_color, ICON_LABEL_SCALE * icon.label_font_size, icon.label_font, icon.label_background, true, icon.label_font_modifier)
 		
 		var label_pos = icon.label_pos;
 		if (!label_pos) {
 			label_pos = "pos_bottom";
 		}
 		
-		var sprite_width = sprite.width / sprite.scale.x;
-		var sprite_height = sprite.height / sprite.scale.y;
+		var sprite_width = sprite.width
+		var sprite_height = sprite.height
 		
 		if (label_pos == 'pos_bottom') {
 			text.x -= text.width/2;
@@ -3892,26 +3835,23 @@ function create_icon_cont(icon, texture) {
 			text.y -= text.height/2;
 		} else if (label_pos == 'pos_top_left') {
 			text.x -= text.width + sprite_width/2;
-			text.y -= sprite_height/2 + text.height/2;	
+			text.y -= sprite_height + text.height/2;	
 		} else if (label_pos == 'pos_top_right') {
 			text.x += sprite_width/2;
-			text.y -= sprite_height/2 + text.height/2;			
+			text.y -= sprite_height + text.height/2;			
 		} else if (label_pos == 'pos_bottom_left') {
 			text.x -= text.width + sprite_width/2;
 		} else if (label_pos == 'pos_bottom_right') {
 			text.x += sprite_width/2;
 		}
-
+		
 		icon.container.addChild(text);
 
 	}
-
 	
 	icon.container.entity = icon; 
 	icon.container.alpha = icon.alpha;
-	
 
-	
 	make_draggable(icon.container);	
 
 	objectContainer.addChild(icon['container']);
@@ -4017,8 +3957,8 @@ function create_entity(entity) {
 
 	if (entity.container) {
 		if (entity.scale) {
-			entity.container.scale.x *= entity.container.orig_scale[0] * entity.scale[0];
-			entity.container.scale.y *= entity.container.orig_scale[1] * entity.scale[1];
+			entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
+			entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
 		}
 	
 		if (entity.container.anchor) {
@@ -4638,25 +4578,6 @@ function transition(slide) {
 			remove(key, true);
 			to_add.push(key);
 		}
-		//take over the container
-		/*
-		var key = to_transition[i];
-		room_data.slides[slide].entities[key].container = room_data.slides[active_slide].entities[key].container;
-		delete room_data.slides[active_slide].entities[key].container;
-		if (room_data.slides[slide].entities[key].container) {
-			room_data.slides[slide].entities[key].container.entity = room_data.slides[slide].entities[key];
-		}
-
-		if (room_data.slides[slide].entities[key].type == "background") {
-			new_background_uid = key;
-		} else {
-			room_data.slides[slide].entities[key].container.x += x_abs(room_data.slides[slide].entities[key].x-room_data.slides[active_slide].entities[key].x);
-			room_data.slides[slide].entities[key].container.y += y_abs(room_data.slides[slide].entities[key].y-room_data.slides[active_slide].entities[key].y);
-			if (room_data.slides[slide].entities[key].type == 'note') {
-				align_note_text(room_data.slides[slide].entities[key]);
-			}
-		}
-		*/
 	}
 
 	active_slide = slide;
@@ -4766,8 +4687,6 @@ function create_new_slide(slide) {
 		new_slide.entities[key] = JSON.parse(JSON.stringify(room_data.slides[slide].entities[key]));
 		room_data.slides[slide].entities[key].container = temp;
 	}
-	
-	
 	
 	var new_order;
 	var next_slide_uid = find_next_slide(room_data.slides[slide].order);
@@ -5037,6 +4956,233 @@ function set_playback_rate(base, rate) {
 		video_media.pluginApi.setPlaybackRate(rate);
 	} else {
 		video_media.playbackRate = rate;
+	}
+}
+
+function create_hp_bar(scale = 1) {
+	var width = to_x_local_vect(0.125 * scale);
+	var height = to_y_local_vect(0.015 * scale);
+	
+	var _canvas = document.createElement("canvas");
+	var _context = _canvas.getContext("2d");
+	
+	_canvas.width = width;
+	_canvas.height = height;
+		
+	_context.fillStyle = "#FFFFFF";
+	_context.fillRect(0, 0, _canvas.width, _canvas.height); 
+	
+	var texture = PIXI.Texture.fromCanvas(_canvas);
+	var green_bar = new PIXI.Sprite(texture);
+	green_bar.tint = 65280;
+	
+	var _canvas2 = document.createElement("canvas");
+	var _context2 = _canvas2.getContext("2d");
+	
+	_canvas2.width = width;
+	_canvas2.height = height;
+
+	_context2.strokeStyle="#000000";
+	_context2.lineWidth = 1;
+	_context2.strokeRect(0, 0, _canvas2.width, _canvas2.height); 
+
+	var texture2 = PIXI.Texture.fromCanvas(_canvas2);
+	var outline = new PIXI.Sprite(texture2);	
+
+	var _canvas3 = document.createElement("canvas");
+	var _context3 = _canvas3.getContext("2d");
+	
+	_canvas3.width = width;
+	_canvas3.height = height;
+
+	_context3.fillStyle="#FF0000";
+	_context3.fillRect(0, 0, _canvas3.width, _canvas3.height); 
+	
+	var texture3 = PIXI.Texture.fromCanvas(_canvas3);
+	var red_bar = new PIXI.Sprite(texture3);	
+	
+	var container = new PIXI.Container();
+	container.addChild(red_bar);
+	container.addChild(green_bar);
+	container.addChild(outline);
+	
+	//container.scale.x *= zoom_level;
+	//container.scale.y *= zoom_level;
+	
+	return container
+}
+
+var icons = {}
+function wot_scale(factor) {
+	for (var i in icons) {
+		if (icons[i] && icons[i].container) {
+			icons[i].container.scale.x /= factor;
+			icons[i].container.scale.y /= factor;
+		}
+	}
+}
+
+function wot_connect() {
+	var top, left, bottom, right, width, height;
+	var player_team = 1;
+	
+	
+	websocket = new WebSocket('ws://localhost:6412/');
+	connect(websocket);
+	
+	function clear_icons() {
+		for (var i in icons) {
+			if (icons[i] && icons[i].container) {
+				objectContainer.removeChild(icons[i].container);
+			}
+		}		
+		icons = {}
+		render_scene();
+	}
+	
+	function create_live_icon(icon) {
+		create_icon(icon);
+
+		//icons seems to always be off by a little bit, correct
+		icon.container.x -= x_abs(0.012)
+		icon.container.y -= y_abs(0.012)
+		var bar = create_hp_bar()
+		bar.scale.x *= zoom_level;
+		bar.scale.y *= zoom_level;
+		bar.x -= bar.width / 2
+		bar.y -= icon.container.height + bar.height
+		icon.container.addChild(bar);
+		var name = create_text_sprite(icon.player.substring(0,9), icon.label_color, 12, "Arial", false, true, "bold");
+		name.x -= name.width/2
+		name.y -= icon.container.height + bar.height + name.height
+		icon.container.addChild(name);			
+
+		icon.container.scale.x *= zoom_level;
+		icon.container.scale.y *= zoom_level;
+	}
+	
+	function connect(websocket) {
+		websocket.onclose = function(evt) { 
+			setTimeout(function() { 
+				websocket = new WebSocket('ws://localhost:6412/'); 
+				connect(websocket);
+			}, 10000);
+		};
+		websocket.onerror = function(evt) { 
+			websocket.close(); 
+		};
+		
+		websocket.onopen = function(evt) { 
+			clear_icons();
+		};
+		
+		websocket.onmessage = function(evt) { 
+			var reader = new window.FileReader();
+			reader.readAsText(evt.data);		
+			function transform_coords(coords) {
+				return [(parseFloat(coords[0])-left)/width, 1-(parseFloat(coords[2])-top)/height];
+			}
+			
+			reader.onloadend = function() {
+				if (reader.result == "BATTLE_ENDED") {
+					clear_icons();
+				} else {
+					var entity = JSON.parse(reader.result);
+					if ('tank' in entity) {
+						var color, hex_color
+						if (entity.team == player_team) {
+							color = 65280
+							hex_color = "#AAFFAA";
+						} else {
+							color = 16711680
+							hex_color = "#FFAAAA";
+						}
+						
+						var icon = {uid:entity.id.toString(), type: 'icon', tank:entity.type, x:-1, y:-1, size:0.02, color:color, alpha:1, label:entity.tank.substring(0,10), label_font_size:8, label_color: hex_color, label_font: "Arial", label_font_modifier: "bold", label_pos:"pos_bottom", label_background:false, label_shadow:true, label_shadow:false, maxHealth:entity.maxHealth, player:entity.name}
+
+						if (entity.position) {
+							var coords = transform_coords(entity.position);
+							icon.x = coords[0];
+							icon.y = coords[1];	
+							create_live_icon(icon);
+						}
+						
+						icons[icon.uid] = icon;					
+					} else if ('map_dimesions' in entity) {
+						left = parseFloat(entity['map_dimesions'][0][0])
+						right = parseFloat(entity['map_dimesions'][1][0])
+						top = parseFloat(entity['map_dimesions'][0][1])
+						bottom = parseFloat(entity['map_dimesions'][1][1])
+						width = right - left
+						height = bottom - top
+					} else if ('player_team' in entity) {
+						player_team = entity['player_team']
+					} else if ('map_id' in entity) {
+						console.log("map id: ", entity['map_id']);
+						var map_id = entity['map_id'];
+						var node = $('#map_select').find("[data-mapid='" + map_id + "']");
+						if (node) {
+							try_select_map($('#map_select'), node.val(), false, function() {
+								render_scene()
+							});
+						}
+					} else if ('remove' in entity) {
+						var id = entity['remove'].toString()
+						objectContainer.removeChild(icons[id].container)
+						icons[id] = undefined
+					} else {
+						var ids = new Set();
+						for (var i in entity) {
+							var id = i.toString();
+							if (!icons[id]) continue;
+							ids.add(id)
+							if (entity[i].length >= 1) {
+								var coords = transform_coords(entity[i][0])
+								if (!icons[id].container) {
+									icons[id].x = coords[0];
+									icons[id].y = coords[1];
+									create_live_icon(icons[id])
+								} else {
+									drag_entity(icons[id], coords[0], coords[1]);
+									icons[id].container.alpha = 1;
+								}
+								if (entity[i].length == 2) {
+									var hp = entity[i][1];
+									if (icons[id].hp != hp) {
+										icons[id].hp = hp;
+										var portion = entity[i][1] /icons[id].maxHealth;
+										var bar = icons[id].container.children[1];
+										bar.children[1].width = portion * bar.children[0].width;
+									}
+								}
+							} else {
+								if (icons[id] && icons[id].container) {
+									icons[id].container.alpha = 0.5;
+								}
+							}
+							//if we don't know the hp make the hp bar yellow
+							if (entity[i].length == 2) {
+								if (icons[id].container && icons[id].container.children[1].children[1].tint == 16776960) {
+									icons[id].container.children[1].children[1].tint = 65280
+								}								
+							} else {
+								if (icons[id].container && icons[id].container.children[1].children[1].tint == 65280) {
+									icons[id].container.children[1].children[1].tint = 16776960
+								}								
+							}
+							
+						}
+						difference = new Set([...new Set(Object.keys(icons))].filter(x => !ids.has(x)));
+						for (let i of difference) {
+							if (icons[i] && icons[i].container) {
+								icons[i].container.alpha = 0.5;
+							}
+						}
+						render_scene();
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -5917,6 +6063,9 @@ $(document).ready(function() {
 		var on_done = function() {
 			if (room_data.pan_zoom) {
 				pan_zoom(room_data.pan_zoom[0], room_data.pan_zoom[1], room_data.pan_zoom[2]);
+			}
+			if (wot_live) {
+				wot_connect();
 			}
 		}
 		
