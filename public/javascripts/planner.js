@@ -186,9 +186,9 @@ var VIDEO_EXTENSIONS = ['mp4','webgl','avi'];
 var VIDEO_SYNC_DELAY = 10000; //in ms
 var MOUSE_IDLE_HIDE_TIME = 5000;
 var MAX_CANVAS_SIZE = 4096;
-var ICON_LABEL_SCALE = 1.5;
-var TEXT_SCALE = 0.75;
-var BACKGROUND_TEXT_SCALE = 0.75;
+var ICON_LABEL_SCALE = 1;
+var TEXT_SCALE = 0.80;
+var BACKGROUND_TEXT_SCALE = 0.80;
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -434,6 +434,7 @@ function zoom(amount, isZoomIn, e) {
 	correct();
 
 	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+	$('#zoom_level').text((1/zoom_level).toFixed(2));
 	var zoom_factor = old_zoom_level / zoom_level;
 	
 	if (wot_live) {
@@ -455,6 +456,7 @@ function pan_zoom(new_zoom_level, x, y) {
 	objectContainer.y = to_y_local_vect(y);
 	
 	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+	$('#zoom_level').text((1/zoom_level).toFixed(2));
 	render_scene();
 }
 
@@ -943,6 +945,7 @@ function set_background(new_background, cb) {
 				grid_layer.height = background_sprite.height;
 				
 				zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+				$('#zoom_level').text((1/zoom_level).toFixed(2));
 				
 				render_scene();
 				if (cb)	cb(true);
@@ -3590,7 +3593,7 @@ function on_icon_end(e) {
 	var x = mouse_x_rel(mouse_location.x) - (size/2);
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
- 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked}
+ 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size * zoom_level, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked}
 	
 	if (icon.label_background) {
 		icon.label_color = "#000000";
@@ -3751,6 +3754,10 @@ function create_text2(text_entity) {
 	var color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6); 
 	var sprite = create_text_sprite(text_entity.text, color, TEXT_SCALE * text_entity.font_size, text_entity.font, false, true)
 	
+	var ratio = sprite.width / sprite.height;
+	sprite.height = x_abs(text_entity.font_size / 440)
+	sprite.width = sprite.height * ratio;
+	
 	if (sprite) {
 		text_entity.container = sprite;		
 		sprite.x = x_abs(text_entity.x)
@@ -3772,6 +3779,10 @@ function create_text2(text_entity) {
 function create_background_text2(text_entity) {
 	var color = '#' + ('00000' + (text_entity.color | 0).toString(16)).substr(-6); 
 	var sprite = create_text_sprite(text_entity.text, color, BACKGROUND_TEXT_SCALE * text_entity.font_size, text_entity.font, true, false)
+
+	var ratio = sprite.width / sprite.height;
+	sprite.height = x_abs(text_entity.font_size / 440)
+	sprite.width = sprite.height * ratio;
 	
 	if (sprite) {
 		text_entity.container = sprite;		
@@ -3811,15 +3822,21 @@ function create_icon_cont(icon, texture) {
 	center_anchor(sprite);
 	
 	if (icon.label && icon.label != "") {
-		var text = create_text_sprite(icon.label, icon.label_color, ICON_LABEL_SCALE * icon.label_font_size, icon.label_font, icon.label_background, true, icon.label_font_modifier)
-		
+		var text = create_text_sprite(icon.label, icon.label_color, ICON_LABEL_SCALE * icon.label_font_size, icon.label_font, icon.label_background, !icon.label_background, icon.label_font_modifier)
+	
 		var label_pos = icon.label_pos;
 		if (!label_pos) {
 			label_pos = "pos_bottom";
 		}
+
+		icon.container.addChild(text);
 		
-		var sprite_width = sprite.width
-		var sprite_height = sprite.height
+		var ratio = text.width / text.height;
+		text.height = x_abs(icon.label_font_size / 450) / icon.container.scale.y
+		text.width = text.height * ratio;
+		
+		var sprite_width = sprite.width / sprite.scale.x
+		var sprite_height = sprite.height / sprite.scale.y
 		
 		if (label_pos == 'pos_bottom') {
 			text.x -= text.width/2;
@@ -3828,25 +3845,23 @@ function create_icon_cont(icon, texture) {
 			text.x -= text.width/2;
 			text.y -= text.height + sprite_height/2;
 		} else if (label_pos == 'pos_left') {
-			text.x -= text.width + sprite_width/2;
+			text.x -= (text.width + sprite_width/2);
 			text.y -= text.height/2;
 		} else if (label_pos == 'pos_right') {
 			text.x += sprite_width/2;
 			text.y -= text.height/2;
 		} else if (label_pos == 'pos_top_left') {
-			text.x -= text.width + sprite_width/2;
-			text.y -= sprite_height + text.height/2;	
+			text.x -= (text.width + sprite_width/2);
+			text.y -= sprite_height/2 + text.height/2;	
 		} else if (label_pos == 'pos_top_right') {
 			text.x += sprite_width/2;
-			text.y -= sprite_height + text.height/2;			
+			text.y -= sprite_height/2 + text.height/2;			
 		} else if (label_pos == 'pos_bottom_left') {
-			text.x -= text.width + sprite_width/2;
+			text.x -= (text.width + sprite_width/2);
 		} else if (label_pos == 'pos_bottom_right') {
 			text.x += sprite_width/2;
 		}
 		
-		icon.container.addChild(text);
-
 	}
 	
 	icon.container.entity = icon; 
