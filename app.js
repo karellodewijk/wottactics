@@ -261,19 +261,21 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var RedisStore = require('connect-redis')(Session);
 	var mwCache = Object.create(null);
 	function virtualHostSession(req, res, next) {
-		var host = req.hostname.split('.');
-		if (host.length >= 2) {
-			host = '.' + host[host.length-2] + '.' + host[host.length-1];
-		} else {
-			host = '.' + host[0];
-		}		
-		var hostSession = mwCache[host];
-		if (!hostSession) {
-			var store = new RedisStore(secrets.redis_options);
-			hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: store});
-			mwCache[host].store = store;
+		if (req.hostname) {
+			var host = req.hostname.split('.');
+			if (host.length >= 2) {
+				host = '.' + host[host.length-2] + '.' + host[host.length-1];
+			} else {
+				host = '.' + host[0];
+			}		
+			var hostSession = mwCache[host];
+			if (!hostSession) {
+				var store = new RedisStore(secrets.redis_options);
+				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: store});
+				mwCache[host].store = store;
+			}
+			hostSession(req, res, next);
 		}
-		hostSession(req, res, next);
 	}
 	
 	app.use(function(req, res, next) {
