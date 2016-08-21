@@ -58,7 +58,7 @@ class WebsocketServer(WebSocket):
 			return (not self.arena is None)
 
 		def add_vehicle(id):
-			entity = BigWorld.player().arena.vehicles[id]
+			entity = self.arena.vehicles[id]
 			if (not entity['isAlive']):
 				return
 			tags = entity['vehicleType'].type.tags;
@@ -99,13 +99,13 @@ class WebsocketServer(WebSocket):
 			if in_battle():
 				if (not self.world_transmitted):
 					self.world_transmitted = True
-					world = BigWorld.player().arena.arenaType._ArenaType__geometryCfg['boundingBox']
+					world = self.arena.arenaType._ArenaType__geometryCfg['boundingBox']
 					msg = {'map_dimesions' : [[str(world[0][0]), str(world[0][0])], [str(world[1][0]), str(world[1][0])]]}
 					echo(json.dumps(msg))
 					
 				if (not self.mapid_transmitted):
 					self.mapid_transmitted = True
-					msg = {'map_id' : BigWorld.player().arena.arenaType._ArenaType__geometryCfg['geometryName'] + '_' + BigWorld.player().arena.arenaType._ArenaType__gameplayCfg['gameplayName']}
+					msg = {'map_id' : self.arena.arenaType._ArenaType__geometryCfg['geometryName'] + '_' + self.arena.arenaType._ArenaType__gameplayCfg['gameplayName']}
 					echo(json.dumps(msg))
 					
 				if (not self.team_transmitted):
@@ -116,13 +116,13 @@ class WebsocketServer(WebSocket):
 				update = {}
 							
 				for id in BigWorld.player().arena.vehicles.copy():
-					if (id not in self.ids):
+					if (self.arena.vehicles[id]['isAlive'] and id not in self.ids):
 						add_vehicle(id)
 					if (BigWorld.entities.has_key(id)):
 						entity = BigWorld.entities.get(id)
 						update[id] = [map(lambda x: str(x), entity.position), entity.health];
 					elif (id in BigWorld.player().arena.positions):
-						update[id] = [map(lambda x: str(x), BigWorld.player().arena.positions[id])];
+						update[id] = [map(lambda x: str(x), self.arena.positions[id])];
 					else:
 						update[id] = [];
 
