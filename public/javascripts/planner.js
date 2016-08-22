@@ -967,14 +967,6 @@ function set_background(new_background, cb) {
 
 				change_background_dim(renderer.view.height)
 				
-				//background_sprite.width = renderer.view.width / objectContainer.scale.x;
-				//background_sprite.height = renderer.view.height / objectContainer.scale.y;
-				//grid_layer.width = background_sprite.width;
-				//grid_layer.height = background_sprite.height;
-				
-				//zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
-				//$('#zoom_level').text((1/zoom_level).toFixed(2));
-				
 				render_scene();
 				
 				
@@ -2987,7 +2979,15 @@ function smooth_draw(context, point_buffer, closed) {
 		context.lineTo(splinePoints[i], splinePoints[i+1]);
 	}
 	context.stroke();
-	return [[splinePoints[splinePoints.length-4], splinePoints[splinePoints.length-3]], [splinePoints[splinePoints.length-2], splinePoints[splinePoints.length-1]]];
+	
+	//normall I'd just return the last 2 points, but the arrow will always turn out crooked, so I look back a bit further
+	var a = (splinePoints[splinePoints.length-2] - splinePoints[splinePoints.length-20])
+	var b = (splinePoints[splinePoints.length-1] - splinePoints[splinePoints.length-19])
+	var len = Math.sqrt(Math.pow(a,2) + Math.pow(b,2))
+	a /= len;
+	b /= len;
+	
+	return [[splinePoints[splinePoints.length-2]-a , splinePoints[splinePoints.length-1]-b], [splinePoints[splinePoints.length-2], splinePoints[splinePoints.length-1]]];	
 }
 
 function smooth_draw_incremental(context1, context2, point_buffer, complete) {
