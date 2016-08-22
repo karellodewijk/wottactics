@@ -626,12 +626,12 @@ window.onresize = function() {
 
 //absolute -> relative
 function x_rel(x) {
-	return x/(background_sprite.width);
+	return x/(background_sprite.height);
 }
 
 //relative -> absolute
 function x_abs(x) {
-	return x*(background_sprite.width);
+	return x*(background_sprite.height);
 }
 
 //absolute -> relative
@@ -646,22 +646,22 @@ function y_abs(y) {
 
 //relative -> local
 function to_x_local(x) {
-	return objectContainer.x + (x * background_sprite.width) * objectContainer.scale.x;
+	return objectContainer.x + (x * background_sprite.height) * objectContainer.scale.y;
 }
 
 //relative -> local, only scaling, no offset
 function to_x_local_vect(x) {
-	return (x * background_sprite.width) * objectContainer.scale.x;
+	return (x * background_sprite.height) * objectContainer.scale.y;
 }
 
 //local -> relative
 function from_x_local(x) {
-	return (x - objectContainer.x) / objectContainer.scale.x / background_sprite.width;
+	return (x - objectContainer.x) / objectContainer.scale.y / background_sprite.height;
 }
 
 //local -> relative, only scaling, no offset
 function from_x_local_vect(x) {
-	return x / objectContainer.scale.x / background_sprite.width;
+	return x / objectContainer.scale.y / background_sprite.height;
 }
 
 //relative -> local
@@ -695,7 +695,7 @@ function mouse_y_abs(y) {
 //translates mouse position from e.data.getLocalPosition(background_sprite) to a relative coordinate
 //TODO: consider using renderer.plugins.interaction.eventData.data.global and from_x_local, from_y_local instead
 function mouse_x_rel(x) {
-	return x/(background_sprite.width / background_sprite.scale.x);
+	return x/(background_sprite.height / background_sprite.scale.y);
 }
 
 //translates mouse position from e.data.getLocalPosition(background_sprite) to a relative coordinate
@@ -898,6 +898,32 @@ function wait_for_seek(cb) {
 	}, 5);
 }
 
+function change_background_dim(height) {
+	var ratio = background_sprite.texture.width / background_sprite.texture.height;
+	var width = height * ratio; 
+	
+	var old_height = background_sprite.height;
+	background_sprite.width = width;
+	background_sprite.height = height;
+	grid_layer.width = background_sprite.width;
+	grid_layer.height = background_sprite.height;
+	var ratio = height/old_height;
+	if (ratio != 1) {
+		for (let key in room_data.slides[active_slide].entities) {
+			var entity = room_data.slides[active_slide].entities[key];
+			if (entity.container) {
+				entity.container.x *= ratio;
+				entity.container.y *= ratio;
+				entity.container.width *= ratio;
+				entity.container.height *= ratio;
+			}
+		}
+	}
+	
+	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+	pan_zoom(1,0,0);
+}
+
 function set_background(new_background, cb) {	
 	if (new_background.path != "") {
 		if (!new_background.is_video) {		
@@ -939,15 +965,19 @@ function set_background(new_background, cb) {
 				
 				window.onresize();		
 
-				background_sprite.width = renderer.view.width / objectContainer.scale.x;
-				background_sprite.height = renderer.view.height / objectContainer.scale.y;
-				grid_layer.width = background_sprite.width;
-				grid_layer.height = background_sprite.height;
+				change_background_dim(renderer.view.height)
 				
-				zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
-				$('#zoom_level').text((1/zoom_level).toFixed(2));
+				//background_sprite.width = renderer.view.width / objectContainer.scale.x;
+				//background_sprite.height = renderer.view.height / objectContainer.scale.y;
+				//grid_layer.width = background_sprite.width;
+				//grid_layer.height = background_sprite.height;
+				
+				//zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+				//$('#zoom_level').text((1/zoom_level).toFixed(2));
 				
 				render_scene();
+				
+				
 				if (cb)	cb(true);
 			}
 			
@@ -984,8 +1014,7 @@ function set_background(new_background, cb) {
 			background_sprite.texture = empty_backround.generateTexture();
 			$("#map_size").text("");
 			
-			background_sprite.width = renderer.view.width / objectContainer.scale.x;
-			background_sprite.height = renderer.view.height / objectContainer.scale.y;
+			change_background_dim(renderer.view.height);
 			
 			var video_type = get_video_type(new_background.path)
 			
@@ -1117,8 +1146,7 @@ function set_background(new_background, cb) {
 		background_sprite.texture = empty_backround.generateTexture();
 		$("#map_size").text("");
 
-		background_sprite.width = renderer.view.width / objectContainer.scale.x;
-		background_sprite.height = renderer.view.height / objectContainer.scale.y;
+		change_background_dim(renderer.view.height);
 		
 		window.onresize();
 		render_scene();	
@@ -3235,21 +3263,20 @@ function create_rectangle2(rectangle) {
 	var _canvas = document.createElement("canvas");
 	var _context = _canvas.getContext("2d");
 	
-	var base_resolution_x = background_sprite.width;
-	var base_resolution_y = background_sprite.height;
+	var base_resolution = background_sprite.height;
 	var quality = 1;
 	if (rectangle.draw_zoom_level) {
 		quality = 1 / rectangle.draw_zoom_level;
 	}
 	
 	var margin = 50;	
-	_canvas.width = base_resolution_x * rectangle.width * quality + margin;
-	_canvas.height = base_resolution_y * rectangle.height * quality + margin;
+	_canvas.width = base_resolution * rectangle.width * quality + margin;
+	_canvas.height = base_resolution * rectangle.height * quality + margin;
 	
 	init_shape_canvas(_context, rectangle, quality);
 	
-	_context.fillRect(margin/2, margin/2, base_resolution_x * rectangle.width * quality, base_resolution_y * rectangle.height * quality); 
-	_context.strokeRect(margin/2, margin/2, base_resolution_x * rectangle.width * quality, base_resolution_y * rectangle.height * quality);
+	_context.fillRect(margin/2, margin/2, base_resolution * rectangle.width * quality, base_resolution * rectangle.height * quality); 
+	_context.strokeRect(margin/2, margin/2, base_resolution * rectangle.width * quality, base_resolution * rectangle.height * quality);
 
 	canvas2container2(_context, _canvas, rectangle);
 	objectContainer.addChild(rectangle.container)
@@ -3267,23 +3294,22 @@ function create_circle2(circle) {
 	var _canvas = document.createElement("canvas");
 	var _context = _canvas.getContext("2d");
 	
-	var base_resolution_x = background_sprite.width;
-	var base_resolution_y = background_sprite.height;
+	var base_resolution = background_sprite.height;
 	var quality = 1;
 	if (circle.draw_zoom_level) {
 		quality = 1 / circle.draw_zoom_level;
 	}
 	
 	var margin = 50;	
-	_canvas.width = 2 * base_resolution_y * circle.radius * quality + margin;
-	_canvas.height = 2 * base_resolution_y * circle.radius * quality + margin;
+	_canvas.width = 2 * base_resolution * circle.radius * quality + margin;
+	_canvas.height = 2 * base_resolution * circle.radius * quality + margin;
 	
 	init_shape_canvas(_context, circle, quality);
 
 	var radius = to_x_local_vect(circle.radius);
 	
 	_context.beginPath();	
-	_context.arc(base_resolution_y * circle.radius * quality + margin/2, base_resolution_y * circle.radius * quality + margin/2, base_resolution_y * circle.radius * quality, 0, 2*Math.PI);
+	_context.arc(base_resolution * circle.radius * quality + margin/2, base_resolution * circle.radius * quality + margin/2, base_resolution * circle.radius * quality, 0, 2*Math.PI);
 	_context.fill();
 	_context.stroke();
 	
@@ -3293,11 +3319,11 @@ function create_circle2(circle) {
 		_context.strokeStyle = "#FFFFFF";
 		_context.fillStyle = "#FFFFFF";
 		_context.beginPath();
-		_context.moveTo(base_resolution_y * circle.radius * quality + margin/2, base_resolution_y * circle.radius * quality + margin/2);		
-		_context.lineTo((base_resolution_y * quality) * (circle.radius + circle.draw_radius[0] - circle.x) + margin/2, (base_resolution_y * quality) * (circle.radius  + circle.draw_radius[1] - circle.y) + margin/2);
+		_context.moveTo(base_resolution * circle.radius * quality + margin/2, base_resolution * circle.radius * quality + margin/2);		
+		_context.lineTo((base_resolution * quality) * (circle.radius + circle.draw_radius[0] - circle.x) + margin/2, (base_resolution * quality) * (circle.radius  + circle.draw_radius[1] - circle.y) + margin/2);
 		_context.stroke();
-		var mid_line_x = base_resolution_y * quality * (circle.radius + (circle.draw_radius[0] - circle.x)/2) + margin/2;
-		var mid_line_y = base_resolution_y * quality * (circle.radius + (circle.draw_radius[1] - circle.y)/2) + margin/2;
+		var mid_line_x = base_resolution * quality * (circle.radius + (circle.draw_radius[0] - circle.x)/2) + margin/2;
+		var mid_line_y = base_resolution * quality * (circle.radius + (circle.draw_radius[1] - circle.y)/2) + margin/2;
 		_context.font = "22px Arial";
 		var length = Math.sqrt(Math.pow(background.size_x * (circle.x - circle.draw_radius[0]), 2) + Math.pow(background.size_y * 
 		(circle.y - circle.draw_radius[1]), 2))
@@ -3319,8 +3345,8 @@ function create_circle2(circle) {
 	canvas2container2(_context, _canvas, circle);
 	objectContainer.addChild(circle.container)
 	
-	circle.container.x = x_abs(circle.x) - base_resolution_y * circle.radius - (margin/2) / quality;
-	circle.container.y = y_abs(circle.y) - base_resolution_y * circle.radius - (margin/2) / quality;
+	circle.container.x = x_abs(circle.x) - base_resolution * circle.radius - (margin/2) / quality;
+	circle.container.y = y_abs(circle.y) - base_resolution * circle.radius - (margin/2) / quality;
 	circle.container.width /= quality;
 	circle.container.height /= quality;
 	
@@ -3355,8 +3381,7 @@ function draw_entity(drawing, draw_function) {
 
 	var points = []
 
-	var base_resolution_x = background_sprite.width;
-	var base_resolution_y = background_sprite.height;
+	var base_resolution = background_sprite.height;
 	var quality = 1;
 	if (drawing.draw_zoom_level) {
 		quality /= drawing.draw_zoom_level;
@@ -3371,7 +3396,7 @@ function draw_entity(drawing, draw_function) {
 			top = Math.min(top, y);
 			right = Math.max(right, x);
 			bottom = Math.max(bottom, y);
-			points.push(base_resolution_x * x * quality, base_resolution_y * y * quality);
+			points.push(base_resolution * x * quality, base_resolution * y * quality);
 		}
 
 		var margin = 50;
@@ -3379,12 +3404,12 @@ function draw_entity(drawing, draw_function) {
 			margin = drawing.end_size * quality * 3;
 		}
 				
-		_canvas.width = base_resolution_x * (right - left) * quality + margin;
-		_canvas.height = base_resolution_y * (bottom - top) * quality + margin;
+		_canvas.width = base_resolution * (right - left) * quality + margin;
+		_canvas.height = base_resolution * (bottom - top) * quality + margin;
 		
 		//shift everything, this should make all coords > margin.
-		var x_diff = -left * base_resolution_x * quality + margin/2;
-		var y_diff = -top * base_resolution_y * quality + margin/2;
+		var x_diff = -left * base_resolution * quality + margin/2;
+		var y_diff = -top * base_resolution * quality + margin/2;
 		for (var i = 0; i < points.length; i+=2) {
 			points[i] += x_diff;
 			points[i+1] += y_diff;
@@ -3657,7 +3682,7 @@ function on_line_end(e) {
 	try {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var x = mouse_x_rel(mouse_location.x);
-		var y = mouse_y_rel(mouse_location.y);
+		var y = mouse_y_rel(mouse_location.y);		
 		x -= new_drawing.x;
 		y -= new_drawing.y;
 		if ((new_drawing.path.length == 0) || x != last(new_drawing.path)[0] || y != last(new_drawing.path)[1]) {
