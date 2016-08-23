@@ -646,22 +646,22 @@ function y_abs(y) {
 
 //relative -> local
 function to_x_local(x) {
-	return objectContainer.x + (x * background_sprite.height) * objectContainer.scale.y;
+	return objectContainer.x + (x * background_sprite.height) * objectContainer.scale.x;
 }
 
 //relative -> local, only scaling, no offset
 function to_x_local_vect(x) {
-	return (x * background_sprite.height) * objectContainer.scale.y;
+	return (x * background_sprite.height) * objectContainer.scale.x;
 }
 
 //local -> relative
 function from_x_local(x) {
-	return (x - objectContainer.x) / objectContainer.scale.y / background_sprite.height;
+	return (x - objectContainer.x) / objectContainer.scale.x / background_sprite.height;
 }
 
 //local -> relative, only scaling, no offset
 function from_x_local_vect(x) {
-	return x / objectContainer.scale.y / background_sprite.height;
+	return x / objectContainer.scale.x / background_sprite.height;
 }
 
 //relative -> local
@@ -695,7 +695,7 @@ function mouse_y_abs(y) {
 //translates mouse position from e.data.getLocalPosition(background_sprite) to a relative coordinate
 //TODO: consider using renderer.plugins.interaction.eventData.data.global and from_x_local, from_y_local instead
 function mouse_x_rel(x) {
-	return x/(background_sprite.height / background_sprite.scale.y);
+	return x/(background_sprite.height / background_sprite.scale.x);
 }
 
 //translates mouse position from e.data.getLocalPosition(background_sprite) to a relative coordinate
@@ -3419,12 +3419,15 @@ function draw_entity(drawing, draw_function) {
 		
 		canvas2container2(_context, _canvas, drawing);
 		
-		drawing.container.height /= quality;
-		drawing.container.width /= quality;
+		
+		drawing.container.height /= (quality) ;
+		drawing.container.width /= (quality) ;
 		drawing.container.x = x_abs(drawing.x) + x_abs(left) - (margin/2) / quality;
 		drawing.container.y = y_abs(drawing.y) + y_abs(top) - (margin/2) / quality;
 	
+
 		objectContainer.addChild(drawing.container);
+		
 		render_scene();
 	}
 }
@@ -3997,10 +4000,10 @@ function create_entity(entity) {
 
 	if (entity.container) {
 		if (entity.scale) {
-			entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
-			entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
+			entity.container.scale.x *= entity.container.orig_scale[0] * entity.scale[0];
+			entity.container.scale.y *= entity.container.orig_scale[1] * entity.scale[1];
 		}
-	
+			
 		if (entity.container.anchor) {
 			center_anchor(entity.container);
 		}
