@@ -12,6 +12,7 @@ If you want to run this yourself, make sure node.js, redis and mongodb are insta
 Now open a mongo shell and run:
 
 use wottactics
+
 db.createUser(
    {
      user: "username",
