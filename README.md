@@ -31,12 +31,13 @@ db.createUser(
 
 
 
-
 Login options:
 
 WG login should work out of the box.
 
-If you want facebook/google/twitter/battlesnet/vk/steam login to work, you need to fill in the "secrets.txt" files with secrets/ids generated when you register the app at their respecive services. Also for facebook/google/battlesnet/vk you'll need to whitelist the redirect uri's: http://hostname/auth/facebook/callback, http://hostname/auth/google/callback, http://hostname/auth/vk/callback, http://hostname/auth/battlenet/callback.
+If you want facebook/google/twitter/battlesnet/vk/steam login to work, you need to fill in the "secrets.txt" files with secrets/ids generated when you register the app at their respecive services.
+
+Also for facebook/google/battlesnet/vk you'll need to whitelist the redirect uri's: http://hostname/auth/facebook/callback, http://hostname/auth/google/callback, http://hostname/auth/vk/callback, http://hostname/auth/battlenet/callback.
 
 
 Other optional options:
