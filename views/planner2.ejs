@@ -57,24 +57,24 @@
 		<link rel="stylesheet" href="<%=static_host%>/warface_icons.css">
 	<% } %>
 
-	<script defer src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+	<script defer src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
 	<script defer src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<script defer src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 	<script defer src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>	
 	
-	<%if (false) {%>
-	<script defer src="<%=static_host%>/javascripts/lib/jquery.simplecolorpicker.js"></script>
-	<script defer src="<%=static_host%>/javascripts/lib/pixi.js"></script>
-	<script defer src="<%=static_host%>/javascripts/lib/TransparencyHitArea.js"></script>
-	<script defer src="<%=static_host%>/javascripts/lib/curve.js"></script>	
-	<%}%>
+	<script defer src="<%=static_host%>/javascripts/jquery.simplecolorpicker.js"></script>
+	<script defer src="<%=static_host%>/javascripts/pixi.js"></script>
+	<script defer src="<%=static_host%>/javascripts/TransparencyHitArea.js"></script>
+	<script defer src="<%=static_host%>/javascripts/curve.js"></script>
+	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	
-	<%if (false) {%>	
+	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
-
-	<script defer src="<%=static_host%>/javascripts/combined.js"></script>	
+	
+	<%if (false) {%>
+	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
+	<%}%>
 	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
@@ -1149,39 +1149,39 @@
 		</div>
 	</div>
 
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-	<!-- Modal content-->
-	<div style="background-color:#EEEEEE; padding:5px;">
-	<div class='input-group'>
-		<span class='input-group-addon'><%=l("Room link")%></span>
-		<input id="send_link" class='form-control col-lg-9' type='text'/>
-		<span class='input-group-btn'>
-			<button id='link_send' class='btn btn-default'><%=l('Send')%></button>
-		</span>
-		<span class='input-group-btn'>
-			<button id='modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
-		</span>
+	<div id="myModal" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+		<!-- Modal content-->
+		<div style="background-color:#EEEEEE; padding:5px;">
+		<div class='input-group'>
+			<span class='input-group-addon'><%=l("Room link")%></span>
+			<input id="send_link" class='form-control col-lg-9' type='text'/>
+			<span class='input-group-btn'>
+				<button id='link_send' class='btn btn-default'><%=l('Send')%></button>
+			</span>
+			<span class='input-group-btn'>
+				<button id='modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
+			</span>
+		</div>
+		<input type="checkbox" id="this_slide_only" style="vertical-align:-2px;"><span style="color:black">This slide only</span>
+		</div>
+	  </div>
 	</div>
-	<input type="checkbox" id="this_slide_only" style="vertical-align:-2px;"><span style="color:black">This slide only</span>
-	</div>
-  </div>
-</div>
 
-<div id="map_modal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-	<!-- Modal content-->
-	<div class='input-group'>
-		<span class='input-group-addon'><%=l("Url")%></span>
-		<input id="map_url" class='form-control col-lg-9' type='text'/>
-		<span class='input-group-btn'>
-			<button id='set_map' class='btn btn-default'><%=l('Load')%></button>
-		</span>
-		<span class='input-group-btn'>
-			<button id='map_modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
-		</span>
+	<div id="map_modal" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+		<!-- Modal content-->
+		<div class='input-group'>
+			<span class='input-group-addon'><%=l("Url")%></span>
+			<input id="map_url" class='form-control col-lg-9' type='text'/>
+			<span class='input-group-btn'>
+				<button id='set_map' class='btn btn-default'><%=l('Load')%></button>
+			</span>
+			<span class='input-group-btn'>
+				<button id='map_modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
+			</span>
+		</div>
+	  </div>
 	</div>
-  </div>
-</div>
-
 </body>
+

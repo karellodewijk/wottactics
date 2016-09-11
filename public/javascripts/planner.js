@@ -79,7 +79,6 @@ function hashstring(str) {
 }
 
 var server = servers[hashstring(room) % servers.length];
-
 console.log("connecting to server: ", server)
 
 function parse_domain(domain) {
@@ -90,26 +89,28 @@ function parse_domain(domain) {
 	return '.' + subDomain.join('.')
 }
 
+/*
+//get sid from cookie, maybe later
+function getCookie(name) {
+	var value = "; " + document.cookie;
+	var parts = value.split("; " + name + "=");
+	if (parts.length == 2) return parts.pop().split(";").shift();
+}
+
+var sid = getCookie("connect.sid");
+*/
+
+var sid = $("#sid").attr("data-sid")
+
 var socket;
 try {
-	if (Modernizr.websockets) {
-		socket = io.connect(server, {
-			reconnectionDelay: 100,
-			reconnectionDelayMax: 500,
-			'reconnection limit' : 1000,
-			'max reconnection attempts': Infinity,
-			query: "connect_sid="+$("#sid").attr("data-sid")+"&host="+parse_domain(location.hostname)
-		});	
-	} else {
-		socket = io.connect(server, {
-			transports: ['polling'],
-			reconnectionDelay: 100,
-			reconnectionDelayMax: 500,
-			'reconnection limit' : 1000,
-			'max reconnection attempts': Infinity,
-			query: "connect_sid="+$("#sid").attr("data-sid")+"&host="+parse_domain(location.hostname)
-		});	
-	}
+	socket = io.connect(server, {
+		reconnectionDelay: 100,
+		reconnectionDelayMax: 500,
+		'reconnection limit' : 1000,
+		'max reconnection attempts': Infinity,
+		query: "connect_sid="+sid+"&host="+parse_domain(location.hostname)
+	});	
 } catch(e) {
 	console.log(e);
 }
@@ -276,7 +277,7 @@ var rotate_arrow3;
 var select_box_dirty = false;
 var select_center;
 var objectContainer;
-var fast_container;
+//var fast_container;
 var background_sprite;
 var renderer;
 var size
@@ -446,9 +447,9 @@ function emit_pan_zoom() {
 	socket.emit('pan_zoom', room, zoom_level, from_x_local_vect(objectContainer.x), from_y_local_vect(objectContainer.y));
 }
 
-function pan_zoom(new_zoom_level, x, y) {
+function pan_zoom(new_zoom_level, x, y) {	
 	var zoom_factor = zoom_level / new_zoom_level;
-	
+
 	objectContainer.scale.x *= zoom_factor;
 	objectContainer.scale.y *= zoom_factor;	
 	
@@ -724,7 +725,6 @@ function get_video_type(path) {
 }
 
 function reset_background() {
-	pan_zoom(1,0,0);
 	video_ready = false;
 	if (video_media) {
 		video_media.setCurrentTime(0);
@@ -898,7 +898,9 @@ function wait_for_seek(cb) {
 	}, 5);
 }
 
-function change_background_dim(height) {
+function change_background_dim(height) {	
+	var old_zoom_level = zoom_level;
+
 	var ratio = background_sprite.texture.width / background_sprite.texture.height;
 	var width = height * ratio; 
 	
@@ -921,11 +923,13 @@ function change_background_dim(height) {
 	}
 	
 	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
-	pan_zoom(1,0,0);
+	pan_zoom(old_zoom_level, from_x_local_vect(objectContainer.x), from_y_local_vect(objectContainer.y))
+	
 }
 
-function set_background(new_background, cb) {	
+function set_background(new_background, cb) {
 	if (new_background.path != "") {
+		
 		if (!new_background.is_video) {		
 			resources_loading++;
 
@@ -933,7 +937,7 @@ function set_background(new_background, cb) {
 
 			var on_loaded = function() {
 				reset_background()
-
+				
 				background = new_background;
 				history[background.uid] = background;
 				background_sprite.texture = texture;
@@ -962,10 +966,9 @@ function set_background(new_background, cb) {
 				} else {
 					$("#map_size").text("");
 				}
-				
-				window.onresize();		
-
+					
 				change_background_dim(renderer.view.height)
+				window.onresize();
 				
 				render_scene();
 				
@@ -1003,7 +1006,7 @@ function set_background(new_background, cb) {
 			empty_backround.lineTo(0, renderer.height);
 			empty_backround.lineTo(0, 0);
 			empty_backround.endFill();
-			background_sprite.texture = empty_backround.generateTexture();
+			background_sprite.texture = renderer.generateTexture(empty_backround);
 			$("#map_size").text("");
 			
 			change_background_dim(renderer.view.height);
@@ -1134,8 +1137,9 @@ function set_background(new_background, cb) {
 		empty_backround.lineTo(renderer.width, renderer.height);
 		empty_backround.lineTo(0, renderer.height);
 		empty_backround.lineTo(0, 0);
-		empty_backround.endFill();
-		background_sprite.texture = empty_backround.generateTexture();
+		empty_backround.endFill();		
+		background_sprite.texture = renderer.generateTexture(empty_backround);
+		
 		$("#map_size").text("");
 
 		change_background_dim(renderer.view.height);
@@ -1701,6 +1705,7 @@ function on_left_click(e) {
 		
 		//ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
 		//socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
+		
 		last_ping_time = new Date();
 		setup_mouse_events(on_ping_move, on_ping_end);
 	} else if (active_context == "select_context") {
@@ -2097,7 +2102,7 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 	graphic.drawShape(shape);
 	graphic.endFill();
 	graphic.boundsPadding = 1;
-	var sprite = new PIXI.Sprite(graphic.generateTexture(renderer));
+	var sprite = new PIXI.Sprite(renderer.generateTexture(graphic));
 	return sprite;
 }
 
@@ -2920,7 +2925,7 @@ function draw_select_box(shape) {
 	graphic.beginFill(16777215, 0.2);
 	graphic.drawShape(shape);
 	graphic.endFill();
-	var sprite = new PIXI.Sprite(graphic.generateTexture(renderer));
+	var sprite = new PIXI.Sprite(renderer.generateTexture(graphic));
 	return sprite;
 }
 
@@ -3173,7 +3178,8 @@ function draw_end_path(context, drawing) {
 }
 
 //draw end. The default scale is if you are drawing on a canvas the exact size of the render window
-function draw_end(context, drawing, a, b, scale = 1/zoom_level) {
+function draw_end(context, drawing, a, b, scale) {
+	if (scale === undefined) scale = 1/zoom_level;
 	var size = 10 * (size_y/1000) * scale;
 	if (drawing.end_size) {			
 		size = drawing.end_size * (size_y/1000) * scale;
@@ -3255,7 +3261,8 @@ function canvas2container(_context, _canvas, entity) {
 	}
 }
 
-function init_shape_canvas(_context, shape, scale = 1) {
+function init_shape_canvas(_context, shape, scale) {
+	if(scale === undefined) scale = 1;
 	init_canvas(_context, shape.outline_thickness * scale, shape.outline_color, shape.style, shape.fill_opacity, shape.fill_color, shape.outline_opacity)
 }
 
@@ -3279,12 +3286,14 @@ function create_rectangle2(rectangle) {
 	_context.strokeRect(margin/2, margin/2, base_resolution * rectangle.width * quality, base_resolution * rectangle.height * quality);
 
 	canvas2container2(_context, _canvas, rectangle);
-	objectContainer.addChild(rectangle.container)
 
 	rectangle.container.x = x_abs(rectangle.x) - (margin/2) / quality;
 	rectangle.container.y = y_abs(rectangle.y) - (margin/2) / quality;
 	rectangle.container.width /= quality;
 	rectangle.container.height /= quality;
+	
+	rectangle.container.orig_scale = [rectangle.container.scale.x, rectangle.container.scale.y];
+	objectContainer.addChild(rectangle.container)
 	
 	render_scene();
 }
@@ -3343,12 +3352,14 @@ function create_circle2(circle) {
 	}
 	
 	canvas2container2(_context, _canvas, circle);
-	objectContainer.addChild(circle.container)
 	
 	circle.container.x = x_abs(circle.x) - base_resolution * circle.radius - (margin/2) / quality;
 	circle.container.y = y_abs(circle.y) - base_resolution * circle.radius - (margin/2) / quality;
 	circle.container.width /= quality;
 	circle.container.height /= quality;
+	
+	circle.container.orig_scale = [circle.container.scale.x, circle.container.scale.y];
+	objectContainer.addChild(circle.container)
 	
 	render_scene();
 }
@@ -3417,15 +3428,14 @@ function draw_entity(drawing, draw_function) {
 		
 		draw_function(_context, points, quality);
 		
-		canvas2container2(_context, _canvas, drawing);
-		
+		canvas2container2(_context, _canvas, drawing);	
 		
 		drawing.container.height /= (quality) ;
 		drawing.container.width /= (quality) ;
 		drawing.container.x = x_abs(drawing.x) + x_abs(left) - (margin/2) / quality;
 		drawing.container.y = y_abs(drawing.y) + y_abs(top) - (margin/2) / quality;
 	
-
+		drawing.container.orig_scale = [drawing.container.scale.x, drawing.container.scale.y];
 		objectContainer.addChild(drawing.container);
 		
 		render_scene();
@@ -3727,7 +3737,8 @@ function on_line_end(e) {
 }
 
 
-function create_text_sprite(msg, color, font_size, font, background, label_shadow, font_modifier = "") {
+function create_text_sprite(msg, color, font_size, font, background, label_shadow, font_modifier) {
+	if(font_modifier === undefined) font_modifier = "";
 	var _canvas = document.createElement("canvas");
 	var scaling = objectContainer.scale.y;
 	var _context = _canvas.getContext("2d");
@@ -4000,8 +4011,8 @@ function create_entity(entity) {
 
 	if (entity.container) {
 		if (entity.scale) {
-			entity.container.scale.x *= entity.container.orig_scale[0] * entity.scale[0];
-			entity.container.scale.y *= entity.container.orig_scale[1] * entity.scale[1];
+			entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
+			entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
 		}
 			
 		if (entity.container.anchor) {
@@ -4090,6 +4101,9 @@ function update_my_user() {
 		if (tactic_name && tactic_name != "") {
 			$("#save").show();
 		}
+		$('#sign_in_text').text(my_user.name.substring(0,9));
+		$('#login_dropdown').removeClass('btn-warning')
+		$('#login_dropdown').addClass('btn-success')
 	} else {
 		$("#store_tactic_popover").hide();
 		$("#save").hide();
@@ -4197,8 +4211,13 @@ function chat(message, color) {
 	$("#chat_box").scrollTop($("#chat_box")[0].scrollHeight);
 }
 
+function supports_color_input() {
+  var colorInput = $('<input type="color" value="!" />')[0];
+  return colorInput.type === 'color' && colorInput.value !== '!';
+};
+
 function initialize_color_picker(slider_id, variable_name) {
-	if (Modernizr.inputtypes.color) {
+	if (supports_color_input()) {
 		$('#' + slider_id + ' ~ input').show();
 	} else {
 		$('#' + slider_id + ' ~ input').hide();
@@ -5002,7 +5021,9 @@ function set_playback_rate(base, rate) {
 	}
 }
 
-function create_hp_bar(scale = 1) {
+function create_hp_bar(scale) {
+	if(scale === undefined) scale = 1;
+	
 	var width = to_x_local_vect(0.125 * scale);
 	var height = to_y_local_vect(0.015 * scale);
 	
@@ -5215,8 +5236,9 @@ function wot_connect() {
 							}
 							
 						}
-						difference = new Set([...new Set(Object.keys(icons))].filter(x => !ids.has(x)));
-						for (let i of difference) {
+						difference = Object.keys(icons).filter(function(a) {return !ids.has(a)});
+						
+						for (var i in difference) {
 							if (icons[i] && icons[i].container) {
 								icons[i].container.alpha = 0.5;
 							}
@@ -5241,11 +5263,7 @@ $(document).ready(function() {
 	size_x = size;
 	size_y = size;
 
-	if (Modernizr.webgl && !nowebgl) {
-		renderer = PIXI.autoDetectRenderer(size, size, {transparent:true});
-	} else {
-		renderer = new PIXI.CanvasRenderer(size, size, {transparent:true});
-	}
+	renderer = PIXI.autoDetectRenderer(size, size, {transparent:true});
 	renderer.autoResize = true;
 	useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
@@ -5265,6 +5283,7 @@ $(document).ready(function() {
 	
 	// create the root of the scene graph
 	objectContainer = new PIXI.Container();
+	/*
 	fast_container = new PIXI.ParticleContainer(10000, {
 		scale: true,
 		position: true,
@@ -5272,6 +5291,7 @@ $(document).ready(function() {
 		uvs: false,
 		alpha: false
 	});
+	*/
 	
 	//initialize grid layer
 	if (game == "aw") {
@@ -5284,7 +5304,7 @@ $(document).ready(function() {
 	
 	objectContainer.addChild(background_sprite);
 	objectContainer.addChild(grid_layer);
-	objectContainer.addChild(fast_container);
+	//objectContainer.addChild(fast_container);
 	
 	objectContainer.interactive = true;
 	objectContainer.mousedown = on_left_click;
@@ -6072,7 +6092,7 @@ $(document).ready(function() {
 		}
 	});
 	
-	socket.on('room_data', function(new_room_data, my_id, new_tactic_name) {
+	socket.on('room_data', function(new_room_data, my_id, new_tactic_name, locale) {
 		cleanup();
 		room_data = new_room_data;
 		video_paused = new_room_data.video_paused;
@@ -6080,6 +6100,15 @@ $(document).ready(function() {
 		is_room_locked = room_data.locked;
 		my_user_id = my_id;
 		tactic_name = new_tactic_name;
+		
+		/*
+		$("#locale_icon").addClass("icon-"+locale);
+		$("#locale_text").text(locale);
+		$("#language_select").find('a').each(function() { 
+			$(this).attr('href', $(this).attr('href') + parse_domain(location.href.split('://')[1]))
+		});
+		*/
+		
 		if (tactic_name && tactic_name != "") {
 			document.title = "Tactic - " +  tactic_name;
 		}
@@ -6106,6 +6135,8 @@ $(document).ready(function() {
 		var on_done = function() {
 			if (room_data.pan_zoom) {
 				pan_zoom(room_data.pan_zoom[0], room_data.pan_zoom[1], room_data.pan_zoom[2]);
+			} else {
+				pan_zoom(1, 0, 0);
 			}
 			if (wot_live) {
 				wot_connect();

@@ -70,8 +70,7 @@ PIXI.TransparencyHitArea.prototype.contains = function(x, y) {
     x = x + this.sprite.anchor.x * w;
     y = y + this.sprite.anchor.y * h;
 
-    if(x >= 0 && x <= w && y >= 0 && y <= h)
-    {
+    if(x >= 0 && x <= w && y >= 0 && y <= h)  {
         // the rectangle bounds check succeeded
         var xInTexture = Math.round(x + this.sprite.texture.frame.x);
         var yInTexture = Math.round(y + this.sprite.texture.frame.y);

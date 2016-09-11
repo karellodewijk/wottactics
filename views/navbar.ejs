@@ -101,7 +101,10 @@
 		document.getElementsByTagName('body')[0].style.paddingTop = ''+(document.getElementsByClassName('navbar')[0].clientHeight+10)+'px'
 	};
 	window.onresize = pad;
-    pad();
+	pad();
+	document.addEventListener('DOMContentLoaded', function () { 
+	   pad();
+	});
 </script>
 
 
