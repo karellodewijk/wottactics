@@ -4,10 +4,9 @@ Hi, visit the page at www.wottactic.eu for this code in action..
 
 The interesting parts of this project are the server ("app.js") and the clientside javascript that makes the editor tick, ("public/javascripts/planner.js").
 
+To get started quickly:
 
-If you want to run this yourself, make sure node.js, redis and mongodb are installed. 
-
-- Install mongodb.
+- Install mongo
 - Open a mongo shell and run:
 
 use wottactics
@@ -20,7 +19,8 @@ db.createUser(
    }
 )
 
-- Start redis with default options ("redis-server dir some_path").
+- install redis
+- install nodejs
 - Install dependencies with npm ("npm install" in project directory)
 - Check the secrets.txt file, at the very least you need:
 	- cookie secret: any random string
@@ -28,6 +28,8 @@ db.createUser(
 	- valid redis server info from step 2
 	- socket_io_servers: localhost will do for testing locally. But if you are hosting it, it should contain your public hostname or ip. Or a comma seperated list of hosts/ips for load balancing. e.g.: "socket_io_servers": "server1.wottactic.eu:80,server2.wottactic.eu:80" (IMPORTANT)
 - run "node app.js" or "sudo node app.js" (sudo because default port 80 requires elevated privileges)
+
+It works on both windows and linux systems. 
 
 
 Login options:
