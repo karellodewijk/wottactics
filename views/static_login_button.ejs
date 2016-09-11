@@ -1,0 +1,48 @@
+<li class="dropdown">
+	<button class="btn btn-warning navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown">
+		<span id="sign_in_text"><%=l('Sign in')%></span> <span class="caret"></span>
+	</button>
+	
+	<ul class="dropdown-menu" id="login_dropdown_select" aria-labelledby="login_dropdown">
+		<li><a data-action='/auth/google' href="javascript:void(0)"><div class="inline icon icon-google"></div>&nbsp; Google</a></li>
+		<li><a data-action='/auth/facebook' href="javascript:void(0)"><div class="inline icon icon-facebook"></div>&nbsp; Facebook</a></li>
+		<li><a data-action='/auth/twitter' href="javascript:void(0)"><div class="inline icon icon-twitter"></div>&nbsp; Twitter</a></li>
+		<li><a data-action='/auth/steam' href="javascript:void(0)"><div class="inline icon icon-steam"></div>&nbsp; Steam</a></li>
+		<li><a data-action='/auth/vk' href="javascript:void(0)" href="javascript:void(0)"><div class="inline icon icon-vk"></div>&nbsp; VK</a></li>
+		<% if (url.split('/')[0] == "gametactic.org" || url.split('/')[0] == "localhost") { %> 
+			<li><a data-action='/auth/battlenet' href="javascript:void(0)"><div class="inline icon icon-battlenet"></div>&nbsp; Battle.net</a></li>
+		<% } %> 
+		<li><a data-action='/auth/openid' id="http://eu.wargaming.net/id/" href="javascript:void(0)"><div class="inline icon icon-wargaming"></div>&nbsp; Wargaming EU</a></li>
+		<li><a data-action='/auth/openid' id="http://ru.wargaming.net/id/" href="javascript:void(0)"><div class="inline icon icon-wargaming"></div>&nbsp; Wargaming RU</a></li>
+		<li><a data-action='/auth/openid' id="http://asia.wargaming.net/id/" href="javascript:void(0)"><div class="inline icon icon-wargaming"></div>&nbsp; Wargaming SEA</a></li>
+		<li><a data-action='/auth/openid' id="http://na.wargaming.net/id/" href="javascript:void(0)"><div class="inline icon icon-wargaming"></div>&nbsp; Wargaming NA</a></li>
+		<li><a data-action='/auth/openid' id="http://kr.wargaming.net/id/" href="javascript:void(0)"><div class="inline icon icon-wargaming"></div>&nbsp; Wargaming KOR</a></li>
+		<li><a href="http://<%=url.split('/')[0]%>/logout"><div class="inline icon icon-logout"></div>&nbsp; <%=l('Log out')%></a></li>
+	</ul>
+</li>
+
+<script type="text/javascript">
+
+var login_options = document.getElementById("login_dropdown_select").children;
+
+for (var i in login_options) {
+	if (login_options.hasOwnProperty(i)) {
+		login_options[i].children[0].onclick = function() {
+			if (this.hasAttribute('data-action')) {
+				var f = document.createElement("form");
+				f.setAttribute('method', "POST");
+				f.setAttribute('action', this.getAttribute('data-action'));	
+				if (this.hasAttribute('id')) {
+					var i = document.createElement("input");
+					i.setAttribute('type', "hidden");
+					i.setAttribute('name', "openid_identifier");
+					i.setAttribute('value', this.getAttribute('id'));
+					f.appendChild(i);
+				}
+				document.getElementsByTagName('body')[0].appendChild(f);
+				f.submit();
+			}
+		}
+	}
+}
+</script>

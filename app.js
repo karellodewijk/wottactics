@@ -271,7 +271,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			var hostSession = mwCache[host];
 			if (!hostSession) {
 				var store = new RedisStore(secrets.redis_options);
-				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: store});
+				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000), httpOnly:false}, rolling: true, store: store});
 				mwCache[host].store = store;
 			}
 			hostSession(req, res, next);
@@ -341,7 +341,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	function session_from_sessionid_host(sessionId, host, cb) {
 		if (!mwCache[host]) {
 			var store = new RedisStore(secrets.redis_options);
-			mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000) }, store: store});
+			mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000), httpOnly: false}, rolling: true, store: store});
 			mwCache[host].store = store;
 		}
 		if (sessionId) {
@@ -1285,7 +1285,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				tactic_name = "";
 			}
 			
-			socket.emit('room_data', room_data[room], user.id, tactic_name);
+			socket.emit('room_data', room_data[room], user.id, tactic_name, socket.request.session.locale);
 		}
 	}
 	
@@ -1628,7 +1628,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 					room_data[room].name;
 				}
 				room_data[room] = create_empty_room(user, room_data[room].game);
-				io.to(room).emit('room_data', room_data[room], user.id, tactic_name);
+				io.to(room).emit('room_data', room_data[room], user.id, tactic_name, socket.request.session.locale);
 			}
 		});
 		

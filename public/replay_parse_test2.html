@@ -57,6 +57,16 @@
 			}
 		};
 	}
+
+	// parse a date in 'DD.MM.JJJJ HH:MM:SS' format
+	function parseDate(input) {
+	  var parts = input.split(' ');
+	  var date = parts[0].split('.');
+	  var time = parts[1].split(':');
+	  return new Date(date[2], date[1]-1 , date[0] , time[0], time[1], time[2])
+	}
+	
+	battle_types = ['Unknown', 'Regular', 'Training', 'Company', 'Tournament', 'Clanwar', 'Tutorial', 'Team battle', 'Historical battle', 'Event', 'Skirmish', 'Stronghold' , 'Ranked', 'Clanwar'];
 	
 	function parse_json(block1, block2) {
 		//$("body").append("<pre>" + JSON.stringify(block1, null, 2)+"<\pre>");
@@ -81,8 +91,11 @@
 			}
 		}
 		
+		console.log(replay_data.side, block2[0].common.winnerTeam)
 		if (replay_data.side == block2[0].common.winnerTeam) {
-			replay_data.win = 0;
+			replay_data.win = "y";
+		} else {
+			replay_data.win = "n";
 		}
 
 		
@@ -115,9 +128,8 @@
 			commander_select += ">" + replay_data.players[i][1] + "</option>";
 		}
 		commander_select += '</select>'
-				
-		console.logreplay_data
 		
+		$("body").append("<pre>" + JSON.stringify(replay_data, null, 2)+"<\pre>");				
 	}
 	document.getElementById('files').addEventListener('change', handleFileSelect, false);
 	
