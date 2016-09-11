@@ -1,0 +1,1 @@
+Put files from the wottactics js folder here to combine and minimize them
