@@ -30,7 +30,6 @@ def draw_spawn(node, output_file, img):
 	
 for map in maps:
 	filename = map.find('name').text + ".xml"
-	print filename
 
 	doc = BeautifulSoup(open(filename), "html.parser")
 	bottom_left = parse_coords(doc.boundingbox.bottomleft.text)
@@ -75,7 +74,7 @@ for map in maps:
 			draw_spawn(doc.gameplaytypes.ctf.teamspawnpoints.team1.position, output_file, "green_start.png")
 			draw_spawn(doc.gameplaytypes.ctf.teamspawnpoints.team2.position, output_file, "red_start.png")
 			
-		print output_file
+		print "<option data-mapid='" + map.find('name').text +"_ctf' data-size='" + str(int(width)) + "x" + str(int(height)) + "' value='<%=static_host%>/maps/" + map.ctf.text + "'><%=l('" + map.en.text + "')%></option>"
 
 	if (doc.gameplaytypes.domination):
 		output_file = "output/"+map.domination.text;
@@ -95,7 +94,7 @@ for map in maps:
 		draw_spawn(doc.gameplaytypes.domination.teamspawnpoints.team1.position, output_file, "green_start.png")
 		draw_spawn(doc.gameplaytypes.domination.teamspawnpoints.team2.position, output_file, "red_start.png")
 		
-		print output_file
+		print "<option data-mapid='" + map.find('name').text +"_domination' data-size='" + str(int(width)) + "x" + str(int(height)) + "' value='<%=static_host%>/maps/" + map.domination.text + "'><%=l('" + map.en.text + "')%> (<%=l('Encounter')%>)</option>"
 
 	if (doc.gameplaytypes.assault2):
 		output_file = "output/"+map.assault2.text;
@@ -128,7 +127,7 @@ for map in maps:
 		if (doc.gameplaytypes.assault2.teamspawnpoints.team2.position):
 			draw_spawn(doc.gameplaytypes.assault2.teamspawnpoints.team2.position, output_file, "red_start.png")
 			
-		print output_file
+		print "<option data-mapid='" + map.find('name').text +"_assault2' data-size='" + str(int(width)) + "x" + str(int(height)) + "' value='<%=static_host%>/maps/" + map.assault2.text + "'><%=l('" + map.en.text + "')%> (<%=l('Attack/Defence')%>)</option>"
 		
 	if (doc.gameplaytypes.assault):
 		output_file = "output/"+map.assault.text;
@@ -144,6 +143,6 @@ for map in maps:
 		for position in doc.gameplaytypes.assault.teamspawnpoints.team2.find_all('position'):
 			draw_spawn(position, output_file, "red_start.png")
 			
-		print output_file
+		print "<option data-mapid='" + map.find('name').text +"_assault' data-size='" + str(int(width)) + "x" + str(int(height)) + "' value='<%=static_host%>/maps/" + map.assault.text + "'><%=l('" + map.en.text + "')%> (<%=l('Assault')%>)</option>"
 
 
