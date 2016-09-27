@@ -1,18 +1,21 @@
 <_list_.xml>
  <map>
   <id>1</id>
+  <en>Karelia</en>
   <name>01_karelia</name>
   <ctf>karelia.png</ctf>
   <assault>karelia_assault.png</assault>
  </map>
  <map>
   <id>2</id>
+  <en>Malinovka</en>
   <name>02_malinovka</name>
   <ctf>malinovka.png</ctf>
   <domination>malinovka_encounter.png</domination>
  </map>
  <map>
   <id>3</id>
+  <en>Himmelsdorf</en>
   <name>04_himmelsdorf</name>
   <ctf>himmelsdorf.png</ctf>
   <domination>himmelsdorf_encounter.png</domination>
@@ -20,6 +23,7 @@
  </map>
  <map>
   <id>4</id>
+  <en>Phrokorovka</en>
   <name>05_prohorovka</name>
   <ctf>phrokorovka.png</ctf>
   <domination>phrokorovka_encounter.png</domination>
@@ -27,6 +31,7 @@
  </map>
  <map>
   <id>5</id>
+  <en>Lakeville</en>
   <name>07_lakeville</name>
   <ctf>lakeville.png</ctf>
   <domination>lakeville_encounter.png</domination>
@@ -34,12 +39,14 @@
  </map>
  <map>
   <id>6</id>
+  <en>Ensk</en>
   <name>06_ensk</name>
   <ctf>ensk.png</ctf>
   <domination>ensk_encounter.png</domination>
  </map>
  <map>
   <id>7</id>
+  <en>Murovanka</en>
   <name>11_murovanka</name>
   <ctf>murovanka.png</ctf>
   <domination>murovanka_encounter.png</domination>
@@ -47,6 +54,7 @@
  </map>
  <map>
   <id>8</id>
+  <en>Erlenberg</en>
   <name>13_erlenberg</name>
   <ctf>erlenberg.png</ctf>
   <domination>erlenberg_encounter.png</domination>
@@ -54,6 +62,7 @@
  </map>
  <map>
   <id>9</id>
+  <en>Mines</en>
   <name>10_hills</name>
   <ctf>mines.png</ctf>
   <domination>mines_encounter.png</domination>
@@ -61,17 +70,20 @@
  </map>
  <map>
   <id>11</id>
+  <en>Cliff</en>
   <name>18_cliff</name>
   <ctf>cliffs.png</ctf>
   <assault2>cliff_attac_defence.png</assault2>  
  </map>
  <map>
   <id>12</id>
+  <en>Abbey</en>
   <name>19_monastery</name>
   <ctf>abbey.png</ctf>
  </map>
  <map>
   <id>13</id>
+  <en>Sand River</en>
   <name>28_desert</name>
   <ctf>sand_river.png</ctf>
   <domination>sand_river_encounter.png</domination>
@@ -80,6 +92,7 @@
  </map>
  <map>
   <id>14</id>
+  <en>Steppes</en>
   <name>35_steppes</name>
   <ctf>steppes.png</ctf>
   <domination>steppes_encounter.png</domination>
@@ -87,40 +100,47 @@
  </map>
  <map>
   <id>15</id>
+  <en>Mountain pass</en>
   <name>37_caucasus</name>
   <ctf>mountain_pass.png</ctf>
  </map>
  <map>
   <id>16</id>
+  <en>Fjords</en>
   <name>33_fjord</name>
   <ctf>fjords.png</ctf>
  </map>
  <map>
   <id>17</id>
+  <en>Redshire</en>
   <name>34_redshire</name>
   <ctf>redshire.png</ctf>
   <domination>redshire_encounter.png</domination>
  </map>
  <map>
   <id>18</id>
+  <en>Fisherman\'s Bay</en>
   <name>36_fishing_bay</name>
   <ctf>fishermans_bay.png</ctf>
  </map>
  <map>
   <id>19</id>
+  <en>Arctic Region</en>
   <name>38_mannerheim_line</name>
   <ctf>arctic_region.png</ctf>
   <assault2>arctic_attac_defence.png</assault2>  
  </map>
  <map>
   <id>20</id>
+  <en>Ruinberg</en>
   <name>08_ruinberg</name>
   <ctf>ruinberg.png</ctf>
   <domination>ruinberg_encounter.png</domination>
   <assault2>ruinberg_attac_defence.png</assault2>   
- </map>
+ </map> 
  <map>
   <id>21</id>
+  <en>Siegfried Line</en>
   <name>14_siegfried_line</name>
   <ctf>siegfried_line.png</ctf>
   <domination>siegfried_line_encounter.png</domination>
@@ -129,65 +149,77 @@
  </map>
  <map>
   <id>22</id>
+  <en>Swamp</en>
   <name>22_slough</name>
   <ctf>swamp.png</ctf>
  </map>
  <map>
   <id>23</id>
+  <en>Westfield</en>
   <name>23_westfeld</name>
   <ctf>westfield.png</ctf>
   <assault>westfield_assault.png</assault>
  </map>
  <map>
   <id>24</id>
+  <en>El Halluf</en>
   <name>29_el_hallouf</name>
   <ctf>el_halluf.png</ctf>
   <domination>el_halluf_encounter.png</domination>
  </map>
  <map>
   <id>26</id>
+  <en>Airfield</en>
   <name>31_airfield</name>
   <ctf>airfield.png</ctf>
  </map>
  <map>
   <id>28</id>
+  <en>Widepark</en>
   <name>17_munchen</name>
   <ctf>widepark.png</ctf>
  </map>
  <map>
   <id>31</id>
+  <en>Live Oaks</en>
   <name>44_north_america</name>
   <ctf>live_oaks.png</ctf>
  </map>
  <map>
   <id>34</id>
+  <en>Highway</en>
   <name>45_north_america</name>
   <ctf>highway.png</ctf>
  </map>
  <map>
   <id>49</id>
+  <en>Serene Coast</en>
   <name>47_canada_a</name>
   <ctf>serene_coast.png</ctf>
  </map>
  <map>
   <id>51</id>
+  <en>Sacred Valley</en>
   <name>73_asia_korea</name>
   <ctf>sacred_valley.png</ctf>
   <domination>sacred_valley_encounter.png</domination>
  </map>
  <map>
   <id>55</id>
+  <en>Tundra</en>
   <name>63_tundra</name>
   <ctf>tundra.png</ctf>
   <assault2>tundra_attac_defence.png</assault2>    
  </map>
  <map>
   <id>56</id>
+  <en>Windstorm</en>
   <name>84_winter</name>
   <ctf>windstorm.png</ctf>
  </map>
  <map>
   <id>57</id>
+  <en>Winter Himmelsdorf</en>
   <name>86_himmelsdorf_winter</name>
   <ctf>winter_himmelsdorf.png</ctf>
   <domination>winter_himmelsdorf_encounter.png</domination>
@@ -196,34 +228,40 @@
  </map>
  <map>
   <id>60</id>
+  <en>Kharkov</en>
   <name>83_kharkiv</name>
   <ctf>krarkov.png</ctf>
   <assault2>kharkov_attac_defence.png</assault2>
  </map>
  <map>
   <id>62</id>
+  <en>Fiery Salient</en>
   <name>96_prohorovka_defense</name>
   <ctf>fiery_salient.png</ctf>
   <domination>fiery_salient_encounter.png</domination>
  </map>
  <map>
   <id>66</id>
+  <en>Stalingrad</en>
   <name>92_stalingrad</name>
   <ctf>stalingrad.png</ctf>
  </map>
  <map>
   <id>67</id>
+  <en>Mittengard</en>
   <name>100_thepit</name>
   <ctf>mittengard.png</ctf>
  </map>
  <map>
   <id>68</id>
+  <en>Ghost Town</en>
   <name>95_lost_city</name>
   <ctf>ghost_town.png</ctf>
   <assault2>ghost_town_attack_defence.png</assault2>
  </map>
  <map>
   <id>69</id>
+  <en>Winter Ruinberg</en>
   <name>103_ruinberg_winter</name>
   <ctf>winter_ruinberg.png</ctf>
   <domination>winter_ruinberg_encounter.png</domination>
@@ -231,20 +269,20 @@
  </map>
  <map>
   <id>70</id>
+  <en>Overlord</en>
   <name>101_dday</name>
   <ctf>overlord.png</ctf>
  </map>
  <map>
-  <id>71</id>
-  <name>111_paris</name>
- </map>
- <map>
-  <id>72</id>
-  <name>105_germany</name>
- </map>
- <map>
   <id>74</id>
+  <en>Pilsen</en>
   <name>114_czech</name>
   <ctf>pilsen.png</ctf>
+ </map>
+ <map>
+  <id>75</id>
+  <en>Paris</en>
+  <name>112_eiffel_tower_ctf</name>
+  <ctf>paris.png</ctf>
  </map>
 </_list_.xml>
