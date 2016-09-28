@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v4.0.0
- * Compiled Wed Aug 24 2016 13:18:58 GMT+0100 (BST)
+ * pixi.js - v4.0.2
+ * Compiled Wed Sep 21 2016 13:19:39 GMT+0100 (BST)
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -33,7 +33,7 @@ var Buffer = function(gl, type, data, drawType)
      *
      * @member {WebGLBuffer}
      */
-	this.buffer = gl.createBuffer(); 
+	this.buffer = gl.createBuffer();
 
 	/**
      * The type of the buffer
@@ -60,6 +60,8 @@ var Buffer = function(gl, type, data, drawType)
 	{
 		this.upload(data);
 	}
+
+	this._updateID = 0;
 };
 
 /**
@@ -369,7 +371,7 @@ var compileProgram = require('./shader/compileProgram'),
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  */
-var Shader = function(gl, vertexSrc, fragmentSrc)
+var Shader = function(gl, vertexSrc, fragmentSrc, attributeLocations)
 {
 	/**
 	 * The current WebGL rendering context
@@ -384,7 +386,7 @@ var Shader = function(gl, vertexSrc, fragmentSrc)
 	 * @member {WebGLProgram}
 	 */
 	// First compile the program..
-	this.program = compileProgram(gl, vertexSrc, fragmentSrc);
+	this.program = compileProgram(gl, vertexSrc, fragmentSrc, attributeLocations);
 
 
 	/**
@@ -399,6 +401,13 @@ var Shader = function(gl, vertexSrc, fragmentSrc)
 	 */
 	// next extract the attributes
 	this.attributes = extractAttributes(gl, this.program);
+
+	for(var i in this.attributes)
+	{
+		console.log(i + " : " + this.attributes[i].location)
+	}
+
+	console.log(">>>>>>>");
 
     var uniformData = extractUniforms(gl, this.program);
 
@@ -846,7 +855,7 @@ module.exports = VertexArrayObject;
  * @static
  * @property {Boolean} FORCE_NATIVE
  */
-VertexArrayObject.FORCE_NATIVE = false;
+VertexArrayObject.FORCE_NATIVE = true;
 
 /**
  * Binds the buffer
@@ -903,6 +912,7 @@ VertexArrayObject.prototype.activate = function()
             attrib.buffer.bind();
             lastBuffer = attrib.buffer;
         }
+
 
         //attrib.attribute.pointer(attrib.type, attrib.normalized, attrib.stride, attrib.start);
         gl.vertexAttribPointer(attrib.attribute.location,
@@ -989,7 +999,7 @@ VertexArrayObject.prototype.clear = function()
 VertexArrayObject.prototype.draw = function(type, size, start)
 {
     var gl = this.gl;
-    gl.drawElements(type, size, gl.UNSIGNED_SHORT, start || 0);
+    gl.drawElements(type, size || this.indexBuffer.data.length, gl.UNSIGNED_SHORT, start || 0);
 
     return this;
 };
@@ -1134,9 +1144,10 @@ module.exports = setVertexAttribArrays;
  * @param gl {WebGLRenderingContext} The current WebGL context {WebGLProgram}
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
+ * @param attributeLocations {Object} An attribute location map that lets you manually set the attribute locations
  * @return {WebGLProgram} the shader program
  */
-var compileProgram = function(gl, vertexSrc, fragmentSrc)
+var compileProgram = function(gl, vertexSrc, fragmentSrc, attributeLocations)
 {
     var glVertShader = compileShader(gl, gl.VERTEX_SHADER, vertexSrc);
     var glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
@@ -1145,6 +1156,17 @@ var compileProgram = function(gl, vertexSrc, fragmentSrc)
 
     gl.attachShader(program, glVertShader);
     gl.attachShader(program, glFragShader);
+
+    // optionally, set the attributes manually for the program rather than letting WebGL decide..
+    if(attributeLocations)
+    {
+        for(var i in attributeLocations)
+        {
+            gl.bindAttribLocation(program, attributeLocations[i], i)
+        }
+    }
+
+
     gl.linkProgram(program);
 
     // if linking fails, then log and cleanup
@@ -4725,25 +4747,40 @@ var process = module.exports = {};
 var cachedSetTimeout;
 var cachedClearTimeout;
 
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
 (function () {
     try {
-        cachedSetTimeout = setTimeout;
-    } catch (e) {
-        cachedSetTimeout = function () {
-            throw new Error('setTimeout is not defined');
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
         }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
     }
     try {
-        cachedClearTimeout = clearTimeout;
-    } catch (e) {
-        cachedClearTimeout = function () {
-            throw new Error('clearTimeout is not defined');
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
         }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
     }
 } ())
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
         return setTimeout(fun, 0);
     }
     try {
@@ -4764,6 +4801,11 @@ function runTimeout(fun) {
 function runClearTimeout(marker) {
     if (cachedClearTimeout === clearTimeout) {
         //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
         return clearTimeout(marker);
     }
     try {
@@ -7952,7 +7994,7 @@ Object.assign(
  */
 function AccessibilityManager(renderer)
 {
-	if(Device.tablet || Device.phone)
+	if((Device.tablet || Device.phone) && !navigator.isCocoonJS)
 	{
 		this.createTouchHook();
 	}
@@ -8491,9 +8533,10 @@ function checkPrecision(src) {
  * @param gl {WebGLRenderingContext} The current WebGL rendering context
  * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
  * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
+ * @param attributeLocations {Object} An attribute location map that lets you manually set the attribute locations.
  */
-var Shader = function(gl, vertexSrc, fragmentSrc) {
-    GLShader.call(this, gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc));
+var Shader = function(gl, vertexSrc, fragmentSrc, attributeLocations) {
+    GLShader.call(this, gl, checkPrecision(vertexSrc), checkPrecision(fragmentSrc), attributeLocations);
 };
 
 Shader.prototype = Object.create(GLShader.prototype);
@@ -8515,7 +8558,7 @@ var CONST = {
      * @constant
      * @type {string}
      */
-    VERSION: '4.0.0',
+    VERSION: '4.0.2',
 
     /**
      * Two Pi.
@@ -8701,7 +8744,7 @@ var CONST = {
      * @property {number} MANUAL - Garbage collection will need to be called manually
      */
     GC_MODES: {
-        DEFAULT:        1,
+        DEFAULT:        0,
         AUTO:           0,
         MANUAL:         1,
     },
@@ -10290,6 +10333,9 @@ DisplayObject.prototype.destroy = function ()
     this._mask = null;
 
     this.filterArea = null;
+
+    this.interactive = false;
+    this.interactiveChildren = false;
 };
 
 },{"../const":78,"../math":102,"./Bounds":79,"./Transform":82,"./TransformStatic":84,"eventemitter3":32}],82:[function(require,module,exports){
@@ -10712,12 +10758,15 @@ var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     math = require('../math'),
     CONST = require('../const'),
+    utils = require('../utils'),
     Bounds = require('../display/Bounds'),
     bezierCurveTo = require('./utils/bezierCurveTo'),
     CanvasRenderer = require('../renderers/canvas/CanvasRenderer'),
     canvasRenderer,
     tempMatrix = new math.Matrix(),
-    tempPoint = new math.Point();
+    tempPoint = new math.Point(),
+    tempColor1 = new Float32Array(4),
+    tempColor2 = new Float32Array(4);
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -11433,17 +11482,29 @@ Graphics.prototype._renderSpriteRect = function (renderer)
     {
         if(!Graphics._SPRITE_TEXTURE)
         {
-            Graphics._SPRITE_TEXTURE = RenderTexture.create(10, 10);
-
-            var currentRenderTarget = renderer._activeRenderTarget;
-            renderer.bindRenderTexture(Graphics._SPRITE_TEXTURE);
-            renderer.clear([1,1,1,1]);
-            renderer.bindRenderTarget(currentRenderTarget);
+            var canvas = document.createElement('canvas');
+            canvas.width = 10;
+            canvas.height = 10;
+            var context = canvas.getContext('2d');
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, 10, 10);
+            Graphics._SPRITE_TEXTURE = Texture.fromCanvas(canvas);
         }
 
         this._spriteRect = new Sprite(Graphics._SPRITE_TEXTURE);
     }
-    this._spriteRect.tint = this.graphicsData[0].fillColor;
+    if (this.tint === 0xffffff) {
+        this._spriteRect.tint = this.graphicsData[0].fillColor;
+    } else {
+        var t1 = tempColor1;
+        var t2 = tempColor2;
+        utils.hex2rgb(this.graphicsData[0].fillColor, t1);
+        utils.hex2rgb(this.tint, t2);
+        t1[0] *= t2[0];
+        t1[1] *= t2[1];
+        t1[2] *= t2[2];
+        this._spriteRect.tint = utils.rgb2hex(t1);
+    }
     this._spriteRect.alpha = this.graphicsData[0].fillAlpha;
     this._spriteRect.worldAlpha = this.worldAlpha * this._spriteRect.alpha;
 
@@ -11746,7 +11807,7 @@ Graphics.prototype.destroy = function ()
     this._localBounds = null;
 };
 
-},{"../const":78,"../display/Bounds":79,"../display/Container":80,"../math":102,"../renderers/canvas/CanvasRenderer":109,"../sprites/Sprite":133,"../textures/RenderTexture":143,"../textures/Texture":144,"./GraphicsData":86,"./utils/bezierCurveTo":88}],86:[function(require,module,exports){
+},{"../const":78,"../display/Bounds":79,"../display/Container":80,"../math":102,"../renderers/canvas/CanvasRenderer":109,"../sprites/Sprite":133,"../textures/RenderTexture":143,"../textures/Texture":144,"../utils":151,"./GraphicsData":86,"./utils/bezierCurveTo":88}],86:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -12923,9 +12984,8 @@ var buildPoly = function (graphicsData, webGLData)
 
     var points = graphicsData.points;
 
-    if(graphicsData.fill && points.length > 6)
+    if(graphicsData.fill && points.length >= 6)
     {
-
         var holeArray = [];
              // Process holes..
         var holes = graphicsData.holes;
@@ -14503,6 +14563,62 @@ function Rectangle(x, y, width, height)
 Rectangle.prototype.constructor = Rectangle;
 module.exports = Rectangle;
 
+
+Object.defineProperties(Rectangle.prototype, {
+    /**
+     * returns the left edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle#
+     */
+    left: {
+        get: function ()
+        {
+            return this.x;
+        }
+    },
+
+    /**
+     * returns the right edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    right: {
+        get: function ()
+        {
+            return this.x + this.width;
+        }
+    },
+
+    /**
+     * returns the top edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    top: {
+        get: function ()
+        {
+            return this.y;
+        }
+    },
+
+    /**
+     * returns the bottom edge of the rectangle
+     *
+     * @member {number}
+     * @memberof PIXI.Rectangle
+     */
+    bottom: {
+        get: function ()
+        {
+            return this.y + this.height;
+        }
+    }
+
+});
+
 /**
  * A constant empty rectangle.
  *
@@ -15544,6 +15660,24 @@ CanvasRenderTarget.prototype.destroy = function ()
 
 },{"../../../const":78}],112:[function(require,module,exports){
 
+
+/**
+ * Creates a little colored canvas
+ * @return {canvas} a small canvas element
+ */
+var createColoredCanvas = function(color)
+{
+    var canvas = document.createElement('canvas');
+    canvas.width = 6;
+    canvas.height = 1;
+
+    var context = canvas.getContext('2d');
+    context.fillStyle = color;
+    context.fillRect(0,0,6,1);
+    return canvas;
+};
+
+
 /**
  * Checks whether the Canvas BlendModes are supported by the current browser
  *
@@ -15556,14 +15690,8 @@ var canUseNewCanvasBlendModes = function ()
         return false;
     }
 
-    var pngHead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABAQMAAADD8p2OAAAAA1BMVEX/';
-    var pngEnd = 'AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==';
-
-    var magenta = new Image();
-    magenta.src = pngHead + 'AP804Oa6' + pngEnd;
-
-    var yellow = new Image();
-    yellow.src = pngHead + '/wCKxvRF' + pngEnd;
+    var magenta = createColoredCanvas('#ff00ff');
+    var yellow = createColoredCanvas('#ffff00');
 
     var canvas = document.createElement('canvas');
     canvas.width = 6;
@@ -15575,16 +15703,17 @@ var canUseNewCanvasBlendModes = function ()
     context.drawImage(yellow, 2, 0);
 
     var imageData = context.getImageData(2,0,1,1);
-    
+
     if (!imageData)
     {
         return false;
     }
-    
+
     var data = imageData.data;
-    
+
     return (data[0] === 255 && data[1] === 0 && data[2] === 0);
 };
+
 
 module.exports = canUseNewCanvasBlendModes;
 
@@ -17250,7 +17379,6 @@ FilterManager.prototype.pushFilter = function(target, filters)
     if(filterData.stack[0].renderTarget.transform)
     {//jshint ignore:line
 
-        // TODO we should fit the rect around the transform..
 
     }
     else
@@ -20104,7 +20232,7 @@ function generateMultiTextureShader(gl, maxTextures)
     fragmentSrc = fragmentSrc.replace(/%count%/gi, maxTextures);
     fragmentSrc = fragmentSrc.replace(/%forloop%/gi, generateSampleSrc(maxTextures));
 
-    var shader = new Shader(gl, vertexSrc, fragmentSrc);
+    var shader = new Shader(gl, vertexSrc, fragmentSrc, {aVertexPosition:3, aColor:2, aTextureCoord:1, aTextureId:0});
 
     var sampleValues = [];
     for (var i = 0; i < maxTextures; i++)
@@ -20172,7 +20300,7 @@ var Sprite = require('../sprites/Sprite'),
  * A Text can be created directly from a string and a style object
  *
  * ```js
- * var text = new PIXI.Text('This is a pixi text',{font : '24px Arial', fill : 0xff1010, align : 'center'});
+ * var text = new PIXI.Text('This is a pixi text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
  * ```
  *
  * @class
@@ -20295,9 +20423,9 @@ Object.defineProperties(Text.prototype, {
         {
             this.updateText(true);
 
-            var sign = utils.sign(this.scale.x) || 1;
-            this.scale.x = sign * value / this.texture.orig.width;
-            this._width = value;
+            var sign = utils.sign(this.scale.y) || 1;
+            this.scale.y = sign * value / this.texture.orig.height;
+            this._height = value;
         }
     },
 
@@ -20587,7 +20715,7 @@ Text.prototype.updateTexture = function ()
     texture.trim.x = -style.padding;
     texture.trim.y = -style.padding;
 
-    texture.orig.width = texture._frame.width;
+    texture.orig.width = texture._frame.width- style.padding*2;
     texture.orig.height = texture._frame.height - style.padding*2;
 
     //call sprite onTextureUpdate to update scale if _width or _height were set
@@ -20846,6 +20974,11 @@ Text.prototype._generateFillStyle = function (style, lines)
     }
     else
     {
+        // cocoon on canvas+ cannot generate textures, so use the first colour instead
+        if ( navigator.isCocoonJS ) {
+            return style.fill[0];
+        }
+
         // the gradient will be evenly spaced out according to how large the array is.
         // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
         var i;
@@ -22600,6 +22733,11 @@ Texture.from = function (source)
     {
         return new Texture(BaseTexture);
     }
+    else
+    {
+        // lets assume its a texture!
+        return source;
+    }
 };
 
 
@@ -22829,6 +22967,12 @@ VideoBaseTexture.prototype._onUpdate = function ()
  */
 VideoBaseTexture.prototype._onPlayStart = function ()
 {
+    // Just in case the video has not recieved its can play even yet..
+    if(!this.hasLoaded)
+    {
+        this._onCanPlay();
+    }
+
     if (!this.autoUpdate)
     {
         window.requestAnimationFrame(this._onUpdate);
@@ -25946,6 +26090,8 @@ var CacheData = function(){
 
     this.originalRenderWebGL = null;
     this.originalRenderCanvas = null;
+    this.originalCalculateBounds = null;
+    this.originalGetLocalBounds = null;
 
     this.originalUpdateTransform = null;
     this.originalHitTest = null;
@@ -25996,7 +26142,8 @@ Object.defineProperties(DisplayObject.prototype, {
                 data.originalRenderCanvas = this.renderCanvas;
 
                 data.originalUpdateTransform = this.updateTransform;
-                data.originalGetBounds = this.getBounds;
+                data.originalCalculateBounds = this._calculateBounds;
+                data.originalGetLocalBounds = this.getLocalBounds;
 
                 data.originalDestroy = this.destroy;
 
@@ -26025,7 +26172,8 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 this.renderWebGL = data.originalRenderWebGL;
                 this.renderCanvas = data.originalRenderCanvas;
-                this.getBounds = data.originalGetBounds;
+                this._calculateBounds = data.originalCalculateBounds;
+                this.getLocalBounds = data.originalGetLocalBounds;
 
                 this.destroy = data.originalDestroy;
 
@@ -26071,6 +26219,10 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
         return;
     }
 
+    // make sure alpha is set to 1 otherwise it will get rendered as invisible!
+    var cacheAlpha = this.alpha;
+    this.alpha = 1;
+
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
     renderer.currentRenderer.flush();
     //this.filters= [];
@@ -26083,11 +26235,8 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     if(this._filters)
     {
         var padding = this._filters[0].padding;
-        bounds.x -= padding;
-        bounds.y -= padding;
 
-        bounds.width += padding * 2;
-        bounds.height += padding * 2;
+        bounds.pad(padding);
     }
 
     // for now we cache the current renderTarget that the webGL renderer is currently using.
@@ -26111,6 +26260,7 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._cacheData.originalRenderWebGL;
 
+
     renderer.render(this, renderTexture, true, m, true);
     // now restore the state be setting the new properties
 
@@ -26120,7 +26270,6 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 
     this.renderWebGL     = this._renderCachedWebGL;
     this.updateTransform = this.displayObjectUpdateTransform;
-    this.getBounds       = this._getCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -26130,6 +26279,12 @@ DisplayObject.prototype._initCachedDisplayObject = function (renderer)
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
+    cachedSprite.alpha = cacheAlpha;
+    cachedSprite._bounds =  this._bounds;
+
+    //easy bounds..
+    this._calculateBounds  = this._calculateCachedBounds;
+    this.getLocalBounds  = this._getCachedLocalBounds;
 
     this._cacheData.sprite = cachedSprite;
 
@@ -26178,6 +26333,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     //get bounds actually transforms the object for us already!
     var bounds = this.getLocalBounds();
 
+    var cacheAlpha = this.alpha;
+    this.alpha = 1;
+
     var cachedRenderTarget = renderer.context;
 
     var renderTexture = new core.RenderTexture.create(bounds.width | 0, bounds.height | 0);
@@ -26201,8 +26359,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
-    this.updateTransform = this.displayObjectUpdateTransform;
-    this.getBounds  = this._getCachedBounds;
+    this._calculateBounds  = this._calculateCachedBounds;
 
     this._mask = null;
     this.filterArea = null;
@@ -26212,12 +26369,17 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -( bounds.x / bounds.width );
     cachedSprite.anchor.y = -( bounds.y / bounds.height );
+    cachedSprite._bounds =  this._bounds;
+    cachedSprite.alpha = cacheAlpha;
 
     this.updateTransform();
+    this.updateTransform = this.displayObjectUpdateTransform;
 
     this._cacheData.sprite = cachedSprite;
 
     this.containsPoint = cachedSprite.containsPoint.bind(cachedSprite);
+
+
 };
 
 /**
@@ -26225,11 +26387,14 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 *
 * @private
 */
-DisplayObject.prototype._getCachedBounds = function ()
+DisplayObject.prototype._calculateCachedBounds = function ()
 {
-    this._cacheData.sprite._currentBounds = null;
+    return this._cacheData.sprite._calculateBounds();
+};
 
-    return this._cacheData.sprite.getBounds();
+DisplayObject.prototype._getCachedLocalBounds = function ()
+{
+    return this._cacheData.sprite.getLocalBounds();
 };
 
 /**

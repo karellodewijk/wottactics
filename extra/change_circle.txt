@@ -1,0 +1,40 @@
+db.tactics.find({}).forEach(function (doc) { 
+	var modified = false;
+	for (var key in doc.slides) {
+		if (doc.slides.hasOwnProperty(key)) {
+			for (var i in doc.slides[key].entities) {
+				if (doc.slides[key].entities.hasOwnProperty(i)) {
+					if (doc.slides[key].entities[i].type == "circle" && doc.slides[key].entities[i].draw_radius) {
+						doc.slides[key].entities[i].draw_radius[0] -= doc.slides[key].entities[i].x;
+						doc.slides[key].entities[i].draw_radius[1] -= doc.slides[key].entities[i].y;
+						modified = true;
+					}
+				}
+			}
+		}
+	}
+	if (modified) {
+		db.tactics.update({_id:doc._id}, doc);
+	}
+});
+
+db.stored_tactics.find({}).forEach(function (doc) { 
+	var modified = false;
+	for (var key in doc.slides) {
+		if (doc.slides.hasOwnProperty(key)) {
+			for (var i in doc.slides[key].entities) {
+				if (doc.slides[key].entities.hasOwnProperty(i)) {
+					if (doc.slides[key].entities[i].type == "circle" && doc.slides[key].entities[i].draw_radius) {
+						doc.slides[key].entities[i].draw_radius[0] -= doc.slides[key].entities[i].x;
+						doc.slides[key].entities[i].draw_radius[1] -= doc.slides[key].entities[i].y;
+						modified = true;
+					}
+				}
+			}
+		}
+	}
+	if (modified) {
+		db.stored_tactics.update({_id:doc._id}, doc);
+	}
+});
+

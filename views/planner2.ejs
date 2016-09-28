@@ -61,20 +61,20 @@
 	<script defer src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<script defer src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>	
 	
+	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/jquery.simplecolorpicker.js"></script>
 	<script defer src="<%=static_host%>/javascripts/pixi.js"></script>
 	<script defer src="<%=static_host%>/javascripts/TransparencyHitArea.js"></script>
 	<script defer src="<%=static_host%>/javascripts/curve.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
+	<%}%>
 	
 	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
 	
-	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
-	<%}%>
 	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
@@ -226,7 +226,7 @@
 				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' style='border-radius: 0px;' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<div class="icon icon-save_as"></div>
 				</button>
-				<% if (game == 'wot' || game == 'wows' || game == 'aw') { %>
+				<% if (game == 'wot' || game == 'wows' || game == 'aw' || game == 'squad') { %>
 					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
 						<div class="icon icon-grid_icon"></div>
 					</button>
