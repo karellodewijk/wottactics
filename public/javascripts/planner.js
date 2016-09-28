@@ -190,6 +190,7 @@ var MAX_CANVAS_SIZE = 4096;
 var ICON_LABEL_SCALE = 1;
 var TEXT_SCALE = 0.80;
 var BACKGROUND_TEXT_SCALE = 0.80;
+var PING_TIME = 500; //time ping stays in ms
 
 var chat_color = random_darkish_color();
 var room_data;
@@ -277,7 +278,7 @@ var rotate_arrow3;
 var select_box_dirty = false;
 var select_center;
 var objectContainer;
-//var fast_container;
+var fast_container;
 var background_sprite;
 var renderer;
 var size
@@ -763,7 +764,6 @@ function init_video_controls() {
 		$('#right_side_bar').hide();
 	});
 
-
 	$('#left_side_bar').hide();
 	$('#right_side_bar').hide();
 }
@@ -1130,6 +1130,8 @@ function set_background(new_background, cb) {
 		$('#map_select_container').show();
 		$('#wotbase_map_select_container').hide();
 		
+		window.onresize();
+		
 		var empty_backround = new PIXI.Graphics();
 		empty_backround.beginFill(0xFFFFFF, 1);
 		empty_backround.moveTo(0, 0);
@@ -1137,14 +1139,13 @@ function set_background(new_background, cb) {
 		empty_backround.lineTo(renderer.width, renderer.height);
 		empty_backround.lineTo(0, renderer.height);
 		empty_backround.lineTo(0, 0);
-		empty_backround.endFill();		
+		empty_backround.endFill();
 		background_sprite.texture = renderer.generateTexture(empty_backround);
 		
 		$("#map_size").text("");
 
-		change_background_dim(renderer.view.height);
+		change_background_dim(renderer.view.height);	
 		
-		window.onresize();
 		render_scene();	
 		if (cb)	cb(true);
 	}
@@ -1204,14 +1205,7 @@ function on_drag_start(e) {
 			deselect_all();
 			return;
 		}
-		
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
-		last_drag_update = Date.now();
-		last_drag_position = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
-			
-		objectContainer.buttonMode = true;
-		dragged_entity = _this;
-		
+				
 		if (is_room_locked && !my_user.role) {
 			if (_this.entity && _this.entity.type == 'note') {
 				_this.mouseup = toggle_note;
@@ -1221,6 +1215,13 @@ function on_drag_start(e) {
 			}
 			return;
 		}
+		
+		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		last_drag_update = Date.now();
+		last_drag_position = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
+		
+		dragged_entity = _this;		
+		objectContainer.buttonMode = true;
 
 		if (active_context != 'drag_context') {
 			context_before_drag = active_context;
@@ -1233,7 +1234,7 @@ function on_drag_start(e) {
 		_this.touchendoutside = on_drag_end;
 		_this.mousemove = on_drag_move;
 		_this.touchmove = on_drag_move;
-		$('html,body').css('cursor', 'pointer');
+		$('html,body').css('cursor', 'pointer');		
 		
 		move_selected = false;
 		if (_this.entity) {
@@ -1275,11 +1276,11 @@ function on_drag_start(e) {
 }
 
 function toggle_note(e) {
-	if (this.is_open) {
-		this.is_open = false;
+	if (this.entity.is_open) {
+		this.entity.is_open = false;
 		align_note_text(this.entity);
 	} else {
-		this.is_open = true;
+		this.entity.is_open = true;
 		align_note_text(this.entity);
 	}	
 }
@@ -1343,7 +1344,7 @@ function on_drag_move(e) {
 }
 
 function on_drag_end(e) {
-	limit_rate(15, drag_state, function() {});
+	limit_rate(15, drag_state, function() {});	
 	if (this.entity && Math.abs(this.entity.origin_x - this.entity.x) < EPSILON &&  Math.abs(this.entity.origin_y - this.entity.y) < EPSILON) {	
 		if (context_before_drag == 'remove_context') {
 			remove(this.entity.uid);
@@ -1458,36 +1459,71 @@ function get_local_time(timestamp) {
 }
 
 
+var ping_container_atlas = {}
 var ping_texture_atlas = {}
-function ping(x, y, color, size) {	
-	var sprite = new PIXI.Sprite(ping_texture);
-	sprite.tint = color;
+var active_pings = [];
+
+function ping(x, y, color, size) {
+	//color = parseInt('0x'+random_color().substring(1));;
+	var fast_container;
+	if (!ping_container_atlas[color]) {
+		fast_container = new PIXI.particles.ParticleContainer(500, {
+			scale: true,
+			alpha: true
+		});
+		ping_container_atlas[color] = fast_container;		
+		var temp_sprite = new PIXI.Sprite(ping_texture);
+		var canvas = PIXI.CanvasTinter.getTintedTexture(temp_sprite, color);
+		ping_texture_atlas[color] = new PIXI.Texture.fromCanvas(canvas);
+		objectContainer.addChild(fast_container);
+	} else {
+		fast_container = ping_container_atlas[color];
+	}
+	
+	var sprite = new PIXI.Sprite(ping_texture_atlas[color]);
 	
 	sprite.anchor.set(0.5);
-	sprite.height = y_abs(0.01) * (size/10) * zoom_level;
-	sprite.width = y_abs(0.01) * (size/10) * zoom_level;
+	sprite.start_size = y_abs(0.01) * (size/10) * zoom_level;
+	
+	sprite.height = sprite.start_size;
+	sprite.width = sprite.start_size;
 		
 	sprite.x = x_abs(x);
 	sprite.y = y_abs(y);
 
-	objectContainer.addChild(sprite);
+	sprite.container = fast_container;
+	fast_container.addChild(sprite);
+	
+	sprite.stop_time = Date.now() + PING_TIME;
+	sprite.growth = sprite.height * 5;
+
 	render_scene();
 	
-	var steps = 25;
-	var step_size = sprite.height/5;
-	var loop = setInterval(function() {
-		sprite.height += step_size;
-		sprite.width += step_size;
-		sprite.alpha -= 0.02;
-		render_scene();
+	active_pings.push(sprite);
+}
+
+function update_pings() {
+	var time = Date.now();
+	active_pings = active_pings.filter(function(el) {
+		var sprite = el;
+		var delta = sprite.stop_time - time;
 		
-		steps--;
-		if (steps <= 0) {
-			clearInterval(loop)
-			objectContainer.removeChild(sprite);
-			render_scene();			
+		var passed = 1 - (delta / PING_TIME);
+		var size = sprite.start_size + passed * sprite.growth
+		var alpha = 0.5 + (1-passed) * 0.5;
+		
+		sprite.height = size;
+		sprite.width = size;
+		sprite.alpha = alpha;
+		
+		if (delta <= 0) {
+			sprite.container.removeChild(sprite);
+			return false;	
 		}
-	}, 20);
+		
+		render_scene();
+		return true;
+	});
 }
 
 function setup_mouse_events(on_move, on_release) {
@@ -1501,15 +1537,14 @@ function setup_mouse_events(on_move, on_release) {
 
 function align_note_text(entity) {
 	if (entity.container) {
-		if (entity.container.is_open) {
-			var rect = renderer.view.getBoundingClientRect();
+		if (entity.is_open) {
+			var rect = $("#edit_window")[0].getBoundingClientRect();
 			var x = rect.left + to_x_local(entity.x) + entity.container.width * objectContainer.scale.x;
 			var y = rect.top + to_y_local(entity.y);
 			entity.container.menu.attr('style', 'top:' + y +'px; left:' + x + 'px; display:block; z-index:20');
 		} else {
 			entity.container.menu.css('visibility', 'hidden');
 		}
-
 	}
 }
 
@@ -2250,7 +2285,7 @@ function on_circle_end(e) {
 	new_drawing = undefined;
 	
 	if (circle_draw_style == "radius" && background.size_x && background.size_x > 0 && background.size_y && background.size_y > 0) {
-		new_shape.draw_radius = [xrel, yrel];
+		new_shape.draw_radius = [xrel - new_shape.x, yrel - new_shape.y];
 		temp_draw_context.save();
 		temp_draw_context.lineWidth = 2 * (size_x/1000);
 		temp_draw_context.strokeStyle = "#FFFFFF";
@@ -2444,7 +2479,7 @@ function select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lo
 		var y_diff = mouse_location.y - ref_y;	
 		var scale_x = Math.abs(x_diff / ref_width);
 		var scale_y = Math.abs(y_diff / ref_height);
-		
+					
 		for (var i in selected_entities) {
 			var entity = selected_entities[i];
 			if (!lock_x) {
@@ -2475,6 +2510,8 @@ function select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lo
 
 function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) {
 	limit_rate(15, select_box_move_state, function() {});
+
+	setup_mouse_events(undefined, undefined);
 	
 	var mouse_location = renderer.plugins.interaction.eventData.data.global;
 	mouse_location.x = x_abs(from_x_local(mouse_location.x));
@@ -2512,14 +2549,10 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 
 	}
 	undo_list.push(clone_action(undo_action));
-	
-	select_box.mousedown = undefined;
+
+	select_box.mouseover = on_select_over;
 	select_box.mousemove = on_selectbox_move;
-	select_box.mouseup = undefined;
-	select_box.mouseupoutside = undefined;
-	objectContainer.mouseup = undefined;
-	objectContainer.mouseupoutside = undefined;
-		
+	
 	if (!lock_x) {
 		select_box.width = Math.abs(ref_x - mouse_location.x);
 		select_box.left_x = Math.min(ref_x, mouse_location.x);
@@ -2549,13 +2582,12 @@ function prepare_resize(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) 
 	objectContainer.removeChild(rotate_arrow2);
 	objectContainer.removeChild(rotate_arrow3);
 	
-	objectContainer.mousedown = on_left_click;
-	select_box.mouseup = function(e) { select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
-	select_box.mouseupoutside = select_box.mouseup;
-	objectContainer.mouseup = select_box.mouseup;
-	objectContainer.mouseupoutside = select_box.mouseup;
+	var mousemove = function(e) { select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
+	var mouseup =  function(e) { select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
+	setup_mouse_events(mousemove, mouseup);
 	
-	select_box.mousemove = function(e) { select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
+	select_box.mouseover = undefined;
+	select_box.mousemove = undefined;
 	
 	e.stopPropagation();
 }
@@ -2636,6 +2668,7 @@ function on_selectbox_move(e) {
 			}
 		}
 	});
+
 	if (e) {
 		e.stopPropagation();
 	}
@@ -2648,7 +2681,7 @@ function on_select_over(e) {
 
 function on_select_out(e) {
 	limit_rate(15, select_box_move_state, function() {});
-	$('html,body').css('cursor', 'initial');
+	$('html,body').css('cursor', 'default');
 	select_box.mousemove = undefined;
 	select_box.mousedown = undefined;
 	objectContainer.mousedown = on_left_click;
@@ -2719,10 +2752,11 @@ function redraw_select_box() {
 }
 
 function start_rotate_selection(angle, e) {
-	limit_rate(15, drag_state, function() {});
+	limit_rate(15, drag_state, function() {});	
+	objectContainer.buttonMode = true;
+	
 	setup_mouse_events(rotate_selection.bind(undefined, this, angle), stop_rotate_selection.bind(undefined, this, angle))
 	var mouse_location = e.data.getLocalPosition(background_sprite);
-	objectContainer.buttonMode = true;
 	last_mouse_location = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 	for (var i in selected_entities) {
 		var sprite = room_data.slides[active_slide].entities[selected_entities[i].uid].container;
@@ -2784,6 +2818,7 @@ function rotate_selection(base, angle, e) {
 function stop_rotate_selection(base, angle, e) {
 	limit_rate(15, drag_state, function() {});
 	objectContainer.buttonMode = false;
+		
 	setup_mouse_events(undefined, undefined);
 
 	var mouse_location = e.data.getLocalPosition(background_sprite);
@@ -2959,7 +2994,7 @@ function remove_select_box() {
 		select_box = undefined;
 		render_scene();
 	}
-	$('html,body').css('cursor', 'initial');
+	$('html,body').css('cursor', 'default');
 }
 
 function deselect_all() {
@@ -3316,27 +3351,28 @@ function create_circle2(circle) {
 	init_shape_canvas(_context, circle, quality);
 
 	var radius = to_x_local_vect(circle.radius);
-	
+	var offset = base_resolution * circle.radius * quality + margin/2;
+		
 	_context.beginPath();	
-	_context.arc(base_resolution * circle.radius * quality + margin/2, base_resolution * circle.radius * quality + margin/2, base_resolution * circle.radius * quality, 0, 2*Math.PI);
+	_context.arc(offset, offset, base_resolution * circle.radius * quality, 0, 2*Math.PI);
 	_context.fill();
 	_context.stroke();
 	
 	if (circle.draw_radius) {
 		_context.save();
-		_context.lineWidth = 2 * (size_x/1000);
+		_context.lineWidth = 2 * (size_y/1000);
 		_context.strokeStyle = "#FFFFFF";
 		_context.fillStyle = "#FFFFFF";
 		_context.beginPath();
-		_context.moveTo(base_resolution * circle.radius * quality + margin/2, base_resolution * circle.radius * quality + margin/2);		
-		_context.lineTo((base_resolution * quality) * (circle.radius + circle.draw_radius[0] - circle.x) + margin/2, (base_resolution * quality) * (circle.radius  + circle.draw_radius[1] - circle.y) + margin/2);
+		_context.moveTo(offset, offset);		
+		_context.lineTo(offset + base_resolution * quality * (circle.draw_radius[0]), offset + base_resolution * quality * (circle.draw_radius[1]));
 		_context.stroke();
-		var mid_line_x = base_resolution * quality * (circle.radius + (circle.draw_radius[0] - circle.x)/2) + margin/2;
-		var mid_line_y = base_resolution * quality * (circle.radius + (circle.draw_radius[1] - circle.y)/2) + margin/2;
+		var mid_line_x = offset + base_resolution * quality * (circle.draw_radius[0]) / 2;
+		var mid_line_y = offset + base_resolution * quality * (circle.draw_radius[1]) / 2;
 		_context.font = "22px Arial";
-		var length = Math.sqrt(Math.pow(background.size_x * (circle.x - circle.draw_radius[0]), 2) + Math.pow(background.size_y * 
-		(circle.y - circle.draw_radius[1]), 2))
-		_context.lineWidth = to_x_local(0.5)/1000;
+		var length = Math.sqrt(Math.pow(background.size_x * (circle.draw_radius[0]), 2) + Math.pow(background.size_y * 
+		(circle.draw_radius[1]), 2))
+		_context.lineWidth = to_y_local(0.5)/1000;
 		_context.strokeStyle = "#000000";
 		_context.fillStyle = "#FFFFFF";
 		var label = "";
@@ -3349,7 +3385,7 @@ function create_circle2(circle) {
 		}
 		_context.fillText(label, mid_line_x, mid_line_y);
 		_context.restore();
-	}
+}
 	
 	canvas2container2(_context, _canvas, circle);
 	
@@ -4211,9 +4247,30 @@ function chat(message, color) {
 	$("#chat_box").scrollTop($("#chat_box")[0].scrollHeight);
 }
 
+//taken from modernizr
 function supports_color_input() {
-  var colorInput = $('<input type="color" value="!" />')[0];
-  return colorInput.type === 'color' && colorInput.value !== '!';
+    var inputElem = document.createElement('input'), bool, docElement = document.documentElement, smile = ':)';
+
+    inputElem.setAttribute('type', 'color');
+    bool = inputElem.type !== 'text';
+
+    // We first check to see if the type we give it sticks..
+    // If the type does, we feed it a textual value, which shouldn't be valid.
+    // If the value doesn't stick, we know there's input sanitization which infers a custom UI
+    if (bool) {
+
+        inputElem.value         = smile;
+        inputElem.style.cssText = 'position:absolute;visibility:hidden;';
+
+        // chuck into DOM and force reflow for Opera bug in 11.00
+        // github.com/Modernizr/Modernizr/issues#issue/159
+        docElement.appendChild(inputElem);
+        docElement.offsetWidth;
+        bool = inputElem.value != smile;
+        docElement.removeChild(inputElem);
+    }
+
+    return bool;
 };
 
 function initialize_color_picker(slider_id, variable_name) {
@@ -4672,8 +4729,8 @@ function transition(slide) {
 
 function cancel_drag(abort) {
 	clearTimeout(drag_timeout);
-	objectContainer.buttonMode = false;
-	$('html,body').css('cursor', 'initial');
+	objectContainer.buttonMode = false;	
+	
 	if (context_before_drag) {
 		active_context = context_before_drag;
 	}
@@ -5283,19 +5340,13 @@ $(document).ready(function() {
 	
 	// create the root of the scene graph
 	objectContainer = new PIXI.Container();
-	/*
-	fast_container = new PIXI.ParticleContainer(10000, {
-		scale: true,
-		position: true,
-		rotation: false,
-		uvs: false,
-		alpha: false
-	});
-	*/
+	
 	
 	//initialize grid layer
 	if (game == "aw") {
 		grid_layer = new PIXI.Sprite.fromImage(image_host + "aw_grid.png");
+	} else if (game == "squad") {
+		grid_layer = new PIXI.Sprite.fromImage(image_host + "squad_grid.png");
 	} else {
 		grid_layer = new PIXI.Sprite.fromImage(image_host + "grid.png");
 	}
@@ -5304,7 +5355,6 @@ $(document).ready(function() {
 	
 	objectContainer.addChild(background_sprite);
 	objectContainer.addChild(grid_layer);
-	//objectContainer.addChild(fast_container);
 	
 	objectContainer.interactive = true;
 	objectContainer.mousedown = on_left_click;
@@ -5358,11 +5408,11 @@ $(document).ready(function() {
 		if (video_ready) {
 			progress_timeline();
 		}
+		update_pings();
 		if (scene_dirty) {
 			if (select_box_dirty) {
 				redraw_select_box();
 			}
-
 			renderer.render(objectContainer);
 			scene_dirty = false;
 		}
@@ -5391,7 +5441,6 @@ $(document).ready(function() {
 		var lists = document.querySelectorAll("input[type=range][list]"),
 		arr = Array.prototype.slice.call(lists);
 		arr.forEach(ticks);
-		
 		
 		if (texture_atlas["circle.png"] && !is_safari()) {
 			var img = texture_atlas["circle.png"];
@@ -6090,6 +6139,30 @@ $(document).ready(function() {
 		if (socket.connected) {
 			socket.emit('join_room', room, game);
 		}
+		
+		var ping_loop = setInterval(function() {
+			var time = Date.now();
+			active_pings = active_pings.filter(function(el) {
+				var sprite = el;
+				var delta = sprite.stop_time - time;
+				
+				var passed = 1 - (delta / PING_TIME);
+				var size = sprite.start_size + passed * sprite.growth
+				var alpha = 0.5 + (1-passed) * 0.5;
+				
+				sprite.height = size;
+				sprite.width = size;
+				sprite.alpha = alpha;
+				
+				if (delta <= 0) {
+					sprite.container.removeChild(sprite);
+					return false;	
+				}
+				return true;
+				render_scene();
+			});
+			render_scene();			
+		}, 20);
 	});
 	
 	socket.on('room_data', function(new_room_data, my_id, new_tactic_name, locale) {
