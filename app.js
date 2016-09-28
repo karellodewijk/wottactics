@@ -38,16 +38,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
-var io = require('socket.io')({
-  transports: [
-    'websocket', 
-    'flashsocket', 
-    'htmlfile', 
-    'xhr-polling', 
-    'jsonp-polling', 
-    'polling'
-  ]
-});
+var io = require('socket.io')();
 
 //configure localization support
 var i18n = require('i18n');

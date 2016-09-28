@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>2D grid generator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script defer type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body style="padding:10px">
+
+<div class="container jumbotron" >
+  <h1>2D grid generator</h1>
+    
+  <h3>Dimensions</h3>
+  
+    <div class="form-group">
+      <label class="control-label col-sm-2">Width:</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" id="width" value="1000">
+      </div>
+      <label class="control-label col-sm-2" >Height:</label>
+      <div class="col-sm-10">          
+        <input type="number" class="form-control" id="height" value="1000">
+      </div>
+      <label class="control-label col-sm-2" >#Horizontal divisions:</label>
+      <div class="col-sm-10">          
+        <input type="number" class="form-control" id="hdiv" value="10">
+      </div>
+      <label class="control-label col-sm-2" >#vertical divisions:</label>
+      <div class="col-sm-10">          
+        <input type="number" class="form-control" id="vdiv" value="10">
+      </div>
+    </div>
+  <h3>Lines</h3>
+  <div class="form-group">
+  <label class="control-label col-sm-2" >Line width:</label>
+  <div class="col-sm-10">          
+	<input type="number" class="form-control" id="line_width" value="1.0">
+  </div> 
+  <label class="control-label col-sm-2" >Color:</label>
+  <div class="col-sm-10">          
+	<input type="text" class="form-control" id="line_color" value="rgba(0,0,0,1)">
+  </div> 
+  </div>  
+  
+  <h3>Labels</h3>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+	  <div class="checkbox">
+		<label><input id="gen_col_labels" type="checkbox" checked>Label columns</label>
+	  </div>
+	</div>
+      <label class="control-label col-sm-2" >Label pattern:</label>
+      <div class="col-sm-10">          
+        <input id="column_pattern" type="text" class="form-control" value="0-4,5,6-9">
+      </div>
+      <label class="control-label col-sm-2" >align:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="col_align" value="top center">
+      </div>
+      <label class="control-label col-sm-2" >padding:</label>
+      <div class="col-sm-10">          
+        <input type="number" class="form-control" id="col_padding" value="10">
+      </div>
+  </div>
+ 
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+	  <div class="checkbox">
+		<label><input id="gen_row_labels" type="checkbox" checked>Label rows</label>
+	  </div>
+	</div>
+      <label class="control-label col-sm-2" >Label pattern:</label>
+      <div class="col-sm-10">          
+        <input id="row_pattern" type="text" class="form-control" value="A-E,F,G-J">
+      </div>
+      <label class="control-label col-sm-2" >align row:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="row_align" value="middle left">
+      </div>
+      <label class="control-label col-sm-2" >padding:</label>
+      <div class="col-sm-10">          
+        <input type="number" class="form-control" id="row_padding" value="10">
+      </div>
+  </div>
+  
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+	  <div class="checkbox">
+		<label><input id="gen_cell_labels" type="checkbox">Label cells</label>
+	  </div>
+	</div>
+	<div class="col-sm-offset-2 col-sm-10">
+	  <label class="radio-inline"><input type="radio" value="row_col" name="cell_label_style" checked>Use column + row label</label>
+	  <label class="radio-inline"><input type="radio" value="pattern" name="cell_label_style">Use pattern</label>
+	</div>
+	  <label class="control-label col-sm-2" >Label pattern:</label>
+	  <div class="col-sm-10">          
+		<input id="cell_pattern" type="text" class="form-control" value="1-100">
+	  </div>
+      <label class="control-label col-sm-2" >align cell:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="cell_align" value="middle center">
+      </div>
+      <label class="control-label col-sm-2" >padding:</label>
+      <div class="col-sm-10">          
+        <input type="number" class="form-control" id="cell_padding" value="10">
+      </div>
+  </div> 
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+	  <div class="checkbox">
+		<label><input type="checkbox">Show label in each cell</label>
+	  </div>
+	</div>
+  </div>
+  <h3>Label font</h3>
+    <div class="form-group">
+      <label class="control-label col-sm-2">font:</label>
+      <div class="col-sm-10">          
+        <input class="form-control" id="text_font" value="bold 20pt Arial">
+      </div>
+      <label class="control-label col-sm-2" >Text color:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="text_color" value="rgba(128,128,128,0.5)">
+      </div>
+	<div class="col-sm-offset-2 col-sm-10">
+	  <div class="checkbox">
+		<label><input id="outline_text" type="checkbox" checked>Outline text </label>
+	  </div>
+	</div>
+      <label class="control-label col-sm-2" >Outline color:</label>
+      <div class="col-sm-10">          
+        <input type="text" class="form-control" id="outline_color" value="rgba(0,0,0,1)">
+      </div>
+      <label class="control-label col-sm-2" >Outline thickness:</label>
+      <div class="col-sm-10">          
+        <input type="number" class="form-control" id="outline_thickness" value="1">
+      </div>
+	<div class="col-sm-offset-2 col-sm-10">
+	  <div class="checkbox">
+		<label><input id="text_shadow" type="checkbox">Text shadow</label>
+	  </div>
+	</div>
+      <label class="control-label col-sm-2" >Shadow thickness:</label>
+      <div class="col-sm-10">          
+        <input type="number"  id="shadow_thickness" class="form-control" value="1.0">
+      </div>
+      <label class="control-label col-sm-2" >Shadow x-offset:</label>
+      <div class="col-sm-10">          
+        <input type="number"  id="shadow_x" class="form-control" value="1.0">
+      </div>
+      <label class="control-label col-sm-2" >Shadow y-offset:</label>
+      <div class="col-sm-10">          
+        <input type="number"  id="shadow_y" class="form-control" value="1.0">
+      </div>
+    </div>
+ <h3>Other</h3>
+ <div class="form-group">
+  <label class="control-label col-sm-2">Quality (scale up):</label>
+  <div class="col-sm-10">
+	<input type="number" class="form-control" id="quality" value="1">
+  </div> 
+  </div>
+	<br /><br />
+	<div class="form-group">
+	<button id="generate" class="btn btn-default">Generate grid</button>
+	<button id="add_to" class="btn btn-default">Add to grid</button>
+	</div>
+	
+  </form>
+  <br/><br/>
+  <h4>Right click to save as image:</h4>
+  
+</div>
+
+</body>
+
+<script>
+$(document).ready(function() {
+	function draw(ctx) {
+		//draw the grid
+		var quality = parseFloat($("#quality").val());
+		var width =  parseFloat($("#width").val()) * quality;
+		var height =  parseFloat($("#height").val()) * quality;
+		var hdiv =  parseFloat($("#hdiv").val());
+		var vdiv =  parseFloat($("#vdiv").val());
+		var line_width = parseFloat($("#line_width").val()) * quality;
+		var line_color = $("#line_color").val();
+
+		ctx.globalCompositeOperation = "destination-over";
+		
+		ctx.lineWidth = line_width;
+		
+		var hspace = (width-line_width)/hdiv;
+		var vspace = (height-line_width)/vdiv;		
+		
+		ctx.beginPath();
+		ctx.strokeStyle = line_color;
+	
+		for (var chspace = line_width/2; chspace < width; chspace += hspace) {
+			ctx.moveTo(chspace, 0);
+			ctx.lineTo(chspace, height);
+		}
+
+		for (var cvspace = line_width/2; cvspace < height; cvspace += vspace) {
+			ctx.moveTo(0, cvspace);
+			ctx.lineTo(width, cvspace);
+		}
+		ctx.stroke();
+
+		function isNumeric(n) {
+		  return !isNaN(parseFloat(n)) && isFinite(n);
+		}		
+		
+		//draw the labels
+		function parse_pattern(pattern) {		
+			var labels = [];
+			var pat = pattern;
+			
+			pat.replace(/\s+/, "") 
+			pat = pat.split(",");
+			
+			for (var i in pat) {
+				var splitted = pat[i].split('-');
+				if (splitted.length == 1) {
+					labels.push(splitted[0]);
+				} else {		
+					var start = splitted[0];
+					var end = splitted[1];
+					for (var label = start;;) {
+						labels.push(label);
+						if (isNumeric(label)) {
+							label = (parseInt(label) + 1).toString();
+						} else {
+							var code = label.charCodeAt(0);
+							label = String.fromCharCode(++code);
+						}
+						if (label == end) {
+							labels.push(label);
+							break;
+						}
+					}
+				}
+			}
+			
+			return labels;
+		}
+		
+		var row_pattern = $("#row_pattern").val();
+		var col_pattern = $("#column_pattern").val();
+		var cell_pattern = $("#cell_pattern").val();
+		
+		var row_labels = parse_pattern(row_pattern);
+		var col_labels = parse_pattern(col_pattern);	
+		var cell_labels = parse_pattern(cell_pattern);			
+		
+		var gen_row_labels = $("#gen_row_labels").is(':checked');
+		var gen_col_labels = $("#gen_col_labels").is(':checked');
+		var gen_cell_labels = $("#gen_cell_labels").is(':checked');
+		
+		var outline_text = $("#outline_text").is(':checked');
+		var font = $("#text_font").val();
+		
+		var splitted = font.split(/(\d+)/);
+		for (var i in splitted) {
+			if (isNumeric(splitted[i])) {
+				var size = parseFloat(splitted[i]);
+				splitted[i] = (size * quality).toString();
+			}
+		}
+		font = splitted.join('');
+		
+		ctx.font = font;
+		
+		var text_color = $("#text_color").val();
+		var outline_color = $("#outline_color").val();
+		var outline_thickness = parseFloat($("#outline_thickness").val()) * quality;
+		
+		ctx.fillStyle = text_color;
+		ctx.strokeStyle = outline_color;
+		ctx.lineWidth = outline_thickness;
+
+		var text_shadow = $("#text_shadow").is(':checked');
+		var shadow_thickness = parseFloat($("#shadow_thickness").val());
+		var x_offset = parseFloat($("#shadow_x").val());
+		var y_offset = parseFloat($("#shadow_y").val());
+		
+		if (text_shadow) {
+			ctx.shadowColor = "rgba(0,0,0,1)"
+			ctx.shadowBlur = shadow_thickness;
+			ctx.shadowOffsetX = x_offset;
+			ctx.shadowOffsetY = y_offset;
+		}
+		
+		if (gen_col_labels) {
+			var col_align = $("#col_align").val();
+			var padding = parseFloat($("#col_padding").val()) * quality;
+			
+			var splitted = col_align.split(" ");
+			var halign, valign;
+			if (splitted.length == 1) {
+				halign = valign = splitted[0];
+			} else {
+				halign = splitted[1];
+				valign = splitted[0];
+			}
+
+			var move_h;
+			if (halign == 'center') {
+				ctx.textAlign = "center";
+				move_h = hspace/2;
+			} else if (halign == 'left') {
+				ctx.textAlign = "left";
+				move_h = line_width + padding;
+			} else if (halign == 'right') {
+				ctx.textAlign = "right";
+				move_h =  hspace - padding - line_width;
+			}
+			
+			var move_v;
+			if (valign == 'middle') {
+				ctx.textBaseline="middle";
+				move_v = vspace/2;
+			} else if (valign == 'top') {
+				ctx.textBaseline="hanging";
+				move_v = line_width + padding;
+			} else if (valign == 'bottom') {
+				ctx.textBaseline="bottom";
+				move_v = vspace - padding - line_width;
+			}
+			
+			var i = 0;
+			for (var chspace = line_width/2; chspace < width; chspace += hspace) {										
+				if (outline_text) {
+					ctx.strokeText(col_labels[i], chspace+move_h, move_v);
+				}	
+				ctx.fillText(col_labels[i], chspace+move_h, move_v);				
+
+				i++;
+				
+				if (!col_labels[i]) break;
+				
+			}
+			
+		}
+		
+		if (gen_row_labels) {
+			var row_align = $("#row_align").val();
+			var padding = parseFloat($("#row_padding").val()) * quality;
+			
+			var splitted = row_align.split(" ");
+			var halign, valign;
+			if (splitted.length == 1) {
+				halign = valign = splitted[0];
+			} else {
+				halign = splitted[1];
+				valign = splitted[0];
+			}
+			var move_h;
+			if (halign == 'center') {
+				ctx.textAlign = "center";
+				move_h = hspace/2;
+			} else if (halign == 'left') {
+				ctx.textAlign = "left";
+				move_h = line_width + padding;
+			} else if (halign == 'right') {
+				ctx.textAlign = "right";
+				move_h =  hspace - padding - line_width;
+			}
+			
+			var move_v;
+			if (valign == 'middle') {
+				ctx.textBaseline="middle";
+				move_v = vspace/2;
+			} else if (valign == 'top') {
+				ctx.textBaseline="hanging";
+				move_v = line_width + padding;
+			} else if (valign == 'bottom') {
+				ctx.textBaseline="bottom";
+				move_v = vspace - padding - line_width;
+			}
+				
+			var i = 0;
+			for (var cvspace = line_width/2; cvspace < height; cvspace += vspace) {						
+				
+				if (outline_text) {
+					ctx.strokeText(row_labels[i], move_h, cvspace + move_v);
+				}
+				ctx.fillText(row_labels[i], move_h, cvspace + move_v);	
+				
+				i++;
+				
+				if (!row_labels[i]) break;
+				
+			}
+			
+		}	
+
+		if (gen_cell_labels) {
+			var style = $('input[name="cell_label_style"]:checked').val();
+		
+			var cell_align = $("#cell_align").val();
+			var padding = parseFloat($("#cell_padding").val()) * quality;
+			
+			var splitted = cell_align.split(" ");
+			var halign, valign;
+			if (splitted.length == 1) {
+				halign = valign = splitted[0];
+			} else {
+				halign = splitted[1];
+				valign = splitted[0];
+			}
+
+			var move_h;
+			if (halign == 'center') {
+				ctx.textAlign = "center";
+				move_h = hspace/2;
+			} else if (halign == 'left') {
+				ctx.textAlign = "left";
+				move_h = line_width + padding;
+			} else if (halign == 'right') {
+				ctx.textAlign = "right";
+				move_h =  hspace - padding - line_width;
+			}
+			
+			var move_v;
+			if (valign == 'middle') {
+				ctx.textBaseline="middle";
+				move_v = vspace/2;
+			} else if (valign == 'top') {
+				ctx.textBaseline="hanging";
+				move_v = line_width + padding;
+			} else if (valign == 'bottom') {
+				ctx.textBaseline="bottom";
+				move_v = vspace - padding - line_width;
+			}
+			
+			var i = 0, k = 0;
+			for (var cvspace = line_width/2; cvspace < height; cvspace += vspace) {		
+				var j = 0;
+				for (var chspace = line_width/2; chspace < width; chspace += hspace) {
+					var text;
+					if (style == "row_col") {
+						text = row_labels[j] + col_labels[i];
+					} else if (style == "pattern") {
+						text = cell_labels[k];
+					}
+				
+					console.log(text)
+					if (outline_text) {
+						ctx.strokeText(text, chspace + move_h, cvspace + move_v);
+					}
+					ctx.fillText(text, chspace + move_h, cvspace + move_v);	
+					
+					j++; k++;
+					
+					if (!row_labels[j]) break;
+				
+				}
+				i++;
+				if (!col_labels[i]) break;
+			}
+			
+		}	
+		
+	}
+
+	$("#generate").click(function(e){
+		e.preventDefault();
+		
+		var width =  parseFloat($("#width").val());
+		var height =  parseFloat($("#height").val());
+		var quality = parseFloat($("#quality").val());
+
+		var canvas = document.createElement('canvas');
+		canvas.width = width * quality;
+		canvas.height = height * quality;
+		var ctx = canvas.getContext('2d');
+		ctx.imageSmoothingEnabled= false
+		
+		draw(ctx);
+		
+		if ($("canvas").length > 0) $("canvas").remove();
+		$(canvas).css("width", width);
+		$(canvas).css("height", height)		
+		$(".container").append(canvas);
+
+	})
+	
+	$("#add_to").click(function(e){
+		e.preventDefault();
+		
+		var canvas = $("canvas");
+		
+		draw(canvas.get(0).getContext('2d'));
+	})
+	
+	$("#generate").click();
+	
+
+});
+</script>
+
+</html>

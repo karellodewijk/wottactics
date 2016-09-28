@@ -81,25 +81,22 @@
 			<p>Press the blue button. Then select a map and use the tools on the right to start planning. You can invite others by sending them the link. 
 			
 		</div>
-		<%if (game == 'wot') {%>
-		<div class="col-md-4">
-			<h2>CW campaign</h2>
-		
-			<p>The Birth Of Titans CW Campaign starts today and I'm expecting a record number of visitors. 
-			
-			<p>To handle the increased traffic, I added 2 vm's (amazon t2.micro nodes) and upgraded the main vm which hosts the db from a amazon t2.micro to a t2.small. 
-			
-			<p>With the increased capacity I'm hoping everything will go smoothly. I'll be monitoring it closely though, especially during eu prime time.
-			
-			<p>Good luck out there.
-		</div>
-		<% } else if (game == 'warface') { %>
+		<%if (game == 'warface') { %>
 			<div class="col-md-4">
 				<h2>Looking for help with warface maps</h2>
 				<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
 			</div>
 		<%} else { %>
-		
+			<div class="col-md-4">
+				<h2>Future plans</h2>
+				<ul>
+					<li>Support for drawing while panning
+					<li>Better support for touch devices (pinch zoom, pan support)
+					<li>Write text directly on the map
+					<li>Share folders in addition to just tactics
+				</ul>
+				If you have any suggestions, you can put them on the forums, contact me by e-mail or put them in the survey.			
+			</div>		
 		<% } %>	
 		<div class="col-md-4">
 			<h2>Your input matters</h2>
@@ -125,12 +122,11 @@
 			<h2>Latest changes</h2>
 			<p>
 			<ul>
+				<li>Added wot Paris map + updated blitz maps
 				<li>Added 'lock camera' mode. Only available to owners (green), when selected all zoom/pan motions will be mimicked by all users in the room.
 				<li>Made drawing more efficient but mostly everything drawn zoomed in will now remain sharp after a refresh or on clients. There will be changes in scaling on existing tactics (slightly thinner/thicker lines, larger/smaller arrow). I'm confident it will be consistent from now on though.  
 				<li>Added Squad as a supported game.
 				<li>Shortened all uids to 14 char random string. It's long enough to avoid collisions and makes links shorter
-				<li>Added wows plane icons
-				<li>Limited max font size to 48, but made sure it can always be rendered properly regardless of length
 			</ul> 
 			On the bug hunting front:
 			<ul>
@@ -142,8 +138,8 @@
 			If you find anything else, however small, that is broken, pls let me know. 
 		</div>
 		<div class="col-md-4">
-			<h2><%=game.toUpperCase()%> <%=l('Tactics')%> visited 1,000,000 times</h2>
-			<p>Since the beginning of March, when i started monitoring traffic, 178,933 users have visitited <%=game.toUpperCase()%> <%=l('tactics')%> a total of 1,069,856 times, viewing 2,072,324 pages. At least 189,509 rooms have been created and 25,218 tactics have been stored.
+			<h2><%=game.toUpperCase()%> <%=l('Tactics')%> visited 2,000,000 times</h2>
+			<p>Since the beginning of March, when i started monitoring traffic, 314,809 users have visitited <%=game.toUpperCase()%> <%=l('tactics')%> a total of 2,031,807 times, visiting 3,822,789 pages. At least 335,645 rooms have been created and 38,127 tactics have been stored.
 
 			<p>Thank you for your support. I think that's pretty amazing.
 
