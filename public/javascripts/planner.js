@@ -6138,30 +6138,6 @@ $(document).ready(function() {
 		if (socket.connected) {
 			socket.emit('join_room', room, game);
 		}
-		
-		var ping_loop = setInterval(function() {
-			var time = Date.now();
-			active_pings = active_pings.filter(function(el) {
-				var sprite = el;
-				var delta = sprite.stop_time - time;
-				
-				var passed = 1 - (delta / PING_TIME);
-				var size = sprite.start_size + passed * sprite.growth
-				var alpha = 0.5 + (1-passed) * 0.5;
-				
-				sprite.height = size;
-				sprite.width = size;
-				sprite.alpha = alpha;
-				
-				if (delta <= 0) {
-					sprite.container.removeChild(sprite);
-					return false;	
-				}
-				return true;
-				render_scene();
-			});
-			render_scene();			
-		}, 20);
 	});
 	
 	socket.on('room_data', function(new_room_data, my_id, new_tactic_name, locale) {
