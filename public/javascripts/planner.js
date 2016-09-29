@@ -269,7 +269,6 @@ var drag_delay_running = false;
 var current_text_element;
 var last_mouse_location;
 var ping_texture;
-var hovering_over;
 var just_activated;
 var select_box;
 var rotate_arrow0;
@@ -1732,7 +1731,6 @@ function on_left_click(e) {
 	} else if (active_context == 'icon_context') {
 		setup_mouse_events(undefined, on_icon_end);
 	} else if (active_context == 'eraser_context') {
-		hovering_over = undefined;
 		setup_mouse_events(on_eraser_move, on_eraser_end);
 	} else if (active_context == 'ping_context') {
 		if (!drag_delay_running) {
@@ -1780,12 +1778,16 @@ function on_left_click(e) {
 
 var eraser_state = {}
 function on_eraser_move(e) {
-	limit_rate(15, eraser_state, function() {
-		if (hovering_over && room_data.slides[active_slide].entities[hovering_over.uid]) {
-			remove(hovering_over.uid);
-			undo_list.push(clone_action(["remove", [hovering_over]]));
-			socket.emit('remove', room, hovering_over.uid, active_slide);
-		}
+	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	limit_rate(5, eraser_state, function() {	
+		renderer.plugins.interaction.processInteractive(mouse_location, objectContainer, function(container, hit) {
+			if (hit && container.entity && container.entity.type != 'background') {
+				var entity = container.entity;
+				remove(entity.uid);
+				undo_list.push(clone_action(["remove", [entity]]));
+				socket.emit('remove', room, entity.uid, active_slide);
+			}
+		}, true);	
 	});
 }
 
@@ -3644,10 +3646,6 @@ function emit_entity(entity) {
 	entity.z_index = room_data.slides[active_slide].z_top;
 	entity.container = container;
 	center_anchor(entity.container);
-
-	entity.container.mouseover = function() {
-		hovering_over = entity;
-	}
 }
 
 function on_icon_end(e) {	
@@ -4056,11 +4054,6 @@ function create_entity(entity) {
 			entity.container.rotation = -entity.rotation;
 		}
 	
-		if (entity.type != 'background') {
-			entity.container.mouseover = function() {
-				hovering_over = entity;
-			}
-		}
 		if (background.is_video) {
 			update_timeline(entity);
 		}
@@ -5457,15 +5450,6 @@ $(document).ready(function() {
 					if (touches[j].id == data.identifier) {
 						touches[j].pos = pos;
 					}
-				}
-
-				//work around for touchenter/touchover
-				if (active_context == 'eraser_context') {			
-					renderer.plugins.interaction.processInteractive({x:x_abs(pos[0]), y:y_abs(pos[1])}, objectContainer, function(child, hit) {
-						if (hit && child.entity && child.entity.type != 'background') {
-							hovering_over = child.entity;
-						}
-					}, true);
 				}
 			}
 
