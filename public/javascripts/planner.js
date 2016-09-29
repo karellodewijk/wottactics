@@ -1,5 +1,5 @@
-var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
-//var servers = [location.host];
+//var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
+var servers = [location.host];
 
 var is_video_replay = false;
 if (location.pathname.indexOf('planner3') != -1) {
@@ -192,6 +192,7 @@ var TEXT_SCALE = 0.80;
 var BACKGROUND_TEXT_SCALE = 0.80;
 var PING_TIME = 500; //time ping stays in ms
 
+var dpi;
 var chat_color = random_darkish_color();
 var room_data;
 var active_slide = 0;
@@ -420,23 +421,21 @@ function paste() {
 	undo_list.push(clone_action(["add", new_entities]));	
 }
 
-function zoom(amount, isZoomIn, e) {
+function zoom(amount, isZoomIn, center, e) {
 	var old_zoom_level = zoom_level
 	var direction = isZoomIn ? 1 : -1;
 	var factor = (1 + amount * direction);
 	
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
 	objectContainer.scale.x *= factor;
 	objectContainer.scale.y *= factor;
 
 	//pan to cursor
-	objectContainer.x -= x_abs(from_x_local(mouse_location.x) * (factor - 1) * objectContainer.scale.x);
-	objectContainer.y -= y_abs(from_y_local(mouse_location.y) * (factor - 1) * objectContainer.scale.y);
+	objectContainer.x -= x_abs(center[0] * (1 - 1/factor) * objectContainer.scale.x);
+	objectContainer.y -= y_abs(center[1] * (1 - 1/factor) * objectContainer.scale.y);
 
 	correct();
 
 	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
-	$('#zoom_level').text((1/zoom_level).toFixed(2));
 	var zoom_factor = old_zoom_level / zoom_level;
 	
 	if (wot_live) {
@@ -561,7 +560,8 @@ function resize_renderer(new_size_x, new_size_y) {
 	grid_layer.width = background_sprite.width;
 	grid_layer.height = background_sprite.height;
 	
-	zoom(0,true);
+	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	zoom(0, true, [from_x_local(mouse_location.x), from_y_local(mouse_location.y)]);
 };
 
 window.onresize = function() {
@@ -1518,9 +1518,9 @@ function update_pings() {
 		
 		if (delta <= 0) {
 			sprite.container.removeChild(sprite);
+			render_scene();
 			return false;	
 		}
-		
 		render_scene();
 		return true;
 	});
@@ -1639,12 +1639,11 @@ function t2o(transparancy) {
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_draw_time, last_point;
 function on_left_click(e) {
-	e.stopPropagation();
-	
 	if (active_context == "drag_context") {
 		cancel_drag(true);
 	}
 	var mouse_location = e.data.getLocalPosition(background_sprite);
+	
 	if (!can_edit()) {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
 		init_canvases(0.1, 0xffffff, "full");
@@ -5309,6 +5308,8 @@ function wot_connect() {
 
 //connect socket.io socket
 $(document).ready(function() {
+	dpi = document.getElementById('dpitest').offsetHeight;
+	
 	//sorts maps alphabetically, can't presort cause it depends on language
 	initialize_map_select($("#map_select"));
 	initialize_map_select($("#map_select_wotbase"));
@@ -5327,7 +5328,9 @@ $(document).ready(function() {
 	$(".edit_window").append(renderer.view);
 	
 	renderer.view.addEventListener("wheel", function(e) {
-		zoom(0.1, e.deltaY < 0, e);
+		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		zoom(0.1, e.deltaY < 0, [from_x_local(mouse_location.x), from_y_local(mouse_location.y)],e);
+		$('#zoom_level').text((1/zoom_level).toFixed(2));
 		if (control_camera) {
 			emit_pan_zoom();
 		}
@@ -5369,6 +5372,7 @@ $(document).ready(function() {
 
 	renderer.view.addEventListener('contextmenu', function(e) {
 		setup_mouse_events(undefined);
+		$('#zoom_level').text((1/zoom_level).toFixed(2));
 		if (control_camera) {
 			emit_pan_zoom();
 		}
@@ -5378,6 +5382,7 @@ $(document).ready(function() {
 
 	$(renderer.view).mouseup(function(e) {
 		if (e.which === 3 || e.which === 2) {
+			$('#zoom_level').text((1/zoom_level).toFixed(2));
 			setup_mouse_events(undefined);
 			if (control_camera) {
 				emit_pan_zoom();
@@ -5385,6 +5390,117 @@ $(document).ready(function() {
 			e.preventDefault();
 		}
 	});
+
+	//pinch-zoom and 2 finger pan support
+	var touches = [];
+	var touch_distance = 0; 
+	var zoom_pan_pending = false;
+	var center;
+	var zoom_started = false;
+	var old_amount;
+
+	
+	var touchstart = function(e) {
+		var new_touches = e.changedTouches;
+		for (var i = 0; i < new_touches.length; i++) {
+			var data = new_touches[i];
+			var pos = [from_x_local(data.pageX), from_y_local(data.pageY)];		
+			touches.push({id: data.identifier, pos: pos});
+		}
+		
+		if (touches.length == 2) {
+			e.preventDefault();
+			objectContainer.interactive = false;
+			touch_distance = Math.sqrt(Math.pow(touches[0].pos[0] - touches[1].pos[0], 2) + Math.pow(touches[0].pos[1] - touches[1].pos[1], 2));
+			center = [touches[0].pos[0] + (touches[1].pos[0] - touches[0].pos[0]) / 2, touches[0].pos[1] + (touches[1].pos[1] - touches[0].pos[1]) / 2];			
+			zoom_started = false;
+			old_amount = null;
+		} else {
+			objectContainer.interactive = true;
+		}
+	}
+	
+	var touchend = function(e) {
+		$('#zoom_level').text((1/zoom_level).toFixed(2));
+		if (zoom_pan_pending && control_camera) {
+			emit_pan_zoom();
+			zoom_pan_pending = false;			
+		}
+		
+		var new_touches = e.changedTouches;
+		for (var i = 0; i < new_touches.length; i++) {
+			var data = new_touches[i];
+			var j = touches.map(function(el) {return el.id;}).indexOf(data.identifier);
+			touches.splice(j, 1);
+		}
+		
+		if (touches.length == 2) {
+			e.preventDefault();
+			objectContainer.interactive = false;
+			touch_distance = Math.sqrt(Math.pow(touches[0].pos[0] - touches[1].pos[0], 2) + Math.pow(touches[0].pos[1] - touches[1].pos[1], 2));
+			center = [touches[0].pos[0] + (touches[1].pos[0] - touches[0].pos[0]) / 2, touches[0].pos[1] + (touches[1].pos[1] - touches[0].pos[1]) / 2];
+			zoom_started = false;
+			old_amount = null;
+		} else {
+			objectContainer.interactive = true;
+		}
+	}
+	
+	var touchmove_state = {};
+	var touchmove = function(e) {
+		limit_rate(15, touchmove_state, function() {
+			var new_touches = e.changedTouches;
+			for (var i = 0; i < new_touches.length; i++) {
+				var data = new_touches[i];
+				var pos = [from_x_local(data.pageX), from_y_local(data.pageY)];
+				for (var j in touches) {
+					if (touches[j].id == data.identifier) {
+						touches[j].pos = pos;
+					}
+				}
+			}
+
+			if (touches.length == 2) {
+				e.preventDefault();
+				objectContainer.interactive = false;		
+				var new_touch_distance = Math.sqrt(Math.pow(touches[1].pos[0] - touches[0].pos[0], 2) + Math.pow(touches[1].pos[1] - touches[0].pos[1], 2));
+				var real_touch_distance = to_y_local_vect(new_touch_distance) / dpi; //in inches
+				
+				var new_center = [touches[0].pos[0] + (touches[1].pos[0] - touches[0].pos[0]) / 2, touches[0].pos[1] + (touches[1].pos[1] - touches[0].pos[1]) / 2];			
+
+				if (zoom_started || real_touch_distance > 1.5) {
+					//zoom
+					var new_amount = ((new_touch_distance / touch_distance) - 1) * 0.9;
+					var amount;
+					if (old_amount) {
+						amount = 0.8 * old_amount + 0.2 * new_amount;
+					} else {
+						amount = new_amount;
+					}
+					old_amount = amount;	
+					zoom(Math.abs(amount), amount > 0, center);
+					zoom_pan_pending = true;
+					zoom_started = true;
+				} else {
+					//pan
+					zoom_pan_pending = true;
+					var diff = [to_x_local(new_center[0]) - to_x_local(center[0]), to_y_local(new_center[1]) - to_y_local(center[1])];
+					objectContainer.x += diff[0];
+					objectContainer.y += diff[1];
+					correct();
+				}
+				touch_distance = new_touch_distance;
+			} else {
+				objectContainer.interactive = true;
+			}
+		});
+	}
+
+	renderer.view.addEventListener('touchstart', touchstart);
+	renderer.view.addEventListener('touchend', touchend);
+	renderer.view.addEventListener('touchendoutside', touchend);
+	renderer.view.addEventListener('touchcancel', touchend);
+	renderer.view.addEventListener('touchmove', touchmove);
 	
 	draw_canvas = document.createElement("canvas");
 	$(draw_canvas).attr('style', 'padding:0px; margin:0px; border:0; position:absolute; z-index:3; pointer-events:none');
@@ -5402,7 +5518,8 @@ $(document).ready(function() {
 	$(renderer.view).parent().append(draw_canvas);
 	$(temp_draw_canvas).hide();
 	$(draw_canvas).hide();
-	
+		
+	//animation loop
 	function animate() {
 		if (video_ready) {
 			progress_timeline();
@@ -5418,6 +5535,8 @@ $(document).ready(function() {
 		requestAnimationFrame(animate);
 	}
 	animate();
+	
+
 	
 	loader.once('complete', function () {
 		//generate ticks, leveraged from: http://thenewcode.com/864/Auto-Generate-Marks-on-HTML5-Range-Sliders-with-JavaScript
