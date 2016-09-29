@@ -1639,6 +1639,8 @@ function t2o(transparancy) {
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_draw_time, last_point;
 function on_left_click(e) {
+	e.stopPropagation();
+	
 	if (active_context == "drag_context") {
 		cancel_drag(true);
 	}
@@ -1737,10 +1739,6 @@ function on_left_click(e) {
 		if (!drag_delay_running) {
 			deselect_all();
 		}
-		
-		//ping(mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
-		//socket.emit('ping_marker', room, mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y), ping_color);
-		
 		last_ping_time = new Date();
 		setup_mouse_events(on_ping_move, on_ping_end);
 	} else if (active_context == "select_context") {
@@ -2372,20 +2370,21 @@ function on_rectangle_end(e) {
 	setup_mouse_events(undefined, undefined);
 }
 
-
-var ping_state = {}
 function on_ping_move(e) {
 	limit_rate(60, drag_state, function() {
+		var time = Date.now();
+		if (time - last_ping_time < 10) return;
 		var mouse_location = renderer.plugins.interaction.eventData.data.global;
 		var x = from_x_local(mouse_location.x);
 		var y = from_y_local(mouse_location.y);
+		last_ping_time = time;
 		ping(x, y, ping_color, ping_size);
 		socket.emit('ping_marker', room, x, y, ping_color, ping_size);
 	});
 }
 
 function on_ping_end(e) {
-	limit_rate(15, drag_state, function() {});
+	limit_rate(0, drag_state, function() {});
 	var mouse_location = renderer.plugins.interaction.eventData.data.global;
 	var x = from_x_local(mouse_location.x);
 	var y = from_y_local(mouse_location.y);
