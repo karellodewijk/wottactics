@@ -122,24 +122,24 @@
 			<h2>Latest changes</h2>
 			<p>
 			<ul>
+			    <li>Moved to pixi v4.0.2, increased performance is definately measurable. Let me know if there are any issues though.
 				<li>Added wot Paris map + updated blitz maps
 				<li>Added 'lock camera' mode. Only available to owners (green), when selected all zoom/pan motions will be mimicked by all users in the room.
 				<li>Made drawing more efficient but mostly everything drawn zoomed in will now remain sharp after a refresh or on clients. There will be changes in scaling on existing tactics (slightly thinner/thicker lines, larger/smaller arrow). I'm confident it will be consistent from now on though.  
-				<li>Added Squad as a supported game.
-				<li>Shortened all uids to 14 char random string. It's long enough to avoid collisions and makes links shorter
 			</ul> 
 			On the bug hunting front:
 			<ul>
+			    <li>Resizing a select box was jumpy sometimes
+			    <li>Moving a circle with a radius would not move the point on the edege resulting in a messed up radius after refresh
+			    <li>Note window would jump around when opening a note on some browsers
 				<li>Switching slides while zoomed in would break the view 
 				<li>Arrows were drawn way too small when zoomed in
-				<li>Notes wouldn't open.
-				<li>Fixed bug where multiple people simultaneously pinging would make the colors switch.
 			</ul>
 			If you find anything else, however small, that is broken, pls let me know. 
 		</div>
 		<div class="col-md-4">
-			<h2><%=game.toUpperCase()%> <%=l('Tactics')%> visited 2,000,000 times</h2>
-			<p>Since the beginning of March, when i started monitoring traffic, 314,809 users have visitited <%=game.toUpperCase()%> <%=l('tactics')%> a total of 2,031,807 times, visiting 3,822,789 pages. At least 335,645 rooms have been created and 38,127 tactics have been stored.
+			<h2>2,000,000 visits</h2>
+			<p>Since the beginning of March, when i started monitoring traffic, 314,809 users have visitited this website a total of 2,031,807 times, visiting 3,822,789 pages. At least 335,645 rooms have been created and 38,127 tactics have been stored.
 
 			<p>Thank you for your support. I think that's pretty amazing.
 
