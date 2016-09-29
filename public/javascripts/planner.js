@@ -3648,7 +3648,6 @@ function emit_entity(entity) {
 	entity.container.mouseover = function() {
 		hovering_over = entity;
 	}
-
 }
 
 function on_icon_end(e) {	
@@ -5449,6 +5448,7 @@ $(document).ready(function() {
 	var touchmove_state = {};
 	var touchmove = function(e) {
 		limit_rate(15, touchmove_state, function() {
+
 			var new_touches = e.changedTouches;
 			for (var i = 0; i < new_touches.length; i++) {
 				var data = new_touches[i];
@@ -5457,6 +5457,15 @@ $(document).ready(function() {
 					if (touches[j].id == data.identifier) {
 						touches[j].pos = pos;
 					}
+				}
+
+				//work around for touchenter/touchover
+				if (active_context == 'eraser_context') {			
+					renderer.plugins.interaction.processInteractive({x:x_abs(pos[0]), y:y_abs(pos[1])}, objectContainer, function(child, hit) {
+						if (hit && child.entity && child.entity.type != 'background') {
+							hovering_over = child.entity;
+						}
+					}, true);
 				}
 			}
 
