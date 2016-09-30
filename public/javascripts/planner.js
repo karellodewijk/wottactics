@@ -3775,16 +3775,16 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 	var _context = _canvas.getContext("2d");
 
 	var text_quality = TEXT_QUALITY;
-	_context.font = font_modifier + " " + 2 * font_size * scaling * text_quality + "px "+font;
+	_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality) + "px "+font;
 	
     var metrics = _context.measureText(msg);
 	while (metrics.width > MAX_CANVAS_SIZE) {	
 		text_quality /= 2;
-		_context.font = font_modifier + " " + 2 * font_size * scaling * text_quality + "px "+font;
+		_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality)+ "px "+font;
 		metrics = _context.measureText(msg);
 	}
 	metrics = _context.measureText(msg);
-
+	
 	_canvas.height = font_size * scaling * text_quality * 2.5;	
 	_canvas.width = metrics.width + _canvas.height*0.2;
 	
@@ -3796,22 +3796,25 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 		
 	}
 	_context.fillStyle = color;
-	
+	_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality) + "px "+font;
+
 	if (label_shadow) {
 		_context.shadowColor = "black";
-		_context.shadowOffsetX = 5; 
-		_context.shadowOffsetY = 5; 
-		_context.shadowBlur = 50;
+		_context.shadowOffsetX = text_quality; 
+		_context.shadowOffsetY = text_quality; 
+		_context.shadowBlur = 5;
 	}
-	_context.font = font_modifier + " " + 2 * font_size * scaling * text_quality + "px "+font;
-	_context.fillText(msg, _canvas.height*0.1, _canvas.height/1.5+_canvas.height*0.1);
 
+	_context.fillText(msg, _canvas.height*0.1, _canvas.height/1.5+_canvas.height*0.1);
+	
 	var sprite = createSprite(_context, _canvas);
 		
 	if (sprite) {
 		//rescale to objectContainer
-		sprite.height /= objectContainer.scale.x * text_quality;
-		sprite.width /= objectContainer.scale.y * text_quality;
+		var ratio =	sprite.width / sprite.height;
+		sprite.height = Math.round(2 * font_size * scaling) / objectContainer.scale.x;
+		sprite.width = sprite.height * ratio;
+
 		sprite.x = 0;
 		sprite.y = 0;
 		return sprite;
@@ -3825,7 +3828,7 @@ function create_text2(text_entity) {
 	var sprite = create_text_sprite(text_entity.text, color, TEXT_SCALE * text_entity.font_size, text_entity.font, false, true)
 	
 	var ratio = sprite.width / sprite.height;
-	sprite.height = x_abs(text_entity.font_size / 440)
+	sprite.height = x_abs(text_entity.font_size / 530)
 	sprite.width = sprite.height * ratio;
 	
 	if (sprite) {
@@ -3901,8 +3904,15 @@ function create_icon_cont(icon, texture) {
 
 		icon.container.addChild(text);
 		
+		var label_scale;
+		if (!icon.label_background) {
+			label_scale = 680;
+		} else {
+			label_scale = 450;
+		}
+		
 		var ratio = text.width / text.height;
-		text.height = x_abs(icon.label_font_size / 450) / icon.container.scale.y
+		text.height = x_abs(icon.label_font_size / label_scale) / icon.container.scale.y
 		text.width = text.height * ratio;
 		
 		var sprite_width = sprite.width / sprite.scale.x
