@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html style="width: 100%; height:100%">
+<html lang="<%=locale%>" style="width: 100%; height:100%">
 <head>
 	<% include common_headers.ejs %>
 	<link rel="stylesheet" href="<%=static_host%>/stylesheets/bootstrap-select.min.css">
@@ -73,16 +73,15 @@
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
-	
-	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
+
+	<script defer src="<%=static_host%>/javascripts/combined.js"></script>	
 		
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
 	<script id="static_host" data-static_host="<%=static_host%>"></script>
 	<script id="socket_io_servers" data-socket_io_servers="<%=socket_io_servers%>"></script>
-</head>
-<body style="width:100%; background-color:#333333; padding:0px; margin:0px; border:0; color:white; min-width: 100%; height:100%; display: inline-block;">
+
 	<style>
 	input, textarea, .chatmsg, .userlist {
 	  color : black;
@@ -91,7 +90,8 @@
 		color:white;
 	}
 	</style>
-
+</head>
+<body style="width:100%; background-color:#333333; padding:0px; margin:0px; border:0; color:white; min-width: 100%; height:100%; display: inline-block;">
 	<div id="left_side_bar" style="max-width:340px; height:100%; vertical-align:top; float:left; display:flex; flex-direction:column; padding:0px; margin:0px;">
 		<div style="flex: 0 1 auto; justify-content: flex-start;">
 			<nav id="left_navbar" class="navbar navbar-inverse container-fluid" style="margin-left:5px; margin-right:5px; padding-left:0px; padding-right:0px">
@@ -159,7 +159,7 @@
 		</div>
 		
 		<div style="padding:10px; justify-content: flex-end; flex: 0 1 300px;">		
-			<ul class="nav nav-tabs" id="bottom_tabs">
+			<ul class="nav nav-tabs">
 			  <li class="active"><a data-toggle="tab" href="#chat_tab"><%=l('Chat')%></a></li>
 			  <li id="slide_tab_button"><a data-toggle="tab" href="#slide_tab"><%=l('Slides')%></a></li>
 			  <li id="export_tab_button"><a data-toggle="tab" href="#export_tab"><%=l('Export')%></a></li>
@@ -469,7 +469,7 @@
 						</button>
 						</div></td>
 					</tr>
-					<tr><td>&nbsp;</td></tr>
+					<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
 						<td style="padding-right:10px"><small><%=l('End')%></small></td>
 						<td><div class="btn-group" role="group" id="draw_end_type">
@@ -534,7 +534,7 @@
 						</button>
 						</div></td>
 					</tr>
-					<tr><td>&nbsp;</td></tr>
+					<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
 						<td style="padding-right:10px"><small><%=l('End')%></small></td>
 						<td><div class="btn-group" role="group" id="curve_end_type">
@@ -1066,7 +1066,7 @@
 							</button>
 						</div></td>
 					</tr>
-					<tr><td>&nbsp;</td></tr>
+					<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
 						<td style="padding-right:10px"><small><%=l('End')%></small></td>
 						<td><div class="btn-group" role="group" id="line_end_type">
