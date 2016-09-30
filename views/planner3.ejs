@@ -335,16 +335,7 @@
 				<div id="icon_options" style="margin:0px; padding:0px">
 				
 				<select name="colorpicker" id="icon_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<%if (game == 'aw') { %>
-					<option value="#70c5ea"><%=l('Cyan')%></option>
-					<% } %>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<%if (game != 'aw') { %>
-					<option value="#ffff00"><%=l('Yellow')%></option>
-					<% } %>
-					<option value="#ffffff"><%=l('White')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				
@@ -425,11 +416,7 @@
 			
 			<p>
 				<select name="colorpicker" id="draw_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				<div class="clearfix" style="margin-left:-15px">
@@ -495,11 +482,7 @@
 			
 			<p>
 				<select name="colorpicker" id="curve_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				<div class="clearfix" style="margin-left:-15px">
@@ -565,11 +548,7 @@
 			<p>
 				<h5><%=l('Outline')%></h5>
 				<select name="colorpicker" id="rectangle_outline_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				
@@ -597,11 +576,7 @@
 								
 				<h5><%=l('Fill')%></h5>	
 				<select name="colorpicker" id="rectangle_fill_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">	
 				
@@ -642,11 +617,7 @@
 			<p>
 				<h5><%=l('Outline')%></h5>
 				<select name="colorpicker" id="circle_outline_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				
@@ -674,11 +645,7 @@
 								
 				<h5><%=l('Fill')%></h5>	
 				<select name="colorpicker" id="circle_fill_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				
@@ -733,11 +700,7 @@
 			<p>
 				<h5><%=l('Outline')%></h5>
 				<select name="colorpicker" id="polygon_outline_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				
@@ -765,11 +728,7 @@
 								
 				<h5><%=l('Fill')%></h5>
 				<select name="colorpicker" id="polygon_fill_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				
@@ -810,11 +769,7 @@
 			<p>
 				<h5><%=l('Outline')%></h5>
 				<select name="colorpicker" id="area_outline_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				
@@ -843,11 +798,7 @@
 								
 				<h5><%=l('Fill')%></h5>
 				<select name="colorpicker" id="area_fill_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				
@@ -887,11 +838,7 @@
 			
 			<p>
 				<select name="colorpicker" id="ping_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 	
@@ -913,11 +860,7 @@
 			
 			<p>
 			<select name="colorpicker" id="track_colorpicker">
-				<option value="#ff0000"><%=l('Red')%></option>
-				<option value="#00ff00"><%=l('Green')%></option>
-				<option value="#87CEFA"><%=l('Blue')%></option>
-				<option value="#ffffff"><%=l('White')%></option>
-				<option value="#ffff00"><%=l('Yellow')%></option>
+				<% include colors.ejs %>
 			</select>			
 			<input type="color">					
 
@@ -1071,11 +1014,7 @@
 			
 			<p>
 				<select name="colorpicker" id="line_colorpicker">
-					<option value="#ff0000"><%=l('Red')%></option>
-					<option value="#00ff00"><%=l('Green')%></option>
-					<option value="#87CEFA"><%=l('Blue')%></option>
-					<option value="#ffffff"><%=l('White')%></option>
-					<option value="#ffff00"><%=l('Yellow')%></option>
+					<% include colors.ejs %>
 				</select>
 				<input type="color">
 				<div class="clearfix" style="margin-left:-15px">
