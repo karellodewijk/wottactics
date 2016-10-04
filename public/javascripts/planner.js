@@ -295,6 +295,7 @@ var temp_draw_context;
 var grid_layer;
 var zoom_level = 1;
 var control_camera = false;
+var dragging_enabled = true;
 
 //these variables are only for the video replay room
 var offset = 0; // time offset from the server in ms 
@@ -1188,8 +1189,6 @@ function on_drag_start(e) {
 			clear_selected();
 		}
 		e.stopPropagation();
-		return;
-	} else if (active_context != "select_context" && active_context != "icon_context" && active_context != "text_context" && active_context != "background_text_context" && active_context != "note_context" && active_context != "ping_context" && active_context != "track_context") {
 		return;
 	} else {
 		if (active_context != 'drag_context') {
@@ -3994,11 +3993,13 @@ function create_icon(icon, cb_after) {
 }
 
 function make_draggable(root) {
-	root.interactive = true;
-    root.buttonMode = true;
-	root.draggable = true;
-	root.mousedown = on_drag_start;
-	root.touchstart = on_drag_start;
+	if (dragging_enabled) {
+		root.interactive = true;
+		root.buttonMode = true;
+		root.draggable = true;
+		root.mousedown = on_drag_start;
+		root.touchstart = on_drag_start;		
+	}
 	root.orig_scale = [root.scale.x, root.scale.y];
 }
 
@@ -5013,6 +5014,38 @@ function video_progress() {
 		return video_media.currentTime;
 	} else {
 		return progress+ (Date.now() - progress_update) * playback_rate / 1000.0;
+	}
+}
+
+function enable_dragging() {
+	if (!dragging_enabled) {
+		for (var i in room_data.slides[active_slide].entities) {
+			var entity = room_data.slides[active_slide].entities[i];
+			if (entity.container && entity.type != 'background') {
+				dragging_enabled = true;
+				entity.container.interactive = true;
+				entity.container.buttonMode = true;
+				entity.container.draggable = true;
+				entity.container.mousedown = on_drag_start;
+				entity.container.touchstart = on_drag_start;
+			}
+		}
+	}
+}
+
+function disable_dragging() {
+	if (dragging_enabled) {
+		for (var i in room_data.slides[active_slide].entities) {
+			var entity = room_data.slides[active_slide].entities[i];
+			if (entity.container && entity.type != 'background') {
+				dragging_enabled = false;
+				entity.container.interactive = false;
+				entity.container.buttonMode = false;
+				entity.container.draggable = false;
+				delete entity.container.mousedown;
+				delete entity.container.touchstart;
+			}
+		}
 	}
 }
 
@@ -6059,8 +6092,6 @@ $(document).ready(function() {
 			if (game == 'sc2') {
 				if (new_menu.substring(0, 4) == 'icon') {
 					$('#icon_options').detach().appendTo($('#' + new_menu));
-					//var label = $('#icon_label_container').detach();
-					//$('#' + new_menu).find('h4').after(label);
 				}
 			}
 						
@@ -6082,8 +6113,31 @@ $(document).ready(function() {
 						
 			$('#'+active_menu).hide();
 			$('#'+new_menu).show();	
-			active_menu = new_menu;	
+			active_menu = new_menu;
 			active_context = new_context;
+			
+			switch(active_context) {
+				case "ping_context":
+				case "track_context":
+				case "icon_context":
+				case "note_context":
+				case "text_context":
+				case "remove_context":
+				case "eraser_context":
+				case "background_text_context":
+				case "select_context":
+					enable_dragging();
+					break;
+				case "draw_context":
+				case "ruler_context":
+				case "rectangle_context":
+				case "cicle_context":
+				case "line_context":
+				case "curve_context":
+				case "polygon_context":
+					disable_dragging();
+					break;
+			}
 		});	
 
 		//label position
