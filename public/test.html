@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<title>Wottactic app</title>
+		<script>
+			//generate unique id
+			var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+			function newUid() {
+				var text = "";
+				for(var i=0; i < 14; i++ ) {
+					text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+				}
+				return text;
+			}
+			
+			document.addEventListener("DOMContentLoaded", function(event) { 
+				var frame = document.createElement("iframe");
+				frame.setAttribute("style", "width:100%; height:100%");   
+				frame.setAttribute("src", "http://wottactic.tk/wotplanner2.html?room=" + newUid() + "&wot_live"); 
+				document.getElementById("content").appendChild(frame);		
+			});
+		</script>
+	</head>
+
+	<body>
+		<div id="content">
+		
+		</div>	
+	</body>
+</html>

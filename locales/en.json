@@ -514,15 +514,16 @@
 	"Yehorivka": "Yehorivka",
 	"Rifleman": "Rifleman",
 	"locks the view (zoom/pan) of all users to yours": "locks the view (zoom/pan) of all users to yours",
+	"Yamato Harbor": "Yamato Harbor",
 	"Paris": "Paris",
 	"Attack flag": "Attack flag",
 	"Defence flag": "Defence flag",
 	"Main base": "Main base",
 	"Way point": "Way point",
-	"Ammo crate": "Ammo crate",
 	"Rally point": "Rally point",
 	"Squad leader": "Squad leader",
 	"Squad Member": "Squad Member",
+	"Ammo crate": "Ammo crate",
 	"Fort": "Fort",
 	"Attack": "Attack",
 	"Scout": "Scout",
@@ -544,5 +545,7 @@
 	"Infantry": "Infantry",
 	"Unavailable": "Unavailable",
 	"You do not have permission to edit. Ask the owner (green) to click your name or unlock the room.": "You do not have permission to edit. Ask the owner (green) to click your name or unlock the room.",
-	"Light blue": "Light blue"
+	"Light blue": "Light blue",
+	"Braxis Holdout": "Braxis Holdout",
+	"Warhead Junction": "Warhead Junction"
 }
