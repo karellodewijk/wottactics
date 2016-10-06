@@ -174,6 +174,7 @@ var NOTE_SCALE = 0.03;
 var THICKNESS_SCALE = 1;
 var FONT_SCALE = 0.002;
 var TEXT_QUALITY = 8;
+var DRAW_QUALITY = 4;
 var ARROW_SCALE = 0.008;
 var ARROW_SCALE2 = 1.7;
 var TEND_SCALE = 0.008;
@@ -191,6 +192,7 @@ var ICON_LABEL_SCALE = 1;
 var TEXT_SCALE = 0.80;
 var BACKGROUND_TEXT_SCALE = 0.80;
 var PING_TIME = 500; //time ping stays in ms
+
 
 var dpi;
 var chat_color = random_darkish_color();
@@ -565,6 +567,8 @@ function resize_renderer(new_size_x, new_size_y) {
 };
 
 window.onresize = function() {
+	change_background_dim(renderer.view.height)
+	
 	if (window.location.pathname.indexOf("planner3") != -1) {
 		resize_renderer($(window).width(), $(window).height());
 		return;
@@ -967,7 +971,6 @@ function set_background(new_background, cb) {
 					$("#map_size").text("");
 				}
 					
-				change_background_dim(renderer.view.height)
 				window.onresize();
 				
 				render_scene();
@@ -1008,9 +1011,7 @@ function set_background(new_background, cb) {
 			empty_backround.endFill();
 			background_sprite.texture = renderer.generateTexture(empty_backround);
 			$("#map_size").text("");
-			
-			change_background_dim(renderer.view.height);
-			
+						
 			var video_type = get_video_type(new_background.path)
 			
 			video_layer = $('<video />', {
@@ -1113,6 +1114,7 @@ function set_background(new_background, cb) {
 					
 					
 					socket.emit('request_sync', room);
+					
 					done();
 				}
 			});
@@ -1130,8 +1132,6 @@ function set_background(new_background, cb) {
 		$('#map_select_container').show();
 		$('#wotbase_map_select_container').hide();
 		
-		window.onresize();
-		
 		var empty_backround = new PIXI.Graphics();
 		empty_backround.beginFill(0xFFFFFF, 1);
 		empty_backround.moveTo(0, 0);
@@ -1144,7 +1144,7 @@ function set_background(new_background, cb) {
 		
 		$("#map_size").text("");
 
-		change_background_dim(renderer.view.height);	
+		window.onresize();
 		
 		render_scene();	
 		if (cb)	cb(true);
@@ -1462,7 +1462,7 @@ var ping_texture_atlas = {}
 var active_pings = [];
 
 function ping(x, y, color, size) {
-	//color = parseInt('0x'+random_color().substring(1));;
+	//color = parseInt('0x'+random_color().substring(1));;	
 	var fast_container;
 	if (!ping_container_atlas[color]) {
 		fast_container = new PIXI.particles.ParticleContainer(500, {
@@ -1565,15 +1565,13 @@ var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d) {
 	ctx.moveTo(topx,topy);
 	ctx.lineTo(x1,y1);
 	ctx.lineTo(botx,boty);
-	var cpx=(topx+x1+botx)/3;
-	var cpy=(topy+y1+boty)/3;
-	ctx.quadraticCurveTo(cpx,cpy,topx,topy);
-	
-//	var temp = ctx.shadowBlur;
-//	ctx.shadowBlur = 0;
+	//var cpx=(topx+x1+botx)/3;
+	//var cpy=(topy+y1+boty)/3;
+	//ctx.quadraticCurveTo(cpx,cpy,topx,topy);
+	ctx.lineTo(topx,topy);
+
 	ctx.stroke();
 	ctx.fill();
-//	ctx.shadowBlur = temp;
 }
 
 function hexToRGBA(hex, alpha) {
