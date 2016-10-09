@@ -150,7 +150,6 @@
 						<select class="selectpicker" id="map_select">
 							<%-include(game + '_maps')%>
 						</select>
-
 					</div>
 					
 					<%if (game == 'wot') { %>
@@ -161,9 +160,21 @@
 					<button class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
 						<div class="icon icon-link_sm"></div>
 					</button>
+					
+					<div style="padding-top:5px; padding-bottom:5px">
+					<div class="btn-group">
+					<button class="btn btn-default menu_btn" aria-label="Left Align" id="zoom_in" data-toggle="tooltip" title="<%=l('Zoom in')%>">	
+						<div class="icon icon-plus"></div>
+					</button>
+					<button class="btn btn-default menu_btn" aria-label="Left Align" id="zoom_out" data-toggle="tooltip" title="<%=l('Zoom out')%>">
+						<div class="icon icon-minus"></div>
+					</button>
+					</div>
 					<span id="zoom_level">1</span>x
+					</div>
+					
 					<%if (game == 'wot') { %>
-						<br /><input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span>Use wotbase maps</span>
+						<br /><input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span><%=l('Use wotbase maps')%></span>
 					<%} %>	
 				<hr>
 				
