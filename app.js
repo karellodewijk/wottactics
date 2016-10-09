@@ -749,6 +749,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	app.get('/logout', function(req, res) {
 	  var return_to = req.headers.referer;
 	  req.logout();
+	  res.clearCookie('logged_in'); 
 	  res.redirect(return_to);
 	});
 
@@ -1057,6 +1058,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		next();
 	}
 	function redirect_return(req, res, next) {
+		res.cookie('logged_in', true);
 		res.redirect(req.session.return_to);
 		delete req.session.return_to;
 		return;
