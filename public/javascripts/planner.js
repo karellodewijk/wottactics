@@ -423,6 +423,16 @@ function paste() {
 	undo_list.push(clone_action(["add", new_entities]));	
 }
 
+function adjust_icon_zoom(icon) {
+	if (icon.container && icon.draw_zoom_level) {
+		var sprite = icon.container;
+		var scale = zoom_level / icon.draw_zoom_level;
+		var ratio = sprite.width / sprite.height;
+		sprite.height = x_abs(icon.size) * scale;
+		sprite.width = sprite.height * ratio;
+	}
+}
+
 function zoom(amount, isZoomIn, center, e) {
 	var old_zoom_level = zoom_level
 	var direction = isZoomIn ? 1 : -1;
@@ -440,8 +450,11 @@ function zoom(amount, isZoomIn, center, e) {
 	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
 	var zoom_factor = old_zoom_level / zoom_level;
 	
-	if (wot_live) {
-		wot_scale(zoom_factor);
+	for (var i in room_data.slides[active_slide].entities) {
+		var entity = room_data.slides[active_slide].entities[i];
+		if (entity.type == 'icon' && entity.container && entity.draw_zoom_level) {
+			adjust_icon_zoom(entity)
+		}
 	}
 }
 
@@ -933,7 +946,6 @@ function change_background_dim(height) {
 
 function set_background(new_background, cb) {
 	if (new_background.path != "") {
-		
 		if (!new_background.is_video) {		
 			resources_loading++;
 
@@ -1000,17 +1012,6 @@ function set_background(new_background, cb) {
 			add_custom_map(background.path)
 			$('#wotbase_map_select_container').hide();
 			$('#map_select_container').show();
-			
-			var empty_backround = new PIXI.Graphics();
-			empty_backround.beginFill(0xFFFFFF, 0);
-			empty_backround.moveTo(0, 0);
-			empty_backround.lineTo(renderer.width, 0);
-			empty_backround.lineTo(renderer.width, renderer.height);
-			empty_backround.lineTo(0, renderer.height);
-			empty_backround.lineTo(0, 0);
-			empty_backround.endFill();
-			background_sprite.texture = renderer.generateTexture(empty_backround);
-			$("#map_size").text("");
 						
 			var video_type = get_video_type(new_background.path)
 			
@@ -1134,11 +1135,19 @@ function set_background(new_background, cb) {
 		
 		var empty_backround = new PIXI.Graphics();
 		empty_backround.beginFill(0xFFFFFF, 1);
+		
 		empty_backround.moveTo(0, 0);
-		empty_backround.lineTo(renderer.width, 0);
-		empty_backround.lineTo(renderer.width, renderer.height);
-		empty_backround.lineTo(0, renderer.height);
+		if (!is_video_replay) {
+			empty_backround.lineTo(renderer.width, 0);
+			empty_backround.lineTo(renderer.width, renderer.height);
+			empty_backround.lineTo(0, renderer.height);
+		} else {
+			empty_backround.lineTo(window.innerWidth, 0);
+			empty_backround.lineTo(window.innerWidth, window.innerHeight);
+			empty_backround.lineTo(0, window.innerHeight);			
+		}
 		empty_backround.lineTo(0, 0);
+		
 		empty_backround.endFill();
 		background_sprite.texture = renderer.generateTexture(empty_backround);
 		
@@ -3659,7 +3668,7 @@ function on_icon_end(e) {
 	var x = mouse_x_rel(mouse_location.x) - (size/2);
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
- 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size * zoom_level, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked}
+ 	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size * zoom_level, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked, draw_zoom_level:zoom_level}
 	
 	if (icon.label_background) {
 		icon.label_color = "#000000";
@@ -3947,6 +3956,8 @@ function create_icon_cont(icon, texture) {
 	make_draggable(icon.container);	
 
 	objectContainer.addChild(icon['container']);
+	
+	adjust_icon_zoom(icon)
 	render_scene();	
 	
 	room_data.slides[active_slide].entities[icon.uid] = icon;
@@ -5165,14 +5176,6 @@ function create_hp_bar(scale) {
 }
 
 var icons = {}
-function wot_scale(factor) {
-	for (var i in icons) {
-		if (icons[i] && icons[i].container) {
-			icons[i].container.scale.x /= factor;
-			icons[i].container.scale.y /= factor;
-		}
-	}
-}
 
 function wot_connect() {
 	var top, left, bottom, right, width, height;
@@ -5204,7 +5207,13 @@ function wot_connect() {
 		bar.x -= bar.width / 2
 		bar.y -= icon.container.height + bar.height
 		icon.container.addChild(bar);
-		var name = create_text_sprite(icon.player.substring(0,9), icon.label_color, 12, "Arial", false, true, "bold");
+		
+		var name = create_text_sprite(icon.player.substring(0,9), icon.label_color, 8, "Arial", false, true, "bold");
+		var ratio = name.width / name.height;
+		name.height = x_abs(8 / 530)
+		name.width = name.height * ratio;	
+	
+		
 		name.x -= name.width/2
 		name.y -= icon.container.height + bar.height + name.height
 		icon.container.addChild(name);			
@@ -6041,7 +6050,23 @@ $(document).ready(function() {
 			}
 			render_scene();
 		});
+		
+		$('#zoom_in').click(function() {
+			zoom(0.1, true, [0.5, 0.5]);
+			$('#zoom_level').text((1/zoom_level).toFixed(2));
+			if (control_camera) {
+				emit_pan_zoom();
+			}
+		});
 
+		$('#zoom_out').click(function() {
+			zoom(0.1, false, [0.5, 0.5]);
+			$('#zoom_level').text((1/zoom_level).toFixed(2));
+			if (control_camera) {
+				emit_pan_zoom();
+			}			
+		});
+		
 		//tool select
 		$('#contexts').on('click', 'button', function (e) {
 			stop_drawing();

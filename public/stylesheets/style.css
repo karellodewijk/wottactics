@@ -324,7 +324,7 @@ div.inline { display: inline-block; vertical-align: middle; }
   background-image: url('sprite.png');
 }
 
-.icon-lol_sm {
+.icon-minus {
   background-position: -0px -0px;
   width: 16px;
   height: 16px;
@@ -374,523 +374,538 @@ div.inline { display: inline-block; vertical-align: middle; }
   width: 16px;
   height: 16px;
 }
-.icon-logout {
+.icon-wargaming {
   background-position: -0px -160px;
   width: 16px;
   height: 16px;
 }
-.icon-aw {
+.icon-logout {
   background-position: -0px -176px;
   width: 16px;
   height: 16px;
 }
-.icon-sc2_sm {
+.icon-lol_sm {
   background-position: -0px -192px;
   width: 16px;
   height: 16px;
 }
-.icon-wargaming {
+.icon-aw {
   background-position: -0px -208px;
   width: 16px;
   height: 16px;
 }
-.icon-warface_sm {
+.icon-plus {
   background-position: -0px -224px;
   width: 16px;
   height: 16px;
 }
-.icon-squad_sm {
+.icon-sc2_sm {
   background-position: -0px -240px;
   width: 16px;
   height: 16px;
 }
-.icon-steam {
+.icon-warface_sm {
   background-position: -0px -256px;
   width: 16px;
   height: 16px;
 }
-.icon-twitter {
+.icon-vk {
   background-position: -0px -272px;
   width: 16px;
   height: 16px;
 }
-.icon-vk {
+.icon-squad_sm {
   background-position: -0px -288px;
   width: 16px;
   height: 16px;
 }
-.icon-share {
+.icon-steam {
   background-position: -0px -304px;
+  width: 16px;
+  height: 16px;
+}
+.icon-twitter {
+  background-position: -0px -320px;
+  width: 16px;
+  height: 16px;
+}
+.icon-share {
+  background-position: -0px -336px;
   width: 18px;
   height: 18px;
 }
 .icon-send_to_link {
-  background-position: -0px -322px;
-  width: 18px;
-  height: 18px;
-}
-.icon-from_link {
-  background-position: -0px -340px;
+  background-position: -0px -354px;
   width: 18px;
   height: 18px;
 }
 .icon-link_sm {
-  background-position: -0px -358px;
+  background-position: -0px -372px;
   width: 18px;
   height: 18px;
 }
-.icon-copy {
-  background-position: -0px -376px;
-  width: 22px;
-  height: 22px;
+.icon-from_link {
+  background-position: -0px -390px;
+  width: 18px;
+  height: 18px;
 }
-.icon-csgo {
-  background-position: -0px -398px;
-  width: 22px;
-  height: 22px;
-}
-.icon-arrow {
-  background-position: -0px -420px;
+.icon-lock {
+  background-position: -0px -408px;
   width: 22px;
   height: 22px;
 }
 .icon-cursor_icon {
-  background-position: -0px -442px;
+  background-position: -0px -430px;
   width: 22px;
   height: 22px;
 }
 .icon-curve {
-  background-position: -0px -464px;
+  background-position: -0px -452px;
   width: 22px;
   height: 22px;
 }
 .icon-curve_T {
-  background-position: -0px -486px;
+  background-position: -0px -474px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_arrow {
-  background-position: -0px -508px;
+  background-position: -0px -496px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_dashed_arrow {
-  background-position: -0px -530px;
+  background-position: -0px -518px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_dashed_line {
-  background-position: -0px -552px;
+  background-position: -0px -540px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_dotted_arrow {
-  background-position: -0px -574px;
+  background-position: -0px -562px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_dotted_line {
-  background-position: -0px -596px;
+  background-position: -0px -584px;
   width: 22px;
   height: 22px;
 }
 .icon-curved_line {
-  background-position: -0px -618px;
+  background-position: -0px -606px;
   width: 22px;
   height: 22px;
 }
 .icon-cut {
-  background-position: -0px -640px;
+  background-position: -0px -628px;
   width: 22px;
   height: 22px;
 }
 .icon-dashed_arrow {
-  background-position: -0px -662px;
+  background-position: -0px -650px;
   width: 22px;
   height: 22px;
 }
 .icon-dashed_line {
-  background-position: -0px -684px;
+  background-position: -0px -672px;
   width: 22px;
   height: 22px;
 }
 .icon-dot_icon {
-  background-position: -0px -706px;
+  background-position: -0px -694px;
   width: 22px;
   height: 22px;
 }
 .icon-dotted_arrow {
-  background-position: -0px -728px;
+  background-position: -0px -716px;
   width: 22px;
   height: 22px;
 }
 .icon-dotted_line {
-  background-position: -0px -750px;
+  background-position: -0px -738px;
   width: 22px;
   height: 22px;
 }
 .icon-draw_circle_icon {
-  background-position: -0px -772px;
+  background-position: -0px -760px;
   width: 22px;
   height: 22px;
 }
 .icon-draw_circle_radius_icon {
-  background-position: -0px -794px;
+  background-position: -0px -782px;
   width: 22px;
   height: 22px;
 }
 .icon-eraser {
-  background-position: -0px -816px;
+  background-position: -0px -804px;
   width: 22px;
   height: 22px;
 }
 .icon-export {
-  background-position: -0px -838px;
+  background-position: -0px -826px;
   width: 22px;
   height: 22px;
 }
 .icon-bin {
-  background-position: -0px -860px;
+  background-position: -0px -848px;
   width: 22px;
   height: 22px;
 }
 .icon-floppy {
-  background-position: -0px -882px;
+  background-position: -0px -870px;
   width: 22px;
   height: 22px;
 }
 .icon-folder {
-  background-position: -0px -904px;
+  background-position: -0px -892px;
   width: 22px;
   height: 22px;
 }
 .icon-archive_icon {
-  background-position: -0px -926px;
+  background-position: -0px -914px;
   width: 22px;
   height: 22px;
 }
 .icon-aw_icon {
-  background-position: -0px -948px;
+  background-position: -0px -936px;
   width: 22px;
   height: 22px;
 }
 .icon-grid_icon {
-  background-position: -0px -970px;
+  background-position: -0px -958px;
   width: 22px;
   height: 22px;
 }
 .icon-hots {
-  background-position: -0px -992px;
+  background-position: -0px -980px;
   width: 22px;
   height: 22px;
 }
 .icon-bomb {
-  background-position: -0px -1014px;
+  background-position: -0px -1002px;
   width: 22px;
   height: 22px;
 }
 .icon-icon_icon {
-  background-position: -0px -1036px;
+  background-position: -0px -1024px;
   width: 22px;
   height: 22px;
 }
 .icon-line_T {
-  background-position: -0px -1058px;
+  background-position: -0px -1046px;
   width: 22px;
   height: 22px;
 }
 .icon-line_icon {
-  background-position: -0px -1080px;
+  background-position: -0px -1068px;
   width: 22px;
   height: 22px;
 }
 .icon-link {
-  background-position: -0px -1102px;
-  width: 22px;
-  height: 22px;
-}
-.icon-area {
-  background-position: -0px -1124px;
-  width: 22px;
-  height: 22px;
-}
-.icon-lock {
-  background-position: -0px -1146px;
-  width: 22px;
-  height: 22px;
-}
-.icon-lock_camera {
-  background-position: -0px -1168px;
+  background-position: -0px -1090px;
   width: 22px;
   height: 22px;
 }
 .icon-circle_icon {
-  background-position: -0px -1190px;
+  background-position: -0px -1112px;
   width: 22px;
   height: 22px;
 }
-.icon-lol {
-  background-position: -0px -1212px;
+.icon-area {
+  background-position: -0px -1134px;
+  width: 22px;
+  height: 22px;
+}
+.icon-lock_camera {
+  background-position: -0px -1156px;
   width: 22px;
   height: 22px;
 }
 .icon-clear {
-  background-position: -0px -1234px;
+  background-position: -0px -1178px;
+  width: 22px;
+  height: 22px;
+}
+.icon-lol {
+  background-position: -0px -1200px;
+  width: 22px;
+  height: 22px;
+}
+.icon-clear_area {
+  background-position: -0px -1222px;
   width: 22px;
   height: 22px;
 }
 .icon-map_icon {
-  background-position: -0px -1256px;
-  width: 22px;
-  height: 22px;
-}
-.icon-move {
-  background-position: -0px -1278px;
-  width: 22px;
-  height: 22px;
-}
-.icon-note {
-  background-position: -0px -1300px;
-  width: 22px;
-  height: 22px;
-}
-.icon-paste {
-  background-position: -0px -1322px;
-  width: 22px;
-  height: 22px;
-}
-.icon-patreon {
-  background-position: -0px -1344px;
-  width: 22px;
-  height: 22px;
-}
-.icon-paypal {
-  background-position: -0px -1366px;
-  width: 22px;
-  height: 22px;
-}
-.icon-pencil {
-  background-position: -0px -1388px;
-  width: 22px;
-  height: 22px;
-}
-.icon-ping_icon {
-  background-position: -0px -1410px;
-  width: 22px;
-  height: 22px;
-}
-.icon-polygon {
-  background-position: -0px -1432px;
-  width: 22px;
-  height: 22px;
-}
-.icon-protoss {
-  background-position: -0px -1454px;
-  width: 22px;
-  height: 22px;
-}
-.icon-rectangle {
-  background-position: -0px -1476px;
-  width: 22px;
-  height: 22px;
-}
-.icon-recticle_icon {
-  background-position: -0px -1498px;
-  width: 22px;
-  height: 22px;
-}
-.icon-redo {
-  background-position: -0px -1520px;
-  width: 22px;
-  height: 22px;
-}
-.icon-remove_slide {
-  background-position: -0px -1542px;
-  width: 22px;
-  height: 22px;
-}
-.icon-ruler_icon {
-  background-position: -0px -1564px;
-  width: 22px;
-  height: 22px;
-}
-.icon-save {
-  background-position: -0px -1586px;
-  width: 22px;
-  height: 22px;
-}
-.icon-save_as {
-  background-position: -0px -1608px;
-  width: 22px;
-  height: 22px;
-}
-.icon-sc2 {
-  background-position: -0px -1630px;
-  width: 21px;
-  height: 22px;
-}
-.icon-clear_area {
-  background-position: -0px -1652px;
-  width: 22px;
-  height: 22px;
-}
-.icon-select {
-  background-position: -0px -1674px;
+  background-position: -0px -1244px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_circle {
-  background-position: -0px -1696px;
+  background-position: -0px -1266px;
   width: 22px;
   height: 22px;
 }
-.icon-send_to_link_22 {
-  background-position: -0px -1718px;
+.icon-move {
+  background-position: -0px -1288px;
+  width: 22px;
+  height: 22px;
+}
+.icon-note {
+  background-position: -0px -1310px;
+  width: 22px;
+  height: 22px;
+}
+.icon-paste {
+  background-position: -0px -1332px;
+  width: 22px;
+  height: 22px;
+}
+.icon-patreon {
+  background-position: -0px -1354px;
+  width: 22px;
+  height: 22px;
+}
+.icon-paypal {
+  background-position: -0px -1376px;
+  width: 22px;
+  height: 22px;
+}
+.icon-pencil {
+  background-position: -0px -1398px;
+  width: 22px;
+  height: 22px;
+}
+.icon-ping_icon {
+  background-position: -0px -1420px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_curve {
-  background-position: -0px -1740px;
+  background-position: -0px -1442px;
   width: 22px;
   height: 22px;
 }
-.icon-ship_icon {
-  background-position: -0px -1762px;
+.icon-polygon {
+  background-position: -0px -1464px;
   width: 22px;
   height: 22px;
 }
-.icon-squad {
-  background-position: -0px -1784px;
+.icon-protoss {
+  background-position: -0px -1486px;
   width: 22px;
+  height: 22px;
+}
+.icon-rectangle {
+  background-position: -0px -1508px;
+  width: 22px;
+  height: 22px;
+}
+.icon-recticle_icon {
+  background-position: -0px -1530px;
+  width: 22px;
+  height: 22px;
+}
+.icon-redo {
+  background-position: -0px -1552px;
+  width: 22px;
+  height: 22px;
+}
+.icon-remove_slide {
+  background-position: -0px -1574px;
+  width: 22px;
+  height: 22px;
+}
+.icon-ruler_icon {
+  background-position: -0px -1596px;
+  width: 22px;
+  height: 22px;
+}
+.icon-save {
+  background-position: -0px -1618px;
+  width: 22px;
+  height: 22px;
+}
+.icon-save_as {
+  background-position: -0px -1640px;
+  width: 22px;
+  height: 22px;
+}
+.icon-sc2 {
+  background-position: -0px -1662px;
+  width: 21px;
   height: 22px;
 }
 .icon-clear_draw {
-  background-position: -0px -1806px;
+  background-position: -0px -1684px;
+  width: 22px;
+  height: 22px;
+}
+.icon-select {
+  background-position: -0px -1706px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_icon {
-  background-position: -0px -1828px;
+  background-position: -0px -1728px;
   width: 22px;
   height: 22px;
 }
-.icon-tank_icon {
-  background-position: -0px -1850px;
-  width: 22px;
-  height: 22px;
-}
-.icon-terran {
-  background-position: -0px -1872px;
-  width: 22px;
-  height: 22px;
-}
-.icon-text_icon {
-  background-position: -0px -1894px;
-  width: 22px;
-  height: 22px;
-}
-.icon-text_on_background {
-  background-position: -0px -1916px;
+.icon-send_to_link_22 {
+  background-position: -0px -1750px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_line {
-  background-position: -0px -1938px;
+  background-position: -0px -1772px;
   width: 22px;
   height: 22px;
 }
-.icon-undo {
-  background-position: -0px -1960px;
+.icon-ship_icon {
+  background-position: -0px -1794px;
   width: 22px;
   height: 22px;
 }
-.icon-unlock {
-  background-position: -0px -1982px;
-  width: 22px;
-  height: 22px;
-}
-.icon-unlock_camera {
-  background-position: -0px -2004px;
+.icon-squad {
+  background-position: -0px -1816px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_note {
-  background-position: -0px -2026px;
-  width: 22px;
-  height: 22px;
-}
-.icon-warface {
-  background-position: -0px -2048px;
+  background-position: -0px -1838px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_polygon {
-  background-position: -0px -2070px;
+  background-position: -0px -1860px;
+  width: 22px;
+  height: 22px;
+}
+.icon-tank_icon {
+  background-position: -0px -1882px;
+  width: 22px;
+  height: 22px;
+}
+.icon-terran {
+  background-position: -0px -1904px;
+  width: 22px;
+  height: 22px;
+}
+.icon-text_icon {
+  background-position: -0px -1926px;
+  width: 22px;
+  height: 22px;
+}
+.icon-text_on_background {
+  background-position: -0px -1948px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_rectangle {
-  background-position: -0px -2092px;
+  background-position: -0px -1970px;
+  width: 22px;
+  height: 22px;
+}
+.icon-undo {
+  background-position: -0px -1992px;
+  width: 22px;
+  height: 22px;
+}
+.icon-unlock {
+  background-position: -0px -2014px;
+  width: 22px;
+  height: 22px;
+}
+.icon-unlock_camera {
+  background-position: -0px -2036px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_selected {
-  background-position: -0px -2114px;
+  background-position: -0px -2058px;
+  width: 22px;
+  height: 22px;
+}
+.icon-warface {
+  background-position: -0px -2080px;
   width: 22px;
   height: 22px;
 }
 .icon-clear_text {
-  background-position: -0px -2136px;
+  background-position: -0px -2102px;
+  width: 22px;
+  height: 22px;
+}
+.icon-copy {
+  background-position: -0px -2124px;
+  width: 22px;
+  height: 22px;
+}
+.icon-csgo {
+  background-position: -0px -2146px;
+  width: 22px;
+  height: 22px;
+}
+.icon-arrow {
+  background-position: -0px -2168px;
   width: 22px;
   height: 22px;
 }
 .icon-zerg {
-  background-position: -0px -2158px;
+  background-position: -0px -2190px;
   width: 22px;
   height: 22px;
 }
 .icon-cs {
-  background-position: -0px -2180px;
+  background-position: -0px -2212px;
   width: 24px;
   height: 24px;
 }
 .icon-de {
-  background-position: -0px -2204px;
+  background-position: -0px -2236px;
   width: 24px;
   height: 24px;
 }
 .icon-en {
-  background-position: -0px -2228px;
+  background-position: -0px -2260px;
   width: 24px;
   height: 24px;
 }
 .icon-es {
-  background-position: -0px -2252px;
+  background-position: -0px -2284px;
   width: 24px;
   height: 24px;
 }
 .icon-fi {
-  background-position: -0px -2276px;
+  background-position: -0px -2308px;
   width: 24px;
   height: 24px;
 }
 .icon-fr {
-  background-position: -0px -2300px;
+  background-position: -0px -2332px;
+  width: 24px;
+  height: 24px;
+}
+.icon-nl {
+  background-position: -0px -2356px;
   width: 24px;
   height: 24px;
 }
 .icon-pl {
-  background-position: -0px -2324px;
+  background-position: -0px -2380px;
   width: 24px;
   height: 24px;
 }
 .icon-ru {
-  background-position: -0px -2348px;
+  background-position: -0px -2404px;
   width: 24px;
   height: 24px;
 }
 .icon-sr {
-  background-position: -0px -2372px;
+  background-position: -0px -2428px;
   width: 24px;
   height: 24px;
 }
