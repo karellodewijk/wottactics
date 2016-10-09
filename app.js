@@ -24,7 +24,7 @@ var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var passport = require('passport');
-var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru'];
+var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru', 'nl'];
 
 var app = express();
 app.use(compress());
@@ -294,7 +294,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (!req.session.passport || !req.session.passport.user) {
 			create_anonymous_user(req);		
 		}
-		
 		if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
 			req.session.locale = subDomain[0];
 			subDomain = subDomain.slice(1);
@@ -749,7 +748,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	app.get('/logout', function(req, res) {
 	  var return_to = req.headers.referer;
 	  req.logout();
-	  res.clearCookie('logged_in'); 
+	  res.clearCookie('logged_in');
 	  res.redirect(return_to);
 	});
 
@@ -1058,7 +1057,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		next();
 	}
 	function redirect_return(req, res, next) {
-		res.cookie('logged_in', true);
+		res.clearCookie('logged_in'); 
 		res.redirect(req.session.return_to);
 		delete req.session.return_to;
 		return;
