@@ -247,18 +247,24 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		req.session.passport.user.name = "Anonymous";		
 	}
 	
+	//returns host without subdomain
+	function get_host(req) {
+		var host = req.hostname.split('.');
+		if (host.length >= 2) {
+			host = '.' + host[host.length-2] + '.' + host[host.length-1];
+		} else {
+			host = '.' + host[0];
+		}
+		return host;		
+	}
+	
 	// initializing session middleware
 	var Session = require('express-session');
 	var RedisStore = require('connect-redis')(Session);
 	var mwCache = Object.create(null);
 	function virtualHostSession(req, res, next) {
 		if (req.hostname) {
-			var host = req.hostname.split('.');
-			if (host.length >= 2) {
-				host = '.' + host[host.length-2] + '.' + host[host.length-1];
-			} else {
-				host = '.' + host[0];
-			}		
+			var host = get_host(req);	
 			var hostSession = mwCache[host];
 			if (!hostSession) {
 				var store = new RedisStore(secrets.redis_options);
@@ -271,7 +277,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	app.use(function(req, res, next) {
 		res.header('Access-Control-Allow-Credentials', true);
-		res.header('Access-Control-Allow-Origin', req.headers.origin);
+		res.header('Access-Control-Allow-Origin', '*');
 		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
 		res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
 		next();
@@ -690,6 +696,19 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								 static_host: secrets.static_host, 
 								 ga_id:secrets.ga_id});
 	});
+
+
+	router.get('/navbar.html', function(req, res, next) {
+	  if (!req.session.game) {
+		req.session.game = 'wot';
+	  }
+	  res.render('navbar_framed', { game: req.session.game, 
+									  user: req.session.passport.user,
+									  locale: req.session.locale,
+									  url: req.fullUrl,
+									  static_host: secrets.static_host, 
+									  ga_id:secrets.ga_id});
+	});
 	
 	router.get('/stored_tactics.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -748,7 +767,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	app.get('/logout', function(req, res) {
 	  var return_to = req.headers.referer;
 	  req.logout();
-	  res.clearCookie('logged_in');
+	  res.cookie('logged_in', 'no', {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
 	  res.redirect(return_to);
 	});
 
@@ -1057,7 +1076,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		next();
 	}
 	function redirect_return(req, res, next) {
-		res.clearCookie('logged_in'); 
+		res.cookie('logged_in', 'yes', {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
 		res.redirect(req.session.return_to);
 		delete req.session.return_to;
 		return;
