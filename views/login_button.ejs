@@ -28,27 +28,27 @@
 </li>
 
 <script type="text/javascript">
-
-var login_options = document.getElementById("login_dropdown_select").children;
-
-for (var i in login_options) {
-	if (login_options.hasOwnProperty(i)) {
-		login_options[i].children[0].onclick = function() {
-			if (this.hasAttribute('data-action')) {
-				var f = document.createElement("form");
-				f.setAttribute('method', "POST");
-				f.setAttribute('action', this.getAttribute('data-action'));	
-				if (this.hasAttribute('id')) {
-					var i = document.createElement("input");
-					i.setAttribute('type', "hidden");
-					i.setAttribute('name', "openid_identifier");
-					i.setAttribute('value', this.getAttribute('id'));
-					f.appendChild(i);
+document.addEventListener("DOMContentLoaded", function(event) { 
+	var login_options = document.getElementById("login_dropdown_select").children;
+	for (var i in login_options) {
+		if (login_options.hasOwnProperty(i)) {
+			login_options[i].children[0].onclick = function() {
+				if (this.hasAttribute('data-action')) {
+					var f = document.createElement("form");
+					f.setAttribute('method', "POST");
+					f.setAttribute('action', this.getAttribute('data-action'));	
+					if (this.hasAttribute('id')) {
+						var i = document.createElement("input");
+						i.setAttribute('type', "hidden");
+						i.setAttribute('name', "openid_identifier");
+						i.setAttribute('value', this.getAttribute('id'));
+						f.appendChild(i);
+					}
+					document.getElementsByTagName('body')[0].appendChild(f);
+					f.submit();
 				}
-				document.getElementsByTagName('body')[0].appendChild(f);
-				f.submit();
 			}
 		}
 	}
-}
+});
 </script>

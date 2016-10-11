@@ -1,5 +1,5 @@
-//var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
-var servers = [location.host];
+var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
+//var servers = [location.host];
 
 var is_video_replay = false;
 if (location.pathname.indexOf('planner3') != -1) {

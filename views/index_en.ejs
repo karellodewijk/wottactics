@@ -5,7 +5,7 @@
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
 	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or just explore, share and discuss map tactics with your friends, team, platoon or clan.">
 </head>
-<body>
+<body style="overflow:scroll;">
 	<% include navbar.ejs %>
 	
 	<style>
@@ -15,152 +15,152 @@
 		}
 	</style>
 
-	<div class="container" style='width:100%;'>
-    <div id="banner" class="jumbotron side_bar call_to_action" style='width:100%;'>
-		<div class="container" id="big_button_frame" style="text-align:center">
-			<h1>
-				<% if (game == 'wot') { %>
-					World of Tanks Tactics
-				<% } else if (game == 'wows') { %>
-					World of Warships Tactics
-				<% } else if (game == 'blitz') { %>
-					World of Tanks Blitz Tactics
-				<% } else if (game == 'aw') { %>
-					Armored Warfare Tactics
-				<% } else if (game == 'lol') { %>
-					League of legends Tactics
-				<% } else if (game == 'hots') { %>
-					Heroes of the Storm Tactics
-				<% } else if (game == 'sc2') { %>
-					Starcraft II Tactics
-				<% } else if (game == 'csgo') { %>
-					CS:GO Tactics
-				<% } else if (game == 'warface') { %>
-					Warface Tactics
-				<% } else if (game == 'squad') { %>
-					Squad Tactics
-				<% } %>	
-			</h1>
-			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
-			(<a href="<%=game%>planner.html" id="new_room2" role="button" style="color:#ADD8E6"><%= l('Use original ui')%></a>)<br /></p>
-			<script type="text/javascript">
-				//generate unique id
-				var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
-				function newUid() {
-					var text = "";
-					for(var i=0; i < 14; i++ ) {
-						text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+	<div class="container" style='width:100%; position:relative;'>
+		<div id="banner" class="jumbotron side_bar call_to_action" style='width:100%;'>
+			<div class="container" id="big_button_frame" style="text-align:center">
+				<h1>
+					<% if (game == 'wot') { %>
+						World of Tanks Tactics
+					<% } else if (game == 'wows') { %>
+						World of Warships Tactics
+					<% } else if (game == 'blitz') { %>
+						World of Tanks Blitz Tactics
+					<% } else if (game == 'aw') { %>
+						Armored Warfare Tactics
+					<% } else if (game == 'lol') { %>
+						League of legends Tactics
+					<% } else if (game == 'hots') { %>
+						Heroes of the Storm Tactics
+					<% } else if (game == 'sc2') { %>
+						Starcraft II Tactics
+					<% } else if (game == 'csgo') { %>
+						CS:GO Tactics
+					<% } else if (game == 'warface') { %>
+						Warface Tactics
+					<% } else if (game == 'squad') { %>
+						Squad Tactics
+					<% } %>	
+				</h1>
+				<p><span id="quote"></span></p>
+				<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
+				(<a href="<%=game%>planner.html" id="new_room2" role="button" style="color:#ADD8E6"><%= l('Use original ui')%></a>)<br /></p>
+				<script type="text/javascript">
+					//generate unique id
+					var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+					function newUid() {
+						var text = "";
+						for(var i=0; i < 14; i++ ) {
+							text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+						}
+						return text;
 					}
-					return text;
-				}
-				window.onload = function() {
-					var el = document.getElementById('new_room');
-					el.onclick = function(e) {
-						window.location.href = el.getAttribute('href') + '?room=' + newUid();
-						e.preventDefault();
-					}
-					var el2 = document.getElementById('new_room2');
-					el2.onclick = function(e) {
-						window.location.href = el2.getAttribute('href') + '?room=' + newUid();
-						e.preventDefault();
-					}
-				};
-			</script>
-		</div>
-	
-	</div>
-
-	<div class="row">
-		<div class="col-md-4">
-			<h2>What is <%=game.toUpperCase()%> <%=l('Tactics')%> &#63;</h2>
-			<p><%=game.toUpperCase()%> <%=l('Tactics')%> is an interactive map planning tool for <%=game.toUpperCase()%>.
-			
-			<p><h4><b>So how does it work ?</b></h4>
-			
-			<p>Press the blue button. Then select a map and use the tools on the right to start planning. You can invite others by sending them the link. 
-			
-		</div>
-		<%if (game == 'warface') { %>
-			<div class="col-md-4">
-				<h2>Looking for help with warface maps</h2>
-				<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
+					window.onload = function() {
+						var el = document.getElementById('new_room');
+						el.onclick = function(e) {
+							window.location.href = el.getAttribute('href') + '?room=' + newUid();
+							e.preventDefault();
+						}
+						var el2 = document.getElementById('new_room2');
+						el2.onclick = function(e) {
+							window.location.href = el2.getAttribute('href') + '?room=' + newUid();
+							e.preventDefault();
+						}
+					};
+				</script>
 			</div>
-		<%} else { %>
+		
+		</div>
+
+		<div class="row">
 			<div class="col-md-4">
-				<h2>Future plans</h2>
+				<h2>What is <%=game.toUpperCase()%> <%=l('Tactics')%> &#63;</h2>
+				<p><%=game.toUpperCase()%> <%=l('Tactics')%> is an interactive map planning tool for <%=game.toUpperCase()%>.
+				
+				<p><h4><b>So how does it work ?</b></h4>
+				
+				<p>Press the blue button. Then select a map and use the tools on the right to start planning. You can invite others by sending them the link. 
+				
+			</div>
+			<%if (game == 'warface') { %>
+				<div class="col-md-4">
+					<h2>Looking for help with warface maps</h2>
+					<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
+				</div>
+			<%} else { %>
+				<div class="col-md-4">
+					<h2>Future plans</h2>
+					<ul>
+						<li>Support for drawing while panning
+						<li style="text-decoration: line-through;">Better support for touch devices (pinch zoom, pan support)
+						<li>Write text directly on the map
+						<li>Share folders in addition to just tactics
+					</ul>
+					If you have any suggestions, you can put them on the forums, contact me by e-mail or put them in the survey.			
+				</div>		
+			<% } %>	
+			<div class="col-md-4">
+				<h2>Your input matters</h2>
+				<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
+				
+				<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
+			</div>			
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<h2>Video replay room</h2>
+				<p>As you may have noticed there is a new 'video replay room' button next to the new room button. It's something new I'm experimenting with.
+				
+				<p>I was watching a League of Legends match and afterwards they were showing some replays to hilight certain things. I figured being to do that live and online is not something that exists yet and may be useful. 
+
+				<p>Now, I'm not saying it's perfect. The drawing part is not a problem, but starting and keeping videos in sync especially through the youtube api is tricky. And I don't think it's something I can improve upon greatly. Basically the youtube API is just lacking the nescessary tools (no fine grained playback rate control, course seek function and play/pause delays).
+				
+				<p>A direct link to a supported video file (anything supported by your browser) will work better. But is there a even free video service that allows you to access video files directly and embed them remotely ?
+				
+				<p>Anyway give it a try and give me some feedback. Do you like the idea, do you have a use for it ? Does it work for you or your team ? What problems are you experiencing ? Does youtube video synchronization well enough or do you consider it unusable as it is ?
+			</div>	
+			<div class="col-md-4">
+				<h2>Latest changes</h2>
+				<p>
 				<ul>
-					<li>Support for drawing while panning
-					<li style="text-decoration: line-through;">Better support for touch devices (pinch zoom, pan support)
-					<li>Write text directly on the map
-					<li>Share folders in addition to just tactics
+					<li>Implemented pinch zoom, 2 finger pan and full support for the eraser tool on touch devices
+					<li>Moved to pixi v4.0.2, increased performance is definately measurable. Let me know if there are any issues though.
+					<li>Added wot Paris map + updated blitz maps
+					<li>Added 'lock camera' mode. Only available to owners (green), when selected all zoom/pan motions will be mimicked by all users in the room.
+					<li>Made drawing more efficient but mostly everything drawn zoomed in will now remain sharp after a refresh or on clients. There will be changes in scaling on existing tactics (slightly thinner/thicker lines, larger/smaller arrow). I'm confident it will be consistent from now on though.  
+				</ul> 
+				On the bug hunting front:
+				<ul>
+					<li>Fixed alignment issues in video replay room.
+					<li>The hand icon is no longer shown when dragging is disabled.
+					<li>Text on firefox 49.0 was bigger than it should be. It's actually a FF bug https://bugzilla.mozilla.org/show_bug.cgi?id=1306027, but I remedied it best I can.
+					<li>Some notes from older tactics dissapeared, they should be back now
+					<li>Resizing a select box was jumpy sometimes
 				</ul>
-				If you have any suggestions, you can put them on the forums, contact me by e-mail or put them in the survey.			
-			</div>		
-		<% } %>	
-		<div class="col-md-4">
-			<h2>Your input matters</h2>
-			<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
-			
-			<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
-		</div>			
+				If you find anything else, however small, that is broken, pls let me know. 
+			</div>
+			<div class="col-md-4">
+				<h2>2,000,000 visits</h2>
+				<p>Since the beginning of March, when i started monitoring traffic, 314,809 users have visitited this website a total of 2,031,807 times, visiting 3,822,789 pages. At least 335,645 rooms have been created and 38,127 tactics have been stored.
+
+				<p>Thank you for your support. I think that's pretty amazing.
+
+				<p>For more details here's a google analytics <a href="http://karellodewijk.github.io/total_visitors.pdf">report</a>.
+
+			</div>
+		</div>
+		
+		<br />
+		<div class='row'>
+			<div class='col-md-6'>
+				<%=l('Developed by')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
+			</div>
+			<div class='col-md-6' style='text-align:right;'>
+				<a href="older_news.html">Older news</a>
+			</div>
+		</div>
+		<br />
 	</div>
-	<div class="row">
-		<div class="col-md-4">
-			<h2>Video replay room</h2>
-			<p>As you may have noticed there is a new 'video replay room' button next to the new room button. It's something new I'm experimenting with.
-			
-			<p>I was watching a League of Legends match and afterwards they were showing some replays to hilight certain things. I figured being to do that live and online is not something that exists yet and may be useful. 
 
-			<p>Now, I'm not saying it's perfect. The drawing part is not a problem, but starting and keeping videos in sync especially through the youtube api is tricky. And I don't think it's something I can improve upon greatly. Basically the youtube API is just lacking the nescessary tools (no fine grained playback rate control, course seek function and play/pause delays).
-			
-			<p>A direct link to a supported video file (anything supported by your browser) will work better. But is there a even free video service that allows you to access video files directly and embed them remotely ?
-			
-			<p>Anyway give it a try and give me some feedback. Do you like the idea, do you have a use for it ? Does it work for you or your team ? What problems are you experiencing ? Does youtube video synchronization well enough or do you consider it unusable as it is ?
-		</div>	
-		<div class="col-md-4">
-			<h2>Latest changes</h2>
-			<p>
-			<ul>
-				<li>Implemented pinch zoom, 2 finger pan and full support for the eraser tool on touch devices
-			    <li>Moved to pixi v4.0.2, increased performance is definately measurable. Let me know if there are any issues though.
-				<li>Added wot Paris map + updated blitz maps
-				<li>Added 'lock camera' mode. Only available to owners (green), when selected all zoom/pan motions will be mimicked by all users in the room.
-				<li>Made drawing more efficient but mostly everything drawn zoomed in will now remain sharp after a refresh or on clients. There will be changes in scaling on existing tactics (slightly thinner/thicker lines, larger/smaller arrow). I'm confident it will be consistent from now on though.  
-			</ul> 
-			On the bug hunting front:
-			<ul>
-				<li>Fixed alignment issues in video replay room.
-				<li>The hand icon is no longer shown when dragging is disabled.
-				<li>Text on firefox 49.0 was bigger than it should be. It's actually a FF bug https://bugzilla.mozilla.org/show_bug.cgi?id=1306027, but I remedied it best I can.
-				<li>Some notes from older tactics dissapeared, they should be back now
-			    <li>Resizing a select box was jumpy sometimes
-			</ul>
-			If you find anything else, however small, that is broken, pls let me know. 
-		</div>
-		<div class="col-md-4">
-			<h2>2,000,000 visits</h2>
-			<p>Since the beginning of March, when i started monitoring traffic, 314,809 users have visitited this website a total of 2,031,807 times, visiting 3,822,789 pages. At least 335,645 rooms have been created and 38,127 tactics have been stored.
-
-			<p>Thank you for your support. I think that's pretty amazing.
-
-			<p>For more details here's a google analytics <a href="http://karellodewijk.github.io/total_visitors.pdf">report</a>.
-
-		</div>
-	</div>
-	
-	<br />
-	<div class='row'>
-		<div class='col-md-6'>
-			<%=l('Developed by')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
-		</div>
-		<div class='col-md-6' style='text-align:right;'>
-			<a href="older_news.html">Older news</a>
-		</div>
-	</div>
-	<br />
-</div>
-
-<% include index_js.ejs %>
+	<% include index_js.ejs %>
 
 </body>
