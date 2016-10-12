@@ -15,76 +15,83 @@
 		}
 	</style>
 
-	<div class="container" style='width:100%;'>
-    <div id="banner" class="jumbotron side_bar call_to_action" style='width:100%;'>
+	<div class="container" style='width:100%; position:relative;'>
+		<div class="jumbotron side_bar" style='width:100%; padding:0px; margin:0px;'>
+			<div id="banner" class="call_to_action" style='width:100%;'>
+				<div class="container" id="big_button_frame" style="text-align:center">
+					<h1>
+						<% if (game == 'wot') { %>
+							World of Tanks Tactics
+						<% } else if (game == 'wows') { %>
+							World of Warships Tactics
+						<% } else if (game == 'blitz') { %>
+							World of Tanks Blitz Tactics
+						<% } else if (game == 'aw') { %>
+							Armored Warfare Tactics
+						<% } else if (game == 'lol') { %>
+							League of legends Tactics
+						<% } else if (game == 'hots') { %>
+							Heroes of the Storm Tactics
+						<% } else if (game == 'sc2') { %>
+							Starcraft II Tactics
+						<% } else if (game == 'csgo') { %>
+							CS:GO Tactics
+						<% } else if (game == 'warface') { %>
+							Warface Tactics
+						<% } else if (game == 'squad') { %>
+							Squad Tactics
+						<% } %>	
+					</h1>
+					<p><span id="quote"></span></p>
+					<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
+					<script type="text/javascript">
+						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+						function newUid() {
+							var text = "";
+							for(var i=0; i < 14; i++ ) {
+								text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+							}
+							return text;
+						}
+						window.onload = function() {
+							var el = document.getElementById('new_room');
+							el.onclick = function(e) {
+								window.location.href = el.getAttribute('href') + '?room=' + newUid();
+								e.preventDefault();
+							}
+						};
+					</script>
+				</div>
+			</div>
 
-		<div class="container" id="big_button_frame" style="text-align:center">
-			<h1>
-				<% if (game == 'wot') { %>
-					World of Tanks Tactics
-				<% } else if (game == 'wows') { %>
-					World of Warships Tactics
-				<% } else if (game == 'blitz') { %>
-					World of Tanks Blitz Tactics
-				<% } else if (game == 'aw') { %>
-					Armored Warfare Tactics
-				<% } else if (game == 'lol') { %>
-					League of legends Tactics
-				<% } else if (game == 'hots') { %>
-					Heroes of the Storm Tactics
-				<% } else if (game == 'sc2') { %>
-					Starcraft II Tactics
-				<% } else if (game == 'csgo') { %>
-					CS:GO Tactics
-				<% } else if (game == 'warface') { %>
-					Warface Tactics
-				<% } else if (game == 'squad') { %>
-					Squad Tactics
-				<% } %>	
-			</h1>
-			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
-			<script type="text/javascript">
-				var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
-				function newUid() {
-					var text = "";
-					for(var i=0; i < 14; i++ ) {
-						text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
-					}
-					return text;
-				}
-				window.onload = function() {
-					var el = document.getElementById('new_room');
-					el.onclick = function(e) {
-						window.location.href = el.getAttribute('href') + '?room=' + newUid();
-						e.preventDefault();
-					}
-				};
-			</script>
+			<div style="padding-left:20px; padding-right:20px;">
+				<div class="row">
+					<div class="col-md-4">
+						<h2>Witajcie</h2>
+						<p>Ta strona powstała aby tworzenie taktyk było szybkie i łatwe. Po prostu naciśnij niebieski przycisk, podziel się linkiem ze znajomymi lub nie i zaczynaj. Jeśli chcesz aby zaproszeni też mogli edytować, naciśnij na ich nick lub przycisk z ikoną kłódki. Więcej informacji znajdziesz w tutorialu Jak zacząć.
+						</p>
+					</div>
+					<div class="col-md-4">
+						<h2>Darmowe i otwarte</h2>
+						<p>Ta strona jest bez opłat, bez reklam i open-source zamierzam utrzymać Ją taką.</p>
+					</div>
+					<div class="col-md-4">
+						<h2>Poszukuję tłumaczeń</h2>
+						<p>Dzięki pomocy ludzi ta strona jest już dostępna w kilku językach. Jeśli chcesz aby była dostępna także w twoim, skontaktuj się ze mną. Nie wymagam żadnych umiejętności technicznych.</p>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-md-6'>
+						<%=l('Developed by')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
+					</div>
+					<div class='col-md-6' style='text-align:right;'>
+						<a href="older_news.html">Older news</a>
+					</div>
+				</div>
+			</div>
 		</div>
-	
 	</div>
-
-	<div class="row">
-	<div class="col-md-4">
-		<h2>Witajcie</h2>
-		<p>Ta strona powstała aby tworzenie taktyk było szybkie i łatwe. Po prostu naciśnij niebieski przycisk, podziel się linkiem ze znajomymi lub nie i zaczynaj. Jeśli chcesz aby zaproszeni też mogli edytować, naciśnij na ich nick lub przycisk z ikoną kłódki. Więcej informacji znajdziesz w tutorialu Jak zacząć.
-		</p>
-	</div>
-	<div class="col-md-4">
-		<h2>Darmowe i otwarte</h2>
-		<p>Ta strona jest bez opłat, bez reklam i open-source zamierzam utrzymać Ją taką.</p>
-	</div>
-	<div class="col-md-4">
-		<h2>Poszukuję tłumaczeń</h2>
-		<p>Dzięki pomocy ludzi ta strona jest już dostępna w kilku językach. Jeśli chcesz aby była dostępna także w twoim, skontaktuj się ze mną. Nie wymagam żadnych umiejętności technicznych.</p>
-	</div>
-</div>
-	
-	<% include footer.ejs %>
-	
-	</div>
-	
+	<br />
 	<% include index_js.ejs %>
-	
+		
 </body>
