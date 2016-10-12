@@ -15,88 +15,99 @@
 		}
 	</style>
 
-	<div class="container" style='width:100%;'>
-    <div id="banner" class="jumbotron side_bar call_to_action" style='width:100%;'>
-		<div class="container" id="big_button_frame" style="text-align:center">
-			<h1>
-				<% if (game == 'wot') { %>
-					World of Tanks Tactics
-				<% } else if (game == 'wows') { %>
-					World of Warships Tactics
-				<% } else if (game == 'blitz') { %>
-					World of Tanks Blitz Tactics
-				<% } else if (game == 'aw') { %>
-					Armored Warfare Tactics
-				<% } else if (game == 'lol') { %>
-					League of legends Tactics
-				<% } else if (game == 'hots') { %>
-					Heroes of the Storm Tactics
-				<% } else if (game == 'sc2') { %>
-					Starcraft II Tactics
-				<% } else if (game == 'csgo') { %>
-					CS:GO Tactics
-				<% } else if (game == 'warface') { %>
-					Warface Tactics
-				<% } else if (game == 'squad') { %>
-					Squad Tactics
-				<% } %>	
-			</h1>
-			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
-			<script type="text/javascript">
-				var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
-				function newUid() {
-					var text = "";
-					for(var i=0; i < 14; i++ ) {
-						text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
-					}
-					return text;
-				}
-				window.onload = function() {
-					var el = document.getElementById('new_room');
-					el.onclick = function(e) {
-						window.location.href = el.getAttribute('href') + '?room=' + newUid();
-						e.preventDefault();
-					}
-				};
-			</script>
+	<div class="container" style='width:100%; position:relative;'>
+		<div class="jumbotron side_bar" style='width:100%; padding:0px; margin:0px;'>
+			<div id="banner" class="call_to_action" style='width:100%;'>
+				<div class="container" id="big_button_frame" style="text-align:center">
+					<h1>
+						<% if (game == 'wot') { %>
+							World of Tanks Tactics
+						<% } else if (game == 'wows') { %>
+							World of Warships Tactics
+						<% } else if (game == 'blitz') { %>
+							World of Tanks Blitz Tactics
+						<% } else if (game == 'aw') { %>
+							Armored Warfare Tactics
+						<% } else if (game == 'lol') { %>
+							League of legends Tactics
+						<% } else if (game == 'hots') { %>
+							Heroes of the Storm Tactics
+						<% } else if (game == 'sc2') { %>
+							Starcraft II Tactics
+						<% } else if (game == 'csgo') { %>
+							CS:GO Tactics
+						<% } else if (game == 'warface') { %>
+							Warface Tactics
+						<% } else if (game == 'squad') { %>
+							Squad Tactics
+						<% } %>	
+					</h1>
+					<p><span id="quote"></span></p>
+					<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
+					<script type="text/javascript">
+						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+						function newUid() {
+							var text = "";
+							for(var i=0; i < 14; i++ ) {
+								text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+							}
+							return text;
+						}
+						window.onload = function() {
+							var el = document.getElementById('new_room');
+							el.onclick = function(e) {
+								window.location.href = el.getAttribute('href') + '?room=' + newUid();
+								e.preventDefault();
+							}
+						};
+					</script>
+				</div>
+			</div>
+
+			<div style="padding-left:20px; padding-right:20px;">			
+				<div class="row">
+					<div class="col-md-4">
+						<h2>Добро пожаловать!</h2>
+						<p>Данный инструмент создан для быстрого и легкого планирования тактик ведения боя. Просто нажмите на синюю кнопку, поделитесь ссылкой с командой и приступайте к планированию. <% if (game == 'wot') { %> Вы командир клана/подразделения и планируете высадку на Глобальной карте или биту за Укреп-район и хотите проинструктировать ваших бойцов? Или Вы участник команды который хочет играть лучше в турнирах? Или же Вы просто хотите обсудить с другом, некоторые детали на карте? Тогда этот инструмент для Вас! Планирование боев еще никогда не было настолько простым.<% } %>
+					</div>
+					<div class="col-md-4">
+						<h2>Новый обучающий видеоролик</h2>
+						<p>Я создал <a href="https://youtu.be/K-yl_WNjvwk">обучающий видеоролик</a>, объясняющий все инструменты и возможности <%=url.split('/')[0]%>. Он должен помочь разобраться как использовать различные инструменты, научит вас использовать клавиши быстрого вызова команд которые вы можете не знать и объяснит некоторые возможности из более продвинутых функций. Оставляйте свое мнение, что вы думаете об этом в комментариях на YouTube.
+					</div>
+					<div class="col-md-4">
+						<h2>Теперь поддерживается русский язык</h2>
+						<p>Пользователь с ником bpuJIJuaHT решил помочь с русским переводом. Если вы нашли ошибки в переводе или хотите помочь перевести контент на свой родной язык, просьба связаться со мной. Перевод не требует технических навыков знания языка.</p>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-4">
+						<h2>Бесплатный и открытый</h2>
+						<p>Данный сервис абсолютно бесплатен, без рекламы и с открытым исходным кодом, и я намерен сохранить его таким образом. Однако я добавил кнопку для пожертвований, чтобы покрыть оплату за хостинг.</p>
+					</div>
+					<div class="col-md-4">
+						<h2>Недавние обновления</h2>
+						<p>Обновленны карты для WOT, за основу взяты HD карты из мода locastan и ShruBB. Также добавленны некоторые карты для AW и WOWs, пусть не в хорошем качестве но они теперь есть. Добавленна функция (в сахраненых тактиках) которая поволяет присоедить сохраненную тактику к уже открытой комнате.
+					</div>
+					<div class="col-md-4">
+						<h2>Планы на будущее</h2>
+						<p>
+						Я бы хотел улучшить карты. Меня всегда беспокоит то что, точки респауна и обозначения баз на некоторых картах, находятся не в нужном масштабе или месте на карте. Если вы знаете как это исправить и хотите помочь - свяжитесь со мной. Кроме того я хотел бы услышать ваше мнение что еще можно улучшить? Какие другие игры, по вашему мнению, можно добавить? Дайте мне знать, оставив отзыв в одной из тем форумов (ссылки на странице "О проекте") или по почте.
+					</div>
+				</div>
+				
+				<div class='row'>
+					<div class='col-md-6'>
+						<%=l('Developed by')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
+					</div>
+					<div class='col-md-6' style='text-align:right;'>
+						<a href="older_news.html">Older news</a>
+					</div>
+				</div>
+				
+			</div>
 		</div>
 	</div>
-
-	<div class="row">
-	<div class="col-md-4">
-		<h2>Добро пожаловать!</h2>
-		<p>Данный инструмент создан для быстрого и легкого планирования тактик ведения боя. Просто нажмите на синюю кнопку, поделитесь ссылкой с командой и приступайте к планированию. <% if (game == 'wot') { %> Вы командир клана/подразделения и планируете высадку на Глобальной карте или биту за Укреп-район и хотите проинструктировать ваших бойцов? Или Вы участник команды который хочет играть лучше в турнирах? Или же Вы просто хотите обсудить с другом, некоторые детали на карте? Тогда этот инструмент для Вас! Планирование боев еще никогда не было настолько простым.<% } %>
-	</div>
-	<div class="col-md-4">
-		<h2>Новый обучающий видеоролик</h2>
-		<p>Я создал <a href="https://youtu.be/K-yl_WNjvwk">обучающий видеоролик</a>, объясняющий все инструменты и возможности <%=url.split('/')[0]%>. Он должен помочь разобраться как использовать различные инструменты, научит вас использовать клавиши быстрого вызова команд которые вы можете не знать и объяснит некоторые возможности из более продвинутых функций. Оставляйте свое мнение, что вы думаете об этом в комментариях на YouTube.
-	</div>
-	<div class="col-md-4">
-		<h2>Теперь поддерживается русский язык</h2>
-		<p>Пользователь с ником bpuJIJuaHT решил помочь с русским переводом. Если вы нашли ошибки в переводе или хотите помочь перевести контент на свой родной язык, просьба связаться со мной. Перевод не требует технических навыков знания языка.</p>
-	</div>
-	</div>
-	
-	<div class="row">
-	<div class="col-md-4">
-		<h2>Бесплатный и открытый</h2>
-		<p>Данный сервис абсолютно бесплатен, без рекламы и с открытым исходным кодом, и я намерен сохранить его таким образом. Однако я добавил кнопку для пожертвований, чтобы покрыть оплату за хостинг.</p>
-	</div>
-	<div class="col-md-4">
-		<h2>Недавние обновления</h2>
-		<p>Обновленны карты для WOT, за основу взяты HD карты из мода locastan и ShruBB. Также добавленны некоторые карты для AW и WOWs, пусть не в хорошем качестве но они теперь есть. Добавленна функция (в сахраненых тактиках) которая поволяет присоедить сохраненную тактику к уже открытой комнате.
-	</div>
-	<div class="col-md-4">
-		<h2>Планы на будущее</h2>
-		<p>
-		Я бы хотел улучшить карты. Меня всегда беспокоит то что, точки респауна и обозначения баз на некоторых картах, находятся не в нужном масштабе или месте на карте. Если вы знаете как это исправить и хотите помочь - свяжитесь со мной. Кроме того я хотел бы услышать ваше мнение что еще можно улучшить? Какие другие игры, по вашему мнению, можно добавить? Дайте мне знать, оставив отзыв в одной из тем форумов (ссылки на странице "О проекте") или по почте.
-	</div>
-	</div>
-	
-	<% include footer.ejs %>
-</div>
-
-<% include index_ru_js.ejs %>
-
+	<br />
+	<% include index_ru_js.ejs %>
 </body>

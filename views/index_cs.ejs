@@ -15,83 +15,89 @@
 		}
 	</style>
 
-	<div class="container" style='width:100%;'>
-    <div id="banner" class="jumbotron side_bar call_to_action" style='width:100%;'>
-		<div class="container" id="big_button_frame" style="text-align:center">
-			<h1>
-				<% if (game == 'wot') { %>
-					World of Tanks Tactics
-				<% } else if (game == 'wows') { %>
-					World of Warships Tactics
-				<% } else if (game == 'blitz') { %>
-					World of Tanks Blitz Tactics
-				<% } else if (game == 'aw') { %>
-					Armored Warfare Tactics
-				<% } else if (game == 'lol') { %>
-					League of legends Tactics
-				<% } else if (game == 'hots') { %>
-					Heroes of the Storm Tactics
-				<% } else if (game == 'sc2') { %>
-					Starcraft II Tactics
-				<% } else if (game == 'csgo') { %>
-					CS:GO Tactics
-				<% } else if (game == 'warface') { %>
-					Warface Tactics
-				<% } else if (game == 'squad') { %>
-					Squad Tactics
-				<% } %>	
-			</h1>
-			<p><span id="quote"></span></p>
-			<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
-			<script type="text/javascript">
-				var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
-				function newUid() {
-					var text = "";
-					for(var i=0; i < 14; i++ ) {
-						text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
-					}
-					return text;
-				}
-				window.onload = function() {
-					var el = document.getElementById('new_room');
-					el.onclick = function(e) {
-						window.location.href = el.getAttribute('href') + '?room=' + newUid();
-						e.preventDefault();
-					}
-				};
-			</script>
+	<div class="container" style='width:100%; position:relative;'>
+		<div class="jumbotron side_bar" style='width:100%; padding:0px; margin:0px;'>
+			<div id="banner" class="call_to_action" style='width:100%;'>
+				<div class="container" id="big_button_frame" style="text-align:center">
+					<h1>
+						<% if (game == 'wot') { %>
+							World of Tanks Tactics
+						<% } else if (game == 'wows') { %>
+							World of Warships Tactics
+						<% } else if (game == 'blitz') { %>
+							World of Tanks Blitz Tactics
+						<% } else if (game == 'aw') { %>
+							Armored Warfare Tactics
+						<% } else if (game == 'lol') { %>
+							League of legends Tactics
+						<% } else if (game == 'hots') { %>
+							Heroes of the Storm Tactics
+						<% } else if (game == 'sc2') { %>
+							Starcraft II Tactics
+						<% } else if (game == 'csgo') { %>
+							CS:GO Tactics
+						<% } else if (game == 'warface') { %>
+							Warface Tactics
+						<% } else if (game == 'squad') { %>
+							Squad Tactics
+						<% } %>	
+					</h1>
+					<p><span id="quote"></span></p>
+					<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
+					<script type="text/javascript">
+						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+						function newUid() {
+							var text = "";
+							for(var i=0; i < 14; i++ ) {
+								text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+							}
+							return text;
+						}
+						window.onload = function() {
+							var el = document.getElementById('new_room');
+							el.onclick = function(e) {
+								window.location.href = el.getAttribute('href') + '?room=' + newUid();
+								e.preventDefault();
+							}
+						};
+					</script>
+				</div>
+			</div>
+			
+			<div style="padding-left:20px; padding-right:20px;">
+				<div class="row">
+					<div class="col-md-4">
+						<h2>Vítejte</h2>
+						<p>Tato stránka slouží k vytváření taktik rychle a jednoduše. Stačí kliknout na modré tlačítko, sdílet odkaz na taktiku se svými přáteli a dát se do toho. Pokud chcete, aby spoluhráči mohli také editovat Vaši taktiku, klikněte na jejich jména či odemkněte místnost. Více informací najdete v sekci Začínáme.
+						</p>
+					</div>
+					<div class="col-md-4">
+						<h2>Zdarma a otevřená</h2>
+						<p>Tato stránka je bez poplatků, bez reklam a s volně šiřitelným zdrojovým kódem. A chci, aby to tak zůstalo. Nicméně - dole najdete tlačítko Donate, pomocí kterého mi můžete přispět na pokrytí budoucích nákladů.</p>
+					</div>
+					<div class="col-md-4">
+						<h2>Pár statistik</h2>
+						<p>Vypadá to, že má stránka získává na popularitě. Za posledních 30 dní (od 8. prosince) bylo vytvořeno 10.830 jedinečných taktik a 18.047 uživatelů (podle aktivních relací) navštívilo tuto stránku alespoň jednou. Šiřte info o tomto projektu, dejte vědět svým známým! Děkuji Vám!</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<h2>Hledají se překladatelé</h2>
+						<p>Díky pár ochotným lidem je tato stránka dostupná v několika jazycích. Pokud chcete také překládat, ozvěte se. Nejsou vyžadovány žádné technické dovednosti.</p>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-md-6'>
+						<%=l('Developed by')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
+					</div>
+					<div class='col-md-6' style='text-align:right;'>
+						<a href="older_news.html">Older news</a>
+					</div>
+				</div>
+			</div>
 		</div>
-	
 	</div>
-
-	<div class="row">
-	<div class="col-md-4">
-		<h2>Vítejte</h2>
-		<p>Tato stránka slouží k vytváření taktik rychle a jednoduše. Stačí kliknout na modré tlačítko, sdílet odkaz na taktiku se svými přáteli a dát se do toho. Pokud chcete, aby spoluhráči mohli také editovat Vaši taktiku, klikněte na jejich jména či odemkněte místnost. Více informací najdete v sekci Začínáme.
-		</p>
-	</div>
-	<div class="col-md-4">
-		<h2>Zdarma a otevřená</h2>
-		<p>Tato stránka je bez poplatků, bez reklam a s volně šiřitelným zdrojovým kódem. A chci, aby to tak zůstalo. Nicméně - dole najdete tlačítko Donate, pomocí kterého mi můžete přispět na pokrytí budoucích nákladů.</p>
-	</div>
-	<div class="col-md-4">
-		<h2>Pár statistik</h2>
-		<p>Vypadá to, že má stránka získává na popularitě. Za posledních 30 dní (od 8. prosince) bylo vytvořeno 10.830 jedinečných taktik a 18.047 uživatelů (podle aktivních relací) navštívilo tuto stránku alespoň jednou. Šiřte info o tomto projektu, dejte vědět svým známým! Děkuji Vám!</p>
-	</div>
-
-	</div>
-	<div class="row">
-	<div class="col-md-4">
-		<h2>Hledají se překladatelé</h2>
-		<p>Díky pár ochotným lidem je tato stránka dostupná v několika jazycích. Pokud chcete také překládat, ozvěte se. Nejsou vyžadovány žádné technické dovednosti.</p>
-	</div>
-	</div>
-</div>
-	
-	<% include footer.ejs %>
-	
-	</div>
-	
+	<br />
 	<% include index_js.ejs %>
 	
 </body>

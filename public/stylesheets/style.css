@@ -1,7 +1,23 @@
 div#preload { display: none; }
 
+.jumbotron, .jumbotron p, .jumbotron ol, .jumbotron ul {
+	font-size: 14px;
+	font-family: 'Open Sans', sans-serif;
+	line-height: 1.7;
+	color: #494949;
+}
+
+#quote {
+	color:white;
+}
+
 body {
 	background: #DDDDDD;
+}
+
+h1,h2,h3,h4 {
+	font-weight: 700;
+	font-family: 'Roboto Slab', serif;
 }
 
 h1 { 
