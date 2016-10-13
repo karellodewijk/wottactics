@@ -1,5 +1,5 @@
-var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
-//var servers = [location.host];
+//var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
+var servers = [location.host];
 
 var is_video_replay = false;
 if (location.pathname.indexOf('planner3') != -1) {
@@ -68,7 +68,8 @@ function setup_assets() {
 
 var room = location.search.split('room=')[1].split("&")[0];	
 var nowebgl = location.search.indexOf('nowebgl') != -1;	
-var wot_live = location.search.indexOf('wot_live') != -1;	
+var wot_live = location.search.indexOf('wot_live') != -1;
+var adjust_all_zoom = location.search.indexOf('adjust_zoom') != -1;
 
 function hashstring(str) {
 	var sum = 0;
@@ -423,13 +424,44 @@ function paste() {
 	undo_list.push(clone_action(["add", new_entities]));	
 }
 
-function adjust_icon_zoom(icon) {
-	if (icon.container && icon.draw_zoom_level) {
-		var sprite = icon.container;
-		var scale = zoom_level / icon.draw_zoom_level;
-		var ratio = sprite.width / sprite.height;
-		sprite.height = x_abs(icon.size) * scale;
-		sprite.width = sprite.height * ratio;
+function adjust_zoom(entity) {
+	if (entity.draw_zoom_level) {
+		if (!adjust_all_zoom && entity.type != icon) return;
+		var scale = zoom_level / entity.draw_zoom_level;
+		switch(entity.type) {
+			case 'icon': case 'text': case 'note': case 'background_text':
+				entity.container.scale.x = entity.container.orig_scale[0] * scale;
+				entity.container.scale.y = entity.container.orig_scale[1] * scale;
+				break;
+			case 'drawing':
+				remove(entity.uid);
+				create_drawing2(entity, 1/scale, scale);
+				break;
+			case 'curve':
+				remove(entity.uid);
+				create_curve2(entity, 1/scale, scale);
+				break;
+			case 'line':
+				remove(entity.uid);
+				create_line2(entity, 1/scale, scale);
+				break;
+			case 'rectangle':
+				remove(entity.uid);
+				create_rectangle2(entity, 1/scale, scale);
+				break;
+			case 'circle':
+				remove(entity.uid);
+				create_circle2(entity, 1/scale, scale);
+				break;
+			case 'polygon':
+				remove(entity.uid);
+				create_polygon2(entity, 1/scale, scale);
+				break;
+			case 'area':
+				remove(entity.uid);
+				create_area2(entity, 1/scale, scale);
+				break;
+		}
 	}
 }
 
@@ -452,8 +484,8 @@ function zoom(amount, isZoomIn, center, e) {
 	
 	for (var i in room_data.slides[active_slide].entities) {
 		var entity = room_data.slides[active_slide].entities[i];
-		if (entity.type == 'icon' && entity.container && entity.draw_zoom_level) {
-			adjust_icon_zoom(entity)
+		if (entity.container && entity.draw_zoom_level) {
+			adjust_zoom(entity)
 		}
 	}
 }
@@ -1830,7 +1862,7 @@ function on_note_end(e) {
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	var note = {uid:newUid(), type: 'note', x:x, y:y, scale:[1,1], color:text_color, alpha:1, text:"", font_size:font_size, font:'Arial', height:zoom_level};
+	var note = {uid:newUid(), type: 'note', x:x, y:y, scale:[1,1], color:text_color, alpha:1, text:"", font_size:font_size, font:'Arial', height:zoom_level, draw_zoom_level:zoom_level};
 	undo_list.push(clone_action(["add", [note]]));
 	create_note(note);
 	note.container.is_open = true;
@@ -3307,21 +3339,196 @@ function init_shape_canvas(_context, shape, scale) {
 	init_canvas(_context, shape.outline_thickness * scale, shape.outline_color, shape.style, shape.fill_opacity, shape.fill_color, shape.outline_opacity)
 }
 
-function create_rectangle2(rectangle) {
+function canvas2container2(_context, _canvas, entity) {
+	var texture = PIXI.Texture.fromCanvas(_canvas);
+	var sprite = new PIXI.Sprite(texture);
+		
+	if (sprite) {
+		entity.container = sprite;		
+		
+		//make draggable
+		sprite.texture.baseTexture.source.src = entity.uid;
+		sprite.hitArea = new PIXI.TransparencyHitArea.create(sprite, false);
+		make_draggable(sprite);
+		sprite.entity = entity;
+		
+		//send off
+		room_data.slides[active_slide].entities[entity.uid] = entity;
+		return true; //success
+	} else {
+		return false; //failure
+	}
+}
+
+function draw_entity(drawing, quality_scale, thickness_scale, extra_margin, draw_function) {
+	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
+	var _canvas = document.createElement("canvas");
+	var _context = _canvas.getContext("2d");
+
+	var points = []
+
+	var base_resolution = background_sprite.height;
+	
+	var quality = quality_scale;
+	if (drawing.draw_zoom_level) {
+		quality /= drawing.draw_zoom_level;
+	}
+	
+	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height);	
+	var margin = 20 + extra_margin * base_thickness;
+
+	if (drawing.path.length > 0) {
+		var left = 9999, top = 9999, right = -9999, bottom = -9999;
+		for (var i = 0; i < drawing.path.length; i++) {
+			var x = drawing.path[i][0];
+			var y = drawing.path[i][1];
+			left = Math.min(left, x);
+			top = Math.min(top, y);
+			right = Math.max(right, x);
+			bottom = Math.max(bottom, y);
+			points.push(base_resolution * x * quality, base_resolution * y * quality);
+		}
+				
+		_canvas.width = base_resolution * (right - left) * quality + margin;
+		_canvas.height = base_resolution * (bottom - top) * quality + margin;
+		
+		//shift everything, this should make all coords > margin.
+		var x_diff = -left * base_resolution * quality + margin/2;
+		var y_diff = -top * base_resolution * quality + margin/2;
+		for (var i = 0; i < points.length; i+=2) {
+			points[i] += x_diff;
+			points[i+1] += y_diff;
+		}
+		
+		draw_function(_context, points, quality, base_thickness);
+		
+		canvas2container2(_context, _canvas, drawing);	
+		
+		drawing.container.height /= (quality) ;
+		drawing.container.width /= (quality) ;
+		drawing.container.x = x_abs(drawing.x) + x_abs(left) - (margin/2) / quality;
+		drawing.container.y = y_abs(drawing.y) + y_abs(top) - (margin/2) / quality;
+	
+		drawing.container.orig_scale = [drawing.container.scale.x, drawing.container.scale.y];
+		objectContainer.addChild(drawing.container);
+		
+		render_scene();
+	}
+}
+
+function create_drawing2(drawing, quality_scale, thickness_scale) {
+	if (!quality_scale) quality_scale = 1;
+	if (!thickness_scale) thickness_scale = 1;	
+	var extra_margin = drawing.thickness;
+	if (drawing.end_size) {
+		extra_margin = drawing.end_size;
+	}
+	draw_entity(drawing, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
+		init_canvas(_context, drawing.thickness * base_thickness, drawing.color, drawing.style);	
+		var end_points = smooth_draw(_context, points);
+		if (drawing.end) {
+			if (drawing.path.length >= ARROW_LOOKBACK) {
+				var j = Math.max(0, drawing.path.length-ARROW_LOOKBACK);
+				end_points[0] = [points[2*j], points[2*j+1]];
+			}
+			draw_end(_context, drawing, end_points[0], end_points[1], base_thickness);
+		}
+	});
+}
+
+function create_curve2(drawing, quality_scale, thickness_scale) {
+	if (!quality_scale) quality_scale = 1;
+	if (!thickness_scale) thickness_scale = 1;
+	var extra_margin = drawing.thickness;
+	if (drawing.end_size) {
+		extra_margin = drawing.end_size;
+	}
+	draw_entity(drawing, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
+		init_canvas(_context, drawing.thickness * base_thickness, drawing.color, drawing.style);
+		var end_points = smooth_draw(_context, points, false);
+		if (drawing.end) {
+			draw_end(_context, drawing, end_points[0], end_points[1], base_thickness);
+		}
+	});
+}
+
+function create_line2(line, quality_scale, thickness_scale) {
+	if (!quality_scale) quality_scale = 1;
+	if (!thickness_scale) thickness_scale = 1;
+	var extra_margin = line.thickness;
+	if (line.end_size) {
+		extra_margin = line.end_size;
+	}
+	draw_entity(line, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {		
+		init_canvas(_context, line.thickness * base_thickness, line.color, line.style);
+		_context.moveTo(points[0], points[1]);
+		for (var i = 2; i < points.length; i+=2) {
+			_context.lineTo(points[i], points[i+1]);
+		}
+		_context.stroke();	
+		var a;
+		if (line.path.length == 1) {
+			a = [x_diff, y_diff];
+		} else {
+			a = [points[points.length-4], points[points.length-3]];
+		}
+		var b = [points[points.length-2], points[points.length-1]];
+		draw_end(_context, line, a, b, base_thickness);
+	});
+}
+
+function create_area2(area, quality_scale, thickness_scale) {
+	if (!quality_scale) quality_scale = 1;
+	if (!thickness_scale) thickness_scale = 1;
+	var extra_margin = area.outline_thickness;
+	if (area.path[area.path.length-1] == [0,0]) {
+		area.path.pop();
+	}
+	draw_entity(area, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
+		init_shape_canvas(_context, area, base_thickness);
+		var end_points = smooth_draw(_context, points, true);
+		_context.fill();
+	});
+}
+
+function create_polygon2(polygon, quality_scale, thickness_scale) {
+	if (!quality_scale) quality_scale = 1;
+	if (!thickness_scale) thickness_scale = 1;
+	var extra_margin = polygon.outline_thickness;
+	draw_entity(polygon, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
+		init_shape_canvas(_context, polygon, base_thickness);
+		_context.moveTo(points[0], points[1]);
+		for (var i = 2; i < points.length; i+=2) {
+			_context.lineTo(points[i], points[i+1]);
+		}
+		_context.lineTo(points[0], points[1]);
+		_context.stroke();
+		_context.fill();
+	});
+}
+
+function create_rectangle2(rectangle, quality_scale, thickness_scale) {	
+	if (!quality_scale) quality_scale = 1;
+	if (!thickness_scale) thickness_scale = 1;
+	var extra_margin = rectangle.outline_thickness;
+	
 	var _canvas = document.createElement("canvas");
 	var _context = _canvas.getContext("2d");
 	
 	var base_resolution = background_sprite.height;
-	var quality = 1;
+	
+	var quality = quality_scale;
 	if (rectangle.draw_zoom_level) {
-		quality = 1 / rectangle.draw_zoom_level;
+		quality /= rectangle.draw_zoom_level;
 	}
 	
-	var margin = 50;	
+	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height);	
+	var margin = 20 + extra_margin * base_thickness;
+	
 	_canvas.width = base_resolution * rectangle.width * quality + margin;
 	_canvas.height = base_resolution * rectangle.height * quality + margin;
 	
-	init_shape_canvas(_context, rectangle, quality);
+	init_shape_canvas(_context, rectangle, base_thickness);
 	
 	_context.fillRect(margin/2, margin/2, base_resolution * rectangle.width * quality, base_resolution * rectangle.height * quality); 
 	_context.strokeRect(margin/2, margin/2, base_resolution * rectangle.width * quality, base_resolution * rectangle.height * quality);
@@ -3339,22 +3546,28 @@ function create_rectangle2(rectangle) {
 	render_scene();
 }
 
-
-function create_circle2(circle) {
+function create_circle2(circle, quality_scale, thickness_scale) {	
+	if (!quality_scale) quality_scale = 1;
+	if (!thickness_scale) thickness_scale = 1;
+	var extra_margin = circle.outline_thickness;
+	
 	var _canvas = document.createElement("canvas");
 	var _context = _canvas.getContext("2d");
 	
 	var base_resolution = background_sprite.height;
-	var quality = 1;
+	
+	var quality = quality_scale;
 	if (circle.draw_zoom_level) {
-		quality = 1 / circle.draw_zoom_level;
+		quality /= circle.draw_zoom_level;
 	}
 	
-	var margin = 50;	
+	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height);	
+	var margin = 20 + extra_margin * base_thickness;
+	
 	_canvas.width = 2 * base_resolution * circle.radius * quality + margin;
 	_canvas.height = 2 * base_resolution * circle.radius * quality + margin;
 	
-	init_shape_canvas(_context, circle, quality);
+	init_shape_canvas(_context, circle, base_thickness);
 
 	var radius = to_x_local_vect(circle.radius);
 	var offset = base_resolution * circle.radius * quality + margin/2;
@@ -3406,162 +3619,6 @@ function create_circle2(circle) {
 	render_scene();
 }
 
-function canvas2container2(_context, _canvas, entity) {
-	var texture = PIXI.Texture.fromCanvas(_canvas);
-	var sprite = new PIXI.Sprite(texture);
-		
-	if (sprite) {
-		entity.container = sprite;		
-		
-		//make draggable
-		sprite.texture.baseTexture.source.src = entity.uid;
-		sprite.hitArea = new PIXI.TransparencyHitArea.create(sprite, false);
-		make_draggable(sprite);
-		sprite.entity = entity;
-		
-		//send off
-		room_data.slides[active_slide].entities[entity.uid] = entity;
-		return true; //success
-	} else {
-		return false; //failure
-	}
-}
-
-function draw_entity(drawing, draw_function) {
-	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
-	var _canvas = document.createElement("canvas");
-	var _context = _canvas.getContext("2d");
-
-	var points = []
-
-	var base_resolution = background_sprite.height;
-	var quality = 1;
-	if (drawing.draw_zoom_level) {
-		quality /= drawing.draw_zoom_level;
-	}
-			
-	if (drawing.path.length > 0) {
-		var left = 9999, top = 9999, right = -9999, bottom = -9999;
-		for (var i = 0; i < drawing.path.length; i++) {
-			var x = drawing.path[i][0];
-			var y = drawing.path[i][1];
-			left = Math.min(left, x);
-			top = Math.min(top, y);
-			right = Math.max(right, x);
-			bottom = Math.max(bottom, y);
-			points.push(base_resolution * x * quality, base_resolution * y * quality);
-		}
-
-		var margin = 50;
-		if (drawing.end_size) {
-			margin = drawing.end_size * quality * 3;
-		}
-				
-		_canvas.width = base_resolution * (right - left) * quality + margin;
-		_canvas.height = base_resolution * (bottom - top) * quality + margin;
-		
-		//shift everything, this should make all coords > margin.
-		var x_diff = -left * base_resolution * quality + margin/2;
-		var y_diff = -top * base_resolution * quality + margin/2;
-		for (var i = 0; i < points.length; i+=2) {
-			points[i] += x_diff;
-			points[i+1] += y_diff;
-		}
-		
-		draw_function(_context, points, quality);
-		
-		canvas2container2(_context, _canvas, drawing);	
-		
-		drawing.container.height /= (quality) ;
-		drawing.container.width /= (quality) ;
-		drawing.container.x = x_abs(drawing.x) + x_abs(left) - (margin/2) / quality;
-		drawing.container.y = y_abs(drawing.y) + y_abs(top) - (margin/2) / quality;
-	
-		drawing.container.orig_scale = [drawing.container.scale.x, drawing.container.scale.y];
-		objectContainer.addChild(drawing.container);
-		
-		render_scene();
-	}
-}
-
-function create_drawing2(drawing) {
-	draw_entity(drawing, function(_context, points, quality) {
-		init_canvas(_context, drawing.thickness * quality, drawing.color, drawing.style);
-		var end_points = smooth_draw(_context, points);
-		if (drawing.end) {
-			if (drawing.path.length >= ARROW_LOOKBACK) {
-				var j = Math.max(0, drawing.path.length-ARROW_LOOKBACK);
-				end_points[0] = [points[2*j], points[2*j+1]];
-			}
-			draw_end(_context, drawing, end_points[0], end_points[1], quality);
-		}
-	});
-}
-
-function create_curve2(drawing) {
-	draw_entity(drawing, function(_context, points, quality) {
-		init_canvas(_context, drawing.thickness * quality, drawing.color, drawing.style);
-		var end_points = smooth_draw(_context, points, false);
-		if (drawing.end) {
-			draw_end(_context, drawing, end_points[0], end_points[1], quality);
-		}
-	});
-}
-
-function create_area2(area) {
-	if (area.path[area.path.length-1] == [0,0]) {
-		area.path.pop();
-	}
-	draw_entity(area, function(_context, points, quality) {
-		init_shape_canvas(_context, area, quality);
-		var end_points = smooth_draw(_context, points, true);
-		_context.fill();
-	});
-}
-
-function create_line2(line) {
-	draw_entity(line, function(_context, points, quality) {		
-		init_canvas(_context, line.thickness * quality, line.color, line.style);
-
-		_context.moveTo(points[0], points[1]);
-		for (var i = 2; i < points.length; i+=2) {
-			_context.lineTo(points[i], points[i+1]);
-		}
-		_context.stroke();
-		
-		var a;
-		if (line.path.length == 1) {
-			a = [x_diff, y_diff];
-		} else {
-			a = [points[points.length-4], points[points.length-3]];
-		}
-		var b = [points[points.length-2], points[points.length-1]];
-		draw_end(_context, line, a, b, quality);
-	});
-}
-
-function create_polygon2(polygon) {
-	draw_entity(polygon, function(_context, points, quality) {
-		init_shape_canvas(_context, polygon, quality);
-
-		_context.moveTo(points[0], points[1]);
-		for (var i = 2; i < points.length; i+=2) {
-			_context.lineTo(points[i], points[i+1]);
-		}
-		_context.lineTo(points[0], points[1]);
-		_context.stroke();
-		_context.fill();
-		
-		var a;
-		if (polygon.path.length == 1) {
-			a = [x_diff, y_diff];
-		} else {
-			a = [points[points.length-4], points[points.length-3]];
-		}
-		var b = [points[points.length-2], points[points.length-1]];
-		draw_end(_context, polygon, a, b, quality);
-	});
-}
 
 function start_drawing() {
 	draw_context.clearRect(0, 0, draw_canvas.width, draw_canvas.height);	
@@ -3685,7 +3742,7 @@ function on_text_end(e) {
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:[1,1], color:text_color, alpha:1, text:msg, font_size:font_size * zoom_level, font:'Arial'};
+	var text = {uid:newUid(), type: 'text', x:x, y:y, scale:[1,1], color:text_color, alpha:1, text:msg, font_size:font_size * zoom_level, font:'Arial', draw_zoom_level:zoom_level};
 	undo_list.push(clone_action(["add", [text]]));
 	current_text_element = text;
 	create_text2(text);
@@ -3697,7 +3754,7 @@ function on_background_text_end(e) {
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:[1,1], color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size * zoom_level, font:'Arial'};
+	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:[1,1], color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size * zoom_level, font:'Arial', draw_zoom_level:zoom_level};
 	undo_list.push(clone_action(["add", [background_text]]));
 	create_background_text2(background_text);
 	snap_and_emit_entity(background_text);
@@ -3957,7 +4014,6 @@ function create_icon_cont(icon, texture) {
 
 	objectContainer.addChild(icon['container']);
 	
-	adjust_icon_zoom(icon)
 	render_scene();	
 	
 	room_data.slides[active_slide].entities[icon.uid] = icon;
@@ -4073,6 +4129,8 @@ function create_entity(entity) {
 		if (entity.rotation) {
 			entity.container.rotation = -entity.rotation;
 		}
+		
+		adjust_zoom(entity)
 	
 		if (background.is_video) {
 			update_timeline(entity);
@@ -6347,14 +6405,6 @@ $(document).ready(function() {
 		is_room_locked = room_data.locked;
 		my_user_id = my_id;
 		tactic_name = new_tactic_name;
-		
-		/*
-		$("#locale_icon").addClass("icon-"+locale);
-		$("#locale_text").text(locale);
-		$("#language_select").find('a').each(function() { 
-			$(this).attr('href', $(this).attr('href') + parse_domain(location.href.split('://')[1]))
-		});
-		*/
 		
 		if (tactic_name && tactic_name != "") {
 			document.title = "Tactic - " +  tactic_name;

@@ -5,6 +5,19 @@ div#preload { display: none; }
 	font-family: 'Open Sans', sans-serif;
 	line-height: 1.7;
 	color: #494949;
+	font-weight:400;
+}
+
+.jumbotron h2, .jumbotron h3, .jumbotron h4 {
+	font-weight: 700;
+	font-family: 'Roboto Slab', serif;
+	color: #444444;
+}
+
+.call_to_action h1 { 
+	text-shadow: 1px 1px 1px #ccc;
+	font-weight: 700;
+	font-family: 'Roboto Slab', serif;
 }
 
 #quote {
@@ -13,15 +26,6 @@ div#preload { display: none; }
 
 body {
 	background: #DDDDDD;
-}
-
-h1,h2,h3,h4 {
-	font-weight: 700;
-	font-family: 'Roboto Slab', serif;
-}
-
-h1 { 
-    text-shadow: 1px 1px 1px #ccc;
 }
 
 .call_to_action {
