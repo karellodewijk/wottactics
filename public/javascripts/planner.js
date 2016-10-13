@@ -1001,18 +1001,28 @@ function set_background(new_background, cb) {
 				
 				if ($("#map_select option[value='" + background.path + "']").length > 0) {
 					$("#map_select").val(background.path).change();	
-					$("#use_wotbase").prop("checked", false);
+					$("#select_hd").prop("checked", true);
 					$('#map_select_container').show();
-					$('#wotbase_map_select_container').hide();
-				} else if ($("#map_select_wotbase option[value='" + background.path + "']").length > 0) {
-					$("#map_select_wotbase").val(background.path).change();
-					$("#use_wotbase").prop("checked", true);
-					$('#map_select_container').hide();
-					$('#wotbase_map_select_container').show();
+					$('#wotbase_select_container').hide();
+					$('#new_minimap_select_container').hide();
+				} else if ($("#wotbase_select option[value='" + background.path + "']").length > 0) {
+					$("#wotbase_select").val(background.path).change();
+					$("#select_wotbase").prop("checked", true);
+					$('#map_select_container').hide();	
+					$('#wotbase_select_container').show();
+					$('#new_minimap_select_container').hide();
+				} else if ($("#new_minimap_select option[value='" + background.path + "']").length > 0) {
+					$("#new_minimap_select").val(background.path).change();
+					$("#select_new_minimap").prop("checked", true);
+					$('#map_select_container').hide();	
+					$('#wotbase_select_container').hide();
+					$('#new_minimap_select_container').show();
 				} else {
-					add_custom_map(background.path)
-					$('#wotbase_map_select_container').hide();
-					$('#map_select_container').show();
+					add_custom_map(background.path);
+					$("#select_hd").prop("checked", true);
+					$('#map_select_container').show();	
+					$('#wotbase_select_container').hide();
+					$('#new_minimap_select_container').hide();
 				}
 			
 				if (background.size_x && background.size_y && background.size_x > 0 && background.size_y > 0) {
@@ -1167,9 +1177,10 @@ function set_background(new_background, cb) {
 		history[background.uid] = background;
 
 		$("#map_select").val(background.path).change();	
-		$("#use_wotbase").prop("checked", false);
+		$("#select_hd").prop("checked", true);
 		$('#map_select_container').show();
-		$('#wotbase_map_select_container').hide();
+		$('#wotbase_select_container').hide();
+		$('#new_minimap_select_container').hide();
 		
 		var empty_backround = new PIXI.Graphics();
 		empty_backround.beginFill(0xFFFFFF, 1);
@@ -2217,7 +2228,7 @@ function on_ruler_move(e) {
 		var mid_line_x = (center_x + to_x_local(mouse_x_rel(mouse_location.x))) / 2;
 		var mid_line_y = (center_y + to_y_local(mouse_y_rel(mouse_location.y))) / 2;
 		
-		temp_draw_context.font = "22px Arial";		  
+		temp_draw_context.font = "44px Arial";		  
 		var length = Math.sqrt(Math.pow(map_size_x * (left_click_origin[0] - mouse_x_rel(mouse_location.x)), 2) 
 							 + Math.pow(map_size_y * (left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2));
 							 							 
@@ -5394,7 +5405,8 @@ $(document).ready(function() {
 	
 	//sorts maps alphabetically, can't presort cause it depends on language
 	initialize_map_select($("#map_select"));
-	initialize_map_select($("#map_select_wotbase"));
+	initialize_map_select($("#wotbase_select"));
+	initialize_map_select($("#new_minimap_select"));
 
 	//start pixi renderer
 	var border = 30;
@@ -5712,14 +5724,23 @@ $(document).ready(function() {
 			$('#myModal').modal('hide');
 		});
 		
-		$('#use_wotbase').click(function() {
-			if ($(this).is(':checked')) {
-				$('#map_select_container').hide();
-				$('#wotbase_map_select_container').show();
-			} else {
+		$('input[name="map_type_select"]').on('change', function() {
+		    if (this.id == "select_hd") {
 				$('#map_select_container').show();
-				$('#wotbase_map_select_container').hide();
-			}
+				$('#wotbase_select_container').hide();
+				$('#new_minimap_select_container').hide();
+				$("#map_select").val("").selectpicker('render');
+		    } else if (this.id == "select_wotbase") {
+				$('#map_select_container').hide();
+				$('#wotbase_select_container').show();
+				$('#new_minimap_select_container').hide();
+				$("#wotbase_select").val("").selectpicker('render');
+			} else if (this.id == "select_new_minimap") {
+				$('#map_select_container').hide();
+				$('#wotbase_select_container').hide();
+				$('#new_minimap_select_container').show();
+				$("#new_minimap_select").val("").selectpicker('render');				
+		    }
 		});
 		
 		$('#send_to_link').click(function (e) {

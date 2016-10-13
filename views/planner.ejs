@@ -143,7 +143,7 @@
 				<hr />
 			</div>
 		
-			<div class="left_column" style="width:350px; padding:20px">	
+			<div class="left_column" style="width:350px; padding-left:20px; padding-right:20px">	
 				<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
 				<p>
 					<div class="dropdown inline" id="map_select_container">
@@ -153,15 +153,18 @@
 					</div>
 					
 					<%if (game == 'wot') { %>
-						<div class="dropdown inline" style="display:none" id="wotbase_map_select_container">
-							<select class="selectpicker" id="map_select_wotbase"><%include wotbase_wot_maps.ejs%></select>
+						<div class="dropdown inline" style="display:none" id="wotbase_select_container">
+							<select class="selectpicker" id="wotbase_select"><%include wotbase_wot_maps.ejs%></select>
+						</div>
+						<div class="dropdown inline" style="display:none" id="new_minimap_select_container">
+							<select class="selectpicker" id="new_minimap_select"><%include new_wot_minimaps.ejs%></select>
 						</div>
 					<%} %>
 					<button class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
 						<div class="icon icon-link_sm"></div>
 					</button>
 					
-					<div style="padding-top:5px; padding-bottom:5px">
+					<div style="padding-top:5px;">
 					<div class="btn-group">
 					<button class="btn btn-default menu_btn" aria-label="Left Align" id="zoom_in" data-toggle="tooltip" title="<%=l('Zoom in')%>">	
 						<div class="icon icon-plus"></div>
@@ -171,12 +174,12 @@
 					</button>
 					</div>
 					<span id="zoom_level">1</span>x
-					</div>
-					
 					<%if (game == 'wot') { %>
-						<br /><input id="use_wotbase" type="checkbox" style="vertical-align:-2px;" /> <span><%=l('Use wotbase maps')%></span>
+						<br /><input id="select_hd" name="map_type_select" type="radio" style="vertical-align:-2px;" checked /> <span><%=l('Use HD minimaps')%></span>
+						<br /><input id="select_wotbase" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <span><%=l('Use Wotbase maps')%></span>
+						<br /><input id="select_new_minimap" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <span><%=l('Use New minimaps')%></span>
 					<%} %>	
-				<hr>
+					</div>
 				
 				<h4><%=l('Tools')%></h4>
 				<p>
