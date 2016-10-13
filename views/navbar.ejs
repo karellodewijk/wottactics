@@ -63,17 +63,22 @@
 			
 			<script type="text/javascript">
 				document.addEventListener("DOMContentLoaded", function(event) {
-					var link = "http://<%=url.split('/')[0]%>";				
-					var fb = document.getElementById('facebook_link');
-					var promo_link = "http://gametactic.org";
-					if (link == "http://betweenthebits.com") {
-						promo_link = "http://betweenthebits.com";
+					var link = "http://<%=url.split('/')[0]%>";					
+					var promo_link = "http://gametactic.org/<%=game%>";
+					if (link.indexOf("betweenthebits.com") != -1
+					 || link.indexOf("wottactic") != -1) {
+						promo_link = link;
 					}
-					fb.setAttribute("href", fb.getAttribute('href') + encodeURIComponent(link) + "&redirect_uri=" + encodeURIComponent(promo_link));
+					var fb = document.getElementById('facebook_link');
+					fb.setAttribute("href", fb.getAttribute('href') + encodeURIComponent(promo_link) + "&redirect_uri=" + encodeURIComponent(promo_link));			
+					if (link.indexOf("awtactic") != -1
+					  || link.indexOf("wowstactic") != -1) {
+						promo_link = link;
+					}
 					var twitter = document.getElementById('twitter_link')
-					twitter.setAttribute("href", twitter.getAttribute('href') + encodeURIComponent(link));
+					twitter.setAttribute("href", twitter.getAttribute('href') + encodeURIComponent(promo_link));
 					var google = document.getElementById('google_link')
-					google.setAttribute("href", google.getAttribute('href') + encodeURIComponent(link));							
+					google.setAttribute("href", google.getAttribute('href') + encodeURIComponent(promo_link));							
 				});
 			</script>
 		</ul>
