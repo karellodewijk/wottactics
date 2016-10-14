@@ -430,9 +430,15 @@ function adjust_zoom(entity) {
 		if (!adjust_all_zoom && entity.type != "icon") return;
 		var scale = zoom_level / entity.draw_zoom_level;
 		switch(entity.type) {
-			case 'icon': case 'text': case 'note': case 'background_text':
+			case 'icon': case 'note':
 				entity.container.scale.x = entity.container.orig_scale[0] * scale;
 				entity.container.scale.y = entity.container.orig_scale[1] * scale;
+				break;
+			case 'text': case 'background_text':
+				set_anchor(entity.container, 0, 0);
+				entity.container.scale.x = entity.container.orig_scale[0] * scale;
+				entity.container.scale.y = entity.container.orig_scale[1] * scale;
+				set_anchor(entity.container, 0.5, 0.5);
 				break;
 			case 'drawing':
 				remove(entity.uid);
@@ -965,7 +971,7 @@ function change_background_dim(height) {
 	grid_layer.width = background_sprite.width;
 	grid_layer.height = background_sprite.height;
 	var ratio = height/old_height;
-	if (ratio != 1) {
+	if (ratio != 1 && room_data) {
 		for (let key in room_data.slides[active_slide].entities) {
 			var entity = room_data.slides[active_slide].entities[key];
 			if (entity.container) {
@@ -3695,7 +3701,7 @@ function emit_entity(entity) {
 	room_data.slides[active_slide].z_top++;
 	entity.z_index = room_data.slides[active_slide].z_top;
 	entity.container = container;
-	center_anchor(entity.container);
+	set_anchor(entity.container, 0.5, 0.5);
 }
 
 function on_icon_end(e) {	
@@ -3942,7 +3948,7 @@ function create_icon_cont(icon, texture) {
 	sprite.height = x_abs(icon.size);
 	sprite.width = sprite.height * ratio;
 	
-	center_anchor(sprite);
+	set_anchor(sprite, 0.5, 0.5);
 	
 	if (icon.label && icon.label != "") {
 		var text = create_text_sprite(icon.label, icon.label_color, ICON_LABEL_SCALE * icon.label_font_size, icon.label_font, icon.label_background, !icon.label_background, icon.label_font_modifier)
@@ -4070,11 +4076,11 @@ function make_undraggable(root) {
 }
 
 
-function center_anchor(obj) {
-	var anchor_diff_x = 0.5 - obj.anchor.x;
-	var anchor_diff_y = 0.5 - obj.anchor.y;
-	obj.anchor.x = 0.5;
-	obj.anchor.y = 0.5;
+function set_anchor(obj, x, y) {
+	var anchor_diff_x = x - obj.anchor.x;
+	var anchor_diff_y = y - obj.anchor.y;
+	obj.anchor.x = x;
+	obj.anchor.y = y;
     obj.x += anchor_diff_x * obj.width;
     obj.y += anchor_diff_y * obj.height;
 }
@@ -4116,7 +4122,7 @@ function create_entity(entity) {
 		}
 			
 		if (entity.container.anchor) {
-			center_anchor(entity.container);
+			set_anchor(entity.container, 0.5, 0.5);
 		}
 		
 		if (entity.rotation) {
@@ -5423,7 +5429,14 @@ $(document).ready(function() {
 	
 	renderer.view.addEventListener("wheel", function(e) {
 		var mouse_location = renderer.plugins.interaction.eventData.data.global;
-		zoom(0.1, e.deltaY < 0, [from_x_local(mouse_location.x), from_y_local(mouse_location.y)],e);
+		var zoom_in = e.deltaY < 0;
+		var zoom_factor;
+		if (zoom_in) {
+			zoom_factor = 0.1;
+		} else {
+			zoom_factor = (1-1/1.1);
+		}
+		zoom(zoom_factor, zoom_in, [from_x_local(mouse_location.x), from_y_local(mouse_location.y)],e);
 		$('#zoom_level').text((1/zoom_level).toFixed(2));
 		if (control_camera) {
 			emit_pan_zoom();
@@ -6125,11 +6138,11 @@ $(document).ready(function() {
 		});
 
 		$('#zoom_out').click(function() {
-			zoom(0.1, false, [0.5, 0.5]);
+			zoom((1-1/1.1), false, [0.5, 0.5]);
 			$('#zoom_level').text((1/zoom_level).toFixed(2));
 			if (control_camera) {
 				emit_pan_zoom();
-			}			
+			}
 		});
 		
 		//tool select
