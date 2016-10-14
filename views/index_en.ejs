@@ -43,8 +43,8 @@
 						<% } %>	
 					</h1>
 					<p><span id="quote"></span></p>
-					<p><a class="btn btn-primary btn-lg" href="<%=game%>planner2.html" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
-					(<a href="<%=game%>planner.html" id="new_room2" role="button" style="color:#ADD8E6"><%= l('Use original ui')%></a>)<br /></p>
+					<p><a class="btn btn-primary btn-lg" href="<%=game%>2" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
+					<a href="<%=game%>1" id="new_room2" role="button" style="color:#ADD8E6">(<%= l('Use original ui')%>)</a><br /></p>
 					<script type="text/javascript">
 						//generate unique id
 						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
@@ -124,11 +124,11 @@
 						<h2>Latest changes</h2>
 						<p>
 						<ul>
+							<li>Simplified links
 							<li>Added the new wot minimaps as an option.
 							<li>Improved quality of things drawn by drawing at a higher resolution than the image.
 							<li>Improved the look of the website a little, will be adding a forum soon.
 							<li>Icons sort of zoom along now.
-							<li>Implemented pinch zoom, 2 finger pan and full support for the eraser tool on touch devices
 						</ul> 
 						<p>On the bug hunting front:
 						<ul>

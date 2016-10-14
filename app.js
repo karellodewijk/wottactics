@@ -392,133 +392,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
                             static_host: secrets.static_host, 
 							ga_id:secrets.ga_id});
 	});
-	router.get('/wot', function(req, res, next) {
-	  req.session.game = 'wot';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});	
-	router.get('/wot.html', function(req, res, next) {
-	  req.session.game = 'wot';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/aw', function(req, res, next) {
-	  req.session.game = 'aw';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/aw.html', function(req, res, next) {
-	  req.session.game = 'aw';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/wows', function(req, res, next) {
-	  req.session.game = 'wows';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/wows.html', function(req, res, next) {
-	  req.session.game = 'wows';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/blitz', function(req, res, next) {
-	  req.session.game = 'blitz';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/blitz.html', function(req, res, next) {
-	  req.session.game = 'blitz';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/lol', function(req, res, next) {
-	  req.session.game = 'lol';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/hots', function(req, res, next) {
-	  req.session.game = 'hots';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/sc2', function(req, res, next) {
-	  req.session.game = 'sc2';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/csgo', function(req, res, next) {
-	  req.session.game = 'csgo';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/warface', function(req, res, next) {
-	  req.session.game = 'warface';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	router.get('/squad', function(req, res, next) {
-	  req.session.game = 'squad';
-	  res.render('index', { game: req.session.game, 
-							user: req.session.passport.user,
-							locale: req.session.locale,
-							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
-	});
-	
 	router.get('/health_check.html', function(req, res, next) {
 	  res.sendStatus(200);
 	});	
@@ -546,7 +419,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								  
 		  if (req.session.passport.user.identity) {
 			  setImmediate(function() {
-				  var link = "http://" + req.fullUrl.split('/')[0] + "/" + req.session.game + 'planner.html?room=' + req.query.room;
+				  var link = "http://" + req.fullUrl;
 				  db.collection('users').update(
 				  	  { _id:req.session.passport.user.identity },
 					  { "$pull": { "rooms": link } }
@@ -559,98 +432,47 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		  }					  
 	  }
 	}
-	router.get('/wotplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'wot', 'planner');
-	});
-	router.get('/awplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'aw', 'planner');
-	});
-	router.get('/wowsplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'wows', 'planner');
-	});
-	router.get('/blitzplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'blitz', 'planner');
-	});
-	router.get('/lolplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'lol', 'planner');
-	});
-	router.get('/hotsplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'hots', 'planner');
-	});
-	router.get('/sc2planner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'sc2', 'planner');
-	});
-	router.get('/csgoplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'csgo', 'planner');
-	});
-	router.get('/warfaceplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'warface', 'planner');
-	});
-	router.get('/squadplanner.html', function(req, res, next) {
-	  planner_redirect(req, res, 'squad', 'planner');
-	});
 	
-	router.get('/wotplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'wot', 'planner2');
-	});
-	router.get('/awplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'aw', 'planner2');
-	});
-	router.get('/wowsplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'wows', 'planner2');
-	});
-	router.get('/blitzplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'blitz', 'planner2');
-	});
-	router.get('/lolplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'lol', 'planner2');
-	});
-	router.get('/hotsplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'hots', 'planner2');
-	});
-	router.get('/sc2planner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'sc2', 'planner2');
-	});
-	router.get('/csgoplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'csgo', 'planner2');
-	});
-	router.get('/warfaceplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'warface', 'planner2');
-	});
-	router.get('/squadplanner2.html', function(req, res, next) {
-	  planner_redirect(req, res, 'squad', 'planner2');
-	});
-	
-	router.get('/wotplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'wot', 'planner3');
-	});
-	router.get('/awplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'aw', 'planner3');
-	});
-	router.get('/wowsplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'wows', 'planner3');
-	});
-	router.get('/blitzplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'blitz', 'planner3');
-	});
-	router.get('/lolplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'lol', 'planner3');
-	});
-	router.get('/hotsplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'hots', 'planner3');
-	});
-	router.get('/sc2planner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'sc2', 'planner3');
-	});
-	router.get('/csgoplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'csgo', 'planner3');
-	});
-	router.get('/warfaceplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'warface', 'planner3');
-	});
-	router.get('/squadplanner3.html', function(req, res, next) {
-	  planner_redirect(req, res, 'squad', 'planner3');
-	});
+	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad'];	
+	for (var i in games) {
+		var game = games[i];
+		router.get('/' + game, function(req, res, next) {
+		  req.session.game = game;
+		  res.render('index', { game: req.session.game, 
+								user: req.session.passport.user,
+								locale: req.session.locale,
+								url: req.fullUrl,
+								static_host: secrets.static_host, 
+								ga_id:secrets.ga_id});
+		});	
+		router.get('/' + game + '.html', function(req, res, next) {
+		  req.session.game = game;
+		  res.render('index', { game: req.session.game, 
+								user: req.session.passport.user,
+								locale: req.session.locale,
+								url: req.fullUrl,
+								static_host: secrets.static_host, 
+								ga_id:secrets.ga_id});
+		});
+		router.get('/'+game+'planner.html', function(req, res, next) {
+		  planner_redirect(req, res, game, 'planner');
+		});	
+		router.get('/'+game+'planner2.html', function(req, res, next) {
+		  planner_redirect(req, res, game, 'planner2');
+		});
+		router.get('/'+game+'planner3.html', function(req, res, next) {
+		  planner_redirect(req, res, game, 'planner3');
+		});
+		router.get('/'+game+'1', function(req, res, next) {
+		  planner_redirect(req, res, game, 'planner');
+		});	
+		router.get('/'+game+'2', function(req, res, next) {
+		  planner_redirect(req, res, game, 'planner2');
+		});
+		router.get('/'+game+'3', function(req, res, next) {
+		  planner_redirect(req, res, game, 'planner3');
+		});			
+	}
 	
 	router.get('/about.html', function(req, res, next) {
 	  if (!req.session.game) {
@@ -1677,7 +1499,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			room_data[room].pan_zoom = [zoom_level, x, y];
 			socket.broadcast.to(room).emit('pan_zoom', zoom_level, x, y, socket.request.session.passport.user.id);
 		});
-
 		
 	});
 	
@@ -1689,5 +1510,3 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	
 });
-
-
