@@ -434,9 +434,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad'];	
-	for (var i in games) {
-		var game = games[i];
-		router.get('/' + game, function(req, res, next) {
+	games.forEach(function(game) {
+		router.get('/' + game, function(req, res, next) {		
 		  req.session.game = game;
 		  res.render('index', { game: req.session.game, 
 								user: req.session.passport.user,
@@ -472,7 +471,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		router.get('/'+game+'3', function(req, res, next) {
 		  planner_redirect(req, res, game, 'planner3');
 		});			
-	}
+	});
 	
 	router.get('/about.html', function(req, res, next) {
 	  if (!req.session.game) {
