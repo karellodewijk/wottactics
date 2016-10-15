@@ -489,10 +489,12 @@ function zoom(amount, isZoomIn, center, e) {
 	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
 	var zoom_factor = old_zoom_level / zoom_level;
 	
-	for (var i in room_data.slides[active_slide].entities) {
-		var entity = room_data.slides[active_slide].entities[i];
-		if (entity.container && entity.draw_zoom_level) {
-			adjust_zoom(entity)
+	if(room_data) {
+		for (var i in room_data.slides[active_slide].entities) {
+			var entity = room_data.slides[active_slide].entities[i];
+			if (entity.container && entity.draw_zoom_level) {
+				adjust_zoom(entity)
+			}
 		}
 	}
 }
@@ -1705,17 +1707,18 @@ function t2o(transparancy) {
 }
 
 //function fires when mouse is left clicked on the map and it isn't a drag
-var last_draw_time, last_point;
+var last_point;
 function on_left_click(e) {
 	if (active_context == "drag_context") {
 		cancel_drag(true);
 	}
-	var mouse_location = e.data.getLocalPosition(background_sprite);
+	
+	var mouse_location = renderer.plugins.interaction.eventData.data.global;
 	
 	if (!can_edit()) {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
 		init_canvases(0.1, 0xffffff, "full");
-		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];	
+		left_click_origin = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];	
 		return;
 	}
 	try {
@@ -1729,38 +1732,37 @@ function on_left_click(e) {
 	}
 	if (active_context == 'draw_context') {
 		setup_mouse_events(on_draw_move, on_draw_end);
-		point_buffer = [];
-		new_drawing = {uid : newUid(), type: 'drawing', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]], end_size:draw_end_size*zoom_level, draw_zoom_level:zoom_level};
+		var x = from_x_local(mouse_location.x), y = from_y_local(mouse_location.y);
+		new_drawing = {uid : newUid(), type: 'drawing', x:x, y:y, scale:[1,1], color:draw_color, alpha:1, thickness:parseFloat(draw_thickness) * zoom_level, end:$('#draw_end_type').find('.active').attr('data-end'), style:$('#draw_type').find('.active').attr('data-style'), path:[[0, 0]], end_size:draw_end_size*zoom_level, draw_zoom_level:zoom_level};
 		init_canvases(parseFloat(draw_thickness), new_drawing.color, new_drawing.style);
-		draw_context.moveTo(to_x_local(new_drawing.x) * DRAW_QUALITY, to_y_local(new_drawing.y) * DRAW_QUALITY);
-		last_draw_time = Date.now();
-		last_point = [to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y))];
+		point_buffer = [mouse_location.x, mouse_location.y];
+		last_point = [mouse_location.x, mouse_location.y];
 	} else if (active_context == 'ruler_context') {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
 		init_canvases(0.1, 0xffffff, "full");
-		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];	
+		left_click_origin = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];	
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_line_end);
-			new_drawing = {uid : newUid(), type: 'line', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], color:line_color, alpha:1, thickness:parseFloat(line_thickness) * zoom_level, path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style'), end_size:line_end_size*zoom_level, draw_zoom_level:zoom_level};
+			new_drawing = {uid : newUid(), type: 'line', x:from_x_local(mouse_location.x), y:from_y_local(mouse_location.y), scale:[1,1], color:line_color, alpha:1, thickness:parseFloat(line_thickness) * zoom_level, path:[[0, 0]], end:$('#line_end_type').find('.active').attr('data-end'), style:$('#line_type').find('.active').attr('data-style'), end_size:line_end_size*zoom_level, draw_zoom_level:zoom_level};
 			init_canvases(parseFloat(line_thickness), new_drawing.color, new_drawing.style);
-			draw_context.moveTo(to_x_local(new_drawing.x) * DRAW_QUALITY, to_y_local(new_drawing.y) * DRAW_QUALITY);
+			draw_context.moveTo(mouse_location.x * DRAW_QUALITY, mouse_location.y * DRAW_QUALITY);
 			just_activated = true;
 		}
 	} else if (active_context == 'polygon_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_line_move, on_polygon_end);
-			new_drawing = {uid : newUid(), type: 'polygon', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], outline_thickness:polygon_outline_thickness * zoom_level, outline_color:polygon_outline_color, outline_opacity: t2o(polygon_outline_transparancy), fill_color:polygon_fill_color, fill_opacity: t2o(polygon_fill_transparancy), alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style'), draw_zoom_level:zoom_level};
+			new_drawing = {uid : newUid(), type: 'polygon', x:from_x_local(mouse_location.x), y:from_y_local(mouse_location.y), scale:[1,1], outline_thickness:polygon_outline_thickness * zoom_level, outline_color:polygon_outline_color, outline_opacity: t2o(polygon_outline_transparancy), fill_color:polygon_fill_color, fill_opacity: t2o(polygon_fill_transparancy), alpha:1, path:[[0,0]], style:$('#polygon_type').find('.active').attr('data-style'), draw_zoom_level:zoom_level};
 
 			init_canvases(polygon_outline_thickness, new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
-			draw_context.moveTo(to_x_local(new_drawing.x) * DRAW_QUALITY, to_y_local(new_drawing.y) * DRAW_QUALITY);
+			draw_context.moveTo(mouse_location.x * DRAW_QUALITY, mouse_location.y * DRAW_QUALITY);
 		
 			var end_circle_radius = (e.type == "touchstart") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
 			
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * THICKNESS_SCALE, new_drawing.outline_color, new_drawing.outline_opacity);
-			graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
-			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), size_y * end_circle_radius * zoom_level));
+			graphics.moveTo(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)));
+			graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), size_y * end_circle_radius * zoom_level));
 			objectContainer.addChild(graphics);
 			
 			just_activated = true;
@@ -1768,29 +1770,29 @@ function on_left_click(e) {
 		}
 	} else if (active_context == 'curve_context') {
 		if (!new_drawing) {
-			new_drawing = {uid : newUid(), type: 'curve', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y),  scale:[1,1], color:curve_color, alpha:1, thickness:parseFloat(curve_thickness) * zoom_level, path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style'), end_size:curve_end_size*zoom_level, draw_zoom_level:zoom_level};
+			new_drawing = {uid : newUid(), type: 'curve', x:from_x_local(mouse_location.x), y:from_y_local(mouse_location.y),  scale:[1,1], color:curve_color, alpha:1, thickness:parseFloat(curve_thickness) * zoom_level, path:[[0, 0]], end:$('#curve_end_type').find('.active').attr('data-end'), style:$('#curve_type').find('.active').attr('data-style'), end_size:curve_end_size*zoom_level, draw_zoom_level:zoom_level};
 
-			point_buffer = [to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y))];
+			point_buffer = [mouse_location.x, mouse_location.y];
 			init_canvases(parseFloat(curve_thickness), new_drawing.color, new_drawing.style);
-			draw_context.moveTo(to_x_local(new_drawing.x), to_y_local(new_drawing.y));
+			draw_context.moveTo(mouse_location.x * DRAW_QUALITY, mouse_location.y * DRAW_QUALITY);
 
 			setup_mouse_events(on_curve_move, on_curve_end);
 			just_activated = true;
 		}
 	} else if (active_context == 'area_context') {
 		if (!new_drawing) {
-			new_drawing = {uid : newUid(), type: 'area', x:mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), scale:[1,1], outline_thickness:parseFloat(area_outline_thickness) * zoom_level, outline_color:area_outline_color, outline_opacity: t2o(area_outline_transparancy), fill_color:area_fill_color, fill_opacity: t2o(area_fill_transparancy), alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style'), draw_zoom_level:zoom_level};
+			new_drawing = {uid : newUid(), type: 'area', x:from_x_local(mouse_location.x), y:from_y_local(mouse_location.y), scale:[1,1], outline_thickness:parseFloat(area_outline_thickness) * zoom_level, outline_color:area_outline_color, outline_opacity: t2o(area_outline_transparancy), fill_color:area_fill_color, fill_opacity: t2o(area_fill_transparancy), alpha:1, path:[[0, 0]], style:$('#area_type').find('.active').attr('data-style'), draw_zoom_level:zoom_level};
 
-			point_buffer = [to_x_local(mouse_x_rel(mouse_location.x)), to_y_local(mouse_y_rel(mouse_location.y))];
+			point_buffer = [mouse_location.x, mouse_location.y];
 			init_canvases(parseFloat(area_outline_thickness), new_drawing.outline_color, new_drawing.style, new_drawing.fill_opacity, new_drawing.fill_color, new_drawing.outline_opacity);
-			draw_context.moveTo(to_x_local(new_drawing.x) * DRAW_QUALITY, to_y_local(new_drawing.y) * DRAW_QUALITY);
+			draw_context.moveTo(mouse_location.x * DRAW_QUALITY, mouse_location.y * DRAW_QUALITY);
 
 			var end_circle_radius = (e.type == "touchstart") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
 			
 			graphics = new PIXI.Graphics();
 			graphics.lineStyle(new_drawing.outline_thickness * THICKNESS_SCALE, new_drawing.outline_color, new_drawing.outline_opacity);
-			graphics.moveTo(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)));
-			graphics.drawShape(new PIXI.Circle(x_abs(mouse_x_rel(mouse_location.x)), y_abs(mouse_y_rel(mouse_location.y)), size_y * end_circle_radius * zoom_level));
+			graphics.moveTo(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)));
+			graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), size_y * end_circle_radius * zoom_level));
 			objectContainer.addChild(graphics);
 			
 			setup_mouse_events(on_curve_move, on_area_end);
@@ -1810,7 +1812,7 @@ function on_left_click(e) {
 	} else if (active_context == "select_context") {
 		setup_mouse_events(on_select_move, on_select_end);
 		init_canvases(2, 0xBBBBBB, 'dotted', 0.25, 0xBBBBBB, 1);
-		left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
+		left_click_origin = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
 		deselect_all();
 	} else if (active_context == 'text_context') {
 		setup_mouse_events(undefined, on_text_end);
@@ -1819,7 +1821,7 @@ function on_left_click(e) {
 	} else if (active_context == 'rectangle_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_rectangle_move, on_rectangle_end);
-			left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
+			left_click_origin = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];		
 			init_canvases(rectangle_outline_thickness, rectangle_outline_color, $('#rectangle_type').find('.active').attr('data-style'), t2o(rectangle_fill_transparancy), rectangle_fill_color, t2o(rectangle_outline_transparancy));
 			new_drawing = true;
 			just_activated = true;
@@ -1827,7 +1829,7 @@ function on_left_click(e) {
 	} else if (active_context == 'circle_context') {
 		if (!new_drawing) {
 			setup_mouse_events(on_circle_move, on_circle_end);
-			left_click_origin = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];		
+			left_click_origin = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];		
 			init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data-style'), t2o(circle_fill_transparancy), circle_fill_color, t2o(circle_outline_transparancy));
 			circle_draw_style = $('#circle_draw_style').find('.active').attr('data-draw_style')
 			new_drawing = true;
@@ -1882,7 +1884,7 @@ function start_tracking(mouse_location) {
 	} else {
 		size = 0.05;
 	}
-	my_tracker = {uid:newUid(), shape:shape, size:(size * (track_size/10)), color: track_color, x: mouse_x_rel(mouse_location.x), y:mouse_y_rel(mouse_location.y), owner:my_user.id};
+	my_tracker = {uid:newUid(), shape:shape, size:(size * (track_size/10)), color: track_color, x: from_x_local(mouse_location.x), y:from_y_local(mouse_location.y), owner:my_user.id};
 	last_track_position = [my_tracker.x, my_tracker.y];
 	socket.emit("track", room, my_tracker);
 	create_tracker(my_tracker);
@@ -2046,16 +2048,10 @@ function on_area_end(e) {
 		if (distance_to_start_sq < EPSILON) return;
 	}
 	
-	if (distance_to_start_sq < (end_circle_radius*end_circle_radius) * zoom_level ) {
-		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);	
-		var end_points = smooth_draw(temp_draw_context, point_buffer, true, DRAW_QUALITY);
-		temp_draw_context.fill();
-		
-		var success = canvas2container(temp_draw_context, temp_draw_canvas, new_drawing);
-		if (success) {
-			emit_entity(new_drawing);
-			undo_list.push(clone_action(["add", [new_drawing]]));
-		}
+	if (distance_to_start_sq < (end_circle_radius*end_circle_radius) * zoom_level ) {		
+		create_area2(new_drawing, DRAW_QUALITY);
+		emit_entity(new_drawing);
+		undo_list.push(clone_action(["add", [new_drawing]]));
 
 		objectContainer.removeChild(graphics);	
 		render_scene();	
@@ -2065,8 +2061,7 @@ function on_area_end(e) {
 		
 	} else {
 		point_buffer.push(mouse_location.x, mouse_location.y);
-		new_drawing.path.push([from_x_local(new_x) - new_drawing.x, from_y_local(new_y) - new_drawing.y]);
-		
+		new_drawing.path.push([from_x_local(new_x) - new_drawing.x, from_y_local(new_y) - new_drawing.y]);	
 		on_curve_move(e);
 	}
 }
@@ -2109,17 +2104,11 @@ function on_curve_end(e) {
 	}
 	
 	var end_circle_radius = (e.type == "touchend" || e.type == "touchendoutside" || e.type == "touchstart" || e.type == "touchstartoutside") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;	
-	if (distance_to_last_sq < (end_circle_radius*end_circle_radius)*zoom_level) {	
-		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);	
-
-		var end_points = smooth_draw(temp_draw_context, point_buffer, false, DRAW_QUALITY);
-		draw_end(temp_draw_context, new_drawing, end_points[0], end_points[1], 1/zoom_level, DRAW_QUALITY);
-				
-		var success = canvas2container(temp_draw_context, temp_draw_canvas, new_drawing);
-		if (success) {
-			emit_entity(new_drawing);
-			undo_list.push(clone_action(["add", [new_drawing]]));
-		}
+	if (distance_to_last_sq < (end_circle_radius*end_circle_radius)*zoom_level) {
+		create_curve2(new_drawing, DRAW_QUALITY);
+		emit_entity(new_drawing);
+		undo_list.push(clone_action(["add", [new_drawing]]));
+		
 		objectContainer.removeChild(graphics);
 		
 		render_scene();	
@@ -2172,15 +2161,10 @@ function on_polygon_end(e) {
 	
 	if (distance_to_start_sq < (end_circle_radius*end_circle_radius) * zoom_level) {
 		new_drawing.path.push([0, 0]);
-		draw_context.lineTo(to_x_local(new_drawing.x) * DRAW_QUALITY, to_y_local(new_drawing.y) * DRAW_QUALITY);
-		draw_context.stroke();
-		draw_context.fill();
 		
-		var success = canvas2container(draw_context, draw_canvas, new_drawing);
-		if (success) {
-			emit_entity(new_drawing);
-			undo_list.push(clone_action(["add", [new_drawing]]));
-		}
+		create_polygon2(new_drawing, DRAW_QUALITY);
+		emit_entity(new_drawing);
+		undo_list.push(clone_action(["add", [new_drawing]]));
 		
 		objectContainer.removeChild(graphics);
 		render_scene();		
@@ -2342,52 +2326,12 @@ function on_circle_end(e) {
 						   Math.pow(to_y_local(left_click_origin[1]) - to_y_local(yrel), 2));
 	}
 
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);	
-	temp_draw_context.beginPath();
-	temp_draw_context.arc(to_x_local(center_x) * DRAW_QUALITY, to_y_local(center_y) * DRAW_QUALITY, radius * DRAW_QUALITY, 0, 2*Math.PI);
-	temp_draw_context.fill();
-	temp_draw_context.stroke();
-
 	var new_shape = {uid:newUid(), type:'circle', x:center_x, y:center_y, radius:from_y_local_vect(radius), outline_thickness:circle_outline_thickness * zoom_level, outline_color:circle_outline_color, outline_opacity: t2o(circle_outline_transparancy), fill_opacity: t2o(circle_fill_transparancy), fill_color:circle_fill_color, alpha:1, style:$('#circle_type').find('.active').attr('data-style'), draw_zoom_level:zoom_level};
 	new_drawing = undefined;
 	
-	if (circle_draw_style == "radius" && background.size_x && background.size_x > 0 && background.size_y && background.size_y > 0) {
-		new_shape.draw_radius = [xrel - new_shape.x, yrel - new_shape.y];
-		temp_draw_context.save();
-		temp_draw_context.lineWidth = 2 * (size_x/1000) * DRAW_QUALITY;
-		temp_draw_context.strokeStyle = "#FFFFFF";
-		temp_draw_context.fillStyle = "#FFFFFF";
-		temp_draw_context.shadowBlur = 0;
-		temp_draw_context.beginPath();
-		temp_draw_context.moveTo(to_x_local(center_x) * DRAW_QUALITY, to_y_local(center_y) * DRAW_QUALITY);		
-		temp_draw_context.lineTo(to_x_local(xrel) * DRAW_QUALITY, to_y_local(yrel) * DRAW_QUALITY);
-		temp_draw_context.stroke();
-		var mid_line_x = to_x_local((center_x + xrel) / 2);
-		var mid_line_y = to_y_local((center_y + yrel) / 2);
-		temp_draw_context.font = "22px Arial";
-		var length = Math.sqrt(Math.pow(background.size_x * (center_x - xrel), 2) + Math.pow(background.size_y * 
-		(center_y - yrel), 2))
-		temp_draw_context.lineWidth = to_x_local(0.5)/1000 * DRAW_QUALITY;
-		temp_draw_context.strokeStyle = "#000000";
-		temp_draw_context.fillStyle = "#FFFFFF";
-		var label = "";
-		if (game == "lol") {
-			label += Math.round(10*length)/10 + "u";
-		} else if (game == "wows") {
-			label += Math.round(0.01*length)/10 + "km";
-		} else {
-			label += Math.round(10*length)/10 + "m";
-		}	
-		temp_draw_context.fillText(label, mid_line_x * DRAW_QUALITY, mid_line_y * DRAW_QUALITY);
-		temp_draw_context.stroke();
-		temp_draw_context.restore();
-	}
-	
-	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
-	if (success) {
-		emit_entity(new_shape);
-		undo_list.push(clone_action(["add", [new_shape]]));
-	}
+	create_circle2(new_shape, DRAW_QUALITY);
+	emit_entity(new_shape);
+	undo_list.push(clone_action(["add", [new_shape]]));
 		
 	stop_drawing();
 	setup_mouse_events(undefined, undefined);
@@ -2422,18 +2366,12 @@ function on_rectangle_end(e) {
 		if (distance_sq < 0.01) return;
 	}
 	new_drawing = undefined;
-	
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);							
-	temp_draw_context.fillRect(to_x_local(left_x) * DRAW_QUALITY, to_y_local(left_y) * DRAW_QUALITY, (to_x_local(right_x)-to_x_local(left_x)) * DRAW_QUALITY, (to_y_local(right_y)-to_y_local(left_y))  * DRAW_QUALITY); 
-	temp_draw_context.strokeRect(to_x_local(left_x) * DRAW_QUALITY, to_y_local(left_y) * DRAW_QUALITY, (to_x_local(right_x)-to_x_local(left_x)) * DRAW_QUALITY, (to_y_local(right_y)-to_y_local(left_y)) * DRAW_QUALITY);
 
 	var new_shape = {uid:newUid(), type:'rectangle', x:left_x, y:left_y, width:(right_x - left_x), height:(right_y - left_y), outline_thickness:rectangle_outline_thickness * zoom_level, outline_color:rectangle_outline_color, outline_opacity: t2o(rectangle_outline_transparancy), fill_opacity: t2o(rectangle_fill_transparancy), fill_color:rectangle_fill_color, alpha:1, style:$('#rectangle_type').find('.active').attr('data-style'), draw_zoom_level:zoom_level};
-	
-	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_shape);
-	if (success) {
-		emit_entity(new_shape);
-		undo_list.push(clone_action(["add", [new_shape]]));
-	}
+
+	create_rectangle2(new_shape, DRAW_QUALITY);
+	emit_entity(new_shape);
+	undo_list.push(clone_action(["add", [new_shape]]));
 		
 	stop_drawing();
 	setup_mouse_events(undefined, undefined);
@@ -3099,7 +3037,7 @@ function smooth_draw(context, point_buffer, closed, quality) {
 var draw_state = {}
 var point_buffer = []
 function on_draw_move(e) {
-	limit_rate(20, draw_state, function() {
+	limit_rate(20, draw_state, function() {		
 		var mouse_location = renderer.plugins.interaction.eventData.data.global;
 
 		var new_x = last_point[0] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.x;
@@ -3120,6 +3058,7 @@ function on_draw_move(e) {
 		new_drawing.path.pop();
 		
 		last_point = [new_x, new_y];
+		
 	});
 }
 
@@ -3130,19 +3069,11 @@ function on_draw_end(e) {
 	var new_x = last_point[0];
 	var new_y = last_point[1];	
 	
-	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);
-	point_buffer.push(new_x, new_y, mouse_location.x, mouse_location.y);
-	smooth_draw(temp_draw_context, point_buffer, false, DRAW_QUALITY);	
-	
 	new_drawing.path.push([from_x_local(mouse_location.x) - new_drawing.x, from_y_local(mouse_location.y) - new_drawing.y]);
-	
-	draw_end_path(temp_draw_context, new_drawing);
-	
-	var success = canvas2container(temp_draw_context, temp_draw_canvas, new_drawing);
-	if (success) {
-		emit_entity(new_drawing);
-		undo_list.push(clone_action(["add", [new_drawing]]));
-	}
+
+	create_drawing2(new_drawing, DRAW_QUALITY);
+	emit_entity(new_drawing);
+	undo_list.push(clone_action(["add", [new_drawing]]));
 		
 	temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);
 	temp_draw_context.beginPath();
@@ -3150,67 +3081,6 @@ function on_draw_end(e) {
 	setup_mouse_events(undefined, undefined);
 	new_drawing = null;	
 }
-
-function autocrop_canvas(canvas) {
-	var ctx = canvas.getContext("2d");
-	
-	//this code is for clipping
-	var w = canvas.width,
-	    h = canvas.height,
-	    pix = {x:[], y:[]},
-	    imageData = ctx.getImageData(0,0,canvas.width,canvas.height),
-	    x, y, index;
-
-	for (y = 0; y < h; y++) {
-		for (x = 0; x < w; x++) {
-			index = (y * w + x) * 4;
-			if (imageData.data[index+3] > 0) {
-				pix.x.push(x);
-				pix.y.push(y);
-			}   
-		}
-	}
-	pix.x.sort(function(a,b){return a-b});
-	pix.y.sort(function(a,b){return a-b});
-	var n = pix.x.length-1;
-
-	x = pix.x[0];
-	y = pix.y[0];
-	w = pix.x[n] - pix.x[0] + 1;
-	h = pix.y[n] - pix.y[0] + 1;
-	
-	var _canvas = document.createElement("canvas");
-	_canvas.width = w;
-	_canvas.height = h;
-	var _ctx = _canvas.getContext("2d");
-
-	if (isNaN(x) || isNaN(y) || isNaN(w) || isNaN(h)) {
-		return null;
-	}
-	
-	var cut = ctx.getImageData(x, y, w, h);
-	_ctx.putImageData(cut, 0, 0);
-	
-	_canvas.x = x;
-	_canvas.y = y;
-	return _canvas;
-}
-
-function createSprite(ctx, canvas) {
-	canvas = autocrop_canvas(canvas);
-	//generate the pixi sprite and put it in the right spot
-	
-	if (canvas) {
-		var texture = PIXI.Texture.fromCanvas(canvas);
-		var sprite = new PIXI.Sprite(texture);
-		sprite.x = x_abs(from_x_local(canvas.x));
-		sprite.y = y_abs(from_y_local(canvas.y));
-		return sprite;
-	} else {
-		return null;
-	}
-}
-
 
 function drawRotatedImage(context, image, angle) { 
 	context.save();
@@ -3220,7 +3090,6 @@ function drawRotatedImage(context, image, angle) {
 	context.drawImage(image, 0, 0);
  	context.restore(); 
 }
-
 
 function draw_end_path(context, drawing) {
 	if (drawing.path.length >= ARROW_LOOKBACK) {
@@ -3273,47 +3142,6 @@ function draw_T(context, a, b, size, quality) {
 	context.lineTo((b[0] + size * x_ort) * quality, (b[1] + size * y_ort) * quality);
 	context.stroke();
 	context.setLineDash(temp_dash);
-}
-
-function canvas2sprite(_context, _canvas) {
-	var sprite = createSprite(_context, _canvas);
-		
-	if (sprite) {
-		//rescale to objectContainer
-		sprite.height /= objectContainer.scale.x;
-		sprite.width /= objectContainer.scale.y;
-		return sprite;
-	} else {
-		return false; //failure
-	}
-}
-
-function canvas2container(_context, _canvas, entity) {
-	var sprite = createSprite(_context, _canvas);
-	
-	if (sprite) {
-		entity.container = sprite;		
-		//rescale to objectContainer
-		sprite.x = x_abs(from_x_local(to_x_local(x_rel(sprite.x)) / DRAW_QUALITY));
-		sprite.y = y_abs(from_y_local(to_y_local(y_rel(sprite.y)) / DRAW_QUALITY));
-		sprite.height /= objectContainer.scale.x * DRAW_QUALITY;
-		sprite.width /= objectContainer.scale.y * DRAW_QUALITY;
-		objectContainer.addChild(sprite);
-		
-		//make draggable
-		sprite.texture.baseTexture.source.src = entity.uid;
-		sprite.hitArea = new PIXI.TransparencyHitArea.create(sprite, false);
-		init_dragging(sprite);
-		sprite.entity = entity;
-		
-		//send off
-		room_data.slides[active_slide].entities[entity.uid] = entity;
-		render_scene();	
-		
-		return true; //success
-	} else {
-		return false; //failure
-	}
 }
 
 function init_shape_canvas(_context, shape, scale) {
@@ -3809,13 +3637,9 @@ function on_line_end(e) {
 	draw_context.stroke();
 		
 	if (!shifted) {
-		draw_end(draw_context, new_drawing, a, b, 1/zoom_level, DRAW_QUALITY);
-
-		var success = canvas2container(draw_context, draw_canvas, new_drawing);
-		if (success) {
-			emit_entity(new_drawing);
-			undo_list.push(clone_action(["add", [new_drawing]]));
-		}
+		create_line2(new_drawing, DRAW_QUALITY);
+		emit_entity(new_drawing);
+		undo_list.push(clone_action(["add", [new_drawing]]));
 				
 		setup_mouse_events(undefined, undefined);
 		stop_drawing();
@@ -3824,7 +3648,7 @@ function on_line_end(e) {
 }
 
 
-function create_text_sprite(msg, color, font_size, font, background, label_shadow, font_modifier) {
+function create_text_sprite(msg, color, font_size, font, background, label_shadow, font_modifier) {	
 	if(font_modifier === undefined) font_modifier = "";
 	var _canvas = document.createElement("canvas");
 	var scaling = objectContainer.scale.y;
@@ -3832,6 +3656,7 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 
 	var text_quality = TEXT_QUALITY;
 	_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality) + "px "+font;
+	_context.textBaseline = "top";
 	
     var metrics = _context.measureText(msg);
 	while (metrics.width > MAX_CANVAS_SIZE) {	
@@ -3841,18 +3666,21 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 	}
 	metrics = _context.measureText(msg);
 	
-	_canvas.height = font_size * scaling * text_quality * 2.5;	
-	_canvas.width = metrics.width + _canvas.height*0.2;
-	
+	_canvas.height = font_size * scaling * text_quality * 2.7;	
+
 	if (background) {
+		_canvas.width = metrics.width + _canvas.height*0.2;
 		_context.fillStyle = "#ffffff"
-		_context.lineWidth = 25
+		_context.lineWidth = _canvas.height*0.1
 		_context.fillRect(0, 0, metrics.width + _canvas.height*0.2, _canvas.height);
 		_context.strokeRect(0, 0, metrics.width + _canvas.height*0.2, _canvas.height);
-		
+	} else {
+		_canvas.width = metrics.width;
 	}
+	
 	_context.fillStyle = color;
 	_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality) + "px "+font;
+	_context.textBaseline = "top";
 
 	if (label_shadow) {
 		_context.shadowColor = "black";
@@ -3861,22 +3689,22 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 		_context.shadowBlur = 5;
 	}
 
-	_context.fillText(msg, _canvas.height*0.1, _canvas.height/1.5+_canvas.height*0.1);
-	
-	var sprite = createSprite(_context, _canvas);
-		
-	if (sprite) {
-		//rescale to objectContainer
-		var ratio =	sprite.width / sprite.height;
-		sprite.height = Math.round(2 * font_size * scaling) / objectContainer.scale.x;
-		sprite.width = sprite.height * ratio;
-
-		sprite.x = 0;
-		sprite.y = 0;
-		return sprite;
+	if (background) {
+		_context.fillText(msg, _canvas.height*0.1, _canvas.height*0.1);
 	} else {
-		return false;
+		_context.fillText(msg, 0, 0);
 	}
+	
+	var texture = PIXI.Texture.fromCanvas(_canvas);
+	var sprite = new PIXI.Sprite(texture);
+	
+	var ratio =	sprite.width / sprite.height;
+	sprite.height = Math.round(2 * font_size * scaling) / objectContainer.scale.x;
+	sprite.width = sprite.height * ratio;
+
+	sprite.x = 0;
+	sprite.y = 0;
+	return sprite;
 }
 
 function create_text2(text_entity) {
@@ -3884,7 +3712,7 @@ function create_text2(text_entity) {
 	var sprite = create_text_sprite(text_entity.text, color, TEXT_SCALE * text_entity.font_size, text_entity.font, false, true)
 	
 	var ratio = sprite.width / sprite.height;
-	sprite.height = x_abs(text_entity.font_size / 530)
+	sprite.height = x_abs(text_entity.font_size / 390)
 	sprite.width = sprite.height * ratio;
 	
 	if (sprite) {
@@ -3910,7 +3738,7 @@ function create_background_text2(text_entity) {
 	var sprite = create_text_sprite(text_entity.text, color, BACKGROUND_TEXT_SCALE * text_entity.font_size, text_entity.font, true, false)
 
 	var ratio = sprite.width / sprite.height;
-	sprite.height = x_abs(text_entity.font_size / 440)
+	sprite.height = x_abs(text_entity.font_size / 420)
 	sprite.width = sprite.height * ratio;
 	
 	if (sprite) {
@@ -3962,7 +3790,7 @@ function create_icon_cont(icon, texture) {
 		
 		var label_scale;
 		if (!icon.label_background) {
-			label_scale = 680;
+			label_scale = 470;
 		} else {
 			label_scale = 450;
 		}
