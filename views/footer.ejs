@@ -1,5 +1,44 @@
-<footer>
-	<div class='inline'>
-		<%=l('Developed by')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
-	</div>
-</footer>
+<br />
+<nav class="navbar navbar-default navbar-inverse" style="border-radius: 0; padding:0px; margin:0px;">
+	<ul class="nav navbar-nav">
+		<li class="divider-vertical hidden-xs"></li>
+		
+		<li><p class="navbar-text"><%=l('Share')%>:<p>
+		
+		<li><a target="_top" data-toggle="tooltip" title="<%=l('Share on faceook')%>" id="facebook_link" href="https://www.facebook.com/dialog/share?app_id=580177672120479&display=popup&href="><i class="fa-lg icon-facebook"></i></a>
+		<li><a target="_top" data-toggle="tooltip" title="<%=l('Share on twitter')%>" id="twitter_link" href="https://twitter.com/intent/tweet?button_hashtag=gametactic&text= " data-url="<%=url.split('/')[0]%>" data-dnt="true"><i class="fa-lg icon-twitter"></i></a>
+		<li><a target="_top" data-toggle="tooltip" title="<%=l('Share on google+')%>" id="google_link" href="https://plus.google.com/share?url=" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa-lg icon-google-plus"></i></a>
+
+		<li class="divider-vertical hidden-xs"></li>
+		
+		<li><p class="navbar-text"><%=l('Donate')%>:<p>
+		
+		<li data-toggle="tooltip" title="<%=l('Donate using paypal')%>">
+		<a target="_top" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3DJZFARS4ZG2U"><i class="fa-lg icon-paypal"></i></a>
+		</li>
+		<li data-toggle="tooltip" title="<%=l('Become a patreon')%>">
+		<a target="_top" href="https://www.patreon.com/kalith"><i class="fa-lg icon-patreon"></i>
+		</a></li>
+		
+		<script type="text/javascript">
+			document.addEventListener("DOMContentLoaded", function(event) {
+				var link = "http://<%=url.split('/')[0]%>";					
+				var promo_link = "http://gametactic.org/<%=game%>";
+				if (link.indexOf("betweenthebits.com") != -1
+				 || link.indexOf("wottactic") != -1) {
+					promo_link = link;
+				}
+				var fb = document.getElementById('facebook_link');
+				fb.setAttribute("href", fb.getAttribute('href') + encodeURIComponent(promo_link) + "&redirect_uri=" + encodeURIComponent(promo_link));			
+				if (link.indexOf("awtactic") != -1
+				  || link.indexOf("wowstactic") != -1) {
+					promo_link = link;
+				}
+				var twitter = document.getElementById('twitter_link')
+				twitter.setAttribute("href", twitter.getAttribute('href') + encodeURIComponent(promo_link));
+				var google = document.getElementById('google_link')
+				google.setAttribute("href", google.getAttribute('href') + encodeURIComponent(promo_link));							
+			});
+		</script>
+	</ul>
+</nav>

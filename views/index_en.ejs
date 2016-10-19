@@ -7,7 +7,9 @@
 </head>
 <body style="overflow:scroll;">
 	<% include navbar.ejs %>
-	
+	<script>
+		document.getElementById('home').className += " active";
+	</script>
 	<style>
 		#banner {
 			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
@@ -16,9 +18,9 @@
 	</style>
 
 	<div class="container" style='width:100%; position:relative;'>
-		<div class="jumbotron side_bar" style='width:100%; padding:0px; margin:0px;'>
+		<div class="jumbotron content" style="padding-left:0px; padding-right:0px">
 			<div id="banner" class="call_to_action" style='width:100%;'>
-				<div class="container" id="big_button_frame" style="text-align:center">
+				<div class="container" id="big_button_frame" style="text-align:center;">
 					<h1>
 						<% if (game == 'wot') { %>
 							World of Tanks Tactics
@@ -75,7 +77,7 @@
 				<div class="row">
 					<div class="col-md-4">
 						<h2>What is <%=url.split('/')[0]%> &#63;</h2>
-						<p><%=url.split('/')[0]%> is an interactive map planning tool for <%=game.toUpperCase()%>.
+						<p><%=url.split('/')[0]%> is an interactive map tactic planning tool for <%=game.toUpperCase()%>.
 						
 						<p><h4><b>So how does it work ?</b></h4>
 						
@@ -114,7 +116,7 @@
 						
 						<p>I was watching a League of Legends match and afterwards they were showing some replays to hilight certain things. I figured being to do that live and online is not something that exists yet and may be useful. 
 
-						<p>Now, I'm not saying it's perfect. The drawing part is not a problem, but starting and keeping videos in sync especially through the youtube api is tricky. And I don't think it's something I can improve upon greatly. Basically the youtube API is just lacking the nescessary tools (no fine grained playback rate control, course seek function and play/pause delays).
+						<p>Now, I'm not saying it's perfect. The drawing part is not a problem, but starting and keeping videos in sync especially through the youtube api is tricky. And I don't think it's something I can improve upon greatly. Basically the youtube API is just lacking the necessary tools (no fine grained playback rate control, course seek function and play/pause delays).
 						
 						<p>A direct link to a supported video file (anything supported by your browser) will work better. But is there a even free video service that allows you to access video files directly and embed them remotely ?
 						
@@ -161,7 +163,8 @@
 			</div>
 		</div>
 	</div>
-	<br />
+	
+	<% include footer.ejs %>
 	<% include index_js.ejs %>
 
 </body>

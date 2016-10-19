@@ -6,89 +6,88 @@
 </head>
 <body>
 	<% include navbar.ejs %>
+	<script>
+		document.getElementById('about').className += " active";
+	</script>
 	<div class="container" style='width:100%;'>	
-    <div class="jumbotron side_bar" style='width:100%;'>
-		
-		<h2><%=l('Info')%></h2>
-		<div style="padding:20px">
-		
-		<p>
-		Ahoj a děkuji za Váš zájem o tuto stránku.
+		<div class="jumbotron content content_margin">
+			<p>
+			Ahoj a děkuji za Váš zájem o tuto stránku.
 
-		<h3>Návrhy</h3>
-		<p>
-		Jsem vždy otevřený k návrhům, kritice, škádlení či chvále. Pod kontaktními informacemi najdete mnoho možností, jak se se mnou spojit. 
-		
-		<h3>Výpomoc</h3>
-		<p>
-		Pokud mi chcete jakkoliv vypomoci, klidně mě zkontaktujte. Obzvláště hledám někoho, kdo by mohl překládat do ruštiny, protože velká část hráčské základny wow/wows mluví rusky. Také mám potíže s hledáním/vytvářením map do wows ve vysoké kvalitě.
-		
-		<h3>Kód</h3>
-		<p>
-		Chci oslovit co nejvíce lidí, takže jsem se rozhodl vytvořit otevřený zdrojový kód pod licencí MIT, v podstatě Vám ho umožňuji využívat ve svých komerčních, nekomerčních či jiných projektech.
-		
-		Zdroj se nachází na
-		<a href='https://github.com/karellodewijk/wottactics'>https://github.com/karellodewijk/wottactics</a>
-		
-		<h3>Kontaktní informace:</h3>
-		
-		<p>
-		
-		<div class="row">
-			<div class="col-md-2">Jméno</div>
-			<div class="col-md-2">Kalith</div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">e-mail</div>
-			<div class="col-md-2"><a href="mailto:pkalith@gmail.com">pkalith@gmail.com</a></div>
-		</div>
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU profil</div>
-			<div class="col-md-10"><a href='http://worldoftanks.eu/community/accounts/505943778-Kalith/'>http://worldoftanks.eu/community/accounts/505943778-Kalith/</a></div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">NA profil</div>
-			<div class="col-md-10"><a href='http://worldoftanks.com/community/accounts/1003817145-Kalid/'>http://worldoftanks.com/community/accounts/1003817145-Kalid/</a></div>
-		</div>
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU forum - téma</div>
-			<div class="col-md-10"><a href='http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/</a></div>
-		</div>	
-		<div class="row">
-			<div class="col-md-2">NA forum - téma</div>
-			<div class="col-md-10"><a href='http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/</a></div>
-		</div>		
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU Wot blitz příspěvek</div>
-			<div class="col-md-10"><a href='http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/'>http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/</a></div>
-		</div>	
-		<div class="row">
-			<div class="col-md-2">NA Wot blitz příspěvek</div>
-			<div class="col-md-10"><a href='http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/'>http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/</a></div>
-		</div>	
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">AW příspěvek</div>
-			<div class="col-md-10"><a href='http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29'>http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29</a></div>
-		</div>	
+			<h3>Návrhy</h3>
+			<p>
+			Jsem vždy otevřený k návrhům, kritice, škádlení či chvále. Pod kontaktními informacemi najdete mnoho možností, jak se se mnou spojit. 
 			
-		<p><p>
-		<h3>Speciální poděkování patří:</h3>
-		<p>
-		<ul>
-		<li>GPS4ever a maroar za veškeré testování a návrhy.</li> 
-		<li>Jingles za šíření věhlasu.</li>
-		<li><a href='http://maptactic.com'>maptactic</a> a <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> za inspiraci a možné půjčení si jedné či dvou map.</li> 
-		<li><a href='http://aw-guide.com'>aw-guide</a> a <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> za mapy pro Armored Warfare.</li>
-		<li>Reluctanttheist za mapy pro blitz.</li>
-		<li>Aleksandar(Ultra_Seljacina) za překlad do srbštiny.
-		<li>Daniel Janssen(DeeJayBass) za překlad do němčiny.
-		<li>Adriel Vargas(adrieeel) za překlad do španělštiny.
-		<li>toxohut za překlad do polštiny a excelentní zpětnou vazbu.
+			<h3>Výpomoc</h3>
+			<p>
+			Pokud mi chcete jakkoliv vypomoci, klidně mě zkontaktujte. Obzvláště hledám někoho, kdo by mohl překládat do ruštiny, protože velká část hráčské základny wow/wows mluví rusky. Také mám potíže s hledáním/vytvářením map do wows ve vysoké kvalitě.
+			
+			<h3>Kód</h3>
+			<p>
+			Chci oslovit co nejvíce lidí, takže jsem se rozhodl vytvořit otevřený zdrojový kód pod licencí MIT, v podstatě Vám ho umožňuji využívat ve svých komerčních, nekomerčních či jiných projektech.
+			
+			Zdroj se nachází na
+			<a href='https://github.com/karellodewijk/wottactics'>https://github.com/karellodewijk/wottactics</a>
+			
+			<h3>Kontaktní informace:</h3>
+			
+			<p>
+			
+			<div class="row">
+				<div class="col-md-2">Jméno</div>
+				<div class="col-md-2">Kalith</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">e-mail</div>
+				<div class="col-md-2"><a href="mailto:pkalith@gmail.com">pkalith@gmail.com</a></div>
+			</div>
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU profil</div>
+				<div class="col-md-10"><a href='http://worldoftanks.eu/community/accounts/505943778-Kalith/'>http://worldoftanks.eu/community/accounts/505943778-Kalith/</a></div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">NA profil</div>
+				<div class="col-md-10"><a href='http://worldoftanks.com/community/accounts/1003817145-Kalid/'>http://worldoftanks.com/community/accounts/1003817145-Kalid/</a></div>
+			</div>
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU forum - téma</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/</a></div>
+			</div>	
+			<div class="row">
+				<div class="col-md-2">NA forum - téma</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/</a></div>
+			</div>		
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU Wot blitz příspěvek</div>
+				<div class="col-md-10"><a href='http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/'>http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/</a></div>
+			</div>	
+			<div class="row">
+				<div class="col-md-2">NA Wot blitz příspěvek</div>
+				<div class="col-md-10"><a href='http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/'>http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/</a></div>
+			</div>	
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">AW příspěvek</div>
+				<div class="col-md-10"><a href='http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29'>http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29</a></div>
+			</div>	
+				
+			<p><p>
+			<h3>Speciální poděkování patří:</h3>
+			<p>
+			<ul>
+			<li>GPS4ever a maroar za veškeré testování a návrhy.</li> 
+			<li>Jingles za šíření věhlasu.</li>
+			<li><a href='http://maptactic.com'>maptactic</a> a <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> za inspiraci a možné půjčení si jedné či dvou map.</li> 
+			<li><a href='http://aw-guide.com'>aw-guide</a> a <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> za mapy pro Armored Warfare.</li>
+			<li>Reluctanttheist za mapy pro blitz.</li>
+			<li>Aleksandar(Ultra_Seljacina) za překlad do srbštiny.
+			<li>Daniel Janssen(DeeJayBass) za překlad do němčiny.
+			<li>Adriel Vargas(adrieeel) za překlad do španělštiny.
+			<li>toxohut za překlad do polštiny a excelentní zpětnou vazbu.
+		</div>
 	</div>
-	</div>
-	</div>
+	<% include footer.ejs %>
 </body>

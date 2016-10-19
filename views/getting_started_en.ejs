@@ -7,60 +7,58 @@
 </head>
 <body>
 	<% include navbar.ejs %>
+	<script>
+		document.getElementById('getting_started').className += " active";
+	</script>
 	<div class="container" style='width:100%;'>
-    <div class="jumbotron side_bar" style='width:100%;'>
-		<h2><%=l('Getting started')%></h2>
-		<div style="padding:20px">
+		<div class="jumbotron content content_margin">
+			<p>
+			In addition to this page, I've also created a <a href="https://youtu.be/K-yl_WNjvwk">tutorial</a> video. And here's another <a href="https://www.youtube.com/watch?v=sLWv7yXYQ-c">tutorial</a> by Stewiejp.
+			
+			<p>
+			The first screen you are presented with after you press that "New room" button should look something like this:
 
-		<p>
-		In addition to this page, I've also created a <a href="https://youtu.be/K-yl_WNjvwk">tutorial</a> video. And here's another <a href="https://www.youtube.com/watch?v=sLWv7yXYQ-c">tutorial</a> by Stewiejp.</div>
-		
-		<p>
-		The first screen you are presented with after you press that "New room" button should look something like this:
+			<p>
+			<img src="<%=static_host%>/icons/tutorial1.jpg" alt="tutorial image 1">
+			<p>
 
-		<p>
-		<img src="<%=static_host%>/icons/tutorial1.jpg" alt="tutorial image 1">
-		<p>
+			One of the first things you'll want to do is:
 
-		One of the first things you'll want to do is:
+			<ol>
+				<li>Select a map.</li>
+				<li>Copy the link by pressing this button or just copy/pasting the address url bar.</li>
+			</ol>
 
-		<ol>
-			<li>Select a map.</li>
-			<li>Copy the link by pressing this button or just copy/pasting the address url bar.</li>
-		</ol>
+			<p>
+			You can then share the link with your friends or clan mates so they can join your tactic, either so you can explain it or so they can work on it with you.
+			
+			<p>
+			<img src="<%=static_host%>/icons/tutorial2.jpg" alt="tutorial image 2">
+			<p>
+			
+			After selecting a map and people have joined.
+			
+			<ol start=3>
+				<li>List of users that have joined, click on their name to toggle their privileges (yellow means can edit, green means can edit and give permissions to other users).</li>
+				<li>Alternatively you can give everyone edit priviliges by unlocking the room.</li>
+				<li>You can now start creating or explaining your tactics with the tools here, read the tooltips.</li>
+				<li>The options of the tool you've selected will appear here.</li>
+				<li>You can chat with the people in the room here.</li>
+				<li>You can log in here with your WG account, it is entirely optional but it is required if you want to store your tactic.</li>
+			</ol>
 
-		<p>
-		You can then share the link with your friends or clan mates so they can join your tactic, either so you can explain it or so they can work on it with you.
-		
-		<p>
-		<img src="<%=static_host%>/icons/tutorial2.jpg" alt="tutorial image 2">
-		<p>
-		
-		After selecting a map and people have joined.
-		
-		<ol start=3>
-			<li>List of users that have joined, click on their name to toggle their privileges (yellow means can edit, green means can edit and give permissions to other users).</li>
-			<li>Alternatively you can give everyone edit priviliges by unlocking the room.</li>
-			<li>You can now start creating or explaining your tactics with the tools here, read the tooltips.</li>
-			<li>The options of the tool you've selected will appear here.</li>
-			<li>You can chat with the people in the room here.</li>
-			<li>You can log in here with your WG account, it is entirely optional but it is required if you want to store your tactic.</li>
-		</ol>
-
-		<p>
-		<img src="<%=static_host%>/icons/tutorial3.jpg" alt="tutorial image 3">
-		<p>
-		
-		After you log in a few more options appear.
-		<ol start=9>
-			<li>This is now green, indicating you're logged in succesfully.</li>
-			<li>Clicking on this button will give you the option to name and store your tactic. You will be able to relaunch your tactic from the front page.</li>
-			<li>After you've named and stored your tactic you can store it easily under the same name with this save button.</li>
-			<li>Alternatively you can also download your tactic as an image with this button.</li>
-		</ol>
-
+			<p>
+			<img src="<%=static_host%>/icons/tutorial3.jpg" alt="tutorial image 3">
+			<p>
+			
+			After you log in a few more options appear.
+			<ol start=9>
+				<li>This is now green, indicating you're logged in succesfully.</li>
+				<li>Clicking on this button will give you the option to name and store your tactic. You will be able to relaunch your tactic from the front page.</li>
+				<li>After you've named and stored your tactic you can store it easily under the same name with this save button.</li>
+				<li>Alternatively you can also download your tactic as an image with this button.</li>
+			</ol>
+		</div>
 	</div>
-
-	</div>
-	</div>
+	<% include footer.ejs %>
 </body>

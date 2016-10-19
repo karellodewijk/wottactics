@@ -7,61 +7,61 @@
 </head>
 <body>
 	<% include navbar.ejs %>
+	<script>
+		document.getElementById('getting_started').className += " active";
+	</script>
 	<div class="container" style='width:100%;'>
-    <div class="jumbotron side_bar" style='width:100%;'>
-		<h2><%=l('Getting started')%></h2>
-		<div style="padding:20px">
-		<p>
-		La primera pantalla que se te presenta después de que presionas el  botón “Nueva sala” deberías ver algo como esto:
-		<p>
-		<img src="<%=static_host%>/icons/tutorial1.jpg">
-		
-		<p>
-		Una de las primeras cosas que querrás hacer es:
+		<div class="jumbotron content content_margin">
+			<p>
+			La primera pantalla que se te presenta después de que presionas el  botón “Nueva sala” deberías ver algo como esto:
+			<p>
+			<img src="<%=static_host%>/icons/tutorial1.jpg">
+			
+			<p>
+			Una de las primeras cosas que querrás hacer es:
 
-		<h5>
-		<ol>
-			<li>Seleccionar un Mapa</li>
-			<li>Copiar el enlace prensando este botón o solo copiando/pegando la dirección URL.</li>
-		</ol>
-		</h5>
+			<h5>
+			<ol>
+				<li>Seleccionar un Mapa</li>
+				<li>Copiar el enlace prensando este botón o solo copiando/pegando la dirección URL.</li>
+			</ol>
+			</h5>
 
-		<p>
-		Después puedes compartir el enlace con tus amigos o compañeros de clan para que puedan unirse a tu táctica, ya sea para que se las expliques o para que puedan ayudar con ella.
-		
-		<p>
-		<img src="<%=static_host%>/icons/tutorial2.jpg">
-		<p>
-		
-		Después de seleccionar un mapa y que se hayan unido personas.
-		<h5>
-		<ol start=3>
-			<li>Lista de usuarios que se han unido, haz clic en su nombre para cambiar sus privilegios. (amarillo significa que pueden editar, verde significa que pueden editar y dar permisos a otros usuarios)</li>
-			<li>Alternativamente puedes dar a todos privilegios de editar desbloqueando la sala.</li>
-			<li>Ahora puedes empezar creando o explicando tus tácticas con las herramientas aquí, lee los tips de herramientas.</li>
-			<li>Las opciones de las herramientas que has seleccionado aparecerán aquí.</li>
-			<li>Puedes mandar mensajes con las personas dentro de la sala aquí.</li>
-			<li>Aquí puedes iniciar sesión con tu cuenta de Wargaming, es enteramente opcional pero es requerido si quieres guardar tu táctica.</li>
-		</ol>
-		</h5>
-		<p><p>
-		
-		<img src="<%=static_host%>/icons/tutorial3.jpg">
-		
-		<p>
-		
-		Después de que inicies sesión unas cuantas opciones más aparecerán.
-		<h5>
-		<ol start=9>
-			<li>Este verde indica que has iniciado sesión exitosamente.</li>
-			<li>Hacer clic en este botón te dará la opción de nombrar y guardar tu táctica. Podrás lanzar de nuevo tu táctica desde la página frontal.</li>
-			<li>Después de que hayas nombrado y guardado tu táctica puedes guardarla fácilmente bajo el mismo nombre con este botón de guardado.</li>
-			<li>Alternativamente también puedes descargar tu táctica como una imagen con este botón.</li>
-		</ol>
-		</h5>
-		<p>
+			<p>
+			Después puedes compartir el enlace con tus amigos o compañeros de clan para que puedan unirse a tu táctica, ya sea para que se las expliques o para que puedan ayudar con ella.
+			
+			<p>
+			<img src="<%=static_host%>/icons/tutorial2.jpg">
+			<p>
+			
+			Después de seleccionar un mapa y que se hayan unido personas.
+			<h5>
+			<ol start=3>
+				<li>Lista de usuarios que se han unido, haz clic en su nombre para cambiar sus privilegios. (amarillo significa que pueden editar, verde significa que pueden editar y dar permisos a otros usuarios)</li>
+				<li>Alternativamente puedes dar a todos privilegios de editar desbloqueando la sala.</li>
+				<li>Ahora puedes empezar creando o explicando tus tácticas con las herramientas aquí, lee los tips de herramientas.</li>
+				<li>Las opciones de las herramientas que has seleccionado aparecerán aquí.</li>
+				<li>Puedes mandar mensajes con las personas dentro de la sala aquí.</li>
+				<li>Aquí puedes iniciar sesión con tu cuenta de Wargaming, es enteramente opcional pero es requerido si quieres guardar tu táctica.</li>
+			</ol>
+			</h5>
+			<p><p>
+			
+			<img src="<%=static_host%>/icons/tutorial3.jpg">
+			
+			<p>
+			
+			Después de que inicies sesión unas cuantas opciones más aparecerán.
+			<h5>
+			<ol start=9>
+				<li>Este verde indica que has iniciado sesión exitosamente.</li>
+				<li>Hacer clic en este botón te dará la opción de nombrar y guardar tu táctica. Podrás lanzar de nuevo tu táctica desde la página frontal.</li>
+				<li>Después de que hayas nombrado y guardado tu táctica puedes guardarla fácilmente bajo el mismo nombre con este botón de guardado.</li>
+				<li>Alternativamente también puedes descargar tu táctica como una imagen con este botón.</li>
+			</ol>
+			</h5>
+			<p>
+		</div>
 	</div>
-
-	</div>
-	</div>
+	<% include footer.ejs %>
 </body>

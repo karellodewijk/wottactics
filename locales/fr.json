@@ -543,5 +543,12 @@
 	"Shards": "Shards",
 	"Links": "Links",
 	"Donate": "Donate",
-	"Login": "Login"
+	"Login": "Login",
+	"Zoom in": "Zoom in",
+	"Zoom out": "Zoom out",
+	"Use wotbase maps": "Use wotbase maps",
+	"Cliff": "Cliff",
+	"Use HD minimaps": "Use HD minimaps",
+	"Use Wotbase maps": "Use Wotbase maps",
+	"Use New minimaps": "Use New minimaps"
 }

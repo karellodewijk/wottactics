@@ -15,64 +15,64 @@
 </head>
 <body>
 	<% include navbar.ejs %>
+	<script>
+		document.getElementById('getting_started').className += " active";
+	</script>
 	<div class="container" style='width:100%;'>
-    <div class="jumbotron side_bar" style='width:100%;'>	
-		<h2><%=l('Getting started')%></h2>
-		<div style="padding:20px">
-		<p>
-		Po naciśnięciu przycisku nowy pokój powinieneś zobaczyć coś takiego:
-		<p>
-		<img src="<%=static_host%>/icons/tutorial1.jpg">
-		
-		<p>
-		Jedną z pierwszych rzeczy które będziesz chciał zrobić to:
+		<div class="jumbotron content content_margin">
+			<p>
+			Po naciśnięciu przycisku nowy pokój powinieneś zobaczyć coś takiego:
+			<p>
+			<img src="<%=static_host%>/icons/tutorial1.jpg">
+			
+			<p>
+			Jedną z pierwszych rzeczy które będziesz chciał zrobić to:
 
-		<h5>
-		<ol>
-			<li>Wybrać mapę.</li>
-			<li>Skopiować link poprzez kliknięcie tego przycisku lub po prostu skopiowanie adresu z paska przeglądarki.</li>
-		</ol>
-		</h5>
+			<h5>
+			<ol>
+				<li>Wybrać mapę.</li>
+				<li>Skopiować link poprzez kliknięcie tego przycisku lub po prostu skopiowanie adresu z paska przeglądarki.</li>
+			</ol>
+			</h5>
 
-		<p>
-		Możesz w ten sposób podzielić się linkiem ze znajomymi lub klanowiczami by dołączyli do taktyki zeby im ją wytłumaczyć lub abyście razem ją opracowali.
-		
-		<p>
-		<img src="<%=static_host%>/icons/tutorial2.jpg">
-		<p>
-		
-		Po wyborze mapy i dołączeniu znajomych:
-		<h5>
-		<ol start=3>			
-            <li>Lista połączonych użytkowników, kliknij na ich nick aby nadać im przywileje (żółty oznacza że mogą rysować, zielony że mogą także przydzielać prawa innym).</li>
-            <li>Alternatywnie możesz dać wszystkim prawo edycji poprzez odblokowanie całego pokoju.</li>
-			<li>Możesz zacząć tworzenie lub tłumaczenie swoich taktyk za pomocą tych narzędzi, czytaj podpowiedzi.</li>
-			<li>Opcje wybranego narzędzia pojawią się tutaj.</li>
-			<li>Możesz rozmawiać ze znajomymi w pokoju za pomocą tego czatu.</li>
-			<li>Możesz się zalogować tutaj swoim kontem WG, jest to całkowicie opcjonalne jednak jest wymagane jeśli chcesz zapisać swoja taktykę <a href="#lifetimeInfo">[*]</a>.</li>            
-		</ol>
-		</h5>
-		<p><p>
-		
-		<img src="<%=static_host%>/icons/tutorial3.jpg">
-		
-		<p>
-				
-        Po zalogowaniu się zobaczysz trochę więcej opcji:
-		<h5>
-		<ol start=9>
-            <li>To jest teraz zielone, wskazuje na to że zalogowałeś się pomyślnie.</li>
-            <li>Klikając w ten przycisk będziesz w stanie zapisać swoją taktykę pod dowolną nazwą, dzięki czemu będzie dostępna ze strony głównej.</li>			
-            <li>Po tym jak nazwiesz i zapiszesz swoją taktykę możesz ją nadpisywać pod tą samą nazwą za pomocą tego przycisku.</li>
-			<li>Alternatywnie możesz także ściągnąć swoją taktykę jako obrazek za pomocą tego przycisku.</li>			
-		</ol>
-		</h5>
-		<p>
-        <ul>
-            <li id="lifetimeInfo">Bez tego taktyka będzie dostępna przez 30 dni po ostatniej wizycie na niej.</li>
-        </ul>
+			<p>
+			Możesz w ten sposób podzielić się linkiem ze znajomymi lub klanowiczami by dołączyli do taktyki zeby im ją wytłumaczyć lub abyście razem ją opracowali.
+			
+			<p>
+			<img src="<%=static_host%>/icons/tutorial2.jpg">
+			<p>
+			
+			Po wyborze mapy i dołączeniu znajomych:
+			<h5>
+			<ol start=3>			
+				<li>Lista połączonych użytkowników, kliknij na ich nick aby nadać im przywileje (żółty oznacza że mogą rysować, zielony że mogą także przydzielać prawa innym).</li>
+				<li>Alternatywnie możesz dać wszystkim prawo edycji poprzez odblokowanie całego pokoju.</li>
+				<li>Możesz zacząć tworzenie lub tłumaczenie swoich taktyk za pomocą tych narzędzi, czytaj podpowiedzi.</li>
+				<li>Opcje wybranego narzędzia pojawią się tutaj.</li>
+				<li>Możesz rozmawiać ze znajomymi w pokoju za pomocą tego czatu.</li>
+				<li>Możesz się zalogować tutaj swoim kontem WG, jest to całkowicie opcjonalne jednak jest wymagane jeśli chcesz zapisać swoja taktykę <a href="#lifetimeInfo">[*]</a>.</li>            
+			</ol>
+			</h5>
+			<p><p>
+			
+			<img src="<%=static_host%>/icons/tutorial3.jpg">
+			
+			<p>
+					
+			Po zalogowaniu się zobaczysz trochę więcej opcji:
+			<h5>
+			<ol start=9>
+				<li>To jest teraz zielone, wskazuje na to że zalogowałeś się pomyślnie.</li>
+				<li>Klikając w ten przycisk będziesz w stanie zapisać swoją taktykę pod dowolną nazwą, dzięki czemu będzie dostępna ze strony głównej.</li>			
+				<li>Po tym jak nazwiesz i zapiszesz swoją taktykę możesz ją nadpisywać pod tą samą nazwą za pomocą tego przycisku.</li>
+				<li>Alternatywnie możesz także ściągnąć swoją taktykę jako obrazek za pomocą tego przycisku.</li>			
+			</ol>
+			</h5>
+			<p>
+			<ul>
+				<li id="lifetimeInfo">Bez tego taktyka będzie dostępna przez 30 dni po ostatniej wizycie na niej.</li>
+			</ul>
+		</div>
 	</div>
-
-	</div>
-	</div>
+	<% include footer.ejs %>
 </body>

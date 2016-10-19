@@ -9,82 +9,45 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="<%=home%>" target="_top">
-				<% if (game == 'wot') { %>
-					WOT Tactics
-				<% } else if (game == 'wows') { %>
-					WOWS Tactics
-				<% } else if (game == 'blitz') { %>
-					Blitz Tactics
-				<% } else if (game == 'aw') { %>
-					AW Tactics
-				<% } else if (game == 'lol') { %>
-					Lol Tactics
-				<% } else if (game == 'hots') { %>
-					Hots Tactics
-				<% } else if (game == 'sc2') { %>
-					SC2 Tactics
-				<% } else if (game == 'csgo') { %>
-					CS:GO Tactics
-				<% } else if (game == 'warface') { %>
-					Warface Tactics
-				<% } else if (game == 'squad') { %>
-					Squad Tactics
-				<% } %>
-			</a>
+			<ul class="nav navbar-nav nav-pills">
+				<li id="home">
+				<a class="navbar-brand" href="<%=home%>" target="_top">
+					<% if (game == 'wot') { %>
+						WOT Tactics
+					<% } else if (game == 'wows') { %>
+						WOWS Tactics
+					<% } else if (game == 'blitz') { %>
+						Blitz Tactics
+					<% } else if (game == 'aw') { %>
+						AW Tactics
+					<% } else if (game == 'lol') { %>
+						Lol Tactics
+					<% } else if (game == 'hots') { %>
+						Hots Tactics
+					<% } else if (game == 'sc2') { %>
+						SC2 Tactics
+					<% } else if (game == 'csgo') { %>
+						CS:GO Tactics
+					<% } else if (game == 'warface') { %>
+						Warface Tactics
+					<% } else if (game == 'squad') { %>
+						Squad Tactics
+					<% } %>
+				</a>
+				<li>		
+			</ul>
 		</div>
-		<div id="navbar" class="navbar-collapse collapse">
-		<ul class="nav navbar-nav">
-			<li><p class="navbar-text hidden-lg hidden-sm hidden-md"><%=l('Links')%>:<p>
-			<% if (user.identity) { %>
-				<li><a href="stored_tactics.html" target="_top"><%=l('Stored tactics')%></a></li>
-			<% } %>
-			<li><a href="getting_started.html" target="_top"><%=l('Getting started')%></a></li>
-			<li><a href="about.html" target="_top"><%=l('About')%></a></li>
-			
-			<li class="divider-vertical hidden-xs"></li>
-			
-			<li><p class="navbar-text"><%=l('Share')%>:<p>
-			
-			<li><a target="_top" data-toggle="tooltip" title="<%=l('Share on faceook')%>" id="facebook_link" href="https://www.facebook.com/dialog/share?app_id=580177672120479&display=popup&href="><i class="fa-lg icon-facebook"></i></a>
-			<li><a target="_top" data-toggle="tooltip" title="<%=l('Share on twitter')%>" id="twitter_link" href="https://twitter.com/intent/tweet?button_hashtag=gametactic&text= " data-url="<%=url.split('/')[0]%>" data-dnt="true"><i class="fa-lg icon-twitter"></i></a>
-			<li><a target="_top" data-toggle="tooltip" title="<%=l('Share on google+')%>" id="google_link" href="https://plus.google.com/share?url=" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><i class="fa-lg icon-google-plus"></i></a>
 
-			<li class="divider-vertical hidden-xs"></li>
-			
-			<li><p class="navbar-text"><%=l('Donate')%>:<p>
-			
-			<li data-toggle="tooltip" title="<%=l('Donate using paypal')%>">
-			<a target="_top" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3DJZFARS4ZG2U"><i class="fa-lg icon-paypal"></i></a>
-			</li>
-			<li data-toggle="tooltip" title="<%=l('Become a patreon')%>">
-			<a target="_top" href="https://www.patreon.com/kalith"><i class="fa-lg icon-patreon"></i>
-			</a></li>
-			
-			<script type="text/javascript">
-				document.addEventListener("DOMContentLoaded", function(event) {
-					var link = "http://<%=url.split('/')[0]%>";					
-					var promo_link = "http://gametactic.org/<%=game%>";
-					if (link.indexOf("betweenthebits.com") != -1
-					 || link.indexOf("wottactic") != -1) {
-						promo_link = link;
-					}
-					var fb = document.getElementById('facebook_link');
-					fb.setAttribute("href", fb.getAttribute('href') + encodeURIComponent(promo_link) + "&redirect_uri=" + encodeURIComponent(promo_link));			
-					if (link.indexOf("awtactic") != -1
-					  || link.indexOf("wowstactic") != -1) {
-						promo_link = link;
-					}
-					var twitter = document.getElementById('twitter_link')
-					twitter.setAttribute("href", twitter.getAttribute('href') + encodeURIComponent(promo_link));
-					var google = document.getElementById('google_link')
-					google.setAttribute("href", google.getAttribute('href') + encodeURIComponent(promo_link));							
-				});
-			</script>
+		<div id="navbar" class="navbar-collapse collapse">
+		<ul class="nav navbar-nav nav-pills">
+			<% if (user.identity) { %>
+				<li id="stored_tactics"><a href="stored_tactics.html" target="_top"><%=l('Stored tactics')%></a></li>
+			<% } %>
+			<li id="getting_started"><a href="getting_started.html" target="_top"><%=l('Getting started')%></a></li>
+			<li id="about"><a href="about.html" target="_top"><%=l('About')%></a></li>
 		</ul>
 
 		<ul class="nav navbar-nav navbar-right">
-			<li><p class="navbar-text hidden-lg hidden-sm hidden-md"><%=l('Login')%>:<p>
 			<li class="dropdown">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 				  <%=l('Other Games')%><span class="caret"></span>
@@ -108,3 +71,4 @@
 		</div>
 	</div>
 </nav>
+

@@ -6,127 +6,126 @@
 </head>
 <body>
 	<% include navbar.ejs %>
+	<script>
+		document.getElementById('about').className += " active";
+	</script>
 	<div class="container" style='width:100%;'>	
-    <div class="jumbotron side_bar" style='width:100%;'>
-		<h2><%=l('About')%></h2>
-		<div style="padding:20px">
-		
-		<p>
-		Hello and thank you for your interest in this website.
+		<div class="jumbotron content content_margin">
+			<p>
+			Hello and thank you for your interest in this website.
 
-		<h3>Suggestions</h3>
-		<p>
-		I'm always open to suggestions, critcism, banter or praise. Under contact info you'll find plenty of ways to get in touch. 
-		
-		<h3>Helping out</h3>
-		<p>
-		If you want to help out in some way, feel free to drop me a line. In particular I'm looking for some high quality maps for wows. If you feel this tool would be a great asset for some other game, I'll be happy to support it if you gather the nescessary maps and icons. I also welcome new or improved translations.
-		
-		<h3>The code</h3>
-		<p>
-		I just want to reach as many people as possible, so I've decided to make it open source under the MIT license, basically allowing you to use it in any way you see fit including but not limited to your own commercial or non-commercial projects.
-		
-		The source is available at
-		<a href='https://github.com/karellodewijk/wottactics'>https://github.com/karellodewijk/wottactics</a>
-		
-		<h3>Contact info:</h3>
-		
-		<p>
-		
-		<div class="row">
-			<div class="col-md-2">Name</div>
-			<div class="col-md-2">Kalith</div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">e-mail</div>
-			<div class="col-md-2"><a href="mailto:pkalith@gmail.com">pkalith@gmail.com</a></div>
-		</div>
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU profile</div>
-			<div class="col-md-10"><a href='http://worldoftanks.eu/community/accounts/505943778-Kalith/'>http://worldoftanks.eu/community/accounts/505943778-Kalith/</a></div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">NA profile</div>
-			<div class="col-md-10"><a href='http://worldoftanks.com/community/accounts/1003817145-Kalid/'>http://worldoftanks.com/community/accounts/1003817145-Kalid/</a></div>
-		</div>
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU forum topic</div>
-			<div class="col-md-10"><a href='http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/</a></div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">RU forum topic</div>
-			<div class="col-md-10"><a href='http://forum.worldoftanks.ru/index.php?/topic/1744734-ruwottacticeu/'>http://forum.worldoftanks.ru/index.php?/topic/1744734-ruwottacticeu/</a></div>
-		</div>		
-		<div class="row">
-			<div class="col-md-2">NA forum topic</div>
-			<div class="col-md-10"><a href='http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/</a></div>
-		</div>		
-		<div class="row">
-			<div class="col-md-2">SEA forum topic</div>
-			<div class="col-md-10"><a href='http://forum.worldoftanks.asia/index.php?/topic/63198-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.asia/index.php?/topic/63198-wot-tactic-planner-wottactictk/</a></div>
-		</div>						
-		
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU Wot blitz post</div>
-			<div class="col-md-10"><a href='http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/'>http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/</a></div>
-		</div>	
-		<div class="row">
-			<div class="col-md-2">NA Wot blitz post</div>
-			<div class="col-md-10"><a href='http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/'>http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/</a></div>
-		</div>	
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">AW post</div>
-			<div class="col-md-10"><a href='http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29'>http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29</a></div>
-		</div>	
+			<h3>Suggestions</h3>
+			<p>
+			I'm always open to suggestions, critcism, banter or praise. Under contact info you'll find plenty of ways to get in touch. 
 			
-		<p><p>
-		<h3>Special thanks to:</h3>
-		<p>
-		<ul>
-		<li>juho-p for: <a href="https://github.com/juho-p/wot-debugserver">wot-debugserver</a>. Not only is is a great way to poke around in the wot client as it is running. The wottactic mod is pretty much built on it. If you want to get into modding, this is where you start.
-		<li>TomNedry for the squad maps.
-		<li><a href="http://www.simpleradar.com/">http://www.simpleradar.com/</a> for the high contrast cs:go maps.
-		<li>David Patterson	and Aragorn2lyon for some excellent suggestions.
-		<li>SebastCBien[1-AUS], N3w2012[1-AUS] for the French translation</li>
-		<li>A big thanks to locastan and ShuraBB for their <a href="http://worldof-tanks.com/locastans-enh-hd-minimap-gen-2/">HD mini maps</a></li>
-		<li><a href="http://wotbase.net">wotbase</a> for the alternative maps</li>
-		<li>Андрей, for the Russian translation.
-		<li>GPS4ever, maroar and H311fi5h, for all the testing and suggestions.</li> 
-		<li>Jingles, for spreading the <a href="https://www.youtube.com/watch?v=7aBl7YTJxqk">word</a>.</li>
-		<li><a href='http://maptactic.com'>maptactic</a> and <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> for inspiration</li> 
-		<li><a href='http://aw-guide.com'>aw-guide</a> for the Armored Warfare maps.</li>
-		<li>Reluctanttheist for the blitz maps.</li>
-		<li>Aleksandar(Ultra_Seljacina) for the Serbian translation.
-		<li>Daniel Janssen(DeeJayBass) for the German translation.
-		<li>Adriel Vargas(adrieeel) for the Spanish translation.
-		<li>toxohut for the Polish translation and excellent feedback.
-		<li>Olaf Darkpassenger for the Czech translation.
-		<li>Etna99_ for the Finnish translation.
-		<li>Jackhammer, Tomsa for the contour icons from his <a href="http://forum.worldoftanks.eu/index.php?/topic/457860-0914-tomsas-contour-icons-mod-jackhammers-style/">mod</a></li>
-		<li><a href='https://github.com/'>GitHub</a> for hosting the code and part of the website.</li>
-		<li>Wargaming, Obsidian, Riot games, Blizzard, Valve, Crytek and Offworld Industries for the their fantastic games and assets.
-		</ul>
+			<h3>Helping out</h3>
+			<p>
+			If you want to help out in some way, feel free to drop me a line. In particular I'm looking for some high quality maps for wows. If you feel this tool would be a great asset for some other game, I'll be happy to support it if you gather the nescessary maps and icons. I also welcome new or improved translations.
+			
+			<h3>The code</h3>
+			<p>
+			I just want to reach as many people as possible, so I've decided to make it open source under the MIT license, basically allowing you to use it in any way you see fit including but not limited to your own commercial or non-commercial projects.
+			
+			The source is available at
+			<a href='https://github.com/karellodewijk/wottactics'>https://github.com/karellodewijk/wottactics</a>
+			
+			<h3>Contact info:</h3>
+			
+			<p>
+			
+			<div class="row">
+				<div class="col-md-2">Name</div>
+				<div class="col-md-2">Kalith</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">e-mail</div>
+				<div class="col-md-2"><a href="mailto:pkalith@gmail.com">pkalith@gmail.com</a></div>
+			</div>
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU profile</div>
+				<div class="col-md-10"><a href='http://worldoftanks.eu/community/accounts/505943778-Kalith/'>http://worldoftanks.eu/community/accounts/505943778-Kalith/</a></div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">NA profile</div>
+				<div class="col-md-10"><a href='http://worldoftanks.com/community/accounts/1003817145-Kalid/'>http://worldoftanks.com/community/accounts/1003817145-Kalid/</a></div>
+			</div>
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU forum topic</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/</a></div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">RU forum topic</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.ru/index.php?/topic/1744734-ruwottacticeu/'>http://forum.worldoftanks.ru/index.php?/topic/1744734-ruwottacticeu/</a></div>
+			</div>		
+			<div class="row">
+				<div class="col-md-2">NA forum topic</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/</a></div>
+			</div>		
+			<div class="row">
+				<div class="col-md-2">SEA forum topic</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.asia/index.php?/topic/63198-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.asia/index.php?/topic/63198-wot-tactic-planner-wottactictk/</a></div>
+			</div>						
+			
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU Wot blitz post</div>
+				<div class="col-md-10"><a href='http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/'>http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/</a></div>
+			</div>	
+			<div class="row">
+				<div class="col-md-2">NA Wot blitz post</div>
+				<div class="col-md-10"><a href='http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/'>http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/</a></div>
+			</div>	
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">AW post</div>
+				<div class="col-md-10"><a href='http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29'>http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29</a></div>
+			</div>	
+				
+			<p><p>
+			<h3>Special thanks to:</h3>
+			<p>
+			<ul>
+			<li>juho-p for: <a href="https://github.com/juho-p/wot-debugserver">wot-debugserver</a>. Not only is is a great way to poke around in the wot client as it is running. The wottactic mod is pretty much built on it. If you want to get into modding, this is where you start.
+			<li>TomNedry for the squad maps.
+			<li><a href="http://www.simpleradar.com/">http://www.simpleradar.com/</a> for the high contrast cs:go maps.
+			<li>David Patterson	and Aragorn2lyon for some excellent suggestions.
+			<li>SebastCBien[1-AUS], N3w2012[1-AUS] for the French translation</li>
+			<li>A big thanks to locastan and ShuraBB for their <a href="http://worldof-tanks.com/locastans-enh-hd-minimap-gen-2/">HD mini maps</a></li>
+			<li><a href="http://wotbase.net">wotbase</a> for the alternative maps</li>
+			<li>Андрей, for the Russian translation.
+			<li>GPS4ever, maroar and H311fi5h, for all the testing and suggestions.</li> 
+			<li>Jingles, for spreading the <a href="https://www.youtube.com/watch?v=7aBl7YTJxqk">word</a>.</li>
+			<li><a href='http://maptactic.com'>maptactic</a> and <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> for inspiration</li> 
+			<li><a href='http://aw-guide.com'>aw-guide</a> for the Armored Warfare maps.</li>
+			<li>Reluctanttheist for the blitz maps.</li>
+			<li>Aleksandar(Ultra_Seljacina) for the Serbian translation.
+			<li>Daniel Janssen(DeeJayBass) for the German translation.
+			<li>Adriel Vargas(adrieeel) for the Spanish translation.
+			<li>toxohut for the Polish translation and excellent feedback.
+			<li>Olaf Darkpassenger for the Czech translation.
+			<li>Etna99_ for the Finnish translation.
+			<li>Jackhammer, Tomsa for the contour icons from his <a href="http://forum.worldoftanks.eu/index.php?/topic/457860-0914-tomsas-contour-icons-mod-jackhammers-style/">mod</a></li>
+			<li><a href='https://github.com/'>GitHub</a> for hosting the code and part of the website.</li>
+			<li>Wargaming, Obsidian, Riot games, Blizzard, Valve, Crytek and Offworld Industries for the their fantastic games and assets.
+			</ul>
 
-		<h3>Donators, in no particular order</h3>
-		<p>
-		<ul>
-		<li>Zombie_Farmer
-		<li>H311fi5h
-		<li>Boris Fekar (FPC clan)
-		<li>Toms teteris
-		<li>Sounds Alive
-		<li>Jouni Muttilainen
-		</ul>
-		
-		<h3>Legal</h3>
-		<p>
-		<ul><li><a href="privacypolicy.html">Privacy policy</a></li></ul>
-		
+			<h3>Donators, in no particular order</h3>
+			<p>
+			<ul>
+			<li>Zombie_Farmer
+			<li>H311fi5h
+			<li>Boris Fekar (FPC clan)
+			<li>Toms teteris
+			<li>Sounds Alive
+			<li>Jouni Muttilainen
+			</ul>
+			
+			<h3>Legal</h3>
+			<p>
+			<ul><li><a href="privacypolicy.html">Privacy policy</a></li></ul>			
 		</div>
 	</div>
-	</div>
+	<% include footer.ejs %>
 </body>
