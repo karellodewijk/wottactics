@@ -7,61 +7,61 @@
 </head>
 <body>
 	<% include navbar.ejs %>
+	<script>
+		document.getElementById('getting_started').className += " active";
+	</script>
 	<div class="container" style='width:100%;'>
-    <div class="jumbotron side_bar" style='width:100%;'>	
-		<h2><%=l('Getting started')%></h2>
-		<div style="padding:20px">
-		<p>
-		Poté, co kliknete na "Vytvořit novou místnost", by se Vám měla zobrazit následující obrazovka:
-		<p>
-		<img src="<%=static_host%>/icons/tutorial1.jpg">
-		
-		<p>
-		Co budete chtít udělat nejdříve:
+		<div class="jumbotron content content_margin">	
+			<p>
+			Poté, co kliknete na "Vytvořit novou místnost", by se Vám měla zobrazit následující obrazovka:
+			<p>
+			<img src="<%=static_host%>/icons/tutorial1.jpg">
+			
+			<p>
+			Co budete chtít udělat nejdříve:
 
-		<h5>
-		<ol>
-			<li>Vybrat mapu.</li>
-			<li>Zkopírovat odkaz na tuto stránku kliknutím na toto tlačítko či klasicky z adresního řádku.</li>
-		</ol>
-		</h5>
+			<h5>
+			<ol>
+				<li>Vybrat mapu.</li>
+				<li>Zkopírovat odkaz na tuto stránku kliknutím na toto tlačítko či klasicky z adresního řádku.</li>
+			</ol>
+			</h5>
 
-		<p>
-		Následně můžete tento odkaz sdílet se svými přáteli a klanovými spoluhráči, aby se dostali na mapu a mohli si prohlédnout taktiku či se i na ní s Vámi podílet.
-		
-		<p>
-		<img src="<%=static_host%>/icons/tutorial2.jpg">
-		<p>
-		
-		Další možnosti po tom, co jste vybrali mapu a přidali se k Vám hráči:
-		<h5>
-		<ol start=3>
-			<li>Seznam příchozích uživatelů. Klikněte na jejich jména pro přidání práv. Zelený uživatel může editovat a dávat práva jiným, žlutý může jen editovat.</li>
-			<li>Můžete také dát práva k editování všem - po odemknutí místnosti.</li>
-			<li>Nyní můžete začít vytvářet a prezentovat své taktiky pomocí Nástrojů - čtěte popisky.</li>
-			<li>Další možnosti Nástroje, který jste vybrali, se zobrazí zde.</li>
-			<li>Zde si můžete psát s ostatními v místnosti.</li>
-			<li>Přes toto tlačítko se můžete přihlásit do svého WG účtu. Je to nepovinné, ale vyžadováno, pokud si chcete své taktiky uložit.</li>
-		</ol>
-		</h5>
-		<p><p>
-		
-		<img src="<%=static_host%>/icons/tutorial3.jpg">
-		
-		<p>
-		
-		Poté, co se přihlásíte, se objeví další možnosti:
-		<h5>
-		<ol start=9>
-			<li>Tlačítko zezelenalo - jste úspěšně přihlášení.</li>
-			<li>Toto tlačítko Vám umožní si pojmenovat a uložit svou taktiku. Z hlavní stránky pak můžete své uložené taktiky znova spustit.</li>
-			<li>Po pojmenování a uložení taktiky ji nyní můžete snadno ukládat pomocí tlačítka Uložit.</li>
-			<li>Případně si také můžete stáhnout svou taktiku jako obrázek - pomocí tohoto tlačítka.</li>
-		</ol>
-		</h5>
-		<p>
+			<p>
+			Následně můžete tento odkaz sdílet se svými přáteli a klanovými spoluhráči, aby se dostali na mapu a mohli si prohlédnout taktiku či se i na ní s Vámi podílet.
+			
+			<p>
+			<img src="<%=static_host%>/icons/tutorial2.jpg">
+			<p>
+			
+			Další možnosti po tom, co jste vybrali mapu a přidali se k Vám hráči:
+			<h5>
+			<ol start=3>
+				<li>Seznam příchozích uživatelů. Klikněte na jejich jména pro přidání práv. Zelený uživatel může editovat a dávat práva jiným, žlutý může jen editovat.</li>
+				<li>Můžete také dát práva k editování všem - po odemknutí místnosti.</li>
+				<li>Nyní můžete začít vytvářet a prezentovat své taktiky pomocí Nástrojů - čtěte popisky.</li>
+				<li>Další možnosti Nástroje, který jste vybrali, se zobrazí zde.</li>
+				<li>Zde si můžete psát s ostatními v místnosti.</li>
+				<li>Přes toto tlačítko se můžete přihlásit do svého WG účtu. Je to nepovinné, ale vyžadováno, pokud si chcete své taktiky uložit.</li>
+			</ol>
+			</h5>
+			<p><p>
+			
+			<img src="<%=static_host%>/icons/tutorial3.jpg">
+			
+			<p>
+			
+			Poté, co se přihlásíte, se objeví další možnosti:
+			<h5>
+			<ol start=9>
+				<li>Tlačítko zezelenalo - jste úspěšně přihlášení.</li>
+				<li>Toto tlačítko Vám umožní si pojmenovat a uložit svou taktiku. Z hlavní stránky pak můžete své uložené taktiky znova spustit.</li>
+				<li>Po pojmenování a uložení taktiky ji nyní můžete snadno ukládat pomocí tlačítka Uložit.</li>
+				<li>Případně si také můžete stáhnout svou taktiku jako obrázek - pomocí tohoto tlačítka.</li>
+			</ol>
+			</h5>
+			<p>
+		</div>
 	</div>
-
-	</div>
-	</div>
+	<% include footer.ejs %>
 </body>

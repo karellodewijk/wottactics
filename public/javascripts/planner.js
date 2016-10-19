@@ -664,7 +664,7 @@ window.onresize = function() {
 		if ($('#left_side_bar').length) {
 			$('#left_side_bar').detach().appendTo($("body"));
 			$('#map_select_box').prependTo($(".left_column"));
-			$('#home_button').prependTo($("#right_navbar"));
+			$('#home_button').prependTo($("#right-buttons"));
 			iface_width = RIGHT_BAR_MIN_WIDTH;
 		}
 		
@@ -1623,7 +1623,11 @@ var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d,quality) {
 	x2 *= quality;
 	y2 *= quality;
 	
-	var lineangle=Math.atan2(y2-y1,x2-x1);
+	d *= 1.2;
+	
+	var line = [x2-x1, y2-y1];
+
+	var lineangle=Math.atan2(line[1],line[0]);
 
 	var h=Math.abs(d*quality/Math.cos(angle));
 	var angle1=lineangle+Math.PI+angle;
@@ -1635,14 +1639,16 @@ var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d,quality) {
 	
 	ctx.beginPath();
 	ctx.moveTo(topx, topy);
-	ctx.lineTo(x1, y1);
+	ctx.lineTo(x1 + (d/3) * line[0], y1 + (d/3) * line[1]);
 	ctx.lineTo(botx, boty);
-	//var cpx=(topx+x1+botx)/3;
-	//var cpy=(topy+y1+boty)/3;
-	//ctx.quadraticCurveTo(cpx,cpy,topx,topy);
-	ctx.lineTo(topx, topy);
+	
+	var cpx=(topx+x1+botx)/3;
+	var cpy=(topy+y1+boty)/3;
+	ctx.quadraticCurveTo(cpx,cpy,topx,topy);
+	
+	//ctx.lineTo(topx, topy);
 
-	ctx.stroke();
+	//ctx.stroke();
 	ctx.fill();
 }
 
@@ -1653,7 +1659,7 @@ function hexToRGBA(hex, alpha) {
   return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 }
 
-function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity, linedash_pattern) {
+function init_canvas_simple(ctx, line_thickness, line_color, style, linedash_pattern) {
 	if (!linedash_pattern) linedash_pattern = [10, 10];
 	
 	var line_color = '#' + ('00000' + (line_color | 0).toString(16)).substr(-6); 
@@ -1669,7 +1675,7 @@ function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_
 	
 	if ('setLineDash' in ctx) {	
 		if (style == "dashed") {
-			ctx.setLineDash([10, 10]);
+			ctx.setLineDash(linedash_pattern);
 			ctx.lineJoin = ctx.lineCap = 'round';
 		} else if (style == "dotted") {
 			ctx.setLineDash([line_thickness, line_thickness]);
@@ -1677,7 +1683,12 @@ function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_
 		} else {
 			ctx.lineJoin = ctx.lineCap = 'round';
 		}
-	}
+	}	
+}
+
+function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity, linedash_pattern) {
+	init_canvas_simple(ctx, line_thickness, line_color, style, linedash_pattern);
+	var line_color = '#' + ('00000' + (line_color | 0).toString(16)).substr(-6); 
 	
 	if (typeof fill_opacity !== 'undefined') {  // we assume && fill_color && outline_opacity
 		var fill_color = '#' + ('00000' + (fill_color | 0).toString(16)).substr(-6); 
@@ -1688,6 +1699,7 @@ function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_
 		ctx.strokeStyle = outline_rgba;
 	}		
 }
+
 
 function init_canvases(line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity) {
 	start_drawing();
@@ -3023,7 +3035,7 @@ function smooth_draw(context, point_buffer, closed, quality) {
 		context.lineTo(splinePoints[i] * quality, splinePoints[i+1] * quality);
 	}
 	context.stroke();
-	
+
 	//normall I'd just return the last 2 points, but the arrow will always turn out crooked, so I look back a bit further
 	var a = (splinePoints[splinePoints.length-2] - splinePoints[splinePoints.length-20])
 	var b = (splinePoints[splinePoints.length-1] - splinePoints[splinePoints.length-19])
@@ -3037,7 +3049,7 @@ function smooth_draw(context, point_buffer, closed, quality) {
 var draw_state = {}
 var point_buffer = []
 function on_draw_move(e) {
-	limit_rate(20, draw_state, function() {		
+	limit_rate(15, draw_state, function() {		
 		var mouse_location = renderer.plugins.interaction.eventData.data.global;
 
 		var new_x = last_point[0] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.x;
@@ -3063,7 +3075,7 @@ function on_draw_move(e) {
 }
 
 function on_draw_end(e) {
-	limit_rate(20, draw_state, function() {});
+	limit_rate(15, draw_state, function() {});
 
 	var mouse_location = renderer.plugins.interaction.eventData.data.global;
 	var new_x = last_point[0];
@@ -3144,9 +3156,9 @@ function draw_T(context, a, b, size, quality) {
 	context.setLineDash(temp_dash);
 }
 
-function init_shape_canvas(_context, shape, scale) {
+function init_shape_canvas(_context, shape, scale, quality) {
 	if(scale === undefined) scale = 1;
-	init_canvas(_context, shape.outline_thickness * scale, shape.outline_color, shape.style, shape.fill_opacity, shape.fill_color, shape.outline_opacity)
+	init_canvas(_context, shape.outline_thickness * scale, shape.outline_color, shape.style, shape.fill_opacity, shape.fill_color, shape.outline_opacity, [10*quality, 10*quality])
 }
 
 function canvas2container2(_context, _canvas, width, height, entity) {	
@@ -3235,13 +3247,13 @@ function draw_entity(drawing, quality_scale, thickness_scale, extra_margin, draw
 
 function create_drawing2(drawing, quality_scale, thickness_scale) {
 	if (!quality_scale) quality_scale = 1;
-	if (!thickness_scale) thickness_scale = 1;	
+	if (!thickness_scale) thickness_scale = 1;
 	var extra_margin = drawing.thickness;
 	if (drawing.end_size) {
-		extra_margin = drawing.end_size;
+		extra_margin = 2 * drawing.end_size;
 	}
 	draw_entity(drawing, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
-		init_canvas(_context, drawing.thickness * base_thickness, drawing.color, drawing.style);	
+		init_canvas_simple(_context, drawing.thickness * base_thickness, drawing.color, drawing.style, [10*quality, 10*quality]);	
 		var end_points = smooth_draw(_context, points, false, 1);
 		if (drawing.end) {
 			if (drawing.path.length >= ARROW_LOOKBACK) {
@@ -3258,10 +3270,10 @@ function create_curve2(drawing, quality_scale, thickness_scale) {
 	if (!thickness_scale) thickness_scale = 1;
 	var extra_margin = drawing.thickness;
 	if (drawing.end_size) {
-		extra_margin = drawing.end_size;
+		extra_margin = 2 * drawing.end_size;
 	}
 	draw_entity(drawing, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
-		init_canvas(_context, drawing.thickness * base_thickness, drawing.color, drawing.style);
+		init_canvas_simple(_context, drawing.thickness * base_thickness, drawing.color, drawing.style, [10*quality, 10*quality]);
 		var end_points = smooth_draw(_context, points, false, 1);
 		if (drawing.end) {
 			draw_end(_context, drawing, end_points[0], end_points[1], base_thickness, 1);
@@ -3274,21 +3286,16 @@ function create_line2(line, quality_scale, thickness_scale) {
 	if (!thickness_scale) thickness_scale = 1;
 	var extra_margin = line.thickness;
 	if (line.end_size) {
-		extra_margin = line.end_size;
+		extra_margin = 2 * line.end_size;
 	}
-	draw_entity(line, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {		
-		init_canvas(_context, line.thickness * base_thickness, line.color, line.style);
+	draw_entity(line, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
+		init_canvas_simple(_context, line.thickness * base_thickness, line.color, line.style, [10*quality, 10*quality]);
 		_context.moveTo(points[0], points[1]);
 		for (var i = 2; i < points.length; i+=2) {
 			_context.lineTo(points[i], points[i+1]);
 		}
 		_context.stroke();	
-		var a;
-		if (line.path.length == 1) {
-			a = [x_diff, y_diff];
-		} else {
-			a = [points[points.length-4], points[points.length-3]];
-		}
+		var a = [points[points.length-4], points[points.length-3]];
 		var b = [points[points.length-2], points[points.length-1]];
 		draw_end(_context, line, a, b, base_thickness, 1);
 	});
@@ -3302,7 +3309,7 @@ function create_area2(area, quality_scale, thickness_scale) {
 		area.path.pop();
 	}
 	draw_entity(area, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
-		init_shape_canvas(_context, area, base_thickness);
+		init_shape_canvas(_context, area, base_thickness, quality);
 		var end_points = smooth_draw(_context, points, true, 1);
 		_context.fill();
 	});
@@ -3313,7 +3320,7 @@ function create_polygon2(polygon, quality_scale, thickness_scale) {
 	if (!thickness_scale) thickness_scale = 1;
 	var extra_margin = polygon.outline_thickness;
 	draw_entity(polygon, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
-		init_shape_canvas(_context, polygon, base_thickness);
+		init_shape_canvas(_context, polygon, base_thickness, quality);
 		_context.moveTo(points[0], points[1]);
 		for (var i = 2; i < points.length; i+=2) {
 			_context.lineTo(points[i], points[i+1]);
@@ -3347,7 +3354,7 @@ function create_rectangle2(rectangle, quality_scale, thickness_scale) {
 	_canvas.height = height;
 	var _context = _canvas.getContext("2d");
 	
-	init_shape_canvas(_context, rectangle, base_thickness);
+	init_shape_canvas(_context, rectangle, base_thickness, quality);
 	
 	_context.fillRect(margin/2, margin/2, base_resolution * rectangle.width * quality, base_resolution * rectangle.height * quality); 
 	_context.strokeRect(margin/2, margin/2, base_resolution * rectangle.width * quality, base_resolution * rectangle.height * quality);
@@ -3388,7 +3395,7 @@ function create_circle2(circle, quality_scale, thickness_scale) {
 	_canvas.height = height;
 	var _context = _canvas.getContext("2d");
 	
-	init_shape_canvas(_context, circle, base_thickness);
+	init_shape_canvas(_context, circle, base_thickness, quality);
 
 	var radius = to_x_local_vect(circle.radius);
 	var offset = base_resolution * circle.radius * quality + margin/2;
@@ -3608,43 +3615,29 @@ function on_line_move(e) {
 function on_line_end(e) {
 	limit_rate(15, line_state, function() {});
 	try {
-		var mouse_location = e.data.getLocalPosition(background_sprite);
-		var x = mouse_x_rel(mouse_location.x);
-		var y = mouse_y_rel(mouse_location.y);		
-		x -= new_drawing.x;
-		y -= new_drawing.y;
+		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var x = from_x_local(mouse_location.x) - new_drawing.x;
+		var y = from_y_local(mouse_location.y) - new_drawing.y;	
 		if ((new_drawing.path.length == 0) || x != last(new_drawing.path)[0] || y != last(new_drawing.path)[1]) {
 			new_drawing.path.push([x, y]);
-		}	
+		}
+		if (!shifted) {
+			create_line2(new_drawing, DRAW_QUALITY);
+			emit_entity(new_drawing);
+			undo_list.push(clone_action(["add", [new_drawing]]));
+					
+			setup_mouse_events(undefined, undefined);
+			stop_drawing();
+			new_drawing = null;
+		} else {
+			temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);
+			draw_context.clearRect(0, 0, draw_canvas.width * DRAW_QUALITY, draw_canvas.height * DRAW_QUALITY);
+			draw_context.lineTo(mouse_location.x * DRAW_QUALITY, mouse_location.y * DRAW_QUALITY);
+			draw_context.stroke();
+		}		
 	} catch (e) {}
 	
-	var a;
-	if (new_drawing.path.length == 1) {
-		a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
-	} else {
-		a = [to_x_local(new_drawing.path[new_drawing.path.length-2][0] + new_drawing.x),
-			 to_y_local(new_drawing.path[new_drawing.path.length-2][1] + new_drawing.y)];
-	}
-	var b = [to_x_local(last(new_drawing.path)[0] + new_drawing.x), to_y_local(last(new_drawing.path)[1] + new_drawing.y)];
-	
-	if (just_activated) {
-		var distance_sq = Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2);
-		just_activated = false;
-		if (distance_sq < 0.01) return;
-	}
-	
-	draw_context.lineTo(b[0] * DRAW_QUALITY, b[1] * DRAW_QUALITY);
-	draw_context.stroke();
-		
-	if (!shifted) {
-		create_line2(new_drawing, DRAW_QUALITY);
-		emit_entity(new_drawing);
-		undo_list.push(clone_action(["add", [new_drawing]]));
-				
-		setup_mouse_events(undefined, undefined);
-		stop_drawing();
-		new_drawing = null;
-	}
+	render_scene();	
 }
 
 
@@ -4758,6 +4751,8 @@ function initialize_map_select(map_select) {
 	map_select.empty().append(options); //ie fix no-op
 	map_select.val("");
 	
+	map_select.selectpicker('refresh');
+	
 	map_select.change(function() {
 		var path = map_select.val().trim();
 		if (!background || background.path != path) {
@@ -5234,7 +5229,7 @@ function wot_connect() {
 }
 
 //connect socket.io socket
-$(document).ready(function() {
+$(document).ready(function() {	
 	dpi = document.getElementById('dpitest').offsetHeight;
 	
 	//sorts maps alphabetically, can't presort cause it depends on language

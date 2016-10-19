@@ -1029,6 +1029,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 	}
 
+	//exlude these pages from the sitemap, don't want search engines to visit them
 	paths.splice(paths.indexOf('/auth/twitter/callback'), 1);
 	paths.splice(paths.indexOf('/auth/facebook/callback'), 1);
 	paths.splice(paths.indexOf('/auth/google/callback'), 1);
@@ -1037,6 +1038,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	paths.splice(paths.indexOf('/auth/battlenet/callback'), 1);
 	paths.splice(paths.indexOf('/auth/steam/callback'), 1);
 	paths.splice(paths.indexOf('/save'), 1);
+	paths.splice(paths.indexOf('/profile'), 1);
 	paths.splice(paths.indexOf('/log'), 1);
 	paths.splice(paths.indexOf('/refresh'), 1);
 	paths.splice(paths.indexOf('/disconnect'), 1);

@@ -14,12 +14,34 @@ div#preload { display: none; }
 	color: #444444;
 }
 
+.content {
+	padding: 0px; 
+	margin:  0px;
+	width:   100%;
+	background: #F0F0F0;
+	display:inline-block;
+	vertical-align:top;
+	border: 1px solid black;
+	min-height: calc(100vh - 148px);
+}
+
+.content_margin {
+	padding:20px !important;
+}
+
 .call_to_action h1 { 
 	text-shadow: 1px 1px 1px #ccc;
 	font-weight: 700;
 	font-family: 'Roboto Slab', serif;
 }
 
+.navbar {
+    background-color: #2e2e2e;
+    background-image: none;
+	font-weight: 700;
+	font-family: 'Roboto Slab', serif;
+}
+	
 #quote {
 	color:white;
 }
@@ -27,6 +49,7 @@ div#preload { display: none; }
 body {
 	background: #DDDDDD;
 }
+
 
 .call_to_action {
 	color:white;

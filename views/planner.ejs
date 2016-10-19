@@ -147,17 +147,17 @@
 				<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
 				<p>
 					<div class="dropdown inline" id="map_select_container">
-						<select class="selectpicker" id="map_select">
+						<select class="selectpicker" data-live-search="true" id="map_select">
 							<%-include(game + '_maps')%>
 						</select>
 					</div>
 					
 					<%if (game == 'wot') { %>
 						<div class="dropdown inline" style="display:none" id="wotbase_select_container">
-							<select class="selectpicker" id="wotbase_select"><%include wotbase_wot_maps.ejs%></select>
+							<select class="selectpicker" data-live-search="true" id="wotbase_select"><%include wotbase_wot_maps.ejs%></select>
 						</div>
 						<div class="dropdown inline" style="display:none" id="new_minimap_select_container">
-							<select class="selectpicker" id="new_minimap_select"><%include new_wot_minimaps.ejs%></select>
+							<select class="selectpicker" data-live-search="true" id="new_minimap_select"><%include new_wot_minimaps.ejs%></select>
 						</div>
 					<%} %>
 					<button class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">

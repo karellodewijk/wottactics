@@ -22,91 +22,92 @@
 		data-error_map_exists="<%=l('Error: A map with that name already exists in that folder')%>"
 	></script>
 	<% include navbar.ejs %>
-	<div class="container" style='width:100%;'>
-    <div class="jumbotron side_bar" style='width:100%;'>		
-		<h2><%=l('Stored tactics')%></h2>
-		<hr>
-		<table class="stored_tactics_table" style="background-color:white;" id="tactic_list">
-			<thead> 
-				<tr>
-				  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Tactic name')%>"><b><%=l('Name')%></b></th>
-				  <th style="width:100px" data-toggle="tooltip" title="<%=l('Click to launch the tactic')%>"><b><%=l('Launch')%></b></th>
-				  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Date the tactic was last changed')%>"><b><%=l('Last changed')%></b></th>
-				  <th style="width:50px" data-toggle="tooltip" title="<%=l('Share')%>"><b><%=l('Share')%></b></th>
-				  <th style="width:50px" data-toggle="tooltip" title="<%=l('Add tactic to room')%>"><b><%=l('Add to room')%></b></th>
-				  <th style="width:50px" data-toggle="tooltip" title="<%=l('Click to permanently remove the tactic')%>"><b><%=l('Remove')%></b></th>
-				</tr>
-			</thead>
-			<tbody style="vertical-align: middle;"> 
-			<%var other_games = {}%>
-			<% for (var i in tactics) {%>
-				<%if (game == tactics[i].game) { %>
-					<tr class="file" data-tt-id="<%=tactics[i].name%>" data-tt-parent-id="<%=tactics[i].name.substring(0,tactics[i].name.lastIndexOf("/"))%>" id="<%=tactics[i].uid%>">
-						<td><div class="inline icon icon-map_icon"></div><%=tactics[i].name.substring(tactics[i].name.lastIndexOf("/")+1)%></td>
-						<td><a class="btn btn-primary btn-sm" href="<%=game%><%if (tactics[i].is_video) {%>planner3.html<%} else {%>planner2.html<%}%>?restore=<%=tactics[i].uid%>" id="<%=tactics[i].uid%>" role="button">Launch&raquo;</a></td>
-						<td class='date'><%=tactics[i].date;%></td>
-						
-						<td><button class="btn btn-default btn-sm share_tactic" data-toggle="tooltip" title="<%=l('Share this tactic')%>"
-									data-link="http://<%=url.split('/')[0]%>/share_tactic.html?name=<%=encodeURIComponent(tactics[i].name)%>&game=<%=encodeURIComponent(tactics[i].game)%>&uid=<%=encodeURIComponent(tactics[i].uid)%>">
-							<div class="icon icon-share"></div>
-						</button></td>
-
-						<td><a type="button" data-uid="<%=tactics[i].uid%>" class="btn btn-default btn-sm send_to_link" data-toggle="tooltip" title="<%=l('Send to room')%>"><div class="icon icon-send_to_link"></div></a></td>
-						<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" data-uid="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><b>X</b></a></td>
+	<script>
+		document.getElementById('stored_tactics').className += " active";
+	</script>
+	<div class="container" style='width:100%;'>	
+		<div class="jumbotron content content_margin">	
+			<table class="stored_tactics_table" style="background-color:white;" id="tactic_list">
+				<thead> 
+					<tr>
+					  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Tactic name')%>"><b><%=l('Name')%></b></th>
+					  <th style="width:100px" data-toggle="tooltip" title="<%=l('Click to launch the tactic')%>"><b><%=l('Launch')%></b></th>
+					  <th style="width:auto" class="header" data-toggle="tooltip" title="<%=l('Date the tactic was last changed')%>"><b><%=l('Last changed')%></b></th>
+					  <th style="width:50px" data-toggle="tooltip" title="<%=l('Share')%>"><b><%=l('Share')%></b></th>
+					  <th style="width:50px" data-toggle="tooltip" title="<%=l('Add tactic to room')%>"><b><%=l('Add to room')%></b></th>
+					  <th style="width:50px" data-toggle="tooltip" title="<%=l('Click to permanently remove the tactic')%>"><b><%=l('Remove')%></b></th>
 					</tr>
-				<% } else { %>
-				<%	other_games[tactics[i].game] = true; %>
-				<% } %>
-			<% } %>	
-			</tbody>
-		</table>
+				</thead>
+				<tbody style="vertical-align: middle;"> 
+				<%var other_games = {}%>
+				<% for (var i in tactics) {%>
+					<%if (game == tactics[i].game) { %>
+						<tr class="file" data-tt-id="<%=tactics[i].name%>" data-tt-parent-id="<%=tactics[i].name.substring(0,tactics[i].name.lastIndexOf("/"))%>" id="<%=tactics[i].uid%>">
+							<td><div class="inline icon icon-map_icon"></div><%=tactics[i].name.substring(tactics[i].name.lastIndexOf("/")+1)%></td>
+							<td><a class="btn btn-primary btn-sm" href="<%=game%><%if (tactics[i].is_video) {%>3<%} else {%>2<%}%>?restore=<%=tactics[i].uid%>" id="<%=tactics[i].uid%>" role="button">Launch&raquo;</a></td>
+							<td class='date'><%=tactics[i].date;%></td>
+							
+							<td><button class="btn btn-default btn-sm share_tactic" data-toggle="tooltip" title="<%=l('Share this tactic')%>"
+										data-link="http://<%=url.split('/')[0]%>/share_tactic.html?name=<%=encodeURIComponent(tactics[i].name)%>&game=<%=encodeURIComponent(tactics[i].game)%>&uid=<%=encodeURIComponent(tactics[i].uid)%>">
+								<div class="icon icon-share"></div>
+							</button></td>
 
-        <div class="row">
-            <div class="col-lg-3">		
-				<div class="input-group">
-					<input type="text" id="new_form_name" class="form-control" />
-					<span class="input-group-btn"><button class='btn btn-default' id="create_folder"><%=l('Create folder')%></button></span>
+							<td><a type="button" data-uid="<%=tactics[i].uid%>" class="btn btn-default btn-sm send_to_link" data-toggle="tooltip" title="<%=l('Send to room')%>"><div class="icon icon-send_to_link"></div></a></td>
+							<td><a class="btn btn-danger btn-sm" href="javascript:void(0);" data-uid="<%=tactics[i].uid%>" date=<%=tactics[i].date%> role="button"><b>X</b></a></td>
+						</tr>
+					<% } else { %>
+					<%	other_games[tactics[i].game] = true; %>
+					<% } %>
+				<% } %>	
+				</tbody>
+			</table>
 
+			<div class="row">
+				<div class="col-lg-3">		
+					<div class="input-group">
+						<input type="text" id="new_form_name" class="form-control" />
+						<span class="input-group-btn"><button class='btn btn-default' id="create_folder"><%=l('Create folder')%></button></span>
+
+					</div>
 				</div>
 			</div>
-		</div>
-		
-		<%if (Object.keys(other_games).length != 0) { %>
-			<p>You also have tactics for <%=other_games.length%>
-		<%	for (var key in other_games) {  %>
-				<a href="?game=<%=key%>"><%=key%></a>
-		<%	} %>			
-		<%}%>
-		
-		<div class="input-group" id="notification_box" style="visibility:hidden;">
-			<span><label id="notification"></label></span>
-		</div>
-		
-		<h3><%=l('Last visited')%></h3>
-		<ul class="list-group">
-			<% for (var i = rooms.length-1; i >= 0; i--) { %>
-				<li class="list-group-item"><a href=<%=rooms[i]%>><%=rooms[i]%></a></li>
-			<% } %>
-		</ul>
-
-		<!-- Modal -->
-		<div id="myModal" class="modal fade" role="dialog">
-		  <div class="modal-dialog">
-			<!-- Modal content-->
-			<div class='input-group'>
-				<span class='input-group-addon'><%=l("Room link")%></span>
-				<input id="send_link" class='form-control col-lg-9' type='text'/>
-				<span class='input-group-btn'>
-					<button id='link_send' class='btn btn-default'><%=l('Send')%></button>
-				</span>
-				<span class='input-group-btn'>
-					<button id='modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
-				</span>
+			
+			<%if (Object.keys(other_games).length != 0) { %>
+				<p>You also have tactics for <%=other_games.length%>
+			<%	for (var key in other_games) {  %>
+					<a href="?game=<%=key%>"><%=key%></a>
+			<%	} %>			
+			<%}%>
+			
+			<div class="input-group" id="notification_box" style="visibility:hidden;">
+				<span><label id="notification"></label></span>
 			</div>
-		  </div>
-		</div>
+			
+			<h3><%=l('Last visited')%></h3>
+			<ul class="list-group">
+				<% for (var i = rooms.length-1; i >= 0; i--) { %>
+					<li class="list-group-item"><a href=<%=rooms[i]%>><%=rooms[i]%></a></li>
+				<% } %>
+			</ul>
+
+			<!-- Modal -->
+			<div id="myModal" class="modal fade" role="dialog">
+			  <div class="modal-dialog">
+				<!-- Modal content-->
+				<div class='input-group'>
+					<span class='input-group-addon'><%=l("Room link")%></span>
+					<input id="send_link" class='form-control col-lg-9' type='text'/>
+					<span class='input-group-btn'>
+						<button id='link_send' class='btn btn-default'><%=l('Send')%></button>
+					</span>
+					<span class='input-group-btn'>
+						<button id='modal_cancel' class='btn btn-default'><%=l('Cancel')%></button>
+					</span>
+				</div>
+			  </div>
+			</div>
 		
-	</div>
-	<% include footer.ejs %>
+		</div>
 	</div>	
+	<% include footer.ejs %>
 </body>

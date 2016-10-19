@@ -6,96 +6,95 @@
 </head>
 <body>
 	<% include navbar.ejs %>
+	<script>
+		document.getElementById('about').className += " active";
+	</script>	
 	<div class="container" style='width:100%;'>
-	
-    <div class="jumbotron side_bar" style='width:100%;'>		
-		<h2><%=l('About')%></h2>
-		<div style="padding:20px">
-		
-		<p>
-        Witajcie i dzięki za odwiedzenie mojej strony.
+		<div class="jumbotron content content_margin">
+			<p>
+			Witajcie i dzięki za odwiedzenie mojej strony.
 
-		<h3>Sugestie</h3>
-		<p>
-        Zawsze jestem otwarty na wszelkie sugestie, krytykę, drwiny lub pochwały. Pod zakładką kontakt znajdziecie wiele sposobów aby się ze mna skontaktować.
-		
-		<h3>Pomoc</h3>
-		<p>
-        Jeśli chcesz w jakikolwiek sposób pomóc, wal śmiało. Zależy mi w szczególności na kimś kto byłby w stanie przetłumaczyć stronę na rosyjski jako iż te serwery na wot/wows są wielką częścią społeczności. Mam również problem ze znalezieniem map do wows w wysokiej rozdzielczości.
-		
-		<h3>Kod</h3>
-		<p>
-        Chciałem dotrzeć do tak wielu ludzi jak tylko mogę więc zdecydowałem się zrobić tą stronę open-source pod licencją MIT, możesz więc użyć kodu jakkolwiek byś chciał nawet komercyjnie.
-		
-		Źródło dostępne jest na 
-		<a href='https://github.com/karellodewijk/wottactics'>https://github.com/karellodewijk/wottactics</a>
-
-		<h3>Reklamy i opłaty</h3>
-		<p>
-        Mogę dodać małe reklamy lub przycisk donate na głównej stronie jeśli koszt hostingu stanie się problemem. Jednakowoż, główna część strony z pokojem taktycznym jest oraz pozostanie bez reklam i opłat.
-		
-		
-		<h3>Informacje kontaktowe:</h3>
-		
-		<p>
-		Sposoby aby się ze mną skomunikować:
-		
-		<p>
-		
-		<div class="row">
-			<div class="col-md-2">Imię</div>
-			<div class="col-md-2">Kalith</div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">e-mail</div>
-			<div class="col-md-2"><a href="mailto:pkalith@gmail.com">pkalith@gmail.com</a></div>
-		</div>
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU profile</div>
-			<div class="col-md-10"><a href='http://worldoftanks.eu/community/accounts/505943778-Kalith/'>http://worldoftanks.eu/community/accounts/505943778-Kalith/</a></div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">NA profile</div>
-			<div class="col-md-10"><a href='http://worldoftanks.com/community/accounts/1003817145-Kalid/'>http://worldoftanks.com/community/accounts/1003817145-Kalid/</a></div>
-		</div>
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU temat na forum</div>
-			<div class="col-md-10"><a href='http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/</a></div>
-		</div>	
-		<div class="row">
-			<div class="col-md-2">NA temat na forum</div>
-			<div class="col-md-10"><a href='http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/</a></div>
-		</div>		
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">EU Wot blitz temat na forum</div>
-			<div class="col-md-10"><a href='http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/'>http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/</a></div>
-		</div>	
-		<div class="row">
-			<div class="col-md-2">NA Wot blitz temat na forum</div>
-			<div class="col-md-10"><a href='http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/'>http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/</a></div>
-		</div>	
-		&nbsp;
-		<div class="row">
-			<div class="col-md-2">AW temat na forum</div>
-			<div class="col-md-10"><a href='http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29'>http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29</a></div>
-		</div>	
+			<h3>Sugestie</h3>
+			<p>
+			Zawsze jestem otwarty na wszelkie sugestie, krytykę, drwiny lub pochwały. Pod zakładką kontakt znajdziecie wiele sposobów aby się ze mna skontaktować.
 			
-		<p><p>
-		<h3>Specjalnie podziękowania dla:</h3>
-		<p>
-		<ul>
-		<li>GPS4ever i maroar, za testowanie oraz sugestie.</li> 
-		<li>Jingles, za rozposzechnienie.</li>
-		<li><a href='http://maptactic.com'>maptactic</a> i <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> za inspiracje i może pożyczenie mapy albo dwóch.</li> 
-		<li><a href='http://aw-guide.com'>aw-guide</a> i <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> za mapy do Armored Warfare .</li>
-		<li>Reluctanttheist za mapy do WOT blitz.</li>
-		<li>Aleksandar(Ultra_Seljacina) za tłumaczenie na serbski.
-		<li>Daniel Janssen(DeeJayBass) za tłumaczenie na Niemiecki.
-		<li>Adriel Vargas(adrieeel) za tłumaczenie na Hiszpański.
+			<h3>Pomoc</h3>
+			<p>
+			Jeśli chcesz w jakikolwiek sposób pomóc, wal śmiało. Zależy mi w szczególności na kimś kto byłby w stanie przetłumaczyć stronę na rosyjski jako iż te serwery na wot/wows są wielką częścią społeczności. Mam również problem ze znalezieniem map do wows w wysokiej rozdzielczości.
+			
+			<h3>Kod</h3>
+			<p>
+			Chciałem dotrzeć do tak wielu ludzi jak tylko mogę więc zdecydowałem się zrobić tą stronę open-source pod licencją MIT, możesz więc użyć kodu jakkolwiek byś chciał nawet komercyjnie.
+			
+			Źródło dostępne jest na 
+			<a href='https://github.com/karellodewijk/wottactics'>https://github.com/karellodewijk/wottactics</a>
+
+			<h3>Reklamy i opłaty</h3>
+			<p>
+			Mogę dodać małe reklamy lub przycisk donate na głównej stronie jeśli koszt hostingu stanie się problemem. Jednakowoż, główna część strony z pokojem taktycznym jest oraz pozostanie bez reklam i opłat.
+			
+			
+			<h3>Informacje kontaktowe:</h3>
+			
+			<p>
+			Sposoby aby się ze mną skomunikować:
+			
+			<p>
+			
+			<div class="row">
+				<div class="col-md-2">Imię</div>
+				<div class="col-md-2">Kalith</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">e-mail</div>
+				<div class="col-md-2"><a href="mailto:pkalith@gmail.com">pkalith@gmail.com</a></div>
+			</div>
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU profile</div>
+				<div class="col-md-10"><a href='http://worldoftanks.eu/community/accounts/505943778-Kalith/'>http://worldoftanks.eu/community/accounts/505943778-Kalith/</a></div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">NA profile</div>
+				<div class="col-md-10"><a href='http://worldoftanks.com/community/accounts/1003817145-Kalid/'>http://worldoftanks.com/community/accounts/1003817145-Kalid/</a></div>
+			</div>
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU temat na forum</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/</a></div>
+			</div>	
+			<div class="row">
+				<div class="col-md-2">NA temat na forum</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/</a></div>
+			</div>		
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU Wot blitz temat na forum</div>
+				<div class="col-md-10"><a href='http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/'>http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/</a></div>
+			</div>	
+			<div class="row">
+				<div class="col-md-2">NA Wot blitz temat na forum</div>
+				<div class="col-md-10"><a href='http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/'>http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/</a></div>
+			</div>	
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">AW temat na forum</div>
+				<div class="col-md-10"><a href='http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29'>http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29</a></div>
+			</div>	
+				
+			<p><p>
+			<h3>Specjalnie podziękowania dla:</h3>
+			<p>
+			<ul>
+			<li>GPS4ever i maroar, za testowanie oraz sugestie.</li> 
+			<li>Jingles, za rozposzechnienie.</li>
+			<li><a href='http://maptactic.com'>maptactic</a> i <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> za inspiracje i może pożyczenie mapy albo dwóch.</li> 
+			<li><a href='http://aw-guide.com'>aw-guide</a> i <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> za mapy do Armored Warfare .</li>
+			<li>Reluctanttheist za mapy do WOT blitz.</li>
+			<li>Aleksandar(Ultra_Seljacina) za tłumaczenie na serbski.
+			<li>Daniel Janssen(DeeJayBass) za tłumaczenie na Niemiecki.
+			<li>Adriel Vargas(adrieeel) za tłumaczenie na Hiszpański.
+		</div>
 	</div>
-	</div>
-	</div>
+	<% include footer.ejs %>
 </body>

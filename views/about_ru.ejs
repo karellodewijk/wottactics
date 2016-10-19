@@ -6,12 +6,11 @@
 </head>
 <body>
 	<% include navbar.ejs %>
+	<script>
+		document.getElementById('about').className += " active";
+	</script>
 	<div class="container" style='width:100%;'>	
-    <div class="jumbotron side_bar" style='width:100%;'>
-		
-		<h2><%=l('About')%></h2>
-		<div style="padding:20px">
-		
+    <div class="jumbotron content content_margin">
 		<p>
 		Здравствуйте и спасибо за проявленный интерес к данному сайту.
 		
@@ -116,5 +115,5 @@
 		
 		</div>
 	</div>
-	</div>
+	<% include footer.ejs %>
 </body>
