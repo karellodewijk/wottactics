@@ -1,10 +1,10 @@
 <li class="dropdown">
 	<% if (!user.identity) { %>
-		<button class="btn btn-warning navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown">
+		<button class="btn btn-warning navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown" style="font-weight: 700;">
 			<span id="sign_in_text"><%=l('Sign in')%></span> <span class="caret"></span>
 		</button>
 	<% } else { %>
-		<button class="btn btn-success navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown">
+		<button class="btn btn-success navbar-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" id="login_dropdown" style="font-weight: 700;">
 			<span id="sign_in_text"><%=user.name.substring(0,9)%></span> <span class="caret"></span>
 		</button>
 	<% }%>
