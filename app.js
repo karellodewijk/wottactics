@@ -146,6 +146,15 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 	}	
 	
+	function set_game(req, res, game) {
+		req.session.game = game;
+		res.cookie('game', game, {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 	
+	}
+	
+	function set_locale(req, res, locale) {
+		req.session.locale = locale;
+		res.cookie('locale', locale, {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 	
+	}
 	
 	function push_tactic_to_db(user, room, name, uid) {
 		//store a link to the tacticn in user data
@@ -301,18 +310,18 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			create_anonymous_user(req);		
 		}
 		if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
-			req.session.locale = subDomain[0];
+			set_locale(req, res, subDomain[0]);
 			subDomain = subDomain.slice(1);
 		} else {
 			if (req.query.lang) {
-				req.session.locale = req.query.lang;
+				set_locale(req, res, req.query.lang);
 			} else if (!req.session.locale) {
-				req.session.locale = "en";
+				set_locale(req, res, "en");
 			}
 		}
 		
 		if (req.query.game) {
-			req.session.game = req.query.game;
+			set_game(req, res, eq.query.game)
 		}
 		
 		req.fullUrl = subDomain.join('.') + req.originalUrl;
@@ -374,17 +383,19 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var router = express.Router();
 
 	router.get('/', function(req, res, next) {
+		var game;
 		if (req.hostname) {
 			if (req.hostname.indexOf('awtactic') != -1) {
-				req.session.game = "aw";
+				game = "aw";
 			} else if (req.hostname.indexOf('wowstactic') != -1) {
-				req.session.game = "wows";
+				game = "wows";
 			} else {
-				req.session.game = "wot";
+				game = "wot";
 			}
 		} else {
-			req.session.game = "wot";
+			game = "wot";
 		}
+		set_game(req, res, game);
 		res.render('index', { game: req.session.game, 
 							user: req.session.passport.user,
 							locale: req.session.locale,
@@ -407,7 +418,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  } else if (!req.query.room) {
 		  res.redirect(game + template + '.html?room='+newUid());
 	  }	else {
-		  req.session.game = game;
+		  set_game(req, res, game);
 		  res.render(template, { game: req.session.game, 
 								 user: req.session.passport.user,
 								 locale: req.session.locale,
@@ -436,7 +447,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad'];	
 	games.forEach(function(game) {
 		router.get('/' + game, function(req, res, next) {		
-		  req.session.game = game;
+		  set_game(req, res, game);
 		  res.render('index', { game: req.session.game, 
 								user: req.session.passport.user,
 								locale: req.session.locale,
@@ -445,7 +456,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								ga_id:secrets.ga_id});
 		});	
 		router.get('/' + game + '.html', function(req, res, next) {
-		  req.session.game = game;
+		  set_game(req, res, game);
 		  res.render('index', { game: req.session.game, 
 								user: req.session.passport.user,
 								locale: req.session.locale,
@@ -475,7 +486,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	router.get('/about.html', function(req, res, next) {
 	  if (!req.session.game) {
-		  req.session.game = 'wot';
+		  set_game(req, res,'wot');
 	  }
 	  res.render('about', { game: req.session.game, 
 							user: req.session.passport.user,
@@ -486,7 +497,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	router.get('/getting_started.html', function(req, res, next) {
 	  if (!req.session.game) {
-		req.session.game = 'wot';
+		set_game(req, res,'wot');
 	  }
 	  res.render('getting_started', { game: req.session.game, 
 									  user: req.session.passport.user,
@@ -497,7 +508,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	router.get('/privacypolicy.html', function(req, res, next) {
 	  if (!req.session.game) {
-		req.session.game = 'wot';
+		set_game(req, res,'wot');
 	  }
 	  res.render('privacypolicy', { game: req.session.game, 
 								    user: req.session.passport.user,
@@ -508,7 +519,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 	router.get('/older_news.html', function(req, res, next) {
 	  if (!req.session.game) {
-		req.session.game = 'wot';
+		set_game(req, res,'wot');
 	  }
 	  res.render('older_news', { game: req.session.game, 
 								 user: req.session.passport.user,
@@ -521,7 +532,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	router.get('/navbar.html', function(req, res, next) {
 	  if (!req.session.game) {
-		req.session.game = 'wot';
+		set_game(req, res,'wot');
 	  }
 	  res.render('navbar_framed', { game: req.session.game, 
 									  user: req.session.passport.user,
@@ -533,7 +544,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	router.get('/stored_tactics.html', function(req, res, next) {
 	  if (!req.session.game) {
-		req.session.game = 'wot';
+		set_game(req, res,'wot');
 	  }
 	  if (req.session.passport.user.identity) {
 		get_tactics(req.session.passport.user.identity, req.session.game, function(tactics, last_rooms) {
