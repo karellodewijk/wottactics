@@ -315,8 +315,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		} else {
 			if (req.query.lang) {
 				set_locale(req, res, req.query.lang);
-			} else if (!req.session.locale) {
-				set_locale(req, res, "en");
+			} else {
+				if (req.session.locale) {
+					set_locale(req, res, req.session.locale);
+				} else {
+					set_locale(req, res, "en");
+				}
 			}
 		}
 		
@@ -908,7 +912,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		next();
 	}
 	function redirect_return(req, res, next) {
-		res.cookie('logged_in', 'yes', {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
+		res.cookie('logged_in', "new", {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
 		res.redirect(req.session.return_to);
 		delete req.session.return_to;
 		return;
@@ -1031,50 +1035,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	//////////////////
 	//end clanportal//
 	//////////////////
-
-	//generate a sitemap and robots.txt file
-	var paths = [];
-	for (var key in router.stack) {
-		if (router.stack[key].route.stack[0].method == 'get') {
-			paths.push(router.stack[key].route.path)
-		}
-	}
-
-	//exlude these pages from the sitemap, don't want search engines to visit them
-	paths.splice(paths.indexOf('/auth/twitter/callback'), 1);
-	paths.splice(paths.indexOf('/auth/facebook/callback'), 1);
-	paths.splice(paths.indexOf('/auth/google/callback'), 1);
-	paths.splice(paths.indexOf('/auth/vk/callback'), 1);
-	paths.splice(paths.indexOf('/auth/openid/callback'), 1);
-	paths.splice(paths.indexOf('/auth/battlenet/callback'), 1);
-	paths.splice(paths.indexOf('/auth/steam/callback'), 1);
-	paths.splice(paths.indexOf('/save'), 1);
-	paths.splice(paths.indexOf('/profile'), 1);
-	paths.splice(paths.indexOf('/log'), 1);
-	paths.splice(paths.indexOf('/refresh'), 1);
-	paths.splice(paths.indexOf('/disconnect'), 1);
-	paths.splice(paths.indexOf('/health_check.html'), 1);
-	paths.splice(paths.indexOf('/share_tactic.html'), 1);
-
-	router.get('/sitemap.xml', function(req, res, next) {
-		var sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
-		var priority = 1;
-		for (var i = 0; i < paths.length; ++i) {
-			sitemap += "<url>";
-			sitemap += "<loc>" + "http://" + req.headers.host + paths[i] + "</loc>";
-			sitemap += "<lastmod>" + lastmod + "</lastmod>";
-			sitemap += "<changefreq>daily</changefreq>"
-			sitemap += "<priority>" + priority.toFixed(2) + "</priority>";
-			for (var j = 0; j < locales.length; ++j) {
-				sitemap += '<xhtml:link rel="alternate" hreflang="' + locales[j] + '" href="' + "http://" + locales[j] + '.' + req.fullUrl.split('/')[0] + paths[i] + '" />'
-			}
-			sitemap += "</url>";
-			priority -= (0.5/paths.length);
-		}
-		sitemap += "</urlset>";
-		res.header('Content-Type', 'application/xml');
-		res.send(sitemap);
-	});
 	
 	var robots_base = "User-agent: *\n";
 	robots_base += "Disallow: /auth/twitter\n";
@@ -1087,7 +1047,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	router.get('/robots.txt', function(req, res, next) {
 		res.header('Content-Type', 'text/plain');
-		res.send(robots_base + "Sitemap: " + 'http://' + req.headers.host + "/sitemap.xml");
+		res.send(robots_base);
 	});
 	
 	//add router to app

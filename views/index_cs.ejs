@@ -46,8 +46,10 @@
 						<% } %>	
 					</h1>
 					<p><span id="quote"></span></p>
-					<p><a class="btn btn-primary btn-lg" href="<%=game%>2" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a></p>
+					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg new_room" href="<%=game%>3" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
+					<a href="<%=game%>1" class="new_room" role="button" style="color:#ADD8E6">(<%= l('Use original ui')%>)</a><br /></p>
 					<script type="text/javascript">
+						//generate unique id
 						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
 						function newUid() {
 							var text = "";
@@ -57,10 +59,9 @@
 							return text;
 						}
 						window.onload = function() {
-							var el = document.getElementById('new_room');
-							el.onclick = function(e) {
-								window.location.href = el.getAttribute('href') + '?room=' + newUid();
-								e.preventDefault();
+							var els = document.getElementsByClassName('new_room');
+							for (var i = 0; i < els.length; i++) {
+								els[i].setAttribute('href', els[i].getAttribute('href') + '?room=' + newUid());
 							}
 						};
 					</script>
