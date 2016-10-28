@@ -3,7 +3,7 @@
 <head>
 	<% include common_headers.ejs %>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
-	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or just explore, share and discuss map tactics with your friends, team, platoon or clan.">
+	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map tactics with your friends, team, platoon or clan.">
 </head>
 <body style="overflow:scroll;">
 	<% include navbar.ejs %>
@@ -45,8 +45,8 @@
 						<% } %>	
 					</h1>
 					<p><span id="quote"></span></p>
-					<p><a class="btn btn-primary btn-lg" href="<%=game%>2" id="new_room" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg" href="<%=game%>planner3.html" id="new_room" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
-					<a href="<%=game%>1" id="new_room2" role="button" style="color:#ADD8E6">(<%= l('Use original ui')%>)</a><br /></p>
+					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg new_room" href="<%=game%>3" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
+					<a href="<%=game%>1" class="new_room" role="button" style="color:#ADD8E6">(<%= l('Use original ui')%>)</a><br /></p>
 					<script type="text/javascript">
 						//generate unique id
 						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
@@ -58,15 +58,9 @@
 							return text;
 						}
 						window.onload = function() {
-							var el = document.getElementById('new_room');
-							el.onclick = function(e) {
-								window.location.href = el.getAttribute('href') + '?room=' + newUid();
-								e.preventDefault();
-							}
-							var el2 = document.getElementById('new_room2');
-							el2.onclick = function(e) {
-								window.location.href = el2.getAttribute('href') + '?room=' + newUid();
-								e.preventDefault();
+							var els = document.getElementsByClassName('new_room');
+							for (var i = 0; i < els.length; i++) {
+								els[i].setAttribute('href', els[i].getAttribute('href') + '?room=' + newUid());
 							}
 						};
 					</script>
@@ -82,7 +76,6 @@
 						<p><h4><b>So how does it work ?</b></h4>
 						
 						<p>Press the blue button. Then select a map and use the tools on the right to start planning. You can invite others by sending them the link. 
-						
 					</div>
 					<%if (game == 'warface') { %>
 						<div class="col-md-4">
