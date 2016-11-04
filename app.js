@@ -325,7 +325,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 		
 		if (req.query.game) {
-			set_game(req, res, eq.query.game)
+			set_game(req, res, req.query.game)
 		}
 		
 		req.fullUrl = subDomain.join('.') + req.originalUrl;
@@ -715,8 +715,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		  }
 		));	
 		
+		StrategyBnet.prototype.authorizationParams = function(options) {
+		  return { state: options.redirectUrl };
+		};
+		
 		//battle.net
-		router.post('/auth/battlenet', save_return, function(req,res,next) { passport.authenticate('battlenet', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/battlenet/callback' })(req, res, next); } );
+		router.post('/auth/battlenet', save_return, function(req,res,next) { passport.authenticate('battlenet', { callbackURL: 'https://karellodewijk.github.io/battlenet_redirect.html', redirectUrl:'http://' + req.fullUrl.split("/")[0] + '/auth/battlenet/callback' })(req, res, next); } );
 		router.get('/auth/battlenet/callback', passport.authenticate('battlenet'), redirect_return);
 	}
 
@@ -772,7 +776,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		));	
 		
 		//twitter
-		router.post('/auth/twitter', save_return, function(req,res,next) { passport.authenticate('twitter', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/twitter/callback' })(req, res, next); } );
+		router.post('/auth/twitter', save_return, function(req,res,next) { passport.authenticate('twitter', { callbackURL: 'http://wottactic.tk/twitter_redirect.html?dest=' + 'http://' + req.fullUrl.split("/")[0] + '/auth/twitter/callback' })(req, res, next); } );
 		router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
 	}
 
