@@ -41,6 +41,10 @@ div#preload { display: none; }
 	font-weight: 700;
 	font-family: 'Roboto Slab', serif;
 }
+
+.popover-title{
+    color: black;
+}
 	
 #quote {
 	color:white;
