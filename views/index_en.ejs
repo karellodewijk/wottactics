@@ -75,7 +75,7 @@
 						
 						<p><h4><b>So how does it work ?</b></h4>
 						
-						<p>Press the blue button. Then select a map and use the tools on the right to start planning. You can invite others by sending them the link. 
+						<p>Press the blue button. Then select a map and use the tools on the right to start planning your strategy. You can invite others by sending them the link. 
 					</div>
 					<%if (game == 'warface') { %>
 						<div class="col-md-4">
@@ -84,16 +84,12 @@
 						</div>
 					<%} else { %>
 						<div class="col-md-4">
-							<h2>Future plans</h2>
-							<p>
-							<ul>
-								<li>Support for drawing while panning
-								<li style="text-decoration: line-through;">Better support for touch devices (pinch zoom, pan support)
-								<li>Write text directly on the map
-								<li>Share folders in addition to just tactics
-							</ul>
-							<p>If you have any suggestions, you can put them on the forums, contact me by e-mail or put them in the survey.			
-						</div>		
+							<h2>Clan Wars: Fifth Campaign</h2>
+							<p>The Fifth campaign for World of tanks is now underway in most regions. 
+							<p>As in previous iterations, I've gone back to the 3 server setup to handle the increased load. You won't have to do anything, it will select a server for your tactic randomly. I will be keeping an eye on things just in case though.
+							<p>Good luck out there for all the participants.
+							<p>EDIT: Everything went smooth. The -15mins +15mins spread on the battles really helps to keep things well under control despite a record breaking number of visitors. Thx Wargaming.
+						</div>	
 					<% } %>	
 					<div class="col-md-4">
 						<h2>Your input matters</h2>
@@ -104,44 +100,44 @@
 				</div>
 				<div class="row">
 					<div class="col-md-4">
-						<h2>Video replay room</h2>
-						<p>As you may have noticed there is a new 'video replay room' button next to the new room button. It's something new I'm experimenting with.
-						
-						<p>I was watching a League of Legends match and afterwards they were showing some replays to hilight certain things. I figured being to do that live and online is not something that exists yet and may be useful. 
-
-						<p>Now, I'm not saying it's perfect. The drawing part is not a problem, but starting and keeping videos in sync especially through the youtube api is tricky. And I don't think it's something I can improve upon greatly. Basically the youtube API is just lacking the necessary tools (no fine grained playback rate control, course seek function and play/pause delays).
-						
-						<p>A direct link to a supported video file (anything supported by your browser) will work better. But is there a even free video service that allows you to access video files directly and embed them remotely ?
-						
-						<p>Anyway give it a try and give me some feedback. Do you like the idea, do you have a use for it ? Does it work for you or your team ? What problems are you experiencing ? Does youtube video synchronization well enough or do you consider it unusable as it is ?
+						<h2>Forums back up</h2>
+						<p>Feel free to say hello.
 					</div>	
 					<div class="col-md-4">
 						<h2>Latest changes</h2>
 						<p>
 						<ul>
-							<li>Simplified links
+							<li>Added ?game=whatever url parameter to the link of stored_tactics.
+							<li>Simplified/shortened links to tactics.
 							<li>Added the new wot minimaps as an option.
 							<li>Improved quality of things drawn by drawing at a higher resolution than the image.
 							<li>Improved the look of the website a little, will be adding a forum soon.
-							<li>Icons sort of zoom along now.
 						</ul> 
 						<p>On the bug hunting front:
 						<ul>
+							<li>Fixed twitter login on domains other than wottactic.tk
 							<li>Made zoom move in predictable steps.
 							<li>Fixed alignment issues in video replay room.
 							<li>The hand icon is no longer shown when dragging is disabled.
 							<li>Text on firefox 49.0 was bigger than it should be. It's actually a FF bug https://bugzilla.mozilla.org/show_bug.cgi?id=1306027, but I remedied it best I can.
-							<li>Some notes from older tactics dissapeared, they should be back now
 						</ul>
 						<p>If you find anything else, however small, that is broken, pls let me know. 
 					</div>
 					<div class="col-md-4">
-						<h2>2,000,000 visits</h2>
-						<p>Since the beginning of March, when i started monitoring traffic, 314,809 users have visitited this website a total of 2,031,807 times, visiting 3,822,789 pages. At least 335,645 rooms have been created and 38,127 tactics have been stored.
+						<h2>3,000,000 visits</h2>
+						<p>Since the beginning of March, this website has been visited a total of 3,069,861 times.
+						
+						<p>497,425 rooms have been created and 70,917 tactics have been stored. 77842 different users have logged in at least once.
 
+						<p>56.3% of users use google chrome. 23.4% use firefox, 8.3% use microsoft edge and 4.8% use ie. Only 2% of the visitors used a tablet or phone.
+						
+						<p>75% Of the visits are from Europe, with 15% from America and 8% from Asia. 
+						
+						<p>On November 24th the website was visited 44,874 times in a single day, with a peak of 7936 concurrent users around 18PM GMT.
+						
 						<p>Thank you for your support. I think that's pretty amazing.
 
-						<p>For more details here's a google analytics <a href="http://karellodewijk.github.io/total_visitors.pdf">report</a>.
+						<p>For more details here's a google analytics <a href="http://karellodewijk.github.io/other/traffic.pdf">report</a>.
 
 					</div>
 				</div>

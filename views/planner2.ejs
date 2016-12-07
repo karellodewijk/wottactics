@@ -74,8 +74,8 @@
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
-	
-	<script defer src="<%=static_host%>/javascripts/combined.js"></script>	
+
+	<script defer src="<%=static_host%>/javascripts/combined.js"></script>		
 	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
@@ -240,7 +240,7 @@
 				<button id="save" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<div class="icon icon-save"></div>
 				</button>
-				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' style='border-radius: 0px;' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
+				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" style="color:black" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' style='border-radius: 0px;' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<div class="icon icon-save_as"></div>
 				</button>
 				<% if (game == 'wot' || game == 'wows' || game == 'aw' || game == 'squad') { %>

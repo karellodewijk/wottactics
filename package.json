@@ -20,6 +20,7 @@
     "mongo-key-escape": "0.0.1",
     "mongodb": "^2.2.8",
     "morgan": "^1.7.0",
+    "object-sizeof": "^1.1.1",
     "passport": "^0.2.2",
     "passport-bnet": "^1.2.1",
     "passport-facebook": "^2.1.0",

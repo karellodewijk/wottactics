@@ -4,6 +4,7 @@ var _datadir = null;
 var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
 var http = require('http');
 var escaper = require('mongo-key-escape');
+var sizeof = require('object-sizeof');
 
 room_data = {} //room -> room_data map to be shared with clients
 
