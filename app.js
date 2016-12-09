@@ -910,14 +910,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				});				
 			}
 		});
-	});
-	
+	});	
 	function save_return(req, res, next) {
 		req.session.return_to = req.headers.referer;
 		next();
 	}
 	function redirect_return(req, res, next) {
-		res.cookie('logged_in', "new", {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
+		if (req.session.passport.user.identity) {
+			res.cookie('logged_in', req.session.passport.user.identity, {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
+		} else {
+			res.cookie('logged_in', "no", {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
+		}
 		res.redirect(req.session.return_to);
 		delete req.session.return_to;
 		return;
