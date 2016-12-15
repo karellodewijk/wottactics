@@ -3,63 +3,78 @@
   background-image: url('wot_icon_set4.png');
 }
 
-.wot_icon_set4-focus {
+.wot_icon_set4-explosion2 {
   background-position: -0px -0px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-battle {
+.wot_icon_set4-1 {
   background-position: -0px -30px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-defend {
+.wot_icon_set4-3 {
   background-position: -0px -60px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-explosion1 {
+.wot_icon_set4-battle {
   background-position: -0px -90px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-explosion2 {
+.wot_icon_set4-danger {
   background-position: -0px -120px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-finish {
+.wot_icon_set4-defend {
   background-position: -0px -150px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-danger {
+.wot_icon_set4-explosion1 {
   background-position: -0px -180px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-football {
+.wot_icon_set4-2 {
   background-position: -0px -210px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-group {
+.wot_icon_set4-finish {
   background-position: -0px -240px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-map_marker {
+.wot_icon_set4-focus {
   background-position: -0px -270px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-spot {
+.wot_icon_set4-football {
   background-position: -0px -300px;
   width: 30px;
   height: 30px;
 }
-.wot_icon_set4-warning {
+.wot_icon_set4-group {
   background-position: -0px -330px;
+  width: 30px;
+  height: 30px;
+}
+.wot_icon_set4-map_marker {
+  background-position: -0px -360px;
+  width: 30px;
+  height: 30px;
+}
+.wot_icon_set4-spot {
+  background-position: -0px -390px;
+  width: 30px;
+  height: 30px;
+}
+.wot_icon_set4-warning {
+  background-position: -0px -420px;
   width: 30px;
   height: 30px;
 }

@@ -55,6 +55,11 @@
 	<% } else if (game == 'squad') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 		<link rel="stylesheet" href="<%=static_host%>/squad_icons.css">
+	<% } else if (game == 'R6') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/R6_attac_icons.css">
+		<link rel="stylesheet" href="<%=static_host%>/R6_def_icons.css">
+		<link rel="stylesheet" href="<%=static_host%>/squad_icons.css">
 	<% } %>
 
 	<script defer src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
@@ -74,7 +79,7 @@
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
-
+	
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>		
 	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
@@ -139,6 +144,10 @@
 				<div class="dropdown inline" style="display:none" id="new_minimap_select_container">
 					<select class="selectpicker" data-live-search="true" id="new_minimap_select"><%include new_wot_minimaps.ejs%></select>
 				</div>
+			<%} else if (game == 'R6') { %>
+				<div class="dropdown inline" style="display:none" id="wotbase_select_container">
+					<select class="selectpicker" data-live-search="true" id="wotbase_select"><%include R6_maps_annotated.ejs%></select>
+				</div>		
 			<%} %>
 			<button class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
 				<div class="icon icon-link_sm"></div>
@@ -158,10 +167,11 @@
 				<br /><input id="select_hd" name="map_type_select" type="radio" style="vertical-align:-2px;" checked /> <span><%=l('Use HD minimaps')%></span>
 				<br /><input id="select_wotbase" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <span><%=l('Use Wotbase maps')%></span>
 				<br /><input id="select_new_minimap" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <span><%=l('Use New minimaps')%></span>
+			<%} else if (game == 'R6') { %>
+				<br /><input id="select_hd" name="map_type_select" type="radio" style="vertical-align:-2px;" checked /> <span><%=l('Normal')%></span>
+				<br /><input id="select_wotbase" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <span><%=l('Annotated')%></span>				
 			<%} %>	
 			</div>
-
-	
 		
 			<hr>
 			
@@ -275,11 +285,7 @@
 				<button class="btn btn-default menu_btn" aria-label="Left Align" id="track" data-toggle="tooltip" title="<%=l('Track cursor')%>">
 					<div class="icon icon-recticle_icon"></div>
 				</button>
-				<%if (game != 'sc2') {%>
-				<button class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
-					<div class="icon icon-<%if (game == 'wows') { %>ship_icon<%} else if (game == 'aw') { %>aw_icon<%} else if (game == 'lol') { %>icon_icon<%} else if (game == 'hots') { %>hots<% } else if (game == 'csgo') { %>csgo<% } else if (game == 'warface') { %>warface<% } else if (game == 'squad') { %>squad<% } else if (game == 'sc2') { %>sc2<% } else { %>tank_icon<%} %>"></div>
-				</button>
-				<%} else {%>
+				<%if (game == 'sc2') {%>
 				<button class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_terran" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
 					<div class="icon icon-terran"></div>
 				</button>
@@ -288,7 +294,18 @@
 				</button>
 				<button class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_protoss" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
 					<div class="icon icon-protoss"></div>
-				</button>					
+				</button>
+				<%} else if (game == 'R6') {%>
+				<button class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_R6_atac" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+					<div class="icon icon-attac"></div>
+				</button>
+				<button class="btn btn-default menu_btn" data-context="icon" aria-label="Left Align" id="icon_R6_def" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+					<div class="icon icon-def"></div>
+				</button>
+				<%} else {%>
+				<button class="btn btn-default menu_btn" aria-label="Left Align" id="icon" data-toggle="tooltip" title="<%=l('Add icon (click map)')%>">
+					<div class="icon icon-<%=game%>_icons"></div>
+				</button>
 				<%}%>
 				<button class="btn btn-default menu_btn" aria-label="Left Align" id="draw" data-toggle="tooltip" title="<%=l('Free draw')%>">
 					<div class="icon icon-pencil"></div>
@@ -423,18 +440,27 @@
 			</div>
 			
 			<%if (game == 'sc2') {%>
-			<div id="icon_terran_context">
-			<h4><%=l('Terran Icon options')%></h4>
+				<div id="icon_terran_context">
+				<h4><%=l('Terran Icon options')%></h4>
 				<%include sc2_terran_icons.ejs%><br/>
-			</div>
-			<div id="icon_zerg_context">
-			<h4><%=l('Zerg Icon options')%></h4>
+				</div>
+				<div id="icon_zerg_context">
+				<h4><%=l('Zerg Icon options')%></h4>
 				<%include sc2_zerg_icons.ejs%><br/>
-			</div>
-			<div id="icon_protoss_context">
-			<h4><%=l('Protoss Icon options')%></h4>
+				</div>
+				<div id="icon_protoss_context">
+				<h4><%=l('Protoss Icon options')%></h4>
 				<%include sc2_protoss_icons.ejs%><br/>
-			</div>
+				</div>
+			<%} else if (game == 'R6') {%>
+				<div id="icon_R6_atac_context">
+				<h4><%=l('Attack Icon options')%></h4>
+				<%include R6_attac_icons.ejs%><br/>
+				</div>
+				<div id="icon_R6_def_context">
+				<h4><%=l('Defence Icon options')%></h4>
+				<%include R6_def_icons.ejs%><br/>
+				</div>
 			<%}%>
 
 			

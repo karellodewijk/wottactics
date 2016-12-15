@@ -6037,7 +6037,8 @@ $(document).ready(function() {
 			var new_context = $(this).attr('id')+"_context";
 			var new_menu = $(this).attr('id')+"_context";
 			
-			if (game == 'sc2') {
+			if (game == 'sc2' || game == 'R6') {
+				console.log(new_menu)
 				if (new_menu.substring(0, 4) == 'icon') {
 					$('#icon_options').detach().appendTo($('#' + new_menu));
 				}

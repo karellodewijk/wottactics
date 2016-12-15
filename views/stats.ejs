@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<script defer type="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/stats.js"></script>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
+	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map tactics with your friends, team, platoon or clan.">
+	<meta name="user" content="<%=JSON.stringify(user)%>">
+</head>
+<body>
+	<% include navbar.ejs %>
+	<div class="container" style='width:100%; position:relative;'>
+		<nav class="navbar navbar-default">
+			<ul class="nav navbar-nav">
+				<li><a href="#">RU</a></li>
+				<li><a href="#">EU</a></li>
+				<li><a href="#">NA</a></li>
+				<li><a href="#">KOR</a></li>
+				<li><a href="#">SEA</a></li>
+			</ul>
+			</div>
+		</nav>
+		
+		<table class="table tablesorter table-bordered" id="list" style="background-color:white;">
+			<thead> 
+			<tr>
+			  <th class="header" data-toggle="tooltip" title="Afbeelding">Afbeelding</th>
+			  <th class="header" data-toggle="tooltip" title="Naam">Naam</th>
+			  <th class="header" data-toggle="tooltip" title="Opslag">Opslag</th>
+			  <th class="header" data-toggle="tooltip" title="Geheugen">Geheugen</th>
+			  <th class="header" data-toggle="tooltip" title="Prijs">Prijs</th>
+			  <th class="header" data-toggle="tooltip" title="Barema">Barema</th>
+			  <th class="header" data-toggle="tooltip" title="Meer informatie">Meer informatie</th>
+			  <th class="header" data-toggle="tooltip" title="Verwijder">Verwijder</th>
+			</tr>
+		</table>
+	</div>
+	<% include footer.ejs %>	
+</body>
