@@ -449,7 +449,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	}
 	
-	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad'];	
+	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6'];	
 	games.forEach(function(game) {
 		router.get('/' + game, function(req, res, next) {		
 		  set_game(req, res, game);
@@ -494,6 +494,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		  set_game(req, res,'wot');
 	  }
 	  res.render('about', { game: req.session.game, 
+							user: req.session.passport.user,
+							locale: req.session.locale,
+							url: req.fullUrl,
+							static_host: secrets.static_host, 
+							ga_id:secrets.ga_id});
+	});
+	router.get('/stats', function(req, res, next) {
+	  if (!req.session.game) {
+		  set_game(req, res,'wot');
+	  }
+	  res.render('stats', { game: req.session.game, 
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,

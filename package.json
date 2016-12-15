@@ -29,6 +29,7 @@
     "passport-strategy": "^1.0.0",
     "passport-twitter": "^1.0.4",
     "passport-vkontakte": "^0.4.0",
+    "request": "^2.79.0",
     "serve-favicon": "^2.3.0",
     "socket.io": "^1.4.8",
     "socket.io-express-session": "^0.1.3",
