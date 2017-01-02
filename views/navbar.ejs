@@ -43,10 +43,12 @@
 		<div id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav nav-pills">
 			<% if (user.identity) { %>
-				<li id="stored_tactics"><a href="stored_tactics.html?game=<%=game%>"><%=l('Stored tactics')%></a></li>
+				<li id="stored_tactics"><a href="/stored_tactics.html?game=<%=game%>"><%=l('Stored tactics')%></a></li>
 			<% } %>
-			<li id="getting_started"><a href="getting_started.html"><%=l('Getting started')%></a></li>
-			<li id="about"><a href="about.html"><%=l('About')%></a></li>
+			<% if (game == 'wot') { %>
+				<li id="stats"><a class="beta_button" href="/player/"><%=l('Player stats')%></a></li>
+			<% }%>
+			<li id="getting_started"><a href="/getting_started.html"><%=l('Getting started')%></a></li>
 			<li id="forum"><a href="http://forum.<%=url.split('/')[0]%>/forums/"><%=l('Forums')%></a></li>
 		</ul>
 
