@@ -5,6 +5,7 @@ var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
 var http = require('http');
 var escaper = require('mongo-key-escape');
 var sizeof = require('object-sizeof');
+var request = require('request');
 
 room_data = {} //room -> room_data map to be shared with clients
 
@@ -94,9 +95,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	if(err) throw err;	
 	
 	db.createCollection('tactics');
-	db.createCollection('clans');
+	db.createCollection('users');
+	db.createCollection('update_stats');
 	db.collection('tactics').createIndex( { "createdAt": 1 }, { expireAfterSeconds: 31622400 } );
 
+	db.createCollection('clans');
+	
 	function clean_up_room(room) {
 		setTimeout( function() {
 			if (room_data[room]) {
@@ -451,7 +455,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6'];	
 	games.forEach(function(game) {
-		router.get('/' + game, function(req, res, next) {		
+		router.get('/' + game, function(req, res, next) {
 		  set_game(req, res, game);
 		  res.render('index', { game: req.session.game, 
 								user: req.session.passport.user,
@@ -487,6 +491,77 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		router.get('/'+game+'3', function(req, res, next) {
 		  planner_redirect(req, res, game, 'planner3');
 		});			
+	});
+	
+	router.get('/player/:wid?', function(req, res, next) {
+		var wid = req.params.wid;
+		if (!wid) {
+			var user = req.session.passport.user;
+			if (user.wg_account_id) {
+				wid = user.wg_account_id;
+			}			
+		}
+		if (wid) {
+			db.collection('update_stats').update({_id:wid}, {_id:wid}, {upsert: true});
+		}
+		if (!req.session.game) {
+			set_game(req, res,'wot');
+		}
+		res.render('stats', { game: req.session.game, 
+							  user: req.session.passport.user,
+							  locale: req.session.locale,
+							  url: req.fullUrl,
+							  static_host: secrets.static_host, 
+							  ga_id:secrets.ga_id});
+	});
+	
+	router.get('/player_updates', function(req, res, next) {
+		if (req.query.pw == secrets.mongodb_password) {
+			var users = [];
+			db.collection('update_stats').find({}).each(function(err, user) {			
+				if(user == null) {
+					//res.set({"Content-Disposition":"attachment; filename=\"player.json\""});
+					res.send(JSON.stringify(users));					
+					db.collection('update_stats').drop();
+				} else {
+					users.push(user._id);				
+				}
+			});
+		} else {
+			res.status(500).send('Incorrect password')
+		}
+	});
+	
+	router.get('/stats/player/:wid', function(req, res, next) {
+		var wid = req.params.wid;
+		var field = req.query.field;
+		if (!field) {
+			field = "all";
+		}
+		db.collection('ws_' + field + '_summary').findOne({_id:wid}, function(err, result) {
+			if (!err) {
+				res.status(200).send(JSON.stringify(result));
+			}
+		});	
+	});
+	
+	var count = 0;
+	//form {pw: pw, data: {field: field, users: [{_id:user, ...}]}}
+	router.post('/submit_summaries', function(req, res, next) {
+		if (req.query.pw == secrets.mongodb_password) {
+			var data = req.body;
+			for (var i in data) {
+				var field = i;
+				var users = data[i]				
+				for (var j in users) {
+					var user = users[j];
+					db.collection('ws_' + field + '_summary').update({_id:user._id}, user, {upsert:true});
+				}
+			}
+			res.status(200).send('Received')
+		} else {
+			res.status(500).send('Incorrect password')
+		}
 	});
 	
 	router.get('/about.html', function(req, res, next) {
@@ -619,6 +694,53 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  res.redirect(return_to);
 	});
 
+	function get_server(id) {
+        if(id > 3000000000){return "kr";}
+        if(id > 2000000000){return "asia";}
+        if(id > 1000000000){return "com";}
+        if(id > 500000000){return "eu";}
+        return "ru";
+    }
+	
+	function get_wg_data(page, fields, player, cb) {
+		var server = get_server(player);
+		var link = "https://api.worldoftanks." + server + "/wot" + page;
+		link += "application_id=" + secrets.wg_api_key;
+		link += "&account_id=" + player;
+		if (fields && fields.length > 0) {
+			link += "&fields=";
+			for (var i in fields) {
+				var field = fields[i];
+				link += field + ",";
+			}
+			link = link.slice(0,-1);
+		}
+		request(link, function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+				var data = JSON.parse(body);
+				if (data.status == "error") {
+					console.error("Error fetching link: " + link);
+					console.error(data);
+					cb();
+				} else {
+					cb(data.data[player]);
+				}
+			} else {
+				console.error(response.statusCode + ": "+ error);
+				cb();
+			}
+		});
+	}
+	
+	function decorate_session(user, done) {
+		db.collection('users').findOne({_id:user.identity}, {no_ads:true}, function(err, result) {
+			if (result && result.no_ads) {
+				user.no_ads = true;
+			}
+			if (done) done();
+		});
+	}
+	
 	OpenIDStrategy = require('passport-openid').Strategy;
 	passport.use('openid', new OpenIDStrategy({
 			returnURL: function(req) { 
@@ -639,7 +761,26 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity = identifier.split('/id/')[1].split("/")[0];
 			user.wg_account_id = user.identity.split('-')[0];
 			user.name = user.identity.split('-')[1];
-			done(null, user);
+			
+			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider, server:user.server, wg_id:user.wg_account_id}}, {upsert:true});
+			
+			var promises = [];
+			promises.push(new Promise(function(resolve){ 
+				decorate_session(user, function() { resolve(); });
+			}))
+			promises.push(new Promise(function(resolve){ 
+				get_wg_data("/account/info/?", ["clan_id"], user.wg_account_id, function(data) {				
+					if (data) {
+						user.clan_id = String(data.clan_id);
+						db.collection('update_clans').update({_id:user.clan_id}, {_id:user.clan_id}, {upsert: true});
+					}
+					resolve();
+				});
+			}))
+			
+			Promise.all(promises).then(function() {
+				done(null, user);
+			})
 		}
 	));
 	
@@ -667,7 +808,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity = profile.id;
 			user.identity_provider = "google";
 			user.name = profile.displayName;
-			done(null, user);
+			
+			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			decorate_session(user, function() {
+				done(null, user);
+			});
 		  }
 		));
 		
@@ -695,7 +840,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity = "vk-" + profile.id;
 			user.identity_provider = "vk";
 			user.name = profile.displayName;
-			done(null, user);
+			
+			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			decorate_session(user, function() {
+				done(null, user);
+			});			
 		  }
 		));
 		
@@ -723,7 +872,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity = 'bnet-'+profile.id;
 			user.identity_provider = "bnet";
 			user.name = profile.battletag;
-			done(null, user);
+			
+			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			decorate_session(user, function() {
+				done(null, user);
+			});		
 		  }
 		));	
 		
@@ -755,7 +908,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity = profile.id;
 			user.identity_provider = "facebook";
 			user.name = profile.displayName;
-			done(null, user);
+			
+			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			decorate_session(user, function() {
+				done(null, user);
+			});			
 		  }
 		));
 		
@@ -783,7 +940,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity = profile.id;
 			user.identity_provider = "twitter";
 			user.name = profile.displayName;
-			done(null, user);
+			
+			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			decorate_session(user, function() {
+				done(null, user);
+			});		
 		  }
 		));	
 		
@@ -824,7 +985,12 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user.identity_provider = "steam";
 							user.name = result.response.players[0].personaname;
 						}
-						done(null, user);
+						
+						db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+						decorate_session(user, function() {
+							done(null, user);
+						});
+						
 					}
 				});			
 			}

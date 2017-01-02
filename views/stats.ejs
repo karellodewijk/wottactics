@@ -4,37 +4,132 @@
 	<% include common_headers.ejs %>
 	<script defer type="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/stats.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
+	<link rel="stylesheet" href="<%=static_host%>/stylesheets/tablesorter/style.css" />
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
 	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map tactics with your friends, team, platoon or clan.">
 	<meta name="user" content="<%=JSON.stringify(user)%>">
 </head>
-<body>
-	<% include navbar.ejs %>
+<body style="overflow-y: scroll;">
+	<% include navbar.ejs %>	
+	<script>
+		document.getElementById('stats').className = "beta_button active";
+	</script>
 	<div class="container" style='width:100%; position:relative;'>
-		<nav class="navbar navbar-default">
-			<ul class="nav navbar-nav">
-				<li><a href="#">RU</a></li>
-				<li><a href="#">EU</a></li>
-				<li><a href="#">NA</a></li>
-				<li><a href="#">KOR</a></li>
-				<li><a href="#">SEA</a></li>
-			</ul>
+		<div class="jumbotron content content_margin">
+			
+			<nav class="navbar navbar-default">
+				<ul id="server_select" class="nav navbar-nav">
+					<li class="server_li" id="ru"><a class="server_select"href="javascript:void(0)">RU</a></li>
+					<li class="server_li" id="eu"><a class="server_select" href="javascript:void(0)">EU</a></li>
+					<li class="server_li" id="com"><a class="server_select" href="javascript:void(0)">NA</a></li>
+					<li class="server_li" id="kr"><a class="server_select" href="javascript:void(0)">KOR</a></li>
+					<li class="server_li" id="asia"><a class="server_select" href="javascript:void(0)">SEA</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right" style="padding-right:8px">
+					<form class="navbar-form navbar-left" role="search">
+						<div class="input-group input-append">
+							<input type="text" class="form-control" placeholder="Player" name="srch-term" id="srch-term">
+							<div class="input-group-btn">
+								<button id="search_button" class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+							</div>
+						</div>
+					</form>
+				</ul>
+			</nav>
+			
+			<span id="no_results" hidden><h4><%=l('No results found')%></h4></span>
+			<span id="no_battles" hidden><h4><%=l('This user has not played any battles')%></h4></span>
+			<span id="did_you_mean" hidden><h4><%=l('Did you mean:')%> <span id="alt_lists"></span></h4></span>
+			<h2 id="player_name" style="padding-top:0px; margin-top:0px" hidden></h2>									
+			<div style="min-width:100%; display:flex">
+				<div style="width:70%;">
+					<ul class="nav nav-tabs">
+						<li class='tab_li' id="all_tab"><a class="tab_link" data-src="all" href="#">Overall</a></li>
+						<li class='tab_li' id="cw_tab"><a class="tab_link" data-src="globalmap" href="#">CW</a></li>
+						<li class='tab_li' id="sk_tab"><a class="tab_link" data-src="stronghold_skirmish" href="#">Skirmish</a></li>
+						<li class='tab_li' id="sh_tab"><a class="tab_link" data-src="stronghold_defense" href="#">Stronghold</a></li>
+						<li class='tab_li' id="team_tab"><a class="tab_link" data-src="team" href="#">Team</a></li>
+					</ul>
+				
+					<table class="table table-bordered" id="total_table" style="background-color:white; table-layout: fixed;">
+						<thead> 
+						<tr>
+						  <th class="header" data-toggle="tooltip" title=""></th>
+						  <th class="header" data-toggle="tooltip" title="<%=l("Total")%>"><%=l("Total")%></th>
+						  <th class="header" data-toggle="tooltip" title="<%=l("Resets every 24h")%>"><%=l("Recent")%></th>
+						  <th class="header" id="last_100"><%=l("Last ~100 battles")%></th>
+						  <th class="header" id="last_1000"><%=l("Last ~1,000 battles")%></th>
+						  <th class="header" id="last_5000"><%=l("Last ~5,000 battles")%></th>
+						</tr>
+						</thead>
+						<tbody id="total_table_body">
+							<tr id="wr_col"><td><%=l("Winrate")%></td></tr>
+							<tr id="wn8_col"><td><%=l("WN8")%></td></tr>
+							<tr id="wn9_col"><td><%=l("WN9")%></td></tr>
+							<tr id="battles_col"><td><%=l("Battles")%></td></tr>
+							<tr id="dam_col"><td><%=l("Damage")%></td></tr>
+							<tr id="kills_col"><td><%=l("Kills")%></td></tr>
+							<tr id="surv_col"><td><%=l("Survived")%></td></tr>
+							<tr id="kd_col"><td><%=l("K/D")%></td></tr>
+							<tr id="def_col"><td><%=l("Defence points")%></td></tr>
+							<tr id="cap_col"><td><%=l("Capture points")%></td></tr>
+							<tr id="xp_col"><td><%=l("XP")%></td></tr>
+							<tr id="tier_col"><td><%=l("Tier")%></td></tr>
+						</tbody>
+					</table>
+				</div>
+				<%if (!user.no_ads) {%>
+				<div class="inline" style="width:30%; padding:20px; display:flex; flex-direction:column; text-align:center">
+					<h3><%=l('Advertisement')%></h3>
+					<div style="width:100%; height:445px; flex: 1 1 auto;">
+					<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+					<ins class="adsbygoogle"
+						 style="display:block;"
+						 data-ad-client="ca-pub-9117810685246622"
+						 data-ad-slot="5969322195"
+						 data-ad-format="rectangle"></ins>		 
+					<script>
+					(adsbygoogle = window.adsbygoogle || []).push({});
+					</script>
+					</div>
+				</div>
+				<%}%>
 			</div>
-		</nav>
-		
-		<table class="table tablesorter table-bordered" id="list" style="background-color:white;">
-			<thead> 
-			<tr>
-			  <th class="header" data-toggle="tooltip" title="Afbeelding">Afbeelding</th>
-			  <th class="header" data-toggle="tooltip" title="Naam">Naam</th>
-			  <th class="header" data-toggle="tooltip" title="Opslag">Opslag</th>
-			  <th class="header" data-toggle="tooltip" title="Geheugen">Geheugen</th>
-			  <th class="header" data-toggle="tooltip" title="Prijs">Prijs</th>
-			  <th class="header" data-toggle="tooltip" title="Barema">Barema</th>
-			  <th class="header" data-toggle="tooltip" title="Meer informatie">Meer informatie</th>
-			  <th class="header" data-toggle="tooltip" title="Verwijder">Verwijder</th>
-			</tr>
-		</table>
+			
+			<div>
+			<h2><%=l("Tanks")%></h2>
+			
+			<table class="table tablesorter table-bordered" id="tank_list" style="background-color:white; text-align:center;">
+				<style scoped>
+					td {
+						display: table-cell;
+						line-height: 32px;
+						padding: 0px;
+					}
+				</style>
+				<thead> 
+				<tr>
+				  <th class="header" data-toggle="tooltip" title=""></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Tank")%>"><%=l("Tank")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Nation")%>"><%=l("Nation")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Tier")%>"><%=l("Tier")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate")%>"><%=l("Win rate")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Battles")%>"><%=l("Battles")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Damage")%>"><%=l("Damage")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Kills")%>"><%=l("Kills")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("K/D")%>"><%=l("K/D")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Survived")%>"><%=l("Survived")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("XP")%>"><%=l("XP")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("wn8")%>"><%=l("wn8")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("wn9")%>"><%=l("wn9")%></th>
+				</tr>
+				</thead> 
+				<tbody id="tank_list_body">
+				</tbody>
+			</table>
+			</div>
+		</div>
 	</div>
-	<% include footer.ejs %>	
+	<% include footer.ejs %>		
 </body>

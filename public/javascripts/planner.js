@@ -299,6 +299,7 @@ var zoom_level = 1;
 var control_camera = false;
 var dragging_enabled = true;
 var temp_canvas = document.createElement("canvas");
+var dragging_mode = {};
 
 //these variables are only for the video replay room
 var offset = 0; // time offset from the server in ms 
@@ -652,7 +653,7 @@ window.onresize = function() {
 		if ($('#left_side_bar').length) {
 			$('#left_side_bar').detach().prependTo($("body"));
 			$('#map_select_box').prependTo($("#map_select_section"));
-			$('#home_button').prependTo($("#left_navbar"));
+			//$('#home_button').prependTo($("#left_navbar"));
 			
 		}
 		size_y = window.innerHeight - 5;
@@ -667,7 +668,7 @@ window.onresize = function() {
 		if ($('#left_side_bar').length) {
 			$('#left_side_bar').detach().appendTo($("body"));
 			$('#map_select_box').prependTo($(".left_column"));
-			$('#home_button').prependTo($("#right-buttons"));
+			//$('#home_button').prependTo($("#right-buttons"));
 			iface_width = RIGHT_BAR_MIN_WIDTH;
 		}
 		
@@ -4930,7 +4931,12 @@ function video_progress() {
 }
 
 function enable_dragging() {
-	if (!dragging_enabled) {
+	if (!dragging_enabled) {	
+		var icon = $("#disable_dragging > div");
+		icon.removeClass("icon-enable_dragging");
+		icon.addClass("icon-disable_dragging");
+		$("#disable_dragging").attr('title', $("#disable_dragging").attr('data-disable'))
+	
 		dragging_enabled = true;
 		for (var i in room_data.slides[active_slide].entities) {
 			var entity = room_data.slides[active_slide].entities[i];
@@ -4947,7 +4953,12 @@ function enable_dragging() {
 
 function disable_dragging() {
 	if (dragging_enabled) {
-		dragging_enabled = false;
+		var icon = $("#disable_dragging > div");
+		icon.removeClass("icon-disable_dragging");
+		icon.addClass("icon-enable_dragging");
+		$("#disable_dragging").attr('title', $("#disable_dragging").attr('data-enable'))
+				
+		dragging_enabled = false;			
 		for (var i in room_data.slides[active_slide].entities) {
 			var entity = room_data.slides[active_slide].entities[i];
 			if (entity.container && entity.type != 'background') {
@@ -5967,6 +5978,17 @@ $(document).ready(function() {
 			}
 		});
 		
+		$('#disable_dragging').click(function () {
+			var icon = $("#disable_dragging > div");
+			if (icon.hasClass("icon-disable_dragging")) {
+				dragging_mode[active_context] = "disabled";
+				disable_dragging();
+			} else {
+				dragging_mode[active_context] = "enabled";
+				enable_dragging();	
+			}
+		});
+		
 		$('#grid').click(function () {
 			grid_layer.visible = !grid_layer.visible;
 			room_data.slides[active_slide].show_grid = grid_layer.visible;
@@ -6038,7 +6060,6 @@ $(document).ready(function() {
 			var new_menu = $(this).attr('id')+"_context";
 			
 			if (game == 'sc2' || game == 'R6') {
-				console.log(new_menu)
 				if (new_menu.substring(0, 4) == 'icon') {
 					$('#icon_options').detach().appendTo($('#' + new_menu));
 				}
@@ -6065,27 +6086,36 @@ $(document).ready(function() {
 			active_menu = new_menu;
 			active_context = new_context;
 			
-			switch(active_context) {
-				case "ping_context":
-				case "track_context":
-				case "icon_context":
-				case "note_context":
-				case "text_context":
-				case "remove_context":
-				case "eraser_context":
-				case "background_text_context":
-				case "select_context":
+			
+			if (dragging_mode[active_context]) {
+				if (dragging_mode[active_context] == "enabled") {
 					enable_dragging();
-					break;
-				case "draw_context":
-				case "ruler_context":
-				case "rectangle_context":
-				case "circle_context":
-				case "line_context":
-				case "curve_context":
-				case "polygon_context":
+				} else {
 					disable_dragging();
-					break;
+				}
+			} else {
+				switch(active_context) {	
+					case "ping_context":
+					case "track_context":
+					case "icon_context":
+					case "note_context":
+					case "text_context":
+					case "remove_context":
+					case "eraser_context":
+					case "background_text_context":
+					case "select_context":
+						enable_dragging();
+						break;		
+					case "draw_context":
+					case "ruler_context":
+					case "rectangle_context":
+					case "circle_context":
+					case "line_context":
+					case "curve_context":
+					case "polygon_context":
+						disable_dragging();
+						break;
+				}
 			}
 		});	
 
@@ -6349,7 +6379,6 @@ $(document).ready(function() {
 				socket.emit('sync_clock');
 			}, 20000);
 		}
-		
 		render_scene();
 	});
 

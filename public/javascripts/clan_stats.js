@@ -1,21 +1,22 @@
-var player = window.location.pathname.split('/');
-player = player[player.length - 1]
+var clan = window.location.pathname.split('/');
+clan = clan[clan.length - 1]
 
-if (!player) {
+if (!clan) {
+	server = "eu";
 	var user = JSON.parse($("meta[name='user']").attr('content'));
-	if (user && user.wg_account_id) {
-		player = user.wg_account_id;
+	if (user && user.clan) {
+		player = user.clan;
+		server = user.server;
 	}
-}
-
-var server = get_server(player);
-
-function get_server(id) {
-	if(id > 3000000000){return "kr";}
-	if(id > 2000000000){return "asia";}
-	if(id > 1000000000){return "com";}
-	if(id > 500000000){return "eu";}
-	return "ru";
+} else {
+	function get_server(id) {
+		if(id > 3000000000){return "kr";}
+		if(id > 2000000000){return "asia";}
+		if(id > 1000000000){return "com";}
+		if(id > 500000000){return "eu";}
+		return "ru";
+	}
+	var server = get_server(player);	
 }
 
 var getQueryString = function ( field, url ) {
@@ -54,10 +55,7 @@ function reset_ui() {
 	})
 }
 
-function populate() {	
-	server = get_server(player);
-	$('#no_results').hide();
-	
+function populate() {					
 	if (src != "all") {
 		$("#last_100").text($("#last_100").text().replace("100 ", "10 "));
 		$("#last_1000").text($("#last_1000").text().replace("1,000 ", "100 "));
@@ -95,15 +93,13 @@ function populate() {
 			}
 			get_wg_data("/tanks/stats/?extra=random&", fields, function(data) {
 				stats_data = data;
-				if (stats_data) {
-					stats_data = stats_data.map(function(x) { x[src].id = x.tank_id; return x; });				
-					if (src == "all") {
-						for (var i in stats_data) {
-							stats_data[i][wn9_src].id = stats_data[i].tank_id;
-						}
+				stats_data = stats_data.map(function(x) { x[src].id = x.tank_id; return x; });
+				
+				if (src == "all") {
+					for (var i in stats_data) {
+						stats_data[i][wn9_src].id = stats_data[i].tank_id;
 					}
 				}
-				
 				self.resolve();
 			});
 		}),
@@ -130,14 +126,7 @@ function populate() {
 				self.resolve();
 			});
 		})
-	).then(function() {	
-		if (!stats_data) {
-			$('#no_battles').show();
-			return;
-		} else {
-			$('#no_battles').hide();
-		}
-		
+	).then(function() {
 		function calculate_stats() {
 			function calculate_wn8(tank, exp) {
 				var rDAMAGE = tank.damage_dealt / exp.expDamage;
@@ -517,7 +506,10 @@ function populate() {
 				}
 				
 				results.battles = now.battles - then.battles;
-
+				
+				console.log(now.wn9, then.wn9)
+				console.log((now.damage_dealt - then.damage_dealt) / 44)
+				
 				if (results.battles == 0) {
 					add_msg_column("No recent battles");
 					return;
@@ -628,25 +620,18 @@ $(document).ready(function() {
 		e.preventDefault();
 		var link = 'https://api.worldoftanks.' + server + '/wot/account/list/?limit=20&application_id=0dbf88d72730ed7b843ab5934d8b3794&search=' + $('#srch-term').val();
 		$.get(link, {}, function(data) {
-			if (data.data.length == 0) {
-				$('#no_results').show();
-				$('#no_battles').hide();
-				return;
+			if (data.data[0].nickname == $('#srch-term').val()) {
+				player = data.data[0].account_id
+				reset_ui();
+				populate();
 			} else {
-				$('#no_results').hide();
-				if (data.data[0].nickname == $('#srch-term').val() || data.data.length == 1) {
-					player = data.data[0].account_id
-					reset_ui();
-					populate();
-				} else {
-					var alternatives = "";
-					for (var i = 0; i < Math.min(20, data.data.length); i++) {
-						alternatives += "<a href='/player/"+ data.data[i].account_id + "'>" + data.data[i].nickname + "</a>, "
-					}
-					alternatives = alternatives.substring(0, alternatives.length - 2);
-					$('#alt_lists').html(alternatives);
-					$("#did_you_mean").show();
+				var alternatives = "";
+				for (var i = 0; i < Math.min(20, data.data.length); i++) {
+					alternatives += "<a href='/player/"+ data.data[i].account_id + "'>" + data.data[i].nickname + "</a>, "
 				}
+				alternatives = alternatives.substring(0, alternatives.length - 2);
+				$('#alt_lists').html(alternatives);
+				$("#did_you_mean").show();
 			}
 		});
 	});
