@@ -3,7 +3,7 @@
 <head>
 	<% include common_headers.ejs %>
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
-	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map tactics with your friends, team, platoon or clan.">
+	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map strategies with your friends, team, platoon or clan.">
 </head>
 <body style="overflow:scroll;">
 	<% include navbar.ejs %>
@@ -77,13 +77,20 @@
 						
 						<p><h4><b>So how does it work ?</b></h4>
 						
-						<p>Press the blue button. Then select a map and use the tools on the right to start planning your strategy. You can invite others by sending them the link. 
+						<p>Press the blue button. Then select a <%=game%> map and use the tools on the right to start planning your strategy. You can invite others by sending them the link. 
 					</div>
 					<div class="col-md-4">
-						<h2>Your input matters</h2>
-						<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
-						
-						<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
+						<h2>Wottactic.tk redirected to <a href="http://wottactic.com/">wottactic.com</a></h2>
+						<p>Same website, different name. If you visit wottactic.tk, you'll be automatically redirected.
+						<p><h4>Do I need to do anything ?</h4>
+						<p>No, you will be automatically redirected. You will have to log in again and may want to update links or bookmarks. Old links and bookmarks will keep working though but will require an additional request (very small delay).
+						<p><b>Why the switch ?</b>
+						<ul>
+							<li>I've been getting some reports of wottactic simply not loading because some parental control software and/or isp's simply block all .tk domains.
+							<li>For some time now google seems to prefer linking to wottactic.com anyway.
+							<li>Google adsense seems to rate tk domain much lower. If I'm going to be a sellout, might as well get paid for it. 
+						</ul>
+						<p>I will be keeping the wottactic.eu domain and is actually the prefered domain for eu residents. The idea is if the site grows a little more it will always be served from an eu based server.
 					</div>
 					<%if (game == 'warface') { %>
 						<div class="col-md-4">
@@ -92,8 +99,14 @@
 						</div>
 					<%} else { %>
 						<div class="col-md-4">
-							<h2>Rainbow Six Siege is now supported</h2>
-							<p>Give it a <a href="http://gametactic.org/R6">try</a>, spread the word. 
+							<h2>Sorry about the ads</h2>
+							<p>I tried to run in on donations alone the last year, but that doesn't seem to cover the hosting cost. So I've added a little bit of advertising, however:
+							<ul>
+								<li>There will be no advertising on the planner page itself, ever.
+								<li>I've disabled the ads for the donators (who's login I could decipher). And I will disable all ads for future donators regardless of the amount.
+								<li>I'm ok with people using adblock.
+							</ul>
+							
 						</div>	
 					<% } %>						
 				</div>
@@ -107,17 +120,19 @@
 					<div class="col-md-4">
 						<h2>Yet another stats tracker</h2>
 						<p>I've added a player stats tracked to the website. It's pretty basic at the moment, and it's still gathering historical info. But feel free to take a look. A clan stats page/option is also coming.
-					</div>					
+						<p>There's also an ad on the new page. This does not mean there will be ads on the tactic planner page. But it should cover the hosting cost with a little luck. Even with some donations, wottactic has been running at a bit of a loss, not even counting manhours.
+						<p>Ads are disabled for everyone who donated ofcourse or anyone who donates anything in the future. It does require you to log back in.
+					</div>
 					<% } %>
 					<div class="col-md-4">
 						<h2>Latest changes</h2>
 						<p>
 						<ul>
+							<li>Added custom color picker for users of ie and edge.
+							<li>You can now use PAGE UP/PAGE DOWN to switch slides.
 							<li>Added Enable/Disable dragging toggle button.
 							<li>Added Rainbox Six siege as a supported game.
 							<li>Added ?game=whatever url parameter to the link of stored_tactics.
-							<li>Simplified/shortened links to tactics.
-							<li>Added the new wot minimaps as an option.
 						</ul> 
 						<p>On the bug hunting front:
 						<ul>
@@ -130,22 +145,11 @@
 						<p>If you find anything else, however small, that is broken, pls let me know. 
 					</div>
 					<div class="col-md-4">
-						<h2>3,000,000 visits</h2>
-						<p>Since the beginning of March, this website has been visited a total of 3,069,861 times.
+						<h2>Your input matters</h2>
+						<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
 						
-						<p>497,425 rooms have been created and 70,917 tactics have been stored. 77842 different users have logged in at least once.
-
-						<p>56.3% of users use google chrome. 23.4% use firefox, 8.3% use microsoft edge and 4.8% use ie. Only 2% of the visitors used a tablet or phone.
-						
-						<p>75% Of the visits are from Europe, with 15% from America and 8% from Asia. 
-						
-						<p>On November 24th the website was visited 44,874 times in a single day, with a peak of 7936 concurrent users around 18PM GMT.
-						
-						<p>Thank you for your support. I think that's pretty amazing.
-
-						<p>For more details here's a google analytics <a href="http://karellodewijk.github.io/other/traffic.pdf">report</a>.
-
-					</div>
+						<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
+					</div>				
 				</div>
 				<div class='row'>
 					<div class='col-md-6'>

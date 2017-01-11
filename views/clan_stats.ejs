@@ -2,11 +2,13 @@
 <html lang="<%=locale%>">
 <head>
 	<% include common_headers.ejs %>
-	<script defer type="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>
-	<script defer type="text/javascript" src="<%=static_host%>/javascripts/stats.js"></script>
+	<script defer type="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>		
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.4/js/jquery.tablesorter.widgets.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/clan_stats.js"></script>
 	<link rel="stylesheet" href="<%=static_host%>/stylesheets/tablesorter/style.css" />
+	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
 	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map tactics with your friends, team, platoon or clan.">
 	<meta name="user" content="<%=JSON.stringify(user)%>">
@@ -14,7 +16,7 @@
 <body style="overflow-y: scroll;">
 	<% include navbar.ejs %>	
 	<script>
-		document.getElementById('stats').className = "beta_button active";
+		document.getElementById('clan_stats').className = "beta_button active";
 	</script>
 	<div class="container" style='width:100%; position:relative;'>
 		<div class="jumbotron content content_margin">		
@@ -80,7 +82,8 @@
 					</table>
 				</div>
 				<%if (!user.no_ads) {%>
-				<div class="inline" style="width:30%; padding:20px; padding-top:50px; display:flex; flex-direction:column; text-align:center">
+				<div class="inline" style="width:30%; padding:20px; display:flex; flex-direction:column; text-align:center">
+					<h3><%=l('Advertisement')%></h3>
 					<div style="width:100%; height:445px; flex: 1 1 auto;">
 					<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 					<ins class="adsbygoogle"
@@ -96,9 +99,9 @@
 				<%}%>
 			</div>
 					
-			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Members")%> <span class="caret"></span></h2></a>
+			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Players")%>(<span id="member_amount"></span>) <span class="caret"></span></h2></a>
 			<div id="tank_section">
-			<table class="table tablesorter table-bordered" id="tank_list" style="background-color:white; text-align:center;">
+			<table class="table tablesorter table-bordered" id="member_list" style="background-color:white; text-align:center;">
 				<style scoped>
 					td {
 						display: table-cell;
@@ -106,24 +109,28 @@
 						padding: 0px;
 					}
 				</style>
+				<col style="width:20%">
+				<col style="width:10%">
+				<col style="width:10%">
+				<col style="width:10%">
+				<col style="width:10%">
+				<col style="width:10%">
+				<col style="width:10%">
+				<col style="width:10%">
+				<col style="width:10%">
 				<thead> 
 				<tr>
-				  <th class="header" data-toggle="tooltip" title=""></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Tank")%>"><%=l("Tank")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Nation")%>"><%=l("Nation")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Tier")%>"><%=l("Tier")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate")%>"><%=l("Win rate")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Battles")%>"><%=l("Battles")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Damage")%>"><%=l("Damage")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Kills")%>"><%=l("Kills")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("K/D")%>"><%=l("K/D")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Survived")%>"><%=l("Survived")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("XP")%>"><%=l("XP")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Name")%>"><%=l("Name")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Role")%>"><%=l("Role")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate")%>"><%=l("Wr")%></th>
 				  <th class="header" data-toggle="tooltip" title="<%=l("wn8")%>"><%=l("wn8")%></th>
 				  <th class="header" data-toggle="tooltip" title="<%=l("wn9")%>"><%=l("wn9")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate, last ~1000 battles")%>"><%=l("Wr (R)")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("wn8, last ~1000 battles")%>"><%=l("wn8 (R)")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("wn9, last ~1000 battles")%>"><%=l("wn9 (R)")%></th>					
 				</tr>
 				</thead> 
-				<tbody id="tank_list_body">
+				<tbody id="member_list_body">
 				</tbody>
 			</table>
 			</div>
@@ -157,7 +164,7 @@
 				</div>
 			</div>
 			
-			<a href="/stats_info">Click here</a> for more info about the ratings.
+			<a href="/stat_info">Click here</a> for more info about the ratings.
 		</div>	
 	</div>
 	<% include footer.ejs %>		

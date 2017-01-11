@@ -603,6 +603,323 @@ function populate() {
 				add_msg_column("Coming soon");
 				add_msg_column("Coming soon");
 			}
+
+			var tierBattleData = [];
+			var tierWN8Data = [];
+			var tierWN9Data = [];
+			var tierWinsData = [];	
+			
+			for (var i = 1; i <= 10; i++) {
+				var total_battles = 0;
+				var total_wn8 = 0;
+				var total_wn8_battles = 0;
+				var total_wn9 = 0;
+				var total_wn9_battles = 0;
+				var total_wins = 0;
+				for (var j in results.tanks) {
+					var tank = results.tanks[j];
+					if (tank.tier == i) {
+						total_battles += tank.battles;
+						total_wins += tank.wins;
+						if (tank.wn8) {
+							total_wn8_battles += tank.battles;
+							total_wn8 += tank.wn8 * tank.battles;
+						}
+						if (tank.wn9) {
+							total_wn9_battles += tank.battles;
+							total_wn9 += tank.wn9 * tank.battles;
+						}
+					}
+				}
+				tierBattleData.push(total_battles);
+				tierWN8Data.push(total_wn8 / total_wn8_battles);
+				tierWN9Data.push(total_wn9 / total_wn9_battles);
+				tierWinsData.push(total_wins / total_battles);
+			}
+			
+			var typeBattleData = [];
+			var typeWN8Data = [];
+			var typeWN9Data = [];	
+			var typeWinsData = [];			
+			var types = ["lightTank", "mediumTank", "heavyTank", "AT-SPG", "SPG"]
+			for (var i in types) {
+				var type = types[i];
+				var total_battles = 0;
+				var total_wn8 = 0;
+				var total_wn8_battles = 0;
+				var total_wn9 = 0;
+				var total_wn9_battles = 0;
+				var total_wins = 0;
+				for (var j in results.tanks) {
+					var tank = results.tanks[j];
+					if (tank.type == type) {
+						total_battles += tank.battles;
+						total_wins += tank.wins;
+						if (tank.wn8) {
+							total_wn8_battles += tank.battles;
+							total_wn8 += tank.wn8 * tank.battles;
+						}
+						if (tank.wn9) {
+							total_wn9_battles += tank.battles;
+							total_wn9 += tank.wn9 * tank.battles;
+						}
+					}
+				}
+				typeBattleData.push(total_battles);
+				typeWN8Data.push(total_wn8 / total_wn8_battles);
+				typeWN9Data.push(total_wn9 / total_wn9_battles);
+				typeWinsData.push(total_wins / total_battles);
+			}
+			
+			typeWinsData = typeWinsData.map(function(x) { return round(x * 100, 2); })
+			tierWinsData = tierWinsData.map(function(x) { return round(x * 100, 2); })
+						
+			var tiers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+			var tierBattleDesc = {
+				type: "bar",
+				labels: tiers,
+				datasets: [
+					{
+						label: 'Battles by tier',
+						borderWidth: 1,
+						data: tierBattleData,
+						backgroundColor: "rgba(255,0,0,1)",
+						yAxisID: "battles"
+					}
+				]
+			};	
+			
+			var tierWinsDesc = {
+				type: "bar",
+				labels: tiers,
+				datasets: [
+					{
+						label: 'Winrate by tier',
+						borderWidth: 1,
+						data: tierWinsData,
+						backgroundColor: "rgba(255,255,0,1)",
+						yAxisID: "wins"
+					}
+				]
+			};	
+			
+			var tierWN8Desc = {
+				type: "bar",
+				labels: tiers,
+				datasets: [
+					{
+						label: 'WN8 by tier',
+						borderWidth: 1,
+						data: tierWN8Data,
+						backgroundColor: "rgba(0, 255, 0,1)",
+						yAxisID: "wn8"
+					}
+				]
+			};
+			
+			var tierWN9Desc = {
+				type: "bar",
+				labels: tiers,
+				datasets: [
+					{
+						label: 'WN9 by tier',
+						borderWidth: 1,
+						data: tierWN9Data,
+						backgroundColor: "rgba(0, 0, 255,1)",
+						yAxisID: "wn9"
+					}
+				]
+			};				
+	
+			var ctx = document.getElementById("tier_battles").getContext('2d');
+			var myBarChart = new Chart(ctx, {
+				type: 'bar',
+				data: tierBattleDesc,
+				options: {
+					scales: {
+					  yAxes: [{
+						labelString: 'Battles',
+						position: "left",
+						"id": "battles"
+					  }]
+					}
+				}
+			});
+
+			var ctx = document.getElementById("tier_wins").getContext('2d');
+			var myBarChart = new Chart(ctx, {
+				type: 'bar',
+				data: tierWinsDesc,
+				options: {
+					scales: {
+					  yAxes: [{
+						labelString: 'Wins',
+						position: "left",
+						"id": "wins",
+						ticks: {
+							callback: function(label, index, labels) {
+								return label+'%';
+							}
+						}
+					  }]
+					}
+				}
+			});
+			
+			var ctx = document.getElementById("tier_wn8").getContext('2d');
+			var myBarChart = new Chart(ctx, {
+				type: 'bar',
+				data: tierWN8Desc,
+				options: {
+					scales: {
+					  yAxes: [{
+						labelString: 'WN8',
+						position: "left",
+						"id": "wn8"
+					  }]
+					}
+				}
+			});
+
+			var ctx = document.getElementById("tier_wn9").getContext('2d');
+			var myBarChart = new Chart(ctx, {
+				type: 'bar',
+				data: tierWN9Desc,
+				options: {
+					scales: {
+					  yAxes: [{
+						labelString: 'WN9',
+						position: "left",
+						"id": "wn9"
+					  }]
+					}
+				}
+			});
+
+			var types = ["Light", "Medium", "Heavy", "TD", "SPG"];
+			var wn9_types = ["Light", "Medium", "Heavy", "TD"];
+			var typeBattleDesc = {
+				type: "bar",
+				labels: types,
+				datasets: [
+					{
+						label: 'Battles by type',
+						borderWidth: 1,
+						data: typeBattleData,
+						backgroundColor: "rgba(255,0,0,1)",
+						yAxisID: "battles"
+					}
+				]
+			};
+			
+			var typeWinsDesc = {
+				type: "bar",
+				labels: types,
+				datasets: [
+					{
+						label: 'Winrate by type',
+						borderWidth: 1,
+						data: typeWinsData,
+						backgroundColor: "rgba(255, 255, 0,1)",
+						yAxisID: "wins"
+					}
+				]
+			};
+
+			var typeWN8Desc = {
+				type: "bar",
+				labels: types,
+				datasets: [
+					{
+						label: 'WN8 by type',
+						borderWidth: 1,
+						data: typeWN8Data,
+						backgroundColor: "rgba(0, 255, 0,1)",
+						yAxisID: "wn8"
+					}
+				]
+			};
+			
+			typeWN9Data.pop();
+			var typeWN9Desc = {
+				type: "bar",
+				labels: wn9_types,
+				datasets: [
+					{
+						label: 'WN9 by type',
+						borderWidth: 1,
+						data: typeWN9Data,
+						backgroundColor: "rgba(0, 0, 255,1)",
+						yAxisID: "wn9"
+					}
+				]
+			};				
+	
+			var ctx = document.getElementById("type_battles").getContext('2d');
+			var myBarChart = new Chart(ctx, {
+				type: 'bar',
+				data: typeBattleDesc,
+				options: {
+					scales: {
+					  yAxes: [{
+						labelString: 'Battles',
+						position: "left",
+						"id": "battles"
+					  }]
+					}
+				}
+			});
+
+			var ctx = document.getElementById("type_wins").getContext('2d');
+			var myBarChart = new Chart(ctx, {
+				type: 'bar',
+				data: typeWinsDesc,
+				options: {
+					scales: {
+					  yAxes: [{
+						labelString: 'Winrate',
+						position: "left",
+						"id": "wins",
+						ticks: {
+							callback: function(label, index, labels) {
+								return label+'%';
+							}
+						}
+					  }]
+					}
+				}
+			});			
+			
+			var ctx = document.getElementById("type_wn8").getContext('2d');
+			var myBarChart = new Chart(ctx, {
+				type: 'bar',
+				data: typeWN8Desc,
+				options: {
+					scales: {
+					  yAxes: [{
+						labelString: 'WN8',
+						position: "left",
+						"id": "wn8"
+					  }]
+					}
+				}
+			});
+
+			var ctx = document.getElementById("type_wn9").getContext('2d');
+			var myBarChart = new Chart(ctx, {
+				type: 'bar',
+				data: typeWN9Desc,
+				options: {
+					scales: {
+					  yAxes: [{
+						labelString: 'WN9',
+						position: "left",
+						"id": "wn9"
+					  }]
+					}
+				}
+			});
+			
 		});
 	});
 	
@@ -624,6 +941,11 @@ $(document).ready(function() {
 		});
 		$(this).parent().addClass("active");
 	});
+	
+	$(".collapsable").click(function(e) {
+		e.preventDefault();
+		$(this).next("div").toggle();
+	})
 	$('#search_button').click(function(e){
 		e.preventDefault();
 		var link = 'https://api.worldoftanks.' + server + '/wot/account/list/?limit=20&application_id=0dbf88d72730ed7b843ab5934d8b3794&search=' + $('#srch-term').val();

@@ -1,17 +1,75 @@
 div#preload { display: none; }
 
-* {
-	padding: 0px; 
-	margin:  0px;
-	border: 0;
-}
-
 .beta_button {
 	 background-image: url('beta_ribbon.png') !important;
-	 background-size: contain !important;
+	 background-size: 60px !important;
 	 background-position: right top !important;
 	 background-repeat: no-repeat !important;
-	 width:130px;
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width : 768px) {
+	#main_navbar .nav > li > a {
+	   line-height: 50px !important;
+	}
+	#home {
+		padding-left:10px;
+	}
+	#login_button_li {
+		line-height:50px;
+		padding-left:15px;
+	}
+	#login_button_li > button {
+	    margin-bottom: 0px !important;
+	    margin-top: 0px !important;
+	}
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (max-width : 480px) {
+	#main_navbar .nav > li > a {
+	   line-height: 50px !important;
+	}
+	#home {
+		padding-left:10px;
+	}
+	#login_button_li {
+		line-height:50px;
+		padding-left:15px;
+	}
+	#login_button_li > button {
+	    margin-bottom: 0px !important;
+	    margin-top: 0px !important;
+	}
+}
+
+/* Custom, iPhone Retina */ 
+@media only screen and (max-width : 320px) {
+	#main_navbar .nav > li > a {
+	   line-height: 50px !important;
+	}
+	#home {
+		padding-left:10px;
+	}
+	#login_button_li {
+		line-height:50px;
+		padding-left:15px;
+	}
+	#login_button_li > button {
+	    margin-bottom: 0px !important;
+	    margin-top: 0px !important;
+	}
+}
+
+#main_navbar .nav > li > a {
+   line-height: 90px;
+   padding-bottom: 0;
+   padding-top: 0;
+}
+
+#main_navbar .nav > li > button {
+   margin-bottom: 28px;
+   margin-top: 28px;
 }
 
 .jumbotron, .jumbotron p, .jumbotron ol, .jumbotron ul {
@@ -63,7 +121,6 @@ html, body {position: absolute; min-width:100%; min-height: 100%; padding: 0px; 
 
 .navbar {
     background-color: #2e2e2e;
-    background-image: none;
 	font-weight: 700;
 	font-family: 'Roboto Slab', serif;
 }
@@ -527,7 +584,7 @@ div.inline { display: inline-block; vertical-align: middle; }
   width: 18px;
   height: 18px;
 }
-.icon-line_icon {
+.icon-link {
   background-position: -0px -424px;
   width: 22px;
   height: 22px;
@@ -702,12 +759,12 @@ div.inline { display: inline-block; vertical-align: middle; }
   width: 22px;
   height: 22px;
 }
-.icon-area {
+.icon-line_icon {
   background-position: -0px -1194px;
   width: 22px;
   height: 22px;
 }
-.icon-link {
+.icon-area {
   background-position: -0px -1216px;
   width: 22px;
   height: 22px;
@@ -972,43 +1029,48 @@ div.inline { display: inline-block; vertical-align: middle; }
   width: 22px;
   height: 22px;
 }
-.icon-en {
+.icon-el {
   background-position: -0px -2382px;
   width: 22px;
   height: 22px;
 }
-.icon-es {
+.icon-en {
   background-position: -0px -2404px;
   width: 22px;
   height: 22px;
 }
-.icon-fi {
+.icon-es {
   background-position: -0px -2426px;
   width: 22px;
   height: 22px;
 }
-.icon-fr {
+.icon-fi {
   background-position: -0px -2448px;
   width: 22px;
   height: 22px;
 }
-.icon-nl {
+.icon-fr {
   background-position: -0px -2470px;
   width: 22px;
   height: 22px;
 }
-.icon-pl {
+.icon-nl {
   background-position: -0px -2492px;
   width: 22px;
   height: 22px;
 }
-.icon-ru {
+.icon-pl {
   background-position: -0px -2514px;
   width: 22px;
   height: 22px;
 }
-.icon-sr {
+.icon-ru {
   background-position: -0px -2536px;
+  width: 22px;
+  height: 22px;
+}
+.icon-sr {
+  background-position: -0px -2558px;
   width: 22px;
   height: 22px;
 }
