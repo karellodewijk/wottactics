@@ -1,7 +1,15 @@
 <%home = "/"+game%>
 
-<nav class="navbar navbar-default navbar-inverse" style="border-radius: 0;">
-	<div class="container-fluid">
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-9117810685246622",
+    enable_page_level_ads: true
+  });
+</script>
+
+<nav class="navbar navbar-default navbar-inverse" style="border-radius: 0; font-size:120%;">
+	<div id="main_navbar" class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 				<span class="sr-only">Toggle navigation</span>
@@ -11,7 +19,7 @@
 			</button>
 			<ul class="nav navbar-nav nav-pills">
 				<li id="home">
-				<a class="navbar-brand" href="<%=home%>">
+				<a href="<%=home%>" style="font-size:120%">
 					<% if (game == 'wot') { %>
 						WOT Tactics
 					<% } else if (game == 'wows') { %>
@@ -43,15 +51,29 @@
 		<div id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav nav-pills">
 			<% if (user.identity) { %>
-				<li id="stored_tactics"><a href="/stored_tactics.html?game=<%=game%>"><%=l('Stored tactics')%></a></li>
+				<li id="stored_tactics"><a href="/stored_tactics?game=<%=game%>"><%=l('Stored tactics')%></a></li>
 			<% } %>
 			<% if (game == 'wot') { %>
 				<li id="stats"><a class="beta_button" href="/player/"><%=l('Player stats')%></a></li>
+				<li id="clan_stats"><a class="beta_button" href="/clan/"><%=l('Clan stats')%></a></li>
 			<% }%>
-			<li id="getting_started"><a href="/getting_started.html"><%=l('Getting started')%></a></li>
+			<li id="getting_started"><a href="/getting_started"><%=l('Getting started')%></a></li>
 			<li id="forum"><a href="http://forum.<%=url.split('/')[0]%>/forums/"><%=l('Forums')%></a></li>
 		</ul>
 
+		<%if (!user.no_ads) {%>
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			<!-- main navbar -->
+			<ins class="adsbygoogle hidden-xs"
+				 style="width:728px; height:90px; padding-left:50px; float:left"
+				 data-ad-client="ca-pub-9117810685246622"
+				 data-ad-slot="8003811790"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+		<%}%>
+		
+		
 		<ul class="nav navbar-nav navbar-right">
 			<li class="dropdown">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -60,7 +82,7 @@
 				<ul class="dropdown-menu" style="z-index:10">
 					<li><a href="http://wottactic.com"><div class="inline icon icon-wot_sm"></div>&nbsp; World of Tanks</a></li>
 					<li><a href="http://wowstactic.tk"><div class="inline icon icon-wows_sm"></div>&nbsp; World of Warships</a></li>
-					<li><a href="http://wottactic.com/blitz.html"><div class="inline icon icon-blitz_sm"></div>&nbsp; World of Tanks Blitz</a></li>
+					<li><a href="http://wottactic.com/blitz"><div class="inline icon icon-blitz_sm"></div>&nbsp; World of Tanks Blitz</a></li>
 					<li><a href="http://awtactic.tk"><div class="inline icon icon-aw_sm"></div>&nbsp; Armored Warfare</a></li>
 					<li><a href="http://gametactic.org/lol"><div class="inline icon icon-lol_sm"></div>&nbsp; League of Legends</a></li>
 					<li><a href="http://gametactic.org/hots"><div class="inline icon icon-hots_sm"></div>&nbsp; Heroes of the Storm</a></li>
@@ -77,4 +99,5 @@
 		</div>
 	</div>
 </nav>
+
 

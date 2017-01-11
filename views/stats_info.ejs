@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('About')%></title>
+</head>
+<body>
+	<% include navbar.ejs %>
+	<script>
+		//document.getElementById('about').className += " active";
+	</script>
+	<div class="container" style='width:100%;'>	
+		<div class="jumbotron content content_margin" style="padding:0px">
+			<h3 style="margin-top:0px"><%=l('Ratings FAQ')%></h3>
+			<p>
+		
+			<h4>What do the colors mean ?</h3>
+			
+			<p>
+			<table style="border-spacing: 5px 0;">
+				<style scoped>
+					tr td {
+						border: 0;
+						color: #fff;
+						padding: 5px;
+						border: 1px solid black;						
+					}				
+				</style>
+				<thead>
+					<tr>
+						<td style="color: black;"><%=l('Win rate')%></td>
+						<td style="color: black;"><%=l('WN8 Rating')%></td>
+						<td style="color: black;"><%=l('WN9 Rating')%></td>
+						<td style="color: black;"><%=l('Color Keys')%></td>
+						<td style="color: black;"><%=l('Percentile')%></td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="background:#930D0D;">< 46%</td>
+						<td style="background:#930D0D;">< 300</td>
+						<td style="background:#930D0D;">< 100</td>
+						<td style="background:#930D0D;"><%=l('Very bad')%></td>
+						<td style="background:#930D0D;"><%=l('Better than')%> 0% <%=l('of player')%></td>
+						
+					</tr>
+					<tr>
+						<td style="background:#CD3333;">46%</td>
+						<td style="background:#CD3333;">300 to 449</td>
+						<td style="background:#CD3333;">100 to 200</td>
+						<td style="background:#CD3333;"><%=l('Bad')%></td>
+						<td style="background:#CD3333;"><%=l('Better than')%> 6% <%=l('of player')%></td>
+						
+					</tr>
+					<tr>
+						<td style="background:#CC7A00;">47%</td>
+						<td style="background:#CC7A00;">450 to 649</td>
+						<td style="background:#CC7A00;">200 to 300</td>
+						<td style="background:#CC7A00;"><%=l('Bellow average')%></td>
+						<td style="background:#CC7A00;"><%=l('Better than')%> 20% <%=l('of player')%></td>
+					</tr>
+					<tr>
+						<td style="background:#CCB800;">48% to 49%</td>
+						<td style="background:#CCB800;">650 to 899</td>
+						<td style="background:#CCB800;">300 to 400</td>
+						<td style="background:#CCB800;"><%=l('Average')%></td>
+						<td style="background:#CCB800;"><%=l('Better than')%> 40% <%=l('of player')%></td>
+					</tr>
+					<tr>
+						<td style="background:#849B24;">50% to 51%</td>
+						<td style="background:#849B24;">900 to 1199</td>
+						<td style="background:#849B24;">500 to 600</td>
+						<td style="background:#849B24;"><%=l('Above average')%></td>
+						<td style="background:#849B24;"><%=l('Better than')%> 63% <%=l('of player')%></td>
+					</tr>
+					<tr>
+						<td style="background:#4D7326;">52% to 53%</td>
+						<td style="background:#4D7326;">1200 to 1599</td>
+						<td style="background:#4D7326;">600 to 700</td>
+						<td style="background:#4D7326;"><%=l('Good')%></td>
+						<td style="background:#4D7326;"><%=l('Better than')%> 82% <%=l('of player')%></td>
+					</tr>
+					<tr>
+						<td style="background:#4099BF;">54% to 55%</td>
+						<td style="background:#4099BF;">1600 to 1999</td>
+						<td style="background:#4099BF;">700 to 800</td>
+						<td style="background:#4099BF;"><%=l('Very good')%></td>
+						<td style="background:#4099BF;"><%=l('Better than')%> 95% <%=l('of player')%></td>
+					</tr>
+					<tr>
+						<td style="background:#3972C6;">56% to 59%</td>
+						<td style="background:#3972C6;">2000 to 2449</td>
+						<td style="background:#3972C6;">800 to 900</td>
+						<td style="background:#3972C6;"><%=l('Great')%></td>
+						<td style="background:#3972C6;"><%=l('Better than')%> 99% <%=l('of player')%></td>
+					</tr>
+					<tr>
+						<td style="background:#793DB6;">60% to 64%</td>
+						<td style="background:#793DB6;">2450 to 2899</td>
+						<td style="background:#793DB6;">900 to 1000</td>
+						<td style="background:#793DB6;"><%=l('Unicum')%></td>
+						<td style="background:#793DB6;"><%=l('Better than')%> 99.9% <%=l('of player')%></td>
+					</tr>
+					<tr>
+						<td style="background:#401070;">65%+</td>
+						<td style="background:#401070;">2900+</td>
+						<td style="background:#401070;">1000+</td>
+						<td style="background:#401070;"><%=l('Super unicum')%></td>
+						<td style="background:#401070;"><%=l('Better than')%> 99.99% <%=l('of player')%></td>
+					</tr>
+				</tbody>
+			</table>	
+
+			<br />
+			<h4>What is WN8 ?</h3>
+			
+			WN8 aims to measure a players relative performance in battle.
+			
+			<p>More info <a href="http://wiki.wnefficiency.net/pages/WN8">here</a>.
+			
+			<h4>What is WN9 ?</h3>
+			
+			WN9 aims to measure a players relative performance in battle.
+			
+			<p>More info <a href="http://jaj22.org.uk/wn9description.html">here</a>.
+
+			<h4>Why is my Recent or X number of battles missing.</h3>
+			
+			Wottactic can only start building a history when a player is first discovered. Chack back later and more and more historic data will be available.
+			
+		</div>
+	</div>
+	<% include footer.ejs %>
+</body>
