@@ -120,7 +120,6 @@ html, body {position: absolute; min-width:100%; min-height: 100%; padding: 0px; 
 }
 
 .navbar {
-    background-color: #2e2e2e;
 	font-weight: 700;
 	font-family: 'Roboto Slab', serif;
 }

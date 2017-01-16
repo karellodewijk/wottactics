@@ -77,10 +77,15 @@ app.use(function(err, req, res, next) {
 });
 
 app.use(function (req, res, next) {
-  var host = req.headers.host;
-  if (host.endsWith('wottactic.tk')) {
-	var subdomain = host.substr(0, host.indexOf('wottactic.tk'));
-	return res.redirect(301, 'http://' + subdomain + 'wottactic.com' + req.originalUrl);
+  try {
+    var host = req.hostname;
+    if (host.endsWith('wottactic.tk')) {
+	  var subdomain = host.substr(0, host.indexOf('wottactic.tk'));
+	  return res.redirect(301, 'http://' + subdomain + 'wottactic.com' + req.originalUrl);
+    }
+  } catch(e) {
+ 	console.log(e);
+	console.log(e.stack);	  
   }
   return next();
 });
@@ -556,6 +561,22 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 	});
 	
+	router.get('/clan_updates', function(req, res, next) {
+		if (req.query.pw == secrets.mongodb_password) {
+			var users = [];
+			db.collection('update_clans').find({}).each(function(err, user) {			
+				if(user == null) {
+					res.send(JSON.stringify(users));					
+					db.collection('update_clans').drop();
+				} else {
+					users.push(user._id);				
+				}
+			});
+		} else {
+			res.status(500).send('Incorrect password')
+		}
+	});
+	
 	router.get('/stats/player/:wid', function(req, res, next) {
 		var wid = req.params.wid;
 		var field = req.query.field;
@@ -563,8 +584,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			field = "all";
 		}
 		db.collection('ws_' + field + '_summary').findOne({_id:wid}, function(err, result) {
-			if (!err) {
+			if (!err && result) {
 				res.status(200).send(JSON.stringify(result));
+			} else {
+				res.status(404).send(null);
 			}
 		});	
 	});
@@ -576,8 +599,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			field = "all";
 		}
 		db.collection('ws_clan_' + field + '_summary').findOne({_id:wid}, function(err, result) {
-			if (!err) {
+			if (!err && result) {
 				res.status(200).send(JSON.stringify(result));
+			} else {
+				res.status(404).send(null);
 			}
 		});	
 	});
