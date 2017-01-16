@@ -6,6 +6,7 @@
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.4/js/jquery.tablesorter.widgets.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/calculate_stats.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/clan_stats.js"></script>
 	<link rel="stylesheet" href="<%=static_host%>/stylesheets/tablesorter/style.css" />
 	
@@ -14,9 +15,11 @@
 	<meta name="user" content="<%=JSON.stringify(user)%>">
 </head>
 <body style="overflow-y: scroll;">
-	<% include navbar.ejs %>	
+	<% include navbar.ejs %>
+	<% include stat_navbar.ejs %>	
 	<script>
-		document.getElementById('clan_stats').className = "beta_button active";
+		document.getElementById('stats').className = "beta_button active";
+		document.getElementById('clan_stats').className = "active";
 	</script>
 	<div class="container" style='width:100%; position:relative;'>
 		<div class="jumbotron content content_margin">		
@@ -31,7 +34,7 @@
 				<ul class="nav navbar-nav navbar-right" style="padding-right:8px">
 					<form class="navbar-form navbar-left" role="search">
 						<div class="input-group input-append">
-							<input type="text" class="form-control" placeholder="Player" name="srch-term" id="srch-term">
+							<input type="text" class="form-control" placeholder="Clan" name="srch-term" id="srch-term">
 							<div class="input-group-btn">
 								<button id="search_button" class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
 							</div>
@@ -43,7 +46,7 @@
 			<span id="no_results" hidden><h4><%=l('No results found')%></h4></span>
 			<span id="no_battles" hidden><h4><%=l('This user has not played any battles')%></h4></span>
 			<span id="did_you_mean" hidden><h4><%=l('Did you mean:')%> <span id="alt_lists"></span></h4></span>
-			<h2 id="player_name" style="padding-top:0px; margin-top:0px" hidden></h2>									
+			<h2 style="padding-top:0px; margin-top:0px;"><img id="clan_logo">&nbsp;<span id="clan_name"></span></img></h2>
 			<div style="min-width:100%; display:flex">
 				<div style="width:70%;">
 					<ul class="nav nav-tabs">
@@ -59,10 +62,9 @@
 						<tr>
 						  <th class="header" data-toggle="tooltip" title=""></th>
 						  <th class="header" data-toggle="tooltip" title="<%=l("Total")%>"><%=l("Total")%></th>
-						  <th class="header" data-toggle="tooltip" title="<%=l("Resets every 24h")%>"><%=l("Recent")%></th>
-						  <th class="header" id="last_100"><%=l("Last ~100 battles")%></th>
-						  <th class="header" id="last_1000"><%=l("Last ~1,000 battles")%></th>
-						  <th class="header" id="last_5000"><%=l("Last ~5,000 battles")%></th>
+						  <th class="header" data-toggle="tooltip" title="<%=l("Average of the last ~100 battles of each player")%>" id="last_100"><%=l("Last ~100 battles")%></th>
+						  <th class="header" data-toggle="tooltip" title="<%=l("Average of the last ~1,000 battles of each player")%>" id="last_1000"><%=l("Last ~1,000 battles")%></th>
+						  <th class="header" data-toggle="tooltip" title="<%=l("Average of the last ~5,000 battles of each player")%>" id="last_5000"><%=l("Last ~5,000 battles")%></th>
 						</tr>
 						</thead>
 						<tbody id="total_table_body">
@@ -82,8 +84,7 @@
 					</table>
 				</div>
 				<%if (!user.no_ads) {%>
-				<div class="inline" style="width:30%; padding:20px; display:flex; flex-direction:column; text-align:center">
-					<h3><%=l('Advertisement')%></h3>
+				<div class="inline" style="width:30%; padding:20px; padding-top:50px; display:flex; flex-direction:column; text-align:center">
 					<div style="width:100%; height:445px; flex: 1 1 auto;">
 					<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 					<ins class="adsbygoogle"
@@ -135,36 +136,7 @@
 			</table>
 			</div>
 			
-			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Charts")%> <span class="caret"></span></h2></a>
-			<div>
-				<div class="inline" style="width:24%; padding:10px;">
-				<canvas id="tier_battles"></canvas>
-				</div>
-				<div class="inline" style="width:24%; padding:10px;">
-				<canvas id="tier_wins"></canvas>
-				</div>
-				<div class="inline" style="width:24%; padding:10px;">
-				<canvas id="tier_wn8"></canvas>
-				</div>
-				<div class="inline" style="width:24%; padding:10px;">
-				<canvas id="tier_wn9"></canvas>
-				</div>
-
-				<div class="inline" style="width:24%; padding:10px;">
-				<canvas id="type_battles"></canvas>
-				</div>
-				<div class="inline" style="width:24%; padding:10px;">
-				<canvas id="type_wins"></canvas>
-				</div>
-				<div class="inline" style="width:24%; padding:10px;">
-				<canvas id="type_wn8"></canvas>
-				</div>
-				<div class="inline" style="width:24%; padding:10px;">
-				<canvas id="type_wn9"></canvas>
-				</div>
-			</div>
-			
-			<a href="/stat_info">Click here</a> for more info about the ratings.
+			<a href="/stats_info">Click here</a> for more info about the ratings.
 		</div>	
 	</div>
 	<% include footer.ejs %>		

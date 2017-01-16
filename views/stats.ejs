@@ -3,6 +3,7 @@
 <head>
 	<% include common_headers.ejs %>
 	<script defer type="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/calculate_stats.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/stats.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
@@ -12,9 +13,11 @@
 	<meta name="user" content="<%=JSON.stringify(user)%>">
 </head>
 <body style="overflow-y: scroll;">
-	<% include navbar.ejs %>	
+	<% include navbar.ejs %>
+	<% include stat_navbar.ejs %>	
 	<script>
 		document.getElementById('stats').className = "beta_button active";
+		document.getElementById('player_stats').className = "active";
 	</script>
 	<div class="container" style='width:100%; position:relative;'>
 		<div class="jumbotron content content_margin">		
@@ -96,7 +99,7 @@
 				<%}%>
 			</div>
 					
-			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Members")%> <span class="caret"></span></h2></a>
+			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Tanks")%> <span class="caret"></span></h2></a>
 			<div id="tank_section">
 			<table class="table tablesorter table-bordered" id="tank_list" style="background-color:white; text-align:center;">
 				<style scoped>
