@@ -19,7 +19,8 @@
 			</button>
 			<ul class="nav navbar-nav nav-pills">
 				<li id="home">
-				<a href="<%=home%>" style="font-size:120%">
+				<a href="<%=home%>">
+				<h1>
 					<% if (game == 'wot') { %>
 						WOT Tactics
 					<% } else if (game == 'wows') { %>
@@ -43,6 +44,7 @@
 					<% } else if (game == 'R6') { %>
 						Rainbox Six Siege Tactics
 					<% } %>
+				</h1>
 				</a>
 				<li>		
 			</ul>
@@ -51,13 +53,13 @@
 		<div id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav nav-pills">
 			<% if (user.identity) { %>
-				<li id="stored_tactics"><a href="/stored_tactics?game=<%=game%>"><%=l('Stored tactics')%></a></li>
+				<li id="stored_tactics"><a href="/stored_tactics?game=<%=game%>"><h2><%=l('Stored tactics')%></h2></a></li>
 			<% } %>
 			<% if (game == 'wot') { %>
-				<li id="stats"><a class="beta_button" href="/player/"><%=l('Stats')%></a></li>
+				<li id="stats"><a class="beta_button" href="/player/"><h2><%=l('Stats')%></h2></a></li>
 			<% }%>
-			<li id="getting_started"><a href="/getting_started"><%=l('Getting started')%></a></li>
-			<li id="forum"><a href="http://forum.<%=url.split('/')[0]%>/forums/"><%=l('Forums')%></a></li>
+			<li id="getting_started"><a href="/getting_started"><h2><%=l('Getting started')%></h2></a></li>
+			<li id="forum"><a href="http://forum.<%=url.split('/')[0]%>/forums/"><h2><%=l('Forums')%></h2></a></li>
 		</ul>
 
 		<%if (!user.no_ads) {%>

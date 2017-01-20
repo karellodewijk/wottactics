@@ -92,6 +92,21 @@
 						</ul>
 						<p>I will be keeping the wottactic.eu domain and is actually the prefered domain for eu residents. The idea is if the site grows a little more it will always be served from an eu based server.
 					</div>
+					<%if (game != 'wot') { %>
+					<div class="col-md-4">
+						<h2>Forums back up</h2>
+						<p>Feel free to say hello.
+					</div>
+					<% } else { %>
+					<div class="col-md-4">
+						<h2>Yet another stats tracker</h2>
+						<p>I've added a player stats tracked to the website. It's pretty basic at the moment, and it's still gathering historical info. But feel free to take a look. A clan stats page/option is also coming.
+						<p>There's also an ad on the new page. This does not mean there will be ads on the tactic planner page. But it should cover the hosting cost with a little luck. Even with some donations, wottactic has been running at a bit of a loss, not even counting manhours.
+						<p>Ads are disabled for everyone who donated ofcourse or anyone who donates anything in the future. It does require you to log back in.
+					</div>
+					<% } %>					
+				</div>
+				<div class="row">
 					<%if (game == 'warface') { %>
 						<div class="col-md-4">
 							<h2>Looking for help with warface maps</h2>
@@ -108,22 +123,7 @@
 							</ul>
 							
 						</div>	
-					<% } %>						
-				</div>
-				<div class="row">
-					<%if (game != 'wot') { %>
-					<div class="col-md-4">
-						<h2>Forums back up</h2>
-						<p>Feel free to say hello.
-					</div>
-					<% } else { %>
-					<div class="col-md-4">
-						<h2>Yet another stats tracker</h2>
-						<p>I've added a player stats tracked to the website. It's pretty basic at the moment, and it's still gathering historical info. But feel free to take a look. A clan stats page/option is also coming.
-						<p>There's also an ad on the new page. This does not mean there will be ads on the tactic planner page. But it should cover the hosting cost with a little luck. Even with some donations, wottactic has been running at a bit of a loss, not even counting manhours.
-						<p>Ads are disabled for everyone who donated ofcourse or anyone who donates anything in the future. It does require you to log back in.
-					</div>
-					<% } %>
+					<% } %>	
 					<div class="col-md-4">
 						<h2>Latest changes</h2>
 						<p>
