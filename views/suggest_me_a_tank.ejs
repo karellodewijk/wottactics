@@ -8,13 +8,12 @@
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
 	<link rel="stylesheet" href="<%=static_host%>/stylesheets/tablesorter/style.css" />
-	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - Player stats</title>
-	<meta name="description" content="Track player stats for <%=game.toUpperCase()%>.">
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
+	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map tactics with your friends, team, platoon or clan.">
 	<meta name="user" content="<%=JSON.stringify(user)%>">
 </head>
 <body style="overflow-y: scroll;">
 	<% include navbar.ejs %>
-	<% include stat_navbar.ejs %>	
 	<script>
 		document.getElementById('stats').className = "beta_button active";
 		document.getElementById('player_stats').className = "active";

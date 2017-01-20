@@ -429,6 +429,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	router.get(['/health_check', '/health_check.html'], function(req, res, next) {
 	  res.sendStatus(200);
 	});	
+	
+	//reload the secrets file
+	router.get('/reload_secrets', function(req, res, next) {
+		if (req.query.pw == secrets.mongodb_password) {
+			secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
+			res.status(200).send("Secrets loaded")
+		} else {
+			res.status(500).send("Wrong password")
+		}
+	});
+	
 	function planner_redirect(req, res, game, template) {
 	  if (req.query.restore) {
 		var uid = newUid();
@@ -497,9 +508,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				wid = user.wg_account_id;
 			}			
 		}
-		if (wid) {
-			db.collection('update_stats').update({_id:wid}, {_id:wid}, {upsert: true});
-		}
 		if (!req.session.game) {
 			set_game(req, res,'wot');
 		}
@@ -517,9 +525,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (user.clan_id) {
 				cid = user.wg_account_id;
 			}			
-		}
-		if (cid) {
-			db.collection('update_clans').update({_id:cid}, {_id:cid}, {upsert: true});
 		}
 		if (!req.session.game) {
 			set_game(req, res,'wot');
@@ -544,39 +549,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							  ga_id:secrets.ga_id});
 	});
 	
-	router.get('/player_updates', function(req, res, next) {
-		if (req.query.pw == secrets.mongodb_password) {
-			var users = [];
-			db.collection('update_stats').find({}).each(function(err, user) {			
-				if(user == null) {
-					//res.set({"Content-Disposition":"attachment; filename=\"player.json\""});
-					res.send(JSON.stringify(users));					
-					db.collection('update_stats').drop();
-				} else {
-					users.push(user._id);				
-				}
-			});
-		} else {
-			res.status(500).send('Incorrect password')
-		}
-	});
-	
-	router.get('/clan_updates', function(req, res, next) {
-		if (req.query.pw == secrets.mongodb_password) {
-			var users = [];
-			db.collection('update_clans').find({}).each(function(err, user) {			
-				if(user == null) {
-					res.send(JSON.stringify(users));					
-					db.collection('update_clans').drop();
-				} else {
-					users.push(user._id);				
-				}
-			});
-		} else {
-			res.status(500).send('Incorrect password')
-		}
-	});
-	
 	router.get('/stats/player/:wid', function(req, res, next) {
 		var wid = req.params.wid;
 		var field = req.query.field;
@@ -589,6 +561,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			} else {
 				res.status(404).send(null);
 			}
+			db.collection('tracked_players').update({_id:wid}, {_id:wid}, {upsert: true});
 		});	
 	});
 	
@@ -604,6 +577,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			} else {
 				res.status(404).send(null);
 			}
+			db.collection('tracked_clans').update({_id:wid}, {_id:wid}, {upsert: true});
 		});	
 	});
 	

@@ -129,7 +129,7 @@ function populate() {
 			})
 		).then(function() {
 			$( document ).ready(function() {
-				$("#member_list").tablesorter({emptyTo: 'bottom', sortList: [[4,1],[0,0],[1,1],[2,0],[3,0],[5,0],[6,0],[7,0]]}); 
+				$("#member_list").tablesorter({emptyTo: 'bottom', sortList: [[1,0],[0,0],[2,0],[3,0],[4,0],[5,0],[7,0]]}); 
 				var metrics = ["battles", "damage_dealt", "spotted", "frags", "dropped_capture_points", "wins", "xp", "survived_battles", "capture_points", "tier"]
 				
 				console.log(clan_stats)
@@ -229,7 +229,7 @@ function populate() {
 							}					
 						}
 						
-						$('#member_amount').text(clan_data.members.length)
+						$('#member_amount').text(""+clan_data.members.length)
 						
 						var interesting_points, summary_points;
 						if (src == "random" || src == "all") {
@@ -316,6 +316,7 @@ function populate() {
 							if (member_stats && member_stats['recent']) {
 								var wr = member_stats['recent'].wins/member_stats['recent'].battles;
 
+								node += "<td>" + round(member_stats['recent'].battles, 0) + "</td>";
 								node += "<td style='color:#ffffff; background-color:" + wr_color(wr) + "'>" + round(100*wr, 1) + "%</td>";
 								node += "<td data-toggle='tooltip' title='" + round(member_stats['recent'].wn8, 2) + "' style='color:#ffffff; background-color:" + wn8_color(member_stats['recent'].wn8) + "'>" + round(member_stats['recent'].wn8, 0) + "</td>";
 								node += "<td data-toggle='tooltip' title='" + round(member_stats['recent'].wn9, 2) + "' style='color:#ffffff; background-color:" + wn9_color(member_stats['recent'].wn9) + "'>" + round(member_stats['recent'].wn9, 0) + "</td>";
@@ -356,6 +357,7 @@ function populate() {
 						$("#cap_col").append("<td data-toggle='tooltip' title='" + round(average.capture_points, 4) + "'>" + round(average.capture_points, 2) + "</td>");
 						$("#xp_col").append("<td data-toggle='tooltip' title='" + round(average.xp, 2) + "'>" + round(average.xp, 0) + "</td>");
 						$("#tier_col").append("<td data-toggle='tooltip' title='" + round(average.tier, 2) + "'>" + round(average.tier, 1) + "</td>");	
+						$("#spotted_col").append("<td data-toggle='tooltip' title='" + round(average.spotted, 2) + "'>" + round(average.spotted, 2) + "</td>");	
 							
 						function add_msg_column(str) {
 							$("#wr_col").append("<td>" + str + "</rd>");
@@ -369,7 +371,8 @@ function populate() {
 							$("#def_col").append("<td></rd>");
 							$("#cap_col").append("<td></rd>");
 							$("#xp_col").append("<td></rd>");
-							$("#tier_col").append("<td></rd>");				
+							$("#tier_col").append("<td></rd>");
+							$("#spotted_col").append("<td></rd>");
 						}
 							
 						function add_column(now, then) {
@@ -421,6 +424,7 @@ function populate() {
 							$("#cap_col").append("<td data-toggle='tooltip' title='" + round(results.capture_points, 4) + "'>" + round(results.capture_points, 2) + " (<span style='color: " + sign_col(average_diff.capture_points) + "'>" + sign(average_diff.capture_points) + round(average_diff.capture_points,2) + "</span>)</td>");
 							$("#xp_col").append("<td data-toggle='tooltip' title='" + round(results.xp, 2) + "'>" + round(results.xp, 0) + " (<span style='color: " + sign_col(average_diff.xp) + "'>" + sign(average_diff.xp) + round(average_diff.xp,2) + "</span>)</td>");
 							$("#tier_col").append("<td data-toggle='tooltip' title='" + round(results.tier, 2) + "'>" + round(results.tier, 1) + " (<span style='color: " + sign_col(average_diff.tier) + "'>" + sign(average_diff.tier) + round(average_diff.tier,2) + "</span>)</td>");
+							$("#spotted_col").append("<td data-toggle='tooltip' title='" + round(results.spotted, 2) + "'>" + round(results.spotted, 1) + " (<span style='color: " + sign_col(average_diff.spotted) + "'>" + sign(average_diff.spotted) + round(average_diff.spotted,2) + "</span>)</td>");
 						}
 
 						for (var i in interesting_points) {
@@ -454,9 +458,16 @@ $(document).ready(function() {
 		});
 		$(this).parent().addClass("active");
 	});
-	
 	$(".collapsable").click(function(e) {
 		e.preventDefault();
+		var caret = $(this).find("span");
+		if (caret.hasClass("glyphicon-triangle-right")) {
+			$(this).find("span").removeClass("glyphicon-triangle-right");
+			$(this).find("span").addClass("glyphicon-triangle-bottom");
+		} else {
+			$(this).find("span").removeClass("glyphicon-triangle-bottom");
+			$(this).find("span").addClass("glyphicon-triangle-right");			
+		}
 		$(this).next("div").toggle();
 	})
 	$('#search_button').click(function(e){

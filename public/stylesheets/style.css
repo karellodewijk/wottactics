@@ -7,6 +7,20 @@ div#preload { display: none; }
 	 background-repeat: no-repeat !important;
 }
 
+.nav h1 {
+	font-size: 20px;
+	font-weight: 700;
+	font-family: 'Roboto Slab', serif;
+	display: inline;
+}
+
+.nav h2 {
+	font-size: 16.8px;
+	font-weight: 700;
+	font-family: 'Roboto Slab', serif;
+	display: inline;
+}
+
 /* Small Devices, Tablets */
 @media only screen and (max-width : 768px) {
 	#main_navbar .nav > li > a {

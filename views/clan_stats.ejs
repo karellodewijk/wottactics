@@ -4,14 +4,12 @@
 	<% include common_headers.ejs %>
 	<script defer type="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>		
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
-	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.4/js/jquery.tablesorter.widgets.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/calculate_stats.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/clan_stats.js"></script>
-	<link rel="stylesheet" href="<%=static_host%>/stylesheets/tablesorter/style.css" />
-	
-	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
-	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map tactics with your friends, team, platoon or clan.">
+	<link rel="stylesheet" href="<%=static_host%>/stylesheets/tablesorter/style.css" />	
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - Clan stats</title>
+	<meta name="description" content="Track clan stats for <%=game.toUpperCase()%>.">
 	<meta name="user" content="<%=JSON.stringify(user)%>">
 </head>
 <body style="overflow-y: scroll;">
@@ -68,18 +66,22 @@
 						</tr>
 						</thead>
 						<tbody id="total_table_body">
-							<tr id="wr_col"><td><%=l("Winrate")%></td></tr>
-							<tr id="wn8_col"><td><%=l("WN8")%></td></tr>
-							<tr id="wn9_col"><td><%=l("WN9")%></td></tr>
-							<tr id="battles_col"><td><%=l("Battles")%></td></tr>
-							<tr id="dam_col"><td><%=l("Damage")%></td></tr>
-							<tr id="kills_col"><td><%=l("Kills")%></td></tr>
-							<tr id="surv_col"><td><%=l("Survived")%></td></tr>
-							<tr id="kd_col"><td><%=l("K/D")%></td></tr>
-							<tr id="def_col"><td><%=l("Defence points")%></td></tr>
-							<tr id="cap_col"><td><%=l("Capture points")%></td></tr>
-							<tr id="xp_col"><td><%=l("XP")%></td></tr>
-							<tr id="tier_col"><td><%=l("Tier")%></td></tr>
+							<style scoped>
+								h4 {padding:0; margin:0}
+							</style>
+							<tr id="wr_col"><td><h4><%=l("Winrate")%></h4></td></tr>
+							<tr id="wn8_col"><td><h4><%=l("WN8")%></h4></td></tr>
+							<tr id="wn9_col"><td><h4><%=l("WN9")%></h4></td></tr>
+							<tr id="battles_col"><td><h4><%=l("Battles")%></h4></td></tr>
+							<tr id="dam_col"><td><h4><%=l("Damage")%></h4></td></tr>
+							<tr id="kills_col"><td><h4><%=l("Kills")%></h4></td></tr>
+							<tr id="surv_col"><td><h4><%=l("Survived")%></h4></td></tr>
+							<tr id="kd_col"><td><h4><%=l("K/D")%></h4></td></tr>
+							<tr id="def_col"><td><h4><%=l("Defence points")%></h4></td></tr>
+							<tr id="cap_col"><td><h4><%=l("Capture points")%></h4></td></tr>
+							<tr id="spotted_col"><td><h4><%=l("Spotted")%></h4></td></tr>
+							<tr id="xp_col"><td><h4><%=l("XP")%></h4></td></tr>
+							<tr id="tier_col"><td><h4><%=l("Tier")%></h4></td></tr>					
 						</tbody>
 					</table>
 				</div>
@@ -100,7 +102,7 @@
 				<%}%>
 			</div>
 					
-			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Players")%>(<span id="member_amount"></span>) <span class="caret"></span></h2></a>
+			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Players")%>(<span id="member_amount"></span>) <span style="font-size: 10px; vertical-align: middle;" class="glyphicon glyphicon-triangle-bottom"></span></h2></a>
 			<div id="tank_section">
 			<table class="table tablesorter table-bordered" id="member_list" style="background-color:white; text-align:center;">
 				<style scoped>
@@ -123,12 +125,13 @@
 				<tr>
 				  <th class="header" data-toggle="tooltip" title="<%=l("Name")%>"><%=l("Name")%></th>
 				  <th class="header" data-toggle="tooltip" title="<%=l("Role")%>"><%=l("Role")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Battles")%>"><%=l("Battles")%></th>
 				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate")%>"><%=l("Wr")%></th>
 				  <th class="header" data-toggle="tooltip" title="<%=l("wn8")%>"><%=l("wn8")%></th>
 				  <th class="header" data-toggle="tooltip" title="<%=l("wn9")%>"><%=l("wn9")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate, last ~1000 battles")%>"><%=l("Wr (R)")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("wn8, last ~1000 battles")%>"><%=l("wn8 (R)")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("wn9, last ~1000 battles")%>"><%=l("wn9 (R)")%></th>					
+				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate, last ~1,000 battles")%>"><%=l("Wr (~1,000)")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("wn8, last ~1,000 battles")%>"><%=l("wn8 (~1,000)")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("wn9, last ~1,000 battles")%>"><%=l("wn9 (~1,000)")%></th>					
 				</tr>
 				</thead> 
 				<tbody id="member_list_body">
