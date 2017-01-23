@@ -37,6 +37,8 @@ if (game == "wows") {
 	quotes = general_quotes.concat(tank_quotes);
 }
 
-document.getElementById("quote").innerText = quotes[Math.floor(Math.random() * quotes.length)];
+var quote_node = document.getElementById("quote")
+if (quote_node)
+	quote_node.innerText = quotes[Math.floor(Math.random() * quotes.length)];
 
 </script>

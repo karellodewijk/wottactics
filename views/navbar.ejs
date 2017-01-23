@@ -63,16 +63,29 @@
 		</ul>
 
 		<%if (!user.no_ads) {%>
-			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-			<!-- main navbar -->
-			<ins class="adsbygoogle hidden-xs"
-				 style="width:728px; height:90px; padding-left:50px; float:left"
-				 data-ad-client="ca-pub-9117810685246622"
-				 data-ad-slot="8003811790"></ins>
-			<script>
-			(adsbygoogle = window.adsbygoogle || []).push({});
-			</script>
+			<%if (Math.random() >= 0.5) {%>
+				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+				<!-- main navbar -->
+				<ins class="adsbygoogle hidden-xs"
+					 style="width:728px; height:90px; padding-left:50px; float:left"
+					 data-ad-client="ca-pub-9117810685246622"
+					 data-ad-slot="8003811790"></ins>
+				<script>
+				(adsbygoogle = window.adsbygoogle || []).push({});
+				</script>
+			<%} else {%>
+				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+				<!-- main navbar -->
+				<ins class="adsbygoogle hidden-xs"
+					 style="width:728px; height:90px; padding-left:50px; float:left"
+					 data-ad-client="ca-pub-9117810685246622"
+					 data-ad-slot="8003811790"></ins>
+				<script>
+				(adsbygoogle = window.adsbygoogle || []).push({});
+				</script>
+			<%}%>
 		<%}%>
+		
 		
 		
 		<ul class="nav navbar-nav navbar-right">

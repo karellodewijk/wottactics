@@ -79,20 +79,21 @@ function reset_ui() {
 function populate() {	
 	server = get_server(clan);
 	$('#no_results').hide();	
+	$("#did_you_mean").hide();
 	if (src != "all") {
-		$("#last_100").text($("#last_100").text().replace("100 ", "10 "));		
-		$("#last_100").attr("title", $("#last_100").attr("title").replace("100 ", "10 "));
-		$("#last_1000").text($("#last_1000").text().replace("1,000 ", "100 "));
-		$("#last_1000").attr("title", $("#last_1000").attr("title").replace("1,000 ", "100 "));
-		$("#last_5000").text($("#last_5000").text().replace("5,000 ", "500 "));
-		$("#last_5000").attr("title", $("#last_5000").attr("title").replace("5,000 ", "500 "));
+		$(".last_100").each(function() { $(this).text($(this).text().replace("100 ", "10 ")); });		
+		$(".last_100").each(function() { $(this).attr("title", $(this).attr("title").replace("100 ", "10 ")); });		
+		$(".last_1000").each(function() { $(this).text($(this).text().replace("1,000 ", "100 ")); });		
+		$(".last_1000").each(function() { $(this).attr("title", $(this).attr("title").replace("1,000 ", "100 ")); });		
+		$(".last_5000").each(function() { $(this).text($(this).text().replace("5,000 ", "500 ")); });		
+		$(".last_5000").each(function() { $(this).attr("title", $(this).attr("title").replace("5,000 ", "500 ")); });		
 	} else {
-		$("#last_100").text($("#last_100").text().replace("10 ", "100 "));
-		$("#last_100").attr("title", $("#last_100").attr("title").replace("10 ", "100 "));
-		$("#last_1000").text($("#last_1000").text().replace("100 ", "1,000 "));
-		$("#last_1000").attr("title", $("#last_1000").attr("title").replace("100 ", "1,000 "));
-		$("#last_5000").text($("#last_5000").text().replace("500 ", "5,000 "));
-		$("#last_5000").attr("title", $("#last_5000").attr("title").replace("500 ", "5,000 "));		
+		$(".last_100").each(function() { $(this).text($(this).text().replace("10 ", "100 ")); });		
+		$(".last_100").each(function() { $(this).attr("title", $(this).attr("title").replace("10 ", "100 ")); });		
+		$(".last_1000").each(function() { $(this).text($("#last_1000").text().replace("100 ", "1,000 ")); });		
+		$(".last_1000").each(function() { $(this).attr("title", $(this).attr("title").replace("100 ", "1,000 ")); });		
+		$(".last_5000").each(function() { $(this).text($("#last_5000").text().replace("500 ", "5,000 ")); });		
+		$(".last_5000").each(function() { $(this).attr("title", $(this).attr("title").replace("500 ", "5,000 "));	});			
 	}
 	
 	if (!player) {
@@ -129,10 +130,8 @@ function populate() {
 			})
 		).then(function() {
 			$( document ).ready(function() {
-				$("#member_list").tablesorter({emptyTo: 'bottom', sortList: [[1,0],[0,0],[2,0],[3,0],[4,0],[5,0],[7,0]]}); 
+				$("#member_list").tablesorter({emptyTo: 'bottom', sortList: [[1,0],[0,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0]]}); 
 				var metrics = ["battles", "damage_dealt", "spotted", "frags", "dropped_capture_points", "wins", "xp", "survived_battles", "capture_points", "tier"]
-				
-				console.log(clan_stats)
 				
 				var missing_members = [];
 				for (var i in clan_data.members) {
@@ -195,7 +194,15 @@ function populate() {
 						for (var i in still_missing_members) {
 							deferreds2.push($.Deferred(function() {
 								var self = this;
-								var fields = ["tank_id", src];
+								var fields = ["tank_id"];
+								if (src == "globalmap6" || src == "globalmap8" || src == "globalmap10") {
+									wg_src = "globalmap";
+								} else if (src == "stronghold_skirmish6" || src == "stronghold_skirmish8" || src == "stronghold_skirmish10") {
+									wg_src = "stronghold_skirmish";
+								} else {
+									wg_src = src;
+								}
+								fields.push(wg_src);
 								wn9_src = src;
 								if (src == "all") {
 									fields.push("random");
@@ -205,7 +212,7 @@ function populate() {
 								get_wg_data("/tanks/stats/?extra=random&", fields, player, function(data) {
 									stats_data[player] = data;
 									if (stats_data[player]) {
-										stats_data[player] = stats_data[player].map(function(x) { x[src].id = x.tank_id; return x; });				
+										stats_data[player] = stats_data[player].map(function(x) { x[wg_src].id = x.tank_id; return x; });
 										if (src == "all") {
 											for (var i in stats_data[player]) {
 												stats_data[player][i][wn9_src].id = stats_data[player][i].tank_id;
@@ -222,7 +229,23 @@ function populate() {
 						if (still_missing_members.length > 0) {
 							for (var i in still_missing_members) {
 								var player = still_missing_members[i];
-								var results = calculate_stats(tank_expected, tank_expected_wn9, stats_data[player]);
+								function filter_tank_data(tier) {
+									for (var i in stats_data) {
+										var tank_id = stats_data[i].tank_id;
+										if (!tank_data[tank_id] || tank_data[tank_id].level != tier) {
+											delete stats_data[i];
+										}
+									}
+								}
+								
+								if (src == "globalmap6" || src == "stronghold_skirmish6") {
+									filter_tank_data(6);
+								} else if (src == "globalmap8" || src == "stronghold_skirmish8") {
+									filter_tank_data(8);
+								} else if (src == "globalmap10" || src == "stronghold_skirmish10") {
+									filter_tank_data(10);
+								}
+								var results = calculate_stats(tank_expected, tank_expected_wn9, stats_data[player], wg_src, wn9_src);
 								var summary = {}
 								summary["recent"] = results;
 								clan_stats.members[player] = summary;
@@ -460,13 +483,13 @@ $(document).ready(function() {
 	});
 	$(".collapsable").click(function(e) {
 		e.preventDefault();
-		var caret = $(this).find("span");
+		var caret = $(this).find(".glyphicon");
 		if (caret.hasClass("glyphicon-triangle-right")) {
-			$(this).find("span").removeClass("glyphicon-triangle-right");
-			$(this).find("span").addClass("glyphicon-triangle-bottom");
+			$(this).find(".glyphicon").removeClass("glyphicon-triangle-right");
+			$(this).find(".glyphicon").addClass("glyphicon-triangle-bottom");
 		} else {
-			$(this).find("span").removeClass("glyphicon-triangle-bottom");
-			$(this).find("span").addClass("glyphicon-triangle-right");			
+			$(this).find(".glyphicon").removeClass("glyphicon-triangle-bottom");
+			$(this).find(".glyphicon").addClass("glyphicon-triangle-right");			
 		}
 		$(this).next("div").toggle();
 	})
@@ -487,7 +510,7 @@ $(document).ready(function() {
 				} else {
 					var alternatives = "";
 					for (var i = 0; i < Math.min(20, data.data.length); i++) {
-						alternatives += "<a href='/clan/"+ data.data[i].tag + "'>" + data.data[i].tag + "</a>, "
+						alternatives += "<a href='/clan/"+ data.data[i].clan_id + "'>" + data.data[i].tag + "</a>, "
 					}
 					alternatives = alternatives.substring(0, alternatives.length - 2);
 					$('#alt_lists').html(alternatives);
@@ -510,23 +533,7 @@ var wn9_src = "random";
 
 if (clan && server) {
 	$(document).ready(function() {
-		switch(src) {
-			case 'all':
-				$("#all_tab").addClass("active");
-				break;
-			case 'globalmap':
-				$("#cw_tab").addClass("active");
-				break;
-			case 'stronghold_skirmish':
-				$("#sk_tab").addClass("active");
-				break;
-			case 'stronghold_defense':
-				$("#sh_tab").addClass("active");
-				break;
-			case 'team':
-				$("#team_tab").addClass("active");
-				break;				
-		}
+		$("#" + src + "_tab").addClass("active");
 	});
 	populate();
 
