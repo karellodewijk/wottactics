@@ -27,6 +27,7 @@
 	</script>
 	<div class="container" style='width:100%;'>	
 		<div class="jumbotron content content_margin">	
+			<h3 style="margin-top:0"><%=l('Stored')%></h3>
 			<table class="stored_tactics_table" style="background-color:white;" id="tactic_list">
 				<thead> 
 					<tr>
@@ -84,10 +85,14 @@
 			</div>
 			
 			<h3><%=l('Last visited')%></h3>
-			<ul class="list-group">
+			<table class="table" style="background-color:white">
+			<tbody>
 				<% for (var i = rooms.length-1; i >= 0; i--) { %>
-					<li class="list-group-item"><a href=<%=rooms[i]%>><%=rooms[i]%></a></li>
+					<tr><td><a href=<%=rooms[i]%>><%=rooms[i]%></a></td></tr>
 				<% } %>
+			</tbody>
+			</table>
+
 			</ul>
 
 			<!-- Modal -->

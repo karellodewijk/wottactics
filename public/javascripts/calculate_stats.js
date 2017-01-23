@@ -75,7 +75,7 @@ function wr_color(wr) {
 	}
 }
 
-function calculate_stats(tank_expected_wn8, tank_expected_wn8_wn9, stats_data) {
+function calculate_stats(tank_expected_wn8, tank_expected_wn8_wn9, stats_data, src, wn9_src) {
 	function calculate_wn8(tank, exp) {
 		var rDAMAGE = tank.damage_dealt / exp.expDamage;
 		var rSPOT   = tank.spotted / exp.expSpot;
@@ -107,7 +107,7 @@ function calculate_stats(tank_expected_wn8, tank_expected_wn8_wn9, stats_data) {
 	function CalcWN9Tank(tank, expvals, maxhist) {
 		var exp = expvals[tank.tank_id];
 		if (!exp) { console.log("Tank ID not found: " + tank.tank_id); return -1; }
-
+		
 		var rtank = tank.random;
 		var avg = tierAvg[exp.mmrange >= 3 ? exp.tier : exp.tier-1];
 		var rdmg = rtank.damage_dealt / (rtank.battles * avg.dmg);

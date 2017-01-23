@@ -51,7 +51,13 @@ for (var i in assets) {
 	loader.add(assets[i], assets[i]);
 }
 
-loader.load(setup_assets);
+var textures_loaded = false;
+loader.on('complete', function(e) {
+	textures_loaded = true;
+})
+loader.load();
+
+
 
 var texture_atlas;
 function setup_assets() {
@@ -401,7 +407,7 @@ function paste() {
 		return;
 	}
 	deselect_all();
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	var mouse_location = mouse_loc();
 	var mouse_x = from_x_local(mouse_location.x);
 	var mouse_y = from_y_local(mouse_location.y);
 	if (Math.abs(mouse_x) > 1 || Math.abs(mouse_y) > 1) {
@@ -570,7 +576,7 @@ function correct() {
 var pan_state = {}
 function on_pan(e) {
 	limit_rate(15, pan_state, function() {
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 		var diff_x = mouse_location.x - last_pan_loc[0];
 		var diff_y = mouse_location.y - last_pan_loc[1];
 		last_pan_loc = [mouse_location.x, mouse_location.y];
@@ -628,7 +634,7 @@ function resize_renderer(new_size_x, new_size_y) {
 	grid_layer.height = background_sprite.height;
 	
 	if (renderer.plugins.interaction.eventData.data) {
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;	
+		var mouse_location = mouse_loc();	
 		zoom(0, true, [from_x_local(mouse_location.x), from_y_local(mouse_location.y)]);
 	}
 };
@@ -692,6 +698,10 @@ window.onresize = function() {
 	}
 	render_scene();
 };
+
+function mouse_loc() {
+	return JSON.parse(JSON.stringify(renderer.plugins.interaction.eventData.data.global));
+}
 
 //Absolute coordinates are coordinates pixi within objectContainer, the main screen graph
 //Relative coordinates are coordinates with the left upper corner of the backfround equal to [0,0], the height of the background exactly 1 and the width has the same scale as the hight
@@ -766,7 +776,7 @@ function mouse_y_abs(y) {
 }
 
 //translates mouse position from e.data.getLocalPosition(background_sprite) to a relative coordinate
-//TODO: consider using renderer.plugins.interaction.eventData.data.global and from_x_local, from_y_local instead
+//TODO: consider using mouse_loc() and from_x_local, from_y_local instead
 function mouse_x_rel(x) {
 	return x/(background_sprite.height / background_sprite.scale.x);
 }
@@ -988,7 +998,7 @@ function change_background_dim(height) {
 	grid_layer.height = background_sprite.height;
 	var ratio = height/old_height;
 	if (ratio != 1 && room_data) {
-		for (let key in room_data.slides[active_slide].entities) {
+		for (var key in room_data.slides[active_slide].entities) {
 			var entity = room_data.slides[active_slide].entities[key];
 			if (entity.container) {
 				entity.container.x *= ratio;
@@ -1296,7 +1306,7 @@ function on_drag_start(e) {
 			return;
 		}
 		
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 		last_drag_update = Date.now();
 		last_drag_position = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
 		
@@ -1741,7 +1751,7 @@ function on_left_click(e) {
 		cancel_drag(true);
 	}
 	
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	var mouse_location = mouse_loc();
 	
 	if (!can_edit()) {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
@@ -1877,7 +1887,7 @@ function on_left_click(e) {
 
 var eraser_state = {}
 function on_eraser_move(e) {
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	var mouse_location = mouse_loc();
 	limit_rate(5, eraser_state, function() {	
 		renderer.plugins.interaction.processInteractive(mouse_location, objectContainer, function(container, hit) {
 			if (hit && container.entity && container.entity.type != 'background') {
@@ -2028,7 +2038,7 @@ var track_state = {}
 function on_track_move(e) {
 	limit_rate(15, track_state, function() {		
 		clearTimeout(track_timeout);	
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 		var x = from_x_local(mouse_location.x);
 		var y = from_y_local(mouse_location.y);
 		my_tracker.x = x;
@@ -2062,7 +2072,7 @@ function on_track_move(e) {
 }
 
 function on_area_end(e) {
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	var mouse_location = mouse_loc();
 	var new_x = mouse_location.x;
 	var new_y = mouse_location.y;
 	
@@ -2098,7 +2108,7 @@ var curve_state = {};
 var point_buffer = []
 function on_curve_move(e) {
 	limit_rate(20, curve_state, function() {
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 
 		var new_x = mouse_location.x;
 		var new_y = mouse_location.y;	
@@ -2118,7 +2128,7 @@ function on_curve_move(e) {
 }
 
 function on_curve_end(e) {
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	var mouse_location = mouse_loc();
 	var new_x = mouse_location.x;
 	var new_y = mouse_location.y;
 
@@ -2276,7 +2286,7 @@ var circle_state = {}
 function on_circle_move(e) {
 	limit_rate(15, circle_state, function() {	
 		//var mouse_location = e.data.getLocalPosition(background_sprite);
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 		var x_rel = from_x_local(mouse_location.x)
 		var y_rel = from_y_local(mouse_location.y)
 		
@@ -2336,7 +2346,7 @@ function on_circle_move(e) {
 
 function on_circle_end(e) {
 	limit_rate(15, circle_state, function() {});
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;		
+	var mouse_location = mouse_loc();		
 	var xrel = from_x_local(mouse_location.x)
 	var yrel = from_y_local(mouse_location.y)	
 
@@ -2414,7 +2424,7 @@ function on_ping_move(e) {
 	limit_rate(60, drag_state, function() {
 		var time = Date.now();
 		if (time - last_ping_time < 10) return;
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 		var x = from_x_local(mouse_location.x);
 		var y = from_y_local(mouse_location.y);
 		last_ping_time = time;
@@ -2425,7 +2435,7 @@ function on_ping_move(e) {
 
 function on_ping_end(e) {
 	limit_rate(0, drag_state, function() {});
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	var mouse_location = mouse_loc();
 	var x = from_x_local(mouse_location.x);
 	var y = from_y_local(mouse_location.y);
 	ping(x, y, ping_color, ping_size);
@@ -2509,7 +2519,7 @@ function measure_text(entity) {
 
 function select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) {
 	limit_rate(15, select_box_move_state, function() {
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 		mouse_location.x = x_abs(from_x_local(mouse_location.x));
 		mouse_location.y = y_abs(from_y_local(mouse_location.y));
 		var x_diff = mouse_location.x - ref_x;
@@ -2550,7 +2560,7 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 
 	setup_mouse_events(undefined, undefined);
 	
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	var mouse_location = mouse_loc();
 	mouse_location.x = x_abs(from_x_local(mouse_location.x));
 	mouse_location.y = y_abs(from_y_local(mouse_location.y));
 	var x_diff = mouse_location.x - ref_x;
@@ -2632,7 +2642,8 @@ function prepare_resize(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) 
 var select_box_move_state = {}
 function on_selectbox_move(e) {
 	limit_rate(15, select_box_move_state, function() {
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
+		
 		mouse_location.x = x_abs(from_x_local(mouse_location.x));
 		mouse_location.y = y_abs(from_y_local(mouse_location.y));
 		
@@ -2640,6 +2651,7 @@ function on_selectbox_move(e) {
 		mouse_location.y -= select_box.upper_y;
 		mouse_location.x /= select_box.width;
 		mouse_location.y /= select_box.height;
+		
 		
 		var margin = y_abs(ROTATE_ARROW_MARGIN) * zoom_level;
 		var x_margin = margin/select_box.width;
@@ -2657,7 +2669,7 @@ function on_selectbox_move(e) {
 			}
 			return;
 		}
-		
+
 		x_margin = Math.min(x_margin, 0.25);
 		y_margin = Math.min(y_margin, 0.25);
 		
@@ -3071,7 +3083,7 @@ var draw_state = {}
 var point_buffer = []
 function on_draw_move(e) {
 	limit_rate(15, draw_state, function() {		
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 
 		var new_x = last_point[0] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.x;
 		var new_y = last_point[1] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.y;	
@@ -3098,7 +3110,7 @@ function on_draw_move(e) {
 function on_draw_end(e) {
 	limit_rate(15, draw_state, function() {});
 
-	var mouse_location = renderer.plugins.interaction.eventData.data.global;
+	var mouse_location = mouse_loc();
 	var new_x = last_point[0];
 	var new_y = last_point[1];	
 	
@@ -3637,7 +3649,7 @@ function on_line_move(e) {
 function on_line_end(e) {
 	limit_rate(15, line_state, function() {});
 	try {
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 		var x = from_x_local(mouse_location.x) - new_drawing.x;
 		var y = from_y_local(mouse_location.y) - new_drawing.y;	
 		if ((new_drawing.path.length == 0) || x != last(new_drawing.path)[0] || y != last(new_drawing.path)[1]) {
@@ -5191,7 +5203,7 @@ function wot_connect() {
 							hex_color = "#FFAAAA";
 						}
 						
-						var icon = {uid:entity.id.toString(), type: 'icon', tank:entity.type, x:-1, y:-1, size:0.02, color:color, alpha:1, label:entity.tank.substring(0,10), label_font_size:8, label_color: hex_color, label_font: "Arial", label_font_modifier: "bold", label_pos:"pos_bottom", label_background:false, label_shadow:true, label_shadow:false, maxHealth:entity.maxHealth, player:entity.name}
+						var icon = {uid:entity.id.toString(), type: 'icon', tank:entity.type, x:-1, y:-1, size:0.02, color:color, alpha:1, label:entity.tank.substring(0,10), label_font_size:8, label_color: hex_color, label_font: "Arial", label_font_modifier: "bold", label_pos:"pos_bottom", label_background:false, label_shadow:false, maxHealth:entity.maxHealth, player:entity.name}
 
 						if (entity.position) {
 							var coords = transform_coords(entity.position);
@@ -5309,7 +5321,7 @@ $(document).ready(function() {
 	$(".edit_window").append(renderer.view);
 	
 	renderer.view.addEventListener("wheel", function(e) {
-		var mouse_location = renderer.plugins.interaction.eventData.data.global;
+		var mouse_location = mouse_loc();
 		var zoom_in = e.deltaY < 0;
 		var zoom_factor;
 		if (zoom_in) {
@@ -5352,7 +5364,7 @@ $(document).ready(function() {
 	
 	$(renderer.view).mousedown(function(e) {
 		if (e.which === 3 || e.which === 2) {
-			last_pan_loc = [renderer.plugins.interaction.eventData.data.global.x, renderer.plugins.interaction.eventData.data.global.y];
+			last_pan_loc = [mouse_loc().x, mouse_loc().y];
 			setup_mouse_events(on_pan);
 			e.preventDefault();
 		}
@@ -5529,9 +5541,15 @@ $(document).ready(function() {
 	}
 	animate();
 	
-
+	if (textures_loaded) {
+		on_textures_loaded();
+	} else {
+		loader.on('complete', on_textures_loaded)
+	}
 	
-	loader.once('complete', function () {
+	function on_textures_loaded() {
+		setup_assets();
+				
 		//generate ticks, leveraged from: http://thenewcode.com/864/Auto-Generate-Marks-on-HTML5-Range-Sliders-with-JavaScript
 		function ticks(element) {		
 			if ('list' in element && 'min' in element && 'max' in element && 'step' in element) {
@@ -6309,7 +6327,7 @@ $(document).ready(function() {
 		if (socket.connected) {
 			socket.emit('join_room', room, game);
 		}
-	});
+	}
 	
 	socket.on('room_data', function(new_room_data, my_id, new_tactic_name, locale) {
 		cleanup();

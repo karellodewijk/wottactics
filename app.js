@@ -77,17 +77,12 @@ app.use(function(err, req, res, next) {
 });
 
 app.use(function (req, res, next) {
-  try {
-    var host = req.hostname;
-    if (host.endsWith('wottactic.tk')) {
-	  var subdomain = host.substr(0, host.indexOf('wottactic.tk'));
-	  return res.redirect(301, 'http://' + subdomain + 'wottactic.com' + req.originalUrl);
-    }
-  } catch(e) {
- 	console.log(e);
-	console.log(e.stack);	  
-  }
-  return next();
+	var host = req.hostname;
+	if (host && host.endsWith('wottactic.tk')) {
+		var subdomain = host.substr(0, host.indexOf('wottactic.tk'));
+		return res.redirect(301, 'http://' + subdomain + 'wottactic.com' + req.originalUrl);
+	}
+	return next();
 });
 
 // not pretty but oh so handy to not crash the server
@@ -745,7 +740,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 		});
 	}
-	
+
 	function decorate_session(user, done) {
 		db.collection('users').findOne({_id:user.identity}, {no_ads:true}, function(err, result) {
 			if (result && result.no_ads) {
@@ -772,12 +767,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			}
 			user.server = identifier.split('://')[1].split(".wargaming")[0];
 			user.identity_provider = "wargaming";
-			user.identity = identifier.split('/id/')[1].split("/")[0];
-			user.wg_account_id = user.identity.split('-')[0];
-			user.name = user.identity.split('-')[1];
-			
-			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider, server:user.server, wg_id:user.wg_account_id}}, {upsert:true});
-			
+			var id_string = identifier.split('/id/')[1].split("/")[0];
+			user.wg_account_id = id_string.split('-')[0];
+			user.identity = "wg-" + user.wg_account_id;			
+			user.name = id_string.split('-')[1];			
 			var promises = [];
 			promises.push(new Promise(function(resolve){ 
 				decorate_session(user, function() { resolve(); });
@@ -790,9 +783,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 					}
 					resolve();
 				});
-			}))
-			
+			}))		
 			Promise.all(promises).then(function() {
+				db.collection('users').update({_id:user.identity}, {$set: {name:user.name, identity_provider:user.identity_provider, server:user.server, wg_id:user.wg_account_id, clan_id:user.clan_id}}, {upsert:true});
 				done(null, user);
 			})
 		}
@@ -823,7 +816,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity_provider = "google";
 			user.name = profile.displayName;
 			
-			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			db.collection('users').update({_id:user.identity}, {$set: {name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
 			decorate_session(user, function() {
 				done(null, user);
 			});
@@ -855,7 +848,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity_provider = "vk";
 			user.name = profile.displayName;
 			
-			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			db.collection('users').update({_id:user.identity}, {$set: {name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
 			decorate_session(user, function() {
 				done(null, user);
 			});			
@@ -887,7 +880,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity_provider = "bnet";
 			user.name = profile.battletag;
 			
-			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			db.collection('users').update({_id:user.identity}, {$set: {name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
 			decorate_session(user, function() {
 				done(null, user);
 			});		
@@ -923,7 +916,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity_provider = "facebook";
 			user.name = profile.displayName;
 			
-			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			db.collection('users').update({_id:user.identity}, {$set: {name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
 			decorate_session(user, function() {
 				done(null, user);
 			});			
@@ -955,7 +948,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			user.identity_provider = "twitter";
 			user.name = profile.displayName;
 			
-			db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+			db.collection('users').update({_id:user.identity}, {$set: {name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
 			decorate_session(user, function() {
 				done(null, user);
 			});		
@@ -1000,7 +993,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user.name = result.response.players[0].personaname;
 						}
 						
-						db.collection('users').update({_id:user.identity}, {$set: { _id:user.identity, name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
+						db.collection('users').update({_id:user.identity}, {$set: {name:user.name, identity_provider:user.identity_provider}}, {upsert:true});
 						decorate_session(user, function() {
 							done(null, user);
 						});

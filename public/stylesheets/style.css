@@ -90,7 +90,6 @@ div#preload { display: none; }
 	font-size: 14px;
 	font-family: 'Open Sans', sans-serif;
 	line-height: 1.7;
-	color: #494949;
 	font-weight:400;
 }
 
@@ -150,9 +149,8 @@ body {
 	background: #DDDDDD;
 }
 
-
 .call_to_action {
-	color:white;
+	color:#ffffff;
 }
 
 nav a, nav a:active, nav a:focus {

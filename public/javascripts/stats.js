@@ -57,7 +57,7 @@ function reset_ui() {
 function populate() {	
 	server = get_server(player);
 	$('#no_results').hide();
-	
+	$("#did_you_mean").hide();
 	if (src != "all") {
 		$("#last_100").text($("#last_100").text().replace("100 ", "10 "));
 		$("#last_1000").text($("#last_1000").text().replace("1,000 ", "100 "));
@@ -90,7 +90,15 @@ function populate() {
 		}),
 		$.Deferred(function() {
 			var self = this;
-			var fields = ["tank_id", src];
+			var fields = ["tank_id"];
+			if (src == "globalmap6" || src == "globalmap8" || src == "globalmap10") {
+				wg_src = "globalmap";
+			} else if (src == "stronghold_skirmish6" || src == "stronghold_skirmish8" || src == "stronghold_skirmish10") {
+				wg_src = "stronghold_skirmish";
+			} else {
+				wg_src = src;
+			}
+			fields.push(wg_src);
 			wn9_src = src;
 			if (src == "all") {
 				fields.push("random");
@@ -99,7 +107,7 @@ function populate() {
 			get_wg_data("/tanks/stats/?extra=random&", fields, function(data) {
 				stats_data = data;
 				if (stats_data) {
-					stats_data = stats_data.map(function(x) { x[src].id = x.tank_id; return x; });				
+					stats_data = stats_data.map(function(x) { x[wg_src].id = x.tank_id; return x; });
 					if (src == "all") {
 						for (var i in stats_data) {
 							stats_data[i][wn9_src].id = stats_data[i].tank_id;
@@ -141,9 +149,26 @@ function populate() {
 		}
 				
 		$( document ).ready(function() {
-			$("#tank_list").tablesorter({sortList: [[5,1], [0,0],[1,0],[2,0],[3,0],[4,0],[6,0],[7,0]], sortStable:true, sortAppend: [[5,1]]}); 		
+			$("#tank_list").tablesorter({sortList: [[5,1], [0,0],[1,0],[2,0],[3,0],[4,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0]], sortStable:true, sortAppend: [[5,1]]}); 		
 			
-			var results = calculate_stats(tank_expected, tank_expected_wn9, stats_data);
+			function filter_tank_data(tier) {
+				for (var i in stats_data) {
+					var tank_id = stats_data[i].tank_id;
+					if (!tank_data[tank_id] || tank_data[tank_id].level != tier) {
+						delete stats_data[i];
+					}
+				}
+			}
+			
+			if (src == "globalmap6" || src == "stronghold_skirmish6") {
+				filter_tank_data(6);
+			} else if (src == "globalmap8" || src == "stronghold_skirmish8") {
+				filter_tank_data(8);
+			} else if (src == "globalmap10" || src == "stronghold_skirmish10") {
+				filter_tank_data(10);
+			}
+			
+			var results = calculate_stats(tank_expected, tank_expected_wn9, stats_data, wg_src, wn9_src);
 											
 			for (var i in results.tanks) {
 				var totals = results.tanks[i];
@@ -639,13 +664,13 @@ $(document).ready(function() {
 	});	
 	$(".collapsable").click(function(e) {
 		e.preventDefault();
-		var caret = $(this).find("span");
+		var caret = $(this).find(".glyphicon");
 		if (caret.hasClass("glyphicon-triangle-right")) {
-			$(this).find("span").removeClass("glyphicon-triangle-right");
-			$(this).find("span").addClass("glyphicon-triangle-bottom");
+			$(this).find(".glyphicon").removeClass("glyphicon-triangle-right");
+			$(this).find(".glyphicon").addClass("glyphicon-triangle-bottom");
 		} else {
-			$(this).find("span").removeClass("glyphicon-triangle-bottom");
-			$(this).find("span").addClass("glyphicon-triangle-right");			
+			$(this).find(".glyphicon").removeClass("glyphicon-triangle-bottom");
+			$(this).find(".glyphicon").addClass("glyphicon-triangle-right");			
 		}
 		$(this).next("div").toggle();
 	})
@@ -689,23 +714,7 @@ var wn9_src = "random";
 
 if (player && server) {
 	$(document).ready(function() {
-		switch(src) {
-			case 'all':
-				$("#all_tab").addClass("active");
-				break;
-			case 'globalmap':
-				$("#cw_tab").addClass("active");
-				break;
-			case 'stronghold_skirmish':
-				$("#sk_tab").addClass("active");
-				break;
-			case 'stronghold_defense':
-				$("#sh_tab").addClass("active");
-				break;
-			case 'team':
-				$("#team_tab").addClass("active");
-				break;				
-		}
+		$("#" + src + "_tab").addClass("active");
 	});
 	
 	populate();

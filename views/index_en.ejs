@@ -18,8 +18,8 @@
 	</style>
 
 	<div class="container" style='width:100%; position:relative;'>
-		<div class="jumbotron content" style="padding-left:0px; padding-right:0px">
-			<div id="banner" class="call_to_action" style='width:100%;'>
+		<div class="jumbotron content" style="padding-left:0px; padding-right:0px;">
+			<div id="banner" class="call_to_action" style='width:100%; background-color:#888ecb'>
 				<div class="container" id="big_button_frame" style="text-align:center;">
 					<h1>
 						<% if (game == 'wot') { %>
@@ -46,8 +46,10 @@
 							Rainbox Six | Siege Tactics
 						<% } %>	
 					</h1>
-					<p><span id="quote"></span></p>
-					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>&nbsp;<a class="btn btn-primary btn-lg new_room" href="<%=game%>3" role="button"><%=l('Video replay room')%> (<%=l('Beta')%>) &raquo;</a><br /><br />
+					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>
+					<br /><%=l('Or')%><br />
+					<a class="btn btn-primary new_room" href="<%=game%>3" role="button"><%=l('Video replay room')%> &raquo;</a>
+					<br /><br />
 					<a href="<%=game%>1" class="new_room" role="button" style="color:#ADD8E6">(<%= l('Use original ui')%>)</a><br /></p>
 					<script type="text/javascript">
 						//generate unique id
@@ -92,6 +94,20 @@
 						</ul>
 						<p>I will be keeping the wottactic.eu domain and is actually the prefered domain for eu residents. The idea is if the site grows a little more it will always be served from an eu based server.
 					</div>
+					<%if (game == 'warface') { %>
+						<div class="col-md-4">
+							<h2>Looking for help with warface maps</h2>
+							<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
+						</div>
+					<%} else { %>
+						<div class="col-md-4">
+							<h2>Maintenance complete</h2>
+							
+							<p>Everything should be working as before, but definately let me know if there are any issues.
+						</div>
+					<% } %>					
+				</div>
+				<div class="row">
 					<%if (game != 'wot') { %>
 					<div class="col-md-4">
 						<h2>Forums back up</h2>
@@ -104,43 +120,25 @@
 						<p>There's also an ad on the new page. This does not mean there will be ads on the tactic planner page. But it should cover the hosting cost with a little luck. Even with some donations, wottactic has been running at a bit of a loss, not even counting manhours.
 						<p>Ads are disabled for everyone who donated ofcourse or anyone who donates anything in the future. It does require you to log back in.
 					</div>
-					<% } %>					
-				</div>
-				<div class="row">
-					<%if (game == 'warface') { %>
-						<div class="col-md-4">
-							<h2>Looking for help with warface maps</h2>
-							<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
-						</div>
-					<%} else { %>
-						<div class="col-md-4">
-							<h2>Sorry about the ads</h2>
-							<p>I tried to run in on donations alone the last year, but that doesn't seem to cover the hosting cost. So I've added a little bit of advertising, however:
-							<ul>
-								<li>There will be no advertising on the planner page itself, ever.
-								<li>I've disabled the ads for the donators (who's login I could decipher). And I will disable all ads for future donators regardless of the amount.
-								<li>I'm ok with people using adblock.
-							</ul>
-							
-						</div>	
 					<% } %>	
+
 					<div class="col-md-4">
 						<h2>Latest changes</h2>
 						<p>
 						<ul>
-							<li>Added custom color picker for users of ie and edge.
-							<li>You can now use PAGE UP/PAGE DOWN to switch slides.
-							<li>Added Enable/Disable dragging toggle button.
+							<li>Moved to pixi 4.3.4
+							<li>Added custom color picker for users of ie and edge
+							<li>You can now use PAGE UP/PAGE DOWN to switch slides
+							<li>Added Enable/Disable dragging toggle button
 							<li>Added Rainbox Six siege as a supported game.
-							<li>Added ?game=whatever url parameter to the link of stored_tactics.
-						</ul> 
+						</ul>
 						<p>On the bug hunting front:
 						<ul>
-							<li>Changing account now also changes account on the forum without the need logout.
+							<li>Sometimes drag cursor would revert back over a select box
+							<li>Changing account now also changes account on the forum without the need logout
 							<li>Fixed twitter login on domains other than wottactic.tk
-							<li>Made zoom move in predictable steps.
-							<li>Fixed alignment issues in video replay room.
-							<li>The hand icon is no longer shown when dragging is disabled.
+							<li>Made zoom move in predictable steps
+							<li>Fixed alignment issues in video replay room
 						</ul>
 						<p>If you find anything else, however small, that is broken, pls let me know. 
 					</div>

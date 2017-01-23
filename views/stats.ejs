@@ -48,11 +48,15 @@
 			<div style="min-width:100%; display:flex">
 				<div style="width:70%;">
 					<ul class="nav nav-tabs">
-						<li class='tab_li' id="all_tab"><a class="tab_link" data-src="all" href="#">Overall</a></li>
-						<li class='tab_li' id="cw_tab"><a class="tab_link" data-src="globalmap" href="#">CW</a></li>
-						<li class='tab_li' id="sk_tab"><a class="tab_link" data-src="stronghold_skirmish" href="#">Skirmish</a></li>
-						<li class='tab_li' id="sh_tab"><a class="tab_link" data-src="stronghold_defense" href="#">Stronghold</a></li>
-						<li class='tab_li' id="team_tab"><a class="tab_link" data-src="team" href="#">Team</a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Overall Statistics")%>" id="all_tab"><a class="tab_link" data-src="all" href="#"><%=l("Overall")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 10 Clan war statistics")%>" id="globalmap10_tab"><a class="tab_link" data-src="globalmap10" href="#"><%=l("CW X")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 8 Clan war statistics")%>" id="globalmap8_tab"><a class="tab_link" data-src="globalmap8" href="#"><%=l("CW VIII")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 6 Clan war statistics")%>" id="globalmap6_tab"><a class="tab_link" data-src="globalmap6" href="#"><%=l("CW VI")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 10 skirmish statistics")%>" id="stronghold_skirmish10_tab"><a class="tab_link" data-src="stronghold_skirmish10" href="#"><%=l("SK X")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 8 skirmish statistics")%>" id="stronghold_skirmish8_tab"><a class="tab_link" data-src="stronghold_skirmish8" href="#"><%=l("SK VIII")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 6 skirmish statistics")%>"  id="stronghold_skirmish6_tab"><a class="tab_link" data-src="stronghold_skirmish6" href="#"><%=l("SK VI")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Stronghold attack/defence statistics")%>" id="stronghold_defense_tab"><a class="tab_link" data-src="stronghold_defense" href="#"><%=l("Stronghold")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Team battles statistics")%>" id="team_tab"><a class="tab_link" data-src="team" href="#"><%=l("Team")%></a></li>
 					</ul>
 				
 					<table class="table table-bordered" id="total_table" style="background-color:white; table-layout: fixed;">

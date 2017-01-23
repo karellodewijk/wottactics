@@ -48,11 +48,15 @@
 			<div style="min-width:100%; display:flex">
 				<div style="width:70%;">
 					<ul class="nav nav-tabs">
-						<li class='tab_li' id="all_tab"><a class="tab_link" data-src="all" href="#">Overall</a></li>
-						<li class='tab_li' id="cw_tab"><a class="tab_link" data-src="globalmap" href="#">CW</a></li>
-						<li class='tab_li' id="sk_tab"><a class="tab_link" data-src="stronghold_skirmish" href="#">Skirmish</a></li>
-						<li class='tab_li' id="sh_tab"><a class="tab_link" data-src="stronghold_defense" href="#">Stronghold</a></li>
-						<li class='tab_li' id="team_tab"><a class="tab_link" data-src="team" href="#">Team</a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Overall Statistics")%>" id="all_tab"><a class="tab_link" data-src="all" href="#"><%=l("Overall")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 10 Clan war statistics")%>" id="globalmap10_tab"><a class="tab_link" data-src="globalmap10" href="#"><%=l("CW X")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 8 Clan war statistics")%>" id="globalmap8_tab"><a class="tab_link" data-src="globalmap8" href="#"><%=l("CW VIII")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 6 Clan war statistics")%>" id="globalmap6_tab"><a class="tab_link" data-src="globalmap6" href="#"><%=l("CW VI")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 10 skirmish statistics")%>" id="stronghold_skirmish10_tab"><a class="tab_link" data-src="stronghold_skirmish10" href="#"><%=l("SK X")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 8 skirmish statistics")%>" id="stronghold_skirmish8_tab"><a class="tab_link" data-src="stronghold_skirmish8" href="#"><%=l("SK VIII")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Tier 6 skirmish statistics")%>"  id="stronghold_skirmish6_tab"><a class="tab_link" data-src="stronghold_skirmish6" href="#"><%=l("SK VI")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Stronghold attack/defence statistics")%>" id="stronghold_defense_tab"><a class="tab_link" data-src="stronghold_defense" href="#"><%=l("Stronghold")%></a></li>
+						<li class='tab_li' data-toggle="tooltip" title="<%=l("Team battles statistics")%>" id="team_tab"><a class="tab_link" data-src="team" href="#"><%=l("Team")%></a></li>
 					</ul>
 				
 					<table class="table table-bordered" id="total_table" style="background-color:white; table-layout: fixed;">
@@ -60,9 +64,9 @@
 						<tr>
 						  <th class="header" data-toggle="tooltip" title=""></th>
 						  <th class="header" data-toggle="tooltip" title="<%=l("Total")%>"><%=l("Total")%></th>
-						  <th class="header" data-toggle="tooltip" title="<%=l("Average of the last ~100 battles of each player")%>" id="last_100"><%=l("Last ~100 battles")%></th>
-						  <th class="header" data-toggle="tooltip" title="<%=l("Average of the last ~1,000 battles of each player")%>" id="last_1000"><%=l("Last ~1,000 battles")%></th>
-						  <th class="header" data-toggle="tooltip" title="<%=l("Average of the last ~5,000 battles of each player")%>" id="last_5000"><%=l("Last ~5,000 battles")%></th>
+						  <th class="header last_100" data-toggle="tooltip" title="<%=l("Average of the last ~100 battles of each player")%>" id="last_100"><%=l("Last ~100 battles")%></th>
+						  <th class="header last_1000" data-toggle="tooltip" title="<%=l("Average of the last ~1,000 battles of each player")%>" id="last_1000"><%=l("Last ~1,000 battles")%></th>
+						  <th class="header last_5000" data-toggle="tooltip" title="<%=l("Average of the last ~5,000 battles of each player")%>" id="last_5000"><%=l("Last ~5,000 battles")%></th>
 						</tr>
 						</thead>
 						<tbody id="total_table_body">
@@ -123,15 +127,20 @@
 				<col style="width:10%">
 				<thead> 
 				<tr>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Name")%>"><%=l("Name")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Role")%>"><%=l("Role")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Battles")%>"><%=l("Battles")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate")%>"><%=l("Wr")%></th>
+				  <th colspan="3"></th>
+				  <th colspan="3" class="header" data-toggle="tooltip" title="<%=l("Overall")%>"><%=l("Overall")%></th>
+				  <th colspan="3" class="header last_1000" data-toggle="tooltip" title="<%=l("Battles")%>"><%=l("Last ~1,000 battles")%></th>
+				</tr>
+				<tr>
+				  <th rowspan="2" class="header" data-toggle="tooltip" title="<%=l("Name")%>"><%=l("Name")%></th>
+				  <th rowspan="2" class="header" data-toggle="tooltip" title="<%=l("Role")%>"><%=l("Role")%></th>
+				  <th rowspan="2" class="header" data-toggle="tooltip" title="<%=l("Battles")%>"><%=l("Battles")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate")%>"><%=l("wr")%></th>
 				  <th class="header" data-toggle="tooltip" title="<%=l("wn8")%>"><%=l("wn8")%></th>
 				  <th class="header" data-toggle="tooltip" title="<%=l("wn9")%>"><%=l("wn9")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate, last ~1,000 battles")%>"><%=l("Wr (~1,000)")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("wn8, last ~1,000 battles")%>"><%=l("wn8 (~1,000)")%></th>
-				  <th class="header" data-toggle="tooltip" title="<%=l("wn9, last ~1,000 battles")%>"><%=l("wn9 (~1,000)")%></th>					
+				  <th class="header" data-toggle="tooltip" title="<%=l("Win rate")%>"><%=l("wr")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("wn8")%>"><%=l("wn8")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("wn9")%>"><%=l("wn9")%></th>			
 				</tr>
 				</thead> 
 				<tbody id="member_list_body">
