@@ -21,7 +21,7 @@
 	</script>
 	<div class="container" style='width:100%; position:relative;'>
 		<div class="jumbotron content content_margin">		
-			<nav class="navbar navbar-default navbar-inverse">
+			<nav class="navbar navbar-default navbar-inverse navbar-custom">
 				<ul id="server_select" class="nav navbar-nav">
 					<li class="server_li" id="ru"><a class="server_select"href="javascript:void(0)">RU</a></li>
 					<li class="server_li" id="eu"><a class="server_select" href="javascript:void(0)">EU</a></li>
@@ -167,6 +167,11 @@
 				<div class="inline" style="width:24%; padding:10px;">
 				<canvas id="type_wn9"></canvas>
 				</div>
+				
+				<div id="line_chart" class="inline" style="position: relative; width:100%; height: 300px;" hidden>
+				<canvas id="wn8_progress"></canvas>
+				</div>
+
 			</div>
 			
 			<a href="/stats_info">Click here</a> for more info about the ratings.

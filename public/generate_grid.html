@@ -11,7 +11,7 @@
 </head>
 <body style="padding:10px">
 
-<div class="container jumbotron" >
+<div class="container jumbotron" style="padding-top:0px; border: 1px solid black">
   <h1>2D grid generator</h1>
     
   <h3>Dimensions</h3>
@@ -113,7 +113,7 @@
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
 	  <div class="checkbox">
-		<label><input type="checkbox">Show label in each cell</label>
+		<label><input id="flip_row_column" type="checkbox">flip row and column</label>
 	  </div>
 	</div>
   </div>
@@ -260,7 +260,8 @@ $(document).ready(function() {
 		
 		var gen_row_labels = $("#gen_row_labels").is(':checked');
 		var gen_col_labels = $("#gen_col_labels").is(':checked');
-		var gen_cell_labels = $("#gen_cell_labels").is(':checked');
+		var gen_cell_labels = $("#gen_cell_labels").is(':checked');		
+		var flip_row_column = $("#flip_row_column").is(':checked');
 		
 		var outline_text = $("#outline_text").is(':checked');
 		var font = $("#text_font").val();
@@ -445,7 +446,11 @@ $(document).ready(function() {
 				for (var chspace = line_width/2; chspace < width; chspace += hspace) {
 					var text;
 					if (style == "row_col") {
-						text = row_labels[j] + col_labels[i];
+						if (flip_row_column) {
+							text = col_labels[i] + row_labels[j];
+						} else {
+							text = row_labels[j] + col_labels[i];
+						}
 					} else if (style == "pattern") {
 						text = cell_labels[k];
 					}

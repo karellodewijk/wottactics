@@ -12,7 +12,7 @@
 	</script>
 	<style>
 		#banner {
-			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
+			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
 			background-size: cover, cover;
 		}
 	</style>
@@ -44,8 +44,11 @@
 							Squad Tactics
 						<% } else if (game == 'R6') { %>
 							Rainbox Six | Siege Tactics
+						<% } else if (game == 'MWO') { %>
+							Mech Warrior Online Tactics
 						<% } %>	
 					</h1>
+					<div id="quote"></div><br />
 					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>
 					<br /><%=l('Or')%><br />
 					<a class="btn btn-primary new_room" href="<%=game%>3" role="button"><%=l('Video replay room')%> &raquo;</a>
@@ -100,10 +103,9 @@
 							<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
 						</div>
 					<%} else { %>
+						<h2>Do you like the blue ?</h2>
 						<div class="col-md-4">
-							<h2>Maintenance complete</h2>
-							
-							<p>Everything should be working as before, but definately let me know if there are any issues.
+							<form method="post" action="http://poll.pollcode.com/37994187"><div style="background-color:#F0F0F0;padding:2px;width:175px;font-family:Arial;font-size:small;color:#000000;"><div style="padding:2px 0px 4px 2px;"></div><input type="radio" name="answer" value="1" id="answer379941871" style="float:left;" /><label for="answer379941871" style="float:left;width:150px;">Yes</label><div style="clear:both;height:2px;"></div><input type="radio" name="answer" value="2" id="answer379941872" style="float:left;" /><label for="answer379941872" style="float:left;width:150px;">No</label><div style="clear:both;height:2px;"></div><input type="radio" name="answer" value="3" id="answer379941873" style="float:left;" /><label for="answer379941873" style="float:left;width:150px;">Maybe a different color</label><div style="clear:both;height:2px;"></div><div align="center" style="padding:3px;"><input type="submit" value=" Vote ">&nbsp;<input type="submit" name="view" value=" View "></div></div></form>
 						</div>
 					<% } %>					
 				</div>
@@ -147,6 +149,8 @@
 						<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
 						
 						<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
+						
+						<p>If you have a question or a problem, use the forums or e-mail me directly, I can't answer to your questions in the survey as it's anonymous and I have no way of contacting you.
 					</div>				
 				</div>
 				<div class='row'>

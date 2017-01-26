@@ -642,7 +642,85 @@ function populate() {
 			});
 			
 		});
+
+		if (summary.battles) {
+			$('#line_chart').show();
+			var wn8_dataset = []
+			var wn9_dataset = []
+			for (var i in summary.wn8) {
+				wn8_dataset.push({x:summary.battles[i], y:summary.wn8[i]});
+				wn9_dataset.push({x:summary.battles[i], y:summary.wn9[i]});
+			}
+			
+			var min_x = summary.battles[0];
+			var max_x = summary.battles[summary.battles.length-1];
+					
+			var ctx = document.getElementById('wn8_progress').getContext('2d');
+			var myChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: summary.battles,
+					datasets: [{
+						label: 'wn8',
+						fill: false,
+						borderColor: "#5DA5DA",
+						backgroundColor: "#5DA5DA",
+						data: wn8_dataset,
+						yAxisID: "wn8"
+					}, {
+						label: 'wn9',
+						fill: false,
+						borderColor: "#F15854",
+						backgroundColor: "#F15854",
+						data: wn9_dataset,
+						yAxisID: "wn9"
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: {
+					  yAxes: [{
+						labelString: 'WN8',
+						position: "left",
+						"id": "wn8",
+						scaleLabel: {
+							display: true,
+							labelString: 'WN8'
+						}
+					  },
+					  {
+						labelString: 'WN9',
+						position: "right",
+						"id": "wn9",
+						scaleLabel: {
+							display: true,
+							labelString: 'WN9'
+						}
+					  }],
+					  xAxes: [{
+						  labelString: 'Battles',
+						  type: 'linear',
+						  position: 'bottom',
+						  scaleLabel: {
+							display: true,
+							labelString: 'Battles'
+						  },
+						  ticks: {
+							  suggestedMin: min_x,
+							  suggestedMax: max_x,
+							  stepSize: Math.floor((max_x - min_x) / 15)
+						  }
+					  }]
+					}
+				}
+			})
+		} else {
+			$('#line_chart').hide();
+		}
 	});
+	
+
 	
 	//do this last, if browser don't support it, well we crag here :)
 	if (src == "all") {
