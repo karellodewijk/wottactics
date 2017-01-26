@@ -59,6 +59,9 @@
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 		<link rel="stylesheet" href="<%=static_host%>/R6_attac_icons.css">
 		<link rel="stylesheet" href="<%=static_host%>/R6_def_icons.css">
+	<% } else if (game == 'MWO') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/MWO_icons.css">
 	<% } %>
 	
 	<script defer src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
@@ -118,7 +121,7 @@
 				<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 					<div class="icon icon-link"></div>
 				</button>
-				<% if (game == 'wot' || game == 'wows' || game == 'aw') { %>
+				<% if (game == 'wot' || game == 'wows' || game == 'aw' || game == 'squad'|| game == 'MWO') { %>
 					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
 						<div class="icon icon-grid_icon"></div>
 					</button>

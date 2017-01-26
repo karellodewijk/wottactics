@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Wn8 standalone</title>
+		<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+	</head>
+	<body>
+		 Wargaming id: <input type="text" id="id"></input><button id="search_btn">Search</button>
+		 <p>Wn8: <span id="account_wn8"><span>
+		 <p>Wn9: <span id="account_wn9"><span>
+		 <table id="tank_list">
+			<tr>
+				<th>Tank
+				<th>wn8
+				<th>wn9
+			</tr>
+		 </table>
+	</body>
+</html>
+
+<script>
+	var wg_app_id = "0dbf88d72730ed7b843ab5934d8b3794";
+
+	//calculate wn8
+	function calculate_wn8(tank, exp) {
+		var rDAMAGE = tank.damage_dealt / exp.expDamage;
+		var rSPOT   = tank.spotted / exp.expSpot;
+		var rFRAG   = tank.frags / exp.expFrag;
+		var rDEF    = tank.dropped_capture_points / exp.expDef;
+		var rWIN    = (100*tank.wins) / exp.expWinRate;
+
+		var rWINc    = Math.max(0,                     (rWIN    - 0.71) / (1 - 0.71) )
+		var rDAMAGEc = Math.max(0,                     (rDAMAGE - 0.22) / (1 - 0.22) )
+		var rFRAGc   = Math.max(0, Math.min(rDAMAGEc + 0.2, (rFRAG   - 0.12) / (1 - 0.12)))
+		var rSPOTc   = Math.max(0, Math.min(rDAMAGEc + 0.1, (rSPOT   - 0.38) / (1 - 0.38)))
+		var rDEFc    = Math.max(0, Math.min(rDAMAGEc + 0.1, (rDEF    - 0.10) / (1 - 0.10)))		
+		
+		return (980*rDAMAGEc + 210*rDAMAGEc*rFRAGc + 155*rFRAGc*rSPOTc + 75*rDEFc*rFRAGc + 145*Math.min(1.8,rWINc));
+	}
+	
+	function calculate_account_wn8(tank_stats, tank_expected_wn8) {
+		var expected_totals = {expDamage:0, expSpot:0, expFrag:0, expDef:0, expWinRate:0};
+		var achieved_totals = {damage_dealt:0, spotted:0, frags:0, dropped_capture_points:0, wins:0, battles:0};
+		
+		for (var i in tank_stats) {
+			var tank_id = tank_stats[i].tank_id;
+			var tank = tank_stats[i].all;
+			var exp = tank_expected_wn8[tank_id];
+			
+			if (exp) {
+				expected_totals.expDamage += exp.expDamage * tank.battles;
+				expected_totals.expSpot += exp.expSpot * tank.battles;
+				expected_totals.expFrag += exp.expFrag * tank.battles;
+				expected_totals.expDef += exp.expDef * tank.battles;
+				expected_totals.expWinRate += exp.expWinRate * tank.battles;
+
+				achieved_totals.damage_dealt += tank.damage_dealt;
+				achieved_totals.spotted += tank.spotted;
+				achieved_totals.frags += tank.frags;
+				achieved_totals.dropped_capture_points += tank.dropped_capture_points;
+				achieved_totals.wins += tank.wins;
+				achieved_totals.battles += tank.battles;
+			}
+		}
+		
+		return calculate_wn8(achieved_totals, expected_totals);	
+	}	
+
+	//calculate wn9
+	var tierAvg = [	// from 150816 EU avgs exc scout/arty
+		{ win:0.477, dmg:88.9, frag:0.68, spot:0.90, def:0.53, cap:1.0, weight:0.40 },
+		{ win:0.490, dmg:118.2, frag:0.66, spot:0.85, def:0.65, cap:1.0, weight:0.41 },
+		{ win:0.495, dmg:145.1, frag:0.59, spot:1.05, def:0.51, cap:1.0, weight:0.44 },
+		{ win:0.492, dmg:214.0, frag:0.60, spot:0.81, def:0.55, cap:1.0, weight:0.44 },
+		{ win:0.495, dmg:388.3, frag:0.75, spot:0.93, def:0.63, cap:1.0, weight:0.60 },
+		{ win:0.497, dmg:578.7, frag:0.74, spot:0.93, def:0.52, cap:1.0, weight:0.70 },
+		{ win:0.498, dmg:791.1, frag:0.76, spot:0.87, def:0.58, cap:1.0, weight:0.82 },
+		{ win:0.497, dmg:1098.7, frag:0.79, spot:0.87, def:0.58, cap:1.0, weight:1.00 },
+		{ win:0.498, dmg:1443.2, frag:0.86, spot:0.94, def:0.56, cap:1.0, weight:1.23 },
+		{ win:0.498, dmg:1963.8, frag:1.04, spot:1.08, def:0.61, cap:1.0, weight:1.60 }];
+	
+	function CalcWN9Tank(tank, expvals, maxhist) {
+		var exp = expvals[tank.tank_id];
+		if (!exp) { console.log("Tank ID not found: " + tank.tank_id); return -1; }
+		
+		var rtank = tank.random;
+		var avg = tierAvg[exp.mmrange >= 3 ? exp.tier : exp.tier-1];
+		var rdmg = rtank.damage_dealt / (rtank.battles * avg.dmg);
+		var rfrag = rtank.frags / (rtank.battles * avg.frag);
+		var rspot = rtank.spotted / (rtank.battles * avg.spot);
+		var rdef = rtank.dropped_capture_points / (rtank.battles * avg.def);
+
+		// Calculate raw winrate-correlated wn9base
+		// Use different formula for low battle counts
+		var wn9base = 0.7*rdmg;
+		if (rtank.battles < 5) wn9base += 0.14*rfrag + 0.13*Math.sqrt(rspot) + 0.03*Math.sqrt(rdef);
+		else wn9base += 0.25*Math.sqrt(rfrag*rspot) + 0.05*Math.sqrt(rfrag*Math.sqrt(rdef));
+		// Adjust expected value if generating maximum historical value
+		var wn9exp = maxhist ? exp.wn9exp * (1+exp.wn9nerf) : exp.wn9exp;
+		// Calculate final WN9 based on tank expected value & skill scaling 
+		var wn9 = 666 * Math.max(0, 1 + (wn9base / wn9exp - 1) / exp.wn9scale );
+		return wn9;
+	}
+	
+	function CalcWN9Account(tanks, expvals)	{
+		// compile list of valid tanks with battles & WN9 
+		var tanklist = [];
+		var totbat = 0;
+		for (var i=0; i<tanks.length; i++)
+		{
+			if (tanks[i].random.battles > 0) { // <-- code was modified here
+				var exp = expvals[tanks[i].tank_id];
+				if (!exp || exp.type == "SPG") continue;	// don't use SPGs & missing tanks
+				var wn9 = CalcWN9Tank(tanks[i], expvals, false);
+				var tankentry = { wn9:wn9, bat:tanks[i].random.battles, exp:exp };
+				tanklist.push(tankentry);
+				totbat += tankentry.bat;
+			}
+		}
+		if (!totbat) return -1;		// handle case with no valid tanks
+
+		// cap tank weight according to tier, total battles & nerf status
+		var totweight = 0;
+		for (var i=0; i<tanklist.length; i++)
+		{
+			var exp = tanklist[i].exp;
+			var batcap = exp.tier*(40.0 + exp.tier*totbat/2000.0);
+			tanklist[i].weight = Math.min(batcap, tanklist[i].bat);
+			if (exp.wn9nerf) tanklist[i].weight /= 2;
+			totweight += tanklist[i].weight;
+		}
+
+		// sort tanks by WN9 decreasing
+		function compareTanks(a, b) { return b.wn9 - a.wn9 };
+		tanklist.sort(compareTanks);
+
+		// add up account WN9 over top 65% of capped battles
+		totweight *= 0.65;
+		var wn9tot = 0, usedweight = 0, i = 0;
+		for (; usedweight+tanklist[i].weight <= totweight; i++)
+		{
+			wn9tot += tanklist[i].wn9 * tanklist[i].weight;
+			usedweight += tanklist[i].weight;
+		}
+		// last tank before cutoff uses remaining weight, not its battle count
+		wn9tot += tanklist[i].wn9 * (totweight - usedweight);
+		return wn9tot / totweight;
+	}
+	
+	function get_server(id) {
+		if(id > 3000000000){return "kr";}
+		if(id > 2000000000){return "asia";}
+		if(id > 1000000000){return "com";}
+		if(id > 500000000){return "eu";}
+		return "ru";
+	}
+	
+	$('#search_btn').click(function() {
+		var id = $('#id').val();
+		var server = get_server(id);
+		var tank_data, tank_stats, tank_expected_wn8, tank_expected_wn9; 
+		
+		//get all the data
+		$.when(
+			//tank list from wargaming
+			$.Deferred(function() {
+				var self = this;
+				$.get("https://api.worldoftanks." + server + "/wot/encyclopedia/tanks/?application_id=" + wg_app_id + "&fields=tank_id,image_small,name_i18n,level,nation,type").done(function(data) {
+					tank_data = data.data;
+					self.resolve();
+				});
+			}),
+			//vehicle stats from wargaming
+			$.Deferred(function() {
+				var self = this;
+				$.get("https://api.worldoftanks." + server + "/wot/tanks/stats/?extra=random&application_id=" + wg_app_id + "&account_id=" + id + "&fields=tank_id,all,random").done(function(data) {
+					tank_stats = data.data[id];
+					self.resolve();
+				});
+			}),
+			//wn8 expected values, src: http://www.wnefficiency.net/exp/expected_tank_values_29.json
+			$.Deferred(function() {
+				var self = this;
+				$.get("https://karellodewijk.github.io/other/expected_tank_values_29.json", {}, function(data) {
+					tank_expected_wn8 = {};
+					for (var i in data.data) {
+						tank_expected_wn8[data.data[i].IDNum] = data.data[i];
+					}
+					self.resolve();
+				});
+			}),
+			//wn9 expected values src: http://jaj22.org.uk/tankdata/exp_wn9.json
+			$.Deferred(function() {
+				var self = this;
+				$.get("https://karellodewijk.github.io/other/exp_wn9.json", {}, function(data) {
+					tank_expected_wn9 = {}
+					for (var i in data.data) {
+						tank_expected_wn9[data.data[i].id] = data.data[i];
+					}
+					self.resolve();
+				});
+			})
+		).then(function() {	
+			//calculate the stats
+			var wn8 = calculate_account_wn8(tank_stats, tank_expected_wn8);
+			var wn9 = CalcWN9Account(tank_stats, tank_expected_wn9);
+			
+			$("#account_wn8").append(wn8);
+			$("#account_wn9").append(wn9);
+			
+			for (var i in tank_stats) {
+				var tank_id = tank_stats[i].tank_id;
+				var tank = tank_stats[i];
+
+				var wn8, wn9;
+				var node = "<tr>";
+				
+				//name
+				if (tank_data[tank_id]) {
+					node += "<td>" + tank_data[tank_id].name_i18n + "</td>";
+				} else {
+					node += "<td>" + tank_id + "</td>";
+				}
+				
+				//wn8
+				if (tank_expected_wn8[tank_id]) {
+					var exp = tank_expected_wn8[tank_id];
+					exp.expDamage *= tank.all.battles;
+					exp.expSpot *= tank.all.battles;
+					exp.expFrag *= tank.all.battles;
+					exp.expDef *= tank.all.battles;
+					exp.expWinRate *= tank.all.battles;
+					var wn8 = calculate_wn8(tank.all, exp);
+					node += "<td>" + wn8 + "</td>";
+				}
+				
+				//wn9
+				if (tank_expected_wn9[tank_id]) {
+					var wn9 = CalcWN9Tank(tank, tank_expected_wn9, true);
+					node += "<td>" + wn9 + "</td>";
+				}
+
+				node += "</tr>"
+				$('#tank_list').append(node)
+			}
+		});
+	
+	})
+	
+</script>

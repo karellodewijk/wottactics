@@ -8,22 +8,22 @@
   width: 30px;
   height: 30px;
 }
-.wot-arty {
+.wot-light {
   background-position: -0px -30px;
   width: 37px;
   height: 37px;
 }
-.wot-heavy {
+.wot-arty {
   background-position: -0px -67px;
   width: 37px;
   height: 37px;
 }
-.wot-light {
+.wot-medium {
   background-position: -0px -104px;
   width: 37px;
   height: 37px;
 }
-.wot-medium {
+.wot-heavy {
   background-position: -0px -141px;
   width: 37px;
   height: 37px;
@@ -48,8 +48,13 @@
   width: 58px;
   height: 58px;
 }
-.wot-cursor {
+.wot-rotate {
   background-position: -0px -369px;
+  width: 26px;
+  height: 58px;
+}
+.wot-cursor {
+  background-position: -0px -427px;
   width: 63px;
   height: 91px;
 }

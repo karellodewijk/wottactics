@@ -42,7 +42,6 @@ if (game == "wows") { //wows
 	loader.add("hots_assets.png", asset_host + "hots_assets.png");
 	loader.add("hots_assets.json",  asset_host +  "hots_assets.json");
 } else {
-	assets.push(image_host+"rotate.png");
 	loader.add("wot_assets.png", asset_host + "wot_assets.png");
 	loader.add("wot_assets.json",  asset_host +  "wot_assets.json");
 }
@@ -57,7 +56,15 @@ loader.on('complete', function(e) {
 })
 loader.load();
 
-
+function img_texture(src) {
+	if (texture_atlas[src] && !is_safari()) {
+		var img = texture_atlas[src];
+		return new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
+	} else {
+		return PIXI.Texture.fromImage(image_host + src);
+	}
+	
+}
 
 var texture_atlas;
 function setup_assets() {
@@ -1027,6 +1034,16 @@ function set_background(new_background, cb) {
 				background = new_background;
 				history[background.uid] = background;
 				background_sprite.texture = texture;
+				
+				var grid = $('#map_select').find('option[value="'+ new_background.path +'"]').attr('data-grid')
+				if (grid) {
+					var img = new Image();
+					img.crossOrigin = "Anonymous";
+					img.onload = function() {
+						grid_layer.texture = new PIXI.Texture(new PIXI.BaseTexture(img));
+					}
+					img.src = image_host + grid;
+				}
 		
 				room_data.slides[active_slide].entities[new_background.uid] = new_background;
 				resources_loading--;
@@ -1942,13 +1959,7 @@ function on_note_end(e) {
 }
 
 function create_note(note) {
-	var texture;
-	if (texture_atlas['note.png'] && !is_safari()) {
-		var img = texture_atlas['note.png'];
-		texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
-	} else {
-		texture = PIXI.Texture.fromImage(image_host + 'note.png');
-	}
+	var texture = img_texture("note.png");
 	var sprite = new PIXI.Sprite(texture);
 
 	var ratio = sprite.width / sprite.height;
@@ -1998,13 +2009,7 @@ function create_note(note) {
 }
 
 function create_tracker(tracker) {	
-	var texture
-	if (texture_atlas[tracker.shape + '.png'] && !is_safari()) {
-		var img = texture_atlas[tracker.shape + '.png'];
-		texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
-	} else {
-		texture = PIXI.Texture.fromImage(image_host + tracker.shape + '.png');
-	}
+	var texture = img_texture(tracker.shape + '.png');
 	
 	tracker.container = new PIXI.Sprite(texture);	
 	tracker.container.tint = tracker.color;
@@ -2969,9 +2974,7 @@ function select_entities() {
 		select_box.x = box_x + x_abs(x_max - x_min)/2;
 		select_box.y = box_y + y_abs(y_max - y_min)/2;
 		make_resizable(select_box);
-		
-		var texture = new PIXI.Texture.fromImage(image_host + "rotate.png");
-
+		var texture = img_texture("rotate.png");
 		var ratio = texture.width / texture.height;
 		var arrow_height = y_abs(ROTATE_ARROW_SCALE) * zoom_level;
 		var arrow_width = arrow_height * ratio;
@@ -3881,14 +3884,9 @@ function create_icon(icon, cb_after) {
 		path += ".png";
 	}
 	
-	var texture
-	if (texture_atlas[path] && !is_safari()) {
-		var img = texture_atlas[path];
-		texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
-	} else {
-		texture = PIXI.Texture.fromImage(image_host + path);
-	}
-	
+	console.log(path)
+	var texture = img_texture(path);
+
 	resources_loading++;
 	var onloaded = function() {
 		create_icon_cont(icon, texture);
@@ -5349,6 +5347,8 @@ $(document).ready(function() {
 		grid_layer = new PIXI.Sprite.fromImage(image_host + "aw_grid.png");
 	} else if (game == "squad") {
 		grid_layer = new PIXI.Sprite.fromImage(image_host + "squad_grid.png");
+	} else if (game == "MWO") {
+		grid_layer = new PIXI.Sprite.fromImage(image_host + "grid_MWO10.png");
 	} else {
 		grid_layer = new PIXI.Sprite.fromImage(image_host + "grid.png");
 	}
@@ -5571,12 +5571,7 @@ $(document).ready(function() {
 		arr = Array.prototype.slice.call(lists);
 		arr.forEach(ticks);
 		
-		if (texture_atlas["circle.png"] && !is_safari()) {
-			var img = texture_atlas["circle.png"];
-			ping_texture = new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
-		} else {
-			ping_texture = PIXI.Texture.fromImage(image_host + 'circle.png');
-		}
+		ping_texture = img_texture("circle.png");
 		
 		// Return a helper with preserved width of cells
 		var fixHelper = function(e, ui) {

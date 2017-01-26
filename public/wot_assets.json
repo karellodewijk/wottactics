@@ -2,7 +2,7 @@
   "sprites": {
     "wot_assets.png": {
       "width": 63,
-      "height": 460
+      "height": 518
     }
   },
   "tiles": {
@@ -13,28 +13,28 @@
       "y": 4,
       "sprite": "wot_assets.png"
     },
-    "arty.png": {
+    "light.png": {
       "width": 29,
       "height": 29,
       "x": 4,
       "y": 34,
       "sprite": "wot_assets.png"
     },
-    "heavy.png": {
+    "arty.png": {
       "width": 29,
       "height": 29,
       "x": 4,
       "y": 71,
       "sprite": "wot_assets.png"
     },
-    "light.png": {
+    "medium.png": {
       "width": 29,
       "height": 29,
       "x": 4,
       "y": 108,
       "sprite": "wot_assets.png"
     },
-    "medium.png": {
+    "heavy.png": {
       "width": 29,
       "height": 29,
       "x": 4,
@@ -69,11 +69,18 @@
       "y": 315,
       "sprite": "wot_assets.png"
     },
+    "rotate.png": {
+      "width": 18,
+      "height": 50,
+      "x": 4,
+      "y": 373,
+      "sprite": "wot_assets.png"
+    },
     "cursor.png": {
       "width": 55,
       "height": 83,
       "x": 4,
-      "y": 373,
+      "y": 431,
       "sprite": "wot_assets.png"
     }
   }
