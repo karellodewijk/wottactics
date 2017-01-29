@@ -47,6 +47,23 @@ function get_wg_data(page, fields, cb) {
 	});
 }
 
+function get_wg_clan_data(page, fields, clan, cb) {
+	var link = "https://api.worldoftanks." + server + "/wgn" + page;
+	link += "application_id=0dbf88d72730ed7b843ab5934d8b3794";
+	link += "&clan_id=" + clan;
+	if (fields && fields.length > 0) {
+		link += "&fields=";
+		for (var i in fields) {
+			var field = fields[i];
+			link += field + ",";
+		}
+		link = link.slice(0,-1);
+	}
+	$.get(link, {}, function(data) {
+		cb(data.data[clan]);
+	});
+}
+
 function reset_ui() {
 	$('#tank_list_body').empty();
 	$('#total_table_body').children().each(function() {
@@ -58,6 +75,7 @@ function populate() {
 	server = get_server(player);
 	$('#no_results').hide();
 	$("#did_you_mean").hide();
+	$("#login_or_search").hide();
 	if (src != "all") {
 		$("#last_100").text($("#last_100").text().replace("100 ", "10 "));
 		$("#last_1000").text($("#last_1000").text().replace("1,000 ", "100 "));
@@ -123,6 +141,7 @@ function populate() {
 				$('#srch-term').attr('placeholder', data.nickname);
 				$('#player_name').text(data.nickname);
 				$('#player_name').show();
+				clan_id = data.clan_id
 				self.resolve();
 			});
 		}),
@@ -140,7 +159,16 @@ function populate() {
 				self.resolve();
 			});
 		})
-	).then(function() {	
+	).then(function() {
+		if (clan_id) {
+			get_wg_clan_data("/clans/info/?", ["tag"], clan_id, function(data) {
+				$('#clan_tag').html('[<a href="/clan/' + clan_id + '">' + data.tag + '</a>]')
+				$('#clan_tag').show();
+			});
+		} else {
+			$('#clan_tag').hide();
+		}
+		
 		if (!stats_data) {
 			$('#no_battles').show();
 			return;
@@ -719,9 +747,7 @@ function populate() {
 			$('#line_chart').hide();
 		}
 	});
-	
 
-	
 	//do this last, if browser don't support it, well we crag here :)
 	if (src == "all") {
 		window.history.replaceState({}, document.title, "/player/" + player);
@@ -796,5 +822,6 @@ if (player && server) {
 	});
 	
 	populate();
-
+} else {
+	$("#login_or_search").show();
 }

@@ -1,0 +1,4 @@
+db.tactics.find({_id:"G9atUH8zQTqmiY"}).forEach(function (doc) {
+	doc.lost_identities["wg-505943778"] = { role:"owner" }
+	db.tactics.update({_id:doc._id}, doc);
+})

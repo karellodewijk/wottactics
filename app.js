@@ -170,20 +170,34 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		res.cookie('locale', locale, {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 	
 	}
 	
-	function push_tactic_to_db(user, room, name, uid) {
+	function push_tactic_to_db(user, room, name, uid, remove_old) {
 		//store a link to the tacticn in user data
-		db.collection('users').update({_id:user.identity}, {$push:{tactics:{name:name, date:Date.now(), game:room_data[room].game, uid:uid, is_video:(typeof room_data[room].playing != 'undefined')}}}, {upsert: true});		
+		var date = Date.now();
+		db.collection('users').update({_id:user.identity}, {$push:{tactics:{name:name, date:date, game:room_data[room].game, uid:uid, is_video:(typeof room_data[room].playing != 'undefined')}}}, {upsert: true} , function(err) {
+			if (!err && remove_old) {
+				try {
+					db.collection('users').update({_id:user.identity}, {$pull: {tactics:{uid:uid, date:{$ne:date}}}}, {upsert: true});
+				} catch(e) {} //probably doesn't exist
+			}
+		});		
 		//store the tactic in the stored_tactics list
 		var data = JSON.parse(JSON.stringify(room_data[room]));
 		data.name = name;
 		delete data.userlist;
 		delete data.lost_users;
 		delete data.lost_identities;
+
+		if (!data.creator) {
+			data.creator = user.identity;
+		}
+		if (!data.users) data.users = {}
+		data.users[user.identity] = "owner";
+		
 		data._id = uid;
 		db.collection('stored_tactics').update({_id:uid}, data, {upsert: true});
 
 		if (!room_data[room].lost_identities[user.identity]) {
-			room_data[room].lost_identities[user.identity] = {};
+			room_data[room].lost_identities[user.identity] = {role: "owner"};
 		}
 		room_data[room].lost_identities[user.identity].tactic_name = name;
 		room_data[room].lost_identities[user.identity].tactic_uid = uid;
@@ -196,17 +210,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				&& room_data[room].lost_identities[user.identity].tactic_name 
 				&& room_data[room].lost_identities[user.identity].tactic_name == name) {
 					var uid = room_data[room].lost_identities[user.identity].tactic_uid;
-					db.collection('users').findOne({_id:user.identity, tactics:{$elemMatch:{uid:uid}}}, {'tactics.$':1}, function(err, result) { 					
-						if (!err && result && result.tactics) {
-							db.collection('users').update({_id:user.identity}, {$pull: {tactics:{uid:uid}}}, {upsert: true});
-						} else {
-							uid = newUid();
-						}
-						push_tactic_to_db(user, room, name, uid);
-					});
+					push_tactic_to_db(user, room, name, uid, true);
 			} else {
 				var uid = newUid();
-				push_tactic_to_db(user, room, name, uid);
+				push_tactic_to_db(user, room, name, uid, false);
 			}
 		}
 	}
@@ -254,9 +261,13 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		db.collection('users').findOne({_id:user.identity, tactics:{$elemMatch:{uid:uid}}},{'tactics.$':1}, function(err, result) {
 			if (!err && result && result.tactics) {
 				var tactic = result.tactics[0];
-				db.collection('users').update({_id:user.identity}, {$pull: {tactics:{uid:uid}}});
+				var old_name = tactic.name;
 				tactic.name = new_name;
-				db.collection('users').update({_id:user.identity}, {$push: {tactics:tactic}});
+				db.collection('users').update({_id:user.identity}, {$push: {tactics:tactic}}, function(err) {
+					if (!err) {
+						db.collection('users').update({_id:user.identity}, {$pull: {tactics:{uid:uid, name:old_name}}});
+					}
+				});
 			}			
 		});
 	}
@@ -473,7 +484,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	}
 	
-	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO'];	
+	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC'];	
 	games.forEach(function(game) {
 		router.get(['/' + game + '.html', '/' + game], function(req, res, next) {
 		  set_game(req, res, game);
@@ -1602,6 +1613,14 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			if (room_data[room]) {
 				room_data[room].locked = is_locked;
 				socket.broadcast.to(room).emit('lock_room', is_locked, socket.request.session.passport.user.id);
+			}
+		});
+		
+		socket.on('presentation_mode', function(room, presentation_mode, active_slide) {
+			if (room_data[room]) {
+				room_data[room].presentation_mode = presentation_mode;
+				room_data[room].active_slide = active_slide;
+				socket.broadcast.to(room).emit('presentation_mode', presentation_mode, room_data[room].active_slide, socket.request.session.passport.user.id);
 			}
 		});
 

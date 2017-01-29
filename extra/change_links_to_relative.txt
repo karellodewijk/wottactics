@@ -1,0 +1,49 @@
+db.tactics.find({}).forEach(function (doc) { 
+	var modified = false;
+	var locales = ['', 'en.', 'sr.', 'de.', 'es.', 'fr.', 'pl.', 'cs.', 'fi.', 'ru.', 'nl.', 'el.'];
+	for (var key in doc.slides) {
+		if (doc.slides.hasOwnProperty(key)) {
+			for (var i in doc.slides[key].entities) {
+				if (doc.slides[key].entities.hasOwnProperty(i)) {
+					if (doc.slides[key].entities[i].type == "background") {
+						doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://karellodewijk.github.io", ""); 
+						for (var j in locales) {
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "wottactic.tk", ""); 
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "wottactic.com", ""); 
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "wottactic.eu", ""); 
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "gametactic.org", "");
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "awtactic.tk", "");
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "wowstactic.tk", ""); 
+						}
+					}
+				}
+			}
+		}
+	}
+	db.tactics.update({_id:doc._id}, doc);
+});
+
+db.stored_tactics.find({}).forEach(function (doc) { 
+	var modified = false;
+	var locales = ['', 'en.', 'sr.', 'de.', 'es.', 'fr.', 'pl.', 'cs.', 'fi.', 'ru.', 'nl.', 'el.'];
+	for (var key in doc.slides) {
+		if (doc.slides.hasOwnProperty(key)) {
+			for (var i in doc.slides[key].entities) {
+				if (doc.slides[key].entities.hasOwnProperty(i)) {
+					if (doc.slides[key].entities[i].type == "background") {
+						doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://karellodewijk.github.io", ""); 
+						for (var j in locales) {
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "wottactic.tk", ""); 
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "wottactic.com", ""); 
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "wottactic.eu", ""); 
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "gametactic.org", "");
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "awtactic.tk", "");
+							doc.slides[key].entities[i].path = doc.slides[key].entities[i].path.replace("http://" + locales[j] + "wowstactic.tk", ""); 
+						}
+					}
+				}
+			}
+		}
+	}
+	db.stored_tactics.update({_id:doc._id}, doc);
+});

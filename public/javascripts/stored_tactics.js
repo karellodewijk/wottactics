@@ -202,6 +202,7 @@ $(document).ready(function() {
 			new_path = file_name;
 		}
 
+		console.log("WAAAAA")
 
 		
 		if (node.hasClass('file')) {

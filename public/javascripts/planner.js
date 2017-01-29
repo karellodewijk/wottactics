@@ -7,17 +7,12 @@ if (location.pathname.indexOf(game+'3') != -1) {
 	is_video_replay = true;
 }
 
-var image_host;
 function is_safari() {
 	return navigator.vendor && navigator.vendor.indexOf('Apple') > -1;
 }
 
 var static_host = $("#static_host").attr("data-static_host");
-if (is_safari()) {
-	image_host = 'http://'+location.host+'/icons/'; //enable for local image hosting
-} else {
-	image_host = static_host + "/icons/";
-}
+var image_host = static_host + "/icons/";
 var asset_host = static_host + "/";
 
 var loader = PIXI.loader;
@@ -82,6 +77,7 @@ var room = location.search.split('room=')[1].split("&")[0];
 var nowebgl = location.search.indexOf('nowebgl') != -1;	
 var wot_live = location.search.indexOf('wot_live') != -1;
 var adjust_all_zoom = location.search.indexOf('adjust_zoom') != -1;
+
 
 function hashstring(str) {
 	var sum = 0;
@@ -186,7 +182,7 @@ var ICON_SCALE = 0.025/20;
 var NOTE_SCALE = 0.03;
 var THICKNESS_SCALE = 1;
 var FONT_SCALE = 0.002;
-var TEXT_QUALITY = 8;
+var TEXT_QUALITY = 1;
 var DRAW_QUALITY = 2;
 var ARROW_SCALE = 0.008;
 var ARROW_SCALE2 = 1.7;
@@ -201,7 +197,7 @@ var VIDEO_EXTENSIONS = ['mp4','webgl','avi'];
 var VIDEO_SYNC_DELAY = 10000; //in ms
 var MOUSE_IDLE_HIDE_TIME = 5000;
 var MAX_CANVAS_SIZE = 4096;
-var ICON_LABEL_SCALE = 1;
+var ICON_LABEL_SCALE = 1.5;
 var TEXT_SCALE = 0.80;
 var BACKGROUND_TEXT_SCALE = 0.80;
 var PING_TIME = 500; //time ping stays in ms
@@ -313,6 +309,7 @@ var control_camera = false;
 var dragging_enabled = true;
 var temp_canvas = document.createElement("canvas");
 var dragging_mode = {};
+var presentation_mode = true;
 
 //these variables are only for the video replay room
 var offset = 0; // time offset from the server in ms 
@@ -446,19 +443,21 @@ function paste() {
 
 function adjust_zoom(entity) {
 	if (entity.draw_zoom_level) {
-		if (!adjust_all_zoom && entity.type != "icon") return;
+		if (!adjust_all_zoom && entity.type != "icon" && entity.type != "text" && entity.type != "background_text") return;
 		var scale = zoom_level / entity.draw_zoom_level;
 		switch(entity.type) {
 			case 'icon': case 'note':
 				entity.container.scale.x = entity.container.orig_scale[0] * scale;
 				entity.container.scale.y = entity.container.orig_scale[1] * scale;
 				break;
-			case 'text': case 'background_text':
-				set_anchor(entity.container, 0, 0);
-				entity.container.scale.x = entity.container.orig_scale[0] * scale;
-				entity.container.scale.y = entity.container.orig_scale[1] * scale;
-				set_anchor(entity.container, 0.5, 0.5);
+			case 'text': 
+				remove(entity.uid);
+				create_text2(entity);
 				break;
+			case 'background_text':
+				remove(entity.uid);
+				create_background_text2(entity);
+				break;				
 			case 'drawing':
 				remove(entity.uid);
 				create_drawing2(entity, DRAW_QUALITY * 1/scale, scale);
@@ -519,7 +518,9 @@ function zoom(amount, isZoomIn, center, e) {
 }
 
 function emit_pan_zoom() {
-	socket.emit('pan_zoom', room, zoom_level, from_x_local_vect(objectContainer.x), from_y_local_vect(objectContainer.y));
+	if (presentation_mode) {
+		socket.emit('pan_zoom', room, zoom_level, from_x_local_vect(objectContainer.x), from_y_local_vect(objectContainer.y));
+	}
 }
 
 function pan_zoom(new_zoom_level, x, y) {	
@@ -1026,8 +1027,13 @@ function set_background(new_background, cb) {
 		if (!new_background.is_video) {		
 			resources_loading++;
 
-			var texture = PIXI.Texture.fromImage(new_background.path);
-
+			var texture;
+			if (new_background.path.indexOf("://")) {
+				texture = PIXI.Texture.fromImage(static_host + new_background.path);
+			} else {
+				texture = PIXI.Texture.fromImage(new_background.path);
+			}
+				
 			var on_loaded = function() {
 				reset_background()
 				
@@ -3619,7 +3625,7 @@ function on_background_text_end(e) {
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var x = mouse_x_rel(mouse_location.x);
 	var y = mouse_y_rel(mouse_location.y);
-	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:[1,1], color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size * zoom_level, font:'Arial', draw_zoom_level:zoom_level};
+	var background_text = {uid:newUid(), type: 'background_text', x:x, y:y, scale:[1,1], color:background_text_color, alpha:1, text:$('#text_tool_background_text').val(), font_size:background_font_size * zoom_level * 1.2, font:'Arial', draw_zoom_level:zoom_level};
 	undo_list.push(clone_action(["add", [background_text]]));
 	create_background_text2(background_text);
 	snap_and_emit_entity(background_text);
@@ -3677,13 +3683,25 @@ function on_line_end(e) {
 	render_scene();	
 }
 
+CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+  if (w < 2 * r) r = w / 2;
+  if (h < 2 * r) r = h / 2;
+  this.beginPath();
+  this.moveTo(x+r, y);
+  this.arcTo(x+w, y,   x+w, y+h, r);
+  this.arcTo(x+w, y+h, x,   y+h, r);
+  this.arcTo(x,   y+h, x,   y,   r);
+  this.arcTo(x,   y,   x+w, y,   r);
+  this.closePath();
+  return this;
+}
 
 function create_text_sprite(msg, color, font_size, font, background, label_shadow, font_modifier) {	
 	if(font_modifier === undefined) font_modifier = "";
 	var _canvas = document.createElement("canvas");
 	var scaling = objectContainer.scale.y;
 	var _context = _canvas.getContext("2d");
-
+	
 	var text_quality = TEXT_QUALITY;
 	_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality) + "px "+font;
 	_context.textBaseline = "top";
@@ -3696,21 +3714,28 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 	}
 	metrics = _context.measureText(msg);
 	
-	_canvas.height = font_size * scaling * text_quality * 2.7;	
+	var height = font_size * scaling * text_quality * 2.7;
+	var linewidth = height * 0.1;
+	var y_margin = height * 0.1;
+	var x_margin = height * 0.2;
+	_canvas.height = height + 2 * y_margin;
 
 	if (background) {
-		_canvas.width = metrics.width + _canvas.height*0.2;
+		_canvas.width = metrics.width + 2 * x_margin + 2 * linewidth ;
 		_context.fillStyle = "#ffffff"
-		_context.lineWidth = _canvas.height*0.1
-		_context.fillRect(0, 0, metrics.width + _canvas.height*0.2, _canvas.height);
-		_context.strokeRect(0, 0, metrics.width + _canvas.height*0.2, _canvas.height);
+		_context.lineWidth = linewidth;
+		_context.roundRect(linewidth/2, linewidth/2, metrics.width + 2 * x_margin, height, 4 * y_margin);
+		_context.fill();
+		_context.stroke();
 	} else {
 		_canvas.width = metrics.width;
 	}
 	
 	_context.fillStyle = color;
 	_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality) + "px "+font;
-	_context.textBaseline = "top";
+	_context.textBaseline = "middle";
+	
+	console.log(_context.font)
 
 	if (label_shadow) {
 		_context.shadowColor = "black";
@@ -3720,9 +3745,9 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 	}
 
 	if (background) {
-		_context.fillText(msg, _canvas.height*0.1, _canvas.height*0.1);
+		_context.fillText(msg, x_margin, _canvas.height/2);
 	} else {
-		_context.fillText(msg, 0, 0);
+		_context.fillText(msg, 0, _canvas.height/2);
 	}
 	
 	var texture = PIXI.Texture.fromCanvas(_canvas);
@@ -3809,6 +3834,13 @@ function create_icon_cont(icon, texture) {
 	set_anchor(sprite, 0.5, 0.5);
 	
 	if (icon.label && icon.label != "") {
+		var label_scale;
+		if (!icon.label_background) {
+			label_scale = 470;
+		} else {
+			label_scale = 450;
+		}
+		
 		var text = create_text_sprite(icon.label, icon.label_color, ICON_LABEL_SCALE * icon.label_font_size, icon.label_font, icon.label_background, !icon.label_background, icon.label_font_modifier)
 	
 		var label_pos = icon.label_pos;
@@ -3817,17 +3849,6 @@ function create_icon_cont(icon, texture) {
 		}
 
 		icon.container.addChild(text);
-		
-		var label_scale;
-		if (!icon.label_background) {
-			label_scale = 470;
-		} else {
-			label_scale = 450;
-		}
-		
-		var ratio = text.width / text.height;
-		text.height = x_abs(icon.label_font_size / label_scale) / icon.container.scale.y
-		text.width = text.height * ratio;
 		
 		var sprite_width = sprite.width / sprite.scale.x
 		var sprite_height = sprite.height / sprite.scale.y
@@ -3884,7 +3905,6 @@ function create_icon(icon, cb_after) {
 		path += ".png";
 	}
 	
-	console.log(path)
 	var texture = img_texture(path);
 
 	resources_loading++;
@@ -4079,10 +4099,9 @@ function update_lock() {
 	if (is_room_locked && !my_user.role) {
 		$('.mejs-controls').hide();
 		$('.left_column').hide();
-		$('#slide_interactive').hide();
-		$('#slide_static').show();
-		$('#slide_table1').hide();
 		$('#can_not_edit').show();
+		$('#disable_dragging').hide();
+		make_slides_unsortable();
 		$('#map_select_box').hide();
 		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
@@ -4101,10 +4120,9 @@ function update_lock() {
 	} else {
 		$('.mejs-controls').show();
 		$('.left_column').show();
-		$('#slide_interactive').show();
-		$('#slide_static').hide();
-		$('#slide_table1').show();
+		make_slides_sortable();
 		$('#can_not_edit').hide();
+		$('#disable_dragging').show();
 		$('#map_select_box').show();
 		for (var i in room_data.slides[active_slide].entities) {
 			if (room_data.slides[active_slide].entities[i] && room_data.slides[active_slide].entities[i].type == 'note') {
@@ -4136,13 +4154,17 @@ function update_lock() {
 	if (my_user.role == "owner") {
 		$('#lock').show();
 		$('#nuke_room').show();
+		$('#stop_present').prop("disabled", false);
 		$('#lock_camera').show();
 
 	} else {
 		$('#lock').hide();
 		$('#nuke_room').hide();
 		$('#lock_camera').hide();
+		$('#stop_present').prop("disabled", true);
 	}
+	
+	update_slide_buttons()
 }
 
 function remove_user(user) {
@@ -4534,20 +4556,25 @@ function update_slide_buttons() {
 	var prev_slide_uid = find_previous_slide(room_data.slides[active_slide].order);
 	var next_slide_uid = find_next_slide(room_data.slides[active_slide].order);
 	
-	if (prev_slide_uid == 0) {
+	if (prev_slide_uid == 0 || (presentation_mode && !can_edit())) {
 		document.getElementById("prev_slide").disabled = true;
 	} else {
 		document.getElementById("prev_slide").disabled = false;
 	}
-	if (next_slide_uid == 0) {
+	if (next_slide_uid == 0 || (presentation_mode && !can_edit())) {
 		document.getElementById("next_slide").disabled = true;
 	} else {
 		document.getElementById("next_slide").disabled = false;
 	}
-	if (Object.keys(room_data.slides).length == 1) {
+	if (Object.keys(room_data.slides).length == 1 || !can_edit()) {
 		document.getElementById("remove_slide").disabled = true;
 	} else {
 		document.getElementById("remove_slide").disabled = false;
+	}
+	if (!can_edit()) {
+		document.getElementById("new_slide").disabled = true;
+	} else {
+		document.getElementById("new_slide").disabled = false;
 	}
 	
 	if (room_data.slides[active_slide].show_grid) {
@@ -4558,7 +4585,12 @@ function update_slide_buttons() {
 	
 	var name = escapeHtml(room_data.slides[active_slide].name);
 	$('#slide_name_field').val(name);
-	$('#slide_name_field2').val(name);
+
+	if (can_edit()) {
+		$('#slide_name_field').prop("readonly", false);
+	} else {
+		$('#slide_name_field').prop("readonly", true);
+	}
 	
 	var current_slide_uid = find_first_slide();
 	var table = $('#slide_table');
@@ -4571,17 +4603,15 @@ function update_slide_buttons() {
 			table.append("<tr id='" + current_slide_uid + "' style='background-color:#ADD8E6'><td><a id='" + current_slide_uid + "'>" + name + "</a></td></tr>");
 		} else {
 			table.append("<tr id='" + current_slide_uid + "'><td><a id='" + current_slide_uid + "'>" + name + "</a></td></tr>");
-		}
-		
+		}		
 		current_slide_uid = find_next_slide(room_data.slides[current_slide_uid].order);
-		
 	} while (current_slide_uid != 0);
-	
+
 	//TODO: Future me, figure out why it resets the scrollbar just AFTER this function ends, I'm too stupid to figure it out
 	var scrolltop = $('#slide_container').scrollTop();
 	setTimeout(function() {
 		$('#slide_container').scrollTop(scrolltop);
-	},0);
+	},0);	
 }
 
 function transition(slide) {	
@@ -5098,22 +5128,22 @@ function create_hp_bar(scale) {
 }
 
 function prev_slide() {
-	if (can_edit()) {
-		var prev_slide_uid = find_previous_slide(room_data.slides[active_slide].order);
-		if (prev_slide_uid != 0) {
+	var prev_slide_uid = find_previous_slide(room_data.slides[active_slide].order);
+	if (prev_slide_uid != 0) {
+		if (presentation_mode && can_edit()) {
 			socket.emit("change_slide", room, prev_slide_uid);
-			change_slide(prev_slide_uid);
 		}
+		change_slide(prev_slide_uid);
 	}
 }
 
 function next_slide() {
-	if (can_edit()) {
-		var next_slide_uid = find_next_slide(room_data.slides[active_slide].order);
-		if (next_slide_uid != 0) {
+	var next_slide_uid = find_next_slide(room_data.slides[active_slide].order);
+	if (next_slide_uid != 0) {
+		if (presentation_mode && can_edit()) {
 			socket.emit("change_slide", room, next_slide_uid);
-			change_slide(next_slide_uid);
 		}
+		change_slide(next_slide_uid);
 	}
 }
 
@@ -5290,6 +5320,61 @@ function wot_connect() {
 	}
 }
 
+function make_slides_sortable() {
+	// Return a helper with preserved width of cells
+	var fixHelper = function(e, ui) {
+		ui.children().each(function() {
+			$(this).width($(this).width());
+		});
+		return ui;
+	};
+	
+	$("#slide_table1 tbody").sortable({
+		helper: fixHelper,
+		update: function(event, ui) {
+			if (can_edit()) {
+				var new_order = 0;
+				if (ui.item[0].previousElementSibling) {
+					new_order = room_data.slides[ui.item[0].previousElementSibling.id].order;
+					if (ui.item[0].nextElementSibling) {
+						new_order += room_data.slides[ui.item[0].nextElementSibling.id].order;
+						new_order /= 2;
+					} else {
+						new_order += 4294967296;
+					}
+				} else {
+					new_order = room_data.slides[find_first_slide()].order - 4294967296;
+				}
+				
+				room_data.slides[ui.item[0].id].order = new_order;
+				socket.emit('change_slide_order', room, ui.item[0].id, new_order);
+				
+				update_slide_buttons();
+			}
+			
+		}
+	}).disableSelection();
+}
+
+function make_slides_unsortable() {
+	if ($("#slide_table1 tbody").data("ui-sortable"))
+		$("#slide_table1 tbody").sortable('disable');
+}
+
+function set_presentation_mode(new_presentation_mode) {
+	presentation_mode = new_presentation_mode;
+	var node = $('#stop_present').find('div');		
+	if (presentation_mode == true) {
+		node.removeClass('icon-present');
+		node.addClass('icon-stop_present');
+		$('#stop_present').attr('title', $('#stop_present').attr('data-disable'))
+	} else {
+		node.removeClass('icon-stop_present');
+		node.addClass('icon-present');
+		$('#stop_present').attr('title', $('#stop_present').attr('data-enable'))
+	}
+}
+
 //connect socket.io socket
 $(document).ready(function() {
 	//download polyfills
@@ -5422,7 +5507,7 @@ $(document).ready(function() {
 	
 	var touchend = function(e) {
 		$('#zoom_level').text((1/zoom_level).toFixed(2));
-		if (zoom_pan_pending && control_camera) {
+		if (zoom_pan_pending) {
 			emit_pan_zoom();
 			zoom_pan_pending = false;			
 		}
@@ -5572,38 +5657,6 @@ $(document).ready(function() {
 		arr.forEach(ticks);
 		
 		ping_texture = img_texture("circle.png");
-		
-		// Return a helper with preserved width of cells
-		var fixHelper = function(e, ui) {
-			ui.children().each(function() {
-				$(this).width($(this).width());
-			});
-			return ui;
-		};
-
-		$("#slide_table1 tbody").sortable({
-			helper: fixHelper,
-			update: function(event, ui) {
-				var new_order = 0;
-				if (ui.item[0].previousElementSibling) {
-					new_order = room_data.slides[ui.item[0].previousElementSibling.id].order;
-					if (ui.item[0].nextElementSibling) {
-						new_order += room_data.slides[ui.item[0].nextElementSibling.id].order;
-						new_order /= 2;
-					} else {
-						new_order += 4294967296;
-					}
-				} else {
-					new_order = room_data.slides[find_first_slide()].order - 4294967296;
-				}
-				
-				room_data.slides[ui.item[0].id].order = new_order;
-				socket.emit('change_slide_order', room, ui.item[0].id, new_order);
-				
-				update_slide_buttons();
-				
-			}
-		}).disableSelection();
 
 		$('#modal_cancel').click(function (e) {
 			$('#myModal').modal('hide');
@@ -5802,10 +5855,14 @@ $(document).ready(function() {
 		});
 		
 		$('#slide_table').on('click', 'tr', function() {
-			var new_slide = $(this).attr('id');
-			if (active_slide == new_slide) {return;}
-			socket.emit("change_slide", room, new_slide);
-			change_slide(new_slide);
+			if (can_edit() || !presentation_mode) {
+				var new_slide = $(this).attr('id');
+				if (active_slide == new_slide) {return;}
+				if (presentation_mode && can_edit()) {
+					socket.emit("change_slide", room, new_slide);
+				}
+				change_slide(new_slide);
+			}
 		});
 		
 		$('#prev_slide').click(function() {
@@ -5821,9 +5878,11 @@ $(document).ready(function() {
 			change_slide(new_slide.uid);
 		});
 		$('#remove_slide').click(function() { //removed active_slide
-			if (Object.keys(room_data.slides).length > 1) {
-				socket.emit('remove_slide', room, active_slide);
-				remove_slide(active_slide);
+			if (can_edit()) {
+				if (Object.keys(room_data.slides).length > 1) {
+					socket.emit('remove_slide', room, active_slide);
+					remove_slide(active_slide);
+				}
 			}
 		});
 		$('#save').click(function() { 
@@ -5993,6 +6052,14 @@ $(document).ready(function() {
 			}
 			update_lock();
 			socket.emit("lock_room", room, is_room_locked);
+		});
+		
+		$('#stop_present').click(function () {
+			set_presentation_mode(!presentation_mode);
+			socket.emit("presentation_mode", room, presentation_mode, active_slide);
+			if (presentation_mode) {
+				emit_pan_zoom();
+			}
 		});
 		
 		$('#lock_camera').click(function () {
@@ -6330,6 +6397,9 @@ $(document).ready(function() {
 		video_paused = new_room_data.video_paused;
 		active_slide = room_data.active_slide;
 		is_room_locked = room_data.locked;
+		if (room_data.hasOwnProperty("presentation_mode")) {
+			set_presentation_mode(room_data.presentation_mode);
+		}
 		my_user_id = my_id;
 		tactic_name = new_tactic_name;
 		
@@ -6482,6 +6552,15 @@ $(document).ready(function() {
 		activity_animation(user_id)
 	});
 
+	socket.on('presentation_mode', function(new_presentation_mode, new_slide, user_id) {
+		set_presentation_mode(new_presentation_mode);
+		if (new_presentation_mode == true) {
+			change_slide(new_slide);
+		}
+		update_slide_buttons();
+		activity_animation(user_id)
+	});
+	
 	socket.on('change_slide', function(uid) {
 		if (uid != active_slide) {
 			change_slide(uid);
