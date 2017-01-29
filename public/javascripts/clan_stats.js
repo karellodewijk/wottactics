@@ -80,6 +80,7 @@ function populate() {
 	server = get_server(clan);
 	$('#no_results').hide();	
 	$("#did_you_mean").hide();
+	$("#login_or_search").hide();
 	if (src != "all") {
 		$(".last_100").each(function() { $(this).text($(this).text().replace("100 ", "10 ")); });		
 		$(".last_100").each(function() { $(this).attr("title", $(this).attr("title").replace("100 ", "10 ")); });		
@@ -536,5 +537,6 @@ if (clan && server) {
 		$("#" + src + "_tab").addClass("active");
 	});
 	populate();
-
+} else {
+	$("#login_or_search").show();
 }

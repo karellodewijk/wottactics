@@ -41,10 +41,11 @@
 				</ul>
 			</nav>
 			
+			<span id="login_or_search" hidden><h4><%=l('Use search to look up a player or log in with your WG account to see your own stats')%></h4></span>
 			<span id="no_results" hidden><h4><%=l('No results found')%></h4></span>
 			<span id="no_battles" hidden><h4><%=l('This user has not played any battles')%></h4></span>
 			<span id="did_you_mean" hidden><h4><%=l('Did you mean:')%> <span id="alt_lists"></span></h4></span>
-			<h2 style="padding-top:0px; margin-top:0px;"><img id="clan_logo">&nbsp;<span id="player_name"></span></img></h2>			
+			<h2 style="padding-top:0px; margin-top:0px;"><span id="player_name"></span><span id="clan_tag" hidden></span></img></h2>			
 			<div style="min-width:100%; display:flex">
 				<div style="width:70%;">
 					<ul class="nav nav-tabs">

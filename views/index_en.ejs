@@ -46,6 +46,8 @@
 							Rainbox Six | Siege Tactics
 						<% } else if (game == 'MWO') { %>
 							Mech Warrior Online Tactics
+						<% } else if (game == 'EC') { %>
+							Eternal Crusade Tactics
 						<% } %>	
 					</h1>
 					<div id="quote"></div><br />
@@ -85,26 +87,21 @@
 						<p>Press the blue button. Then select a <%=game%> map and use the tools on the right to start planning your strategy. You can invite others by sending them the link. 
 					</div>
 					<div class="col-md-4">
-						<h2>Wottactic.tk redirected to <a href="http://wottactic.com/">wottactic.com</a></h2>
-						<p>Same website, different name. If you visit wottactic.tk, you'll be automatically redirected.
-						<p><h4>Do I need to do anything ?</h4>
-						<p>No, you will be automatically redirected. You will have to log in again and may want to update links or bookmarks. Old links and bookmarks will keep working though but will require an additional request (very small delay).
-						<p><b>Why the switch ?</b>
-						<ul>
-							<li>I've been getting some reports of wottactic simply not loading because some parental control software and/or isp's simply block all .tk domains.
-							<li>For some time now google seems to prefer linking to wottactic.com anyway.
-							<li>Google adsense seems to rate tk domain much lower. If I'm going to be a sellout, might as well get paid for it. 
-						</ul>
-						<p>I will be keeping the wottactic.eu domain and is actually the prefered domain for eu residents. The idea is if the site grows a little more it will always be served from an eu based server.
-					</div>
+						<h2>Your input matters</h2>
+						<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
+						
+						<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
+						
+						<p>If you have a question or a problem, use the forums or e-mail me directly, I can't answer to your questions in the survey as it's anonymous and I have no way of contacting you.
+					</div>	
 					<%if (game == 'warface') { %>
 						<div class="col-md-4">
 							<h2>Looking for help with warface maps</h2>
 							<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
 						</div>
 					<%} else { %>
-						<h2>Do you like the blue ?</h2>
 						<div class="col-md-4">
+							<h2>Do you like the blue ?</h2>
 							<form method="post" action="http://poll.pollcode.com/37994187"><div style="background-color:#F0F0F0;padding:2px;width:175px;font-family:Arial;font-size:small;color:#000000;"><div style="padding:2px 0px 4px 2px;"></div><input type="radio" name="answer" value="1" id="answer379941871" style="float:left;" /><label for="answer379941871" style="float:left;width:150px;">Yes</label><div style="clear:both;height:2px;"></div><input type="radio" name="answer" value="2" id="answer379941872" style="float:left;" /><label for="answer379941872" style="float:left;width:150px;">No</label><div style="clear:both;height:2px;"></div><input type="radio" name="answer" value="3" id="answer379941873" style="float:left;" /><label for="answer379941873" style="float:left;width:150px;">Maybe a different color</label><div style="clear:both;height:2px;"></div><div align="center" style="padding:3px;"><input type="submit" value=" Vote ">&nbsp;<input type="submit" name="view" value=" View "></div></div></form>
 						</div>
 					<% } %>					
@@ -123,16 +120,15 @@
 						<p>Ads are disabled for everyone who donated ofcourse or anyone who donates anything in the future. It does require you to log back in.
 					</div>
 					<% } %>	
-
 					<div class="col-md-4">
 						<h2>Latest changes</h2>
 						<p>
 						<ul>
+							<li>Added toggle presenter mode
+							<li>Added MWO as a supported game
 							<li>Moved to pixi 4.3.4
 							<li>Added custom color picker for users of ie and edge
 							<li>You can now use PAGE UP/PAGE DOWN to switch slides
-							<li>Added Enable/Disable dragging toggle button
-							<li>Added Rainbox Six siege as a supported game.
 						</ul>
 						<p>On the bug hunting front:
 						<ul>
@@ -144,13 +140,9 @@
 						</ul>
 						<p>If you find anything else, however small, that is broken, pls let me know. 
 					</div>
-					<div class="col-md-4">
-						<h2>Your input matters</h2>
-						<p>Take 5 mins to take this very short <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">survey</a>, and let met know what you want in wottactic. I'll leave it up for at least two weeks and then release the results.</p>
-						
-						<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
-						
-						<p>If you have a question or a problem, use the forums or e-mail me directly, I can't answer to your questions in the survey as it's anonymous and I have no way of contacting you.
+					<div class="col-md-4">					
+						<h2>Support for Mechwarrior online</a></h2>
+						<p>Take a <a href="http://gametactic.org/MWO">look</a>
 					</div>				
 				</div>
 				<div class='row'>

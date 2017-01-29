@@ -1,0 +1,1 @@
+db.users.update({_id:"76561197974364734"}, {$set:{no_ads:true}})
