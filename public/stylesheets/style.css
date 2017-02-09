@@ -7,8 +7,8 @@ div#preload { display: none; }
 .btn-warning,
 .btn-danger {
   text-shadow: 0 -2px 0 rgba(0, 0, 0, 0.2);
-   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.075);
-}
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.075);
+-}
 
 .navbar-custom {
   background-color: #384771;
@@ -162,6 +162,14 @@ div#preload { display: none; }
 	display: inline;
 }
 
+.dir_btn {
+    background-color: #cccccc;
+}
+
+#label_pos .active {
+    background: #888888;
+}
+
 /* Small Devices, Tablets */
 @media only screen and (max-width : 768px) {
 	#main_navbar .nav > li > a {
@@ -171,7 +179,7 @@ div#preload { display: none; }
 		padding-left:10px;
 	}
 	#login_button_li {
-		line-height:50px;
+		line-height:px;
 		padding-left:15px;
 	}
 	#login_button_li > button {
@@ -217,14 +225,14 @@ div#preload { display: none; }
 }
 
 #main_navbar .nav > li > a {
-   line-height: 90px;
+   line-height: 110px;
    padding-bottom: 0;
    padding-top: 0;
 }
 
 #main_navbar .nav > li > button {
-   margin-bottom: 28px;
-   margin-top: 28px;
+   margin-bottom: 38px;
+   margin-top: 38px;
 }
 
 .jumbotron, .jumbotron p, .jumbotron ol, .jumbotron ul {
@@ -1234,13 +1242,19 @@ div.inline { display: inline-block; vertical-align: middle; }
   width: 22px;
   height: 22px;
 }
-.icon-ru {
+.icon-pt {
   background-position: -0px -2700px;
   width: 22px;
   height: 22px;
 }
-.icon-sr {
+.icon-ru {
   background-position: -0px -2722px;
   width: 22px;
   height: 22px;
 }
+.icon-sr {
+  background-position: -0px -2744px;
+  width: 22px;
+  height: 22px;
+}
+

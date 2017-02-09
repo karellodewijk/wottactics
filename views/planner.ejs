@@ -12,7 +12,9 @@
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'wows') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/wows_icons.css">
 	<% } else if (game == 'blitz') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_assets.css">
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'lol') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
@@ -84,7 +86,7 @@
 	<%}%>
 	
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
-
+	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
@@ -93,9 +95,9 @@
 
 </head>
 <body>
-	<div id="edit_window" class="edit_window" style="height:calc(100vh - 12px); width:calc(100vh - 12px);"></div>
+	<div id="edit_window" class="edit_window" style="height:100%; width:100%; position:absolute;"></div>
 	
-	<div id="single_side_bar" class="side_bar jumbotron" style="vertical-align:top; max-width:630px">
+	<div id="right_side_bar" class="side_bar jumbotron" style="vertical-align:top; max-width:630px; position:relative; float:right; z-index:10;">
 	<nav class="navbar navbar-inverse container-fluid navbar_planner">
 	<div class="navbar-header">
 		<button class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">

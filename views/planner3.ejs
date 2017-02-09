@@ -12,7 +12,9 @@
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'wows') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/wows_icons.css">
 	<% } else if (game == 'blitz') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_assets.css">
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'lol') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
@@ -83,11 +85,11 @@
 	
 	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
-	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
-	<%}%>	
+	<script defer src="<%=static_host%>/javascripts/planner.js"></script>		
+	<%}%>
 	
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
-
+	
 	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.22.0/mediaelementplayer.css" />
 
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
@@ -110,32 +112,34 @@
 	</style>
 	
 	<div id="left_detect" style="position:fixed; left:0px; top:0px; width:10px; height:97%; opacity:0; z-index:9"></div>
-	<div id="right_detect" style="position:fixed; right:0px; top:0px; width:10px; height:97%; opacity:0;  z-index:9"></div>
+	<div id="right_detect" style="position:fixed; right:0px; top:0px; width:10px; height:97%; opacity:0; z-index:9"></div>
 
 	<div id="edit_window" class="edit_window" style="height:100%; width:calc(100vh); display: inline-block; vertical-align:top; padding:0px; margin:0px; border:0; position:absolute">
 		<div id="video_div" style="height:100%; width:100%; position:absolute;"></div>
 	</div>
 	
-	<div id="left_side_bar" style="max-width:340px; height:97%; display:flex; flex-direction:column; top:0px; position:absolute; left:0px; background-color:rgba(0,0,0,0.5); z-index:10;">
+	<div id="left_side_bar" style="max-width:340px; height:100%; position:absolute; vertical-align:top; float:left; display:flex; flex-direction:column; padding:0px; margin:0px; z-index:10; background-color:rgba(0,0,0,0.5);">
 		<div style="flex: 0 1 auto;">
-			<nav id="left_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
-				<div id="home_button" class="navbar-header">
-					<button class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" style="padding-left:0px"
-						href="/<%=game%>"><i class="fa-lg icon-home "></i>
-					</a>
-				</div>
-
-				<div class="collapse navbar-collapse" id="myNavbar">
-				<ul class="nav navbar-nav navbar-right container-fluid" style="padding-right: 0;">
+			<nav id="left_navbar" class="navbar navbar-inverse container-fluid" style="flex: 0 1 auto; justify-content: flex-start; border-radius:0px; min-height:60px; margin:0; padding:0">
+				<ul id="left_icons" class="nav navbar-nav navbar-left">
+					<li id="home_button">
+						<a class="navbar-brand" style="padding-left:10px; padding-right:10px"
+							href="/<%=game%>"><i class="fa-lg icon-home "></i>
+						</a>
+					</li>
+					<li class="btn-group pull-left">
+						<button id="lock" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
+							<div class="icon icon-lock"></div>
+						</button>
+						<button id="link" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
+							<div class="icon icon-link"></div>
+						</button>
+					</li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right container-fluid" style="margin-right:-1px">
 					<% include language_select.ejs %>
 					<% include login_button.ejs %>
 				</ul>
-				</div>
 			</nav>	
 		</div>
 		<div id="map_select_section" style="padding:10px; padding-top:0px; flex: 0 1 auto;">
@@ -210,37 +214,37 @@
 		</div>
 	</div>	
 	
-	<div id="right_side_bar" style="height:97%; max-width:304px; display:flex; flex-direction:column; top:0px; position:absolute; right:0px; background-color:rgba(0,0,0,0.5); z-index:11">
+	<div id="right_side_bar" style="height:100%; max-width:340px; display:flex; flex-direction:column; position:relative; vertical-align:top; float:right; background-color:rgba(0,0,0,0.5); z-index:10; right:0px;">
 		<div style="flex: 0 1 auto;">
-		<nav id="right_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
-			<ul class="nav navbar-nav navbar-left container-fluid" style="margin-left:-10px; margin-right:-10px; padding-left:0px; padding-right:0px">
-				<div class="btn-group">
-				<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
-					<div class="icon icon-save"></div>
-				</button>
-				<button id='store_tactic_popover' data-placement="left" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
-					<div class="icon icon-save_as"></div>
-				</button>
-				<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
-					<div class="icon icon-lock"></div>
-				</button>
-				<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
-					<div class="icon icon-link"></div>
-				</button>
-				<% if (game == 'wot' || game == 'wows' || game == 'aw') { %>
-					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
-						<div class="icon icon-grid_icon"></div>
+			<nav id="right_navbar" class="navbar navbar-inverse container-fluid" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
+				<ul class="nav navbar-nav navbar-left container-fluid" style="margin-left:-10px; margin-right:-10px; padding-left:0px; padding-right:0px">
+					<div class="btn-group">
+					<button id="save" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
+						<div class="icon icon-save"></div>
 					</button>
-				<% } %>
-				<button id="nuke_room" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Empty room')%>">
-					<div class="icon icon-bomb"></div>
-				</button>
-				<button id="disable_dragging" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" data-disable="<%=l('Disable dragging')%>" data-enable="<%=l('Enable dragging')%>" title="<%=l('Disable dragging')%>">
-					<div class="icon icon-disable_dragging"></div>
-				</button>				
-				</div>
-			</ul>
-		</nav>
+					<button id='store_tactic_popover' data-placement="left" data-toggle="popover" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
+						<div class="icon icon-save_as"></div>
+					</button>
+					<button id="lock" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
+						<div class="icon icon-lock"></div>
+					</button>
+					<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
+						<div class="icon icon-link"></div>
+					</button>
+					<% if (game == 'wot' || game == 'wows' || game == 'aw') { %>
+						<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
+							<div class="icon icon-grid_icon"></div>
+						</button>
+					<% } %>
+					<button id="nuke_room" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Empty room')%>">
+						<div class="icon icon-bomb"></div>
+					</button>
+					<button id="disable_dragging" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" data-disable="<%=l('Disable dragging')%>" data-enable="<%=l('Enable dragging')%>" title="<%=l('Disable dragging')%>">
+						<div class="icon icon-disable_dragging"></div>
+					</button>				
+					</div>
+				</ul>
+			</nav>
 		</div>
 		
 		<div id="can_not_edit" style="padding-left: 10px; flex: 1 1 auto;" >
@@ -1096,12 +1100,12 @@
 				</table>
 			</div>
 		</div>
-		<div class="left_column" style="justify-content: flex-end; flex: 0 1; padding-right: 10px; padding-bottom:20px">
+		<div class="left_column" style="position: relative; flex: 0 1 auto; padding-right: 10px; padding-bottom:20px; margin-top:auto;">
 			<div class="clearfix" style="margin-left:-15px">
-				<div class="col-sm-4">
+				<div class="col-sm-2">
 					<small><%=l('Delay')%></small>
 				</div>
-				<div class="col-sm-6">
+				<div class="col-sm-8">
 					<input type="range" id="delay" min="1" value="3" max="20" step="1" list="delay_ticks">
 				</div>
 				<div class="col-sm-2">

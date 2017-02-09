@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Getting started')%></title>
+	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy planner.')%> - <%=l('Getting started')%>">
+</head>
+<body>
+	<% include navbar.ejs %>
+	<script>
+		document.getElementById('getting_started').className += " active";
+	</script>
+	<div class="container" style='width:100%;'>
+		<div class="jumbotron content content_margin">
+			<p>
+			Além desta página, também criei um <a href="https://youtu.be/K-yl_WNjvwk">tutorial</a> vídeo. E aqui está outro <a href="https://www.youtube.com/watch?v=sLWv7yXYQ-c">tutorial</a> Por Stewiejp.
+			
+			<p>
+			A primeira tela com a qual você é apresentado depois de pressionar "New room" o botão deve ser algo como isto:
+
+			<p>
+			<img src="<%=static_host%>/icons/tutorial1.jpg" alt="tutorial image 1">
+			<p>
+
+			Uma das primeiras coisas que você vai querer fazer é:
+
+			<ol>
+				<li>Selecione um mapa</li>
+				<li>Copie o link pressionando o botão ou apenas copiar/colar a barra de endereços.</li>
+			</ol>
+
+			<p>
+			Você pode então compartilhar o link com seus amigos ou colegas de clã para que eles possam participar da sua tática, para que você possa explicá-la e assim eles podem trabalhar com ela.
+			
+			<p>
+			<img src="<%=static_host%>/icons/tutorial2.jpg" alt="tutorial image 2">
+			<p>
+			
+			Depois de selecionar um mapa as pessoas se juntarão.
+			
+			<ol start=3>
+				<li>Lista de usuários que se juntaram, clique em seu nome para alternar seus privilégios ( amarelos podem editar, verdes podem editar e dar permissões a outros usuários).</li>
+				<li>Alternativamente, você pode dar a todos os privilégios de edição desbloqueando a sala.</li>
+				<li>Agora você pode começar a criar ou explicar suas táticas com as ferramentas aqui, leia as dicas de ferramentas.</li>
+				<li>As opções da ferramenta selecionada aparecerão aqui.</li>
+				<li>Você pode conversar com as pessoas na sala aqui.</li>
+				<li>Você pode fazer login aqui com sua conta WG, é totalmente opcional, mas é necessário se você quiser armazenar sua tática.</li>
+			</ol>
+
+			<p>
+			<img src="<%=static_host%>/icons/tutorial3.jpg" alt="tutorial image 3">
+			<p>
+			
+			Depois de efetuar o login, aparecerão mais algumas opções.
+			<ol start=9>
+				<li>Agora esta verde, indicando que você está conectado com êxito.</li>
+				<li>Clicando neste botão lhe dará a opção de nomear e armazenar sua tática. Você será capaz de relançar sua tática na primeira página.</li>
+				<li>Depois de ter nomeado e armazenado a sua táctica, pode armazená-la facilmente com o mesmo nome com este botão de guardar.</li>
+				<li>Alternativamente, você também pode baixar sua tática como uma imagem com este botão.</li>
+			</ol>
+		</div>
+	</div>
+	<% include footer.ejs %>
+</body>

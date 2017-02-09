@@ -1,0 +1,22 @@
+db.stored_tactics.find({}).forEach(function (doc) { 
+	var modified = false;
+	if (doc.pan_zoom) {
+		delete doc.pan_zoom;
+		modified = true;
+	}
+	if (modified) {
+		db.stored_tactics.replaceOne({_id:doc._id}, doc);
+	}
+})
+
+db.tactics.find({}).forEach(function (doc) { 
+	var modified = false;
+	if (doc.pan_zoom) {
+		delete doc.pan_zoom;
+		modified = true;
+	}
+	if (modified) {
+		db.tactics.replaceOne({_id:doc._id}, doc);
+	}
+})
+	

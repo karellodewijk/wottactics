@@ -2,7 +2,7 @@
 	"_comment": "############----------- NO IDEA WHERE -----------############",
 	"Create new room": "Δημιουργία νέου δωματίου",
 	"Sign in": "Σύνδεση",
-	"Stored tactics": "Αποθηκευμένες τακτικές",
+	"Stored tactics": "Αποθηκευμένες",
 	"Getting started": "Ξεκινώντας",
 	"About": "Αναφορικά με εμάς",
 	"Other Games": "Άλλα Παιχνίδια",
@@ -784,5 +784,8 @@
 	"Team battles statistics": "Team battles statistics",
 	"Team": "Team",
 	"Or": "Or",
-	"Stored": "Stored"
+	"Stored": "Stored",
+	"Disable presentation mode (All users will be able to browse all slides freely)": "Disable presentation mode (All users will be able to browse all slides freely)",
+	"Enable presentation mode (All users will see only your slide)": "Enable presentation mode (All users will see only your slide)",
+	"Use search to look up a player or log in with your WG account to see your own stats": "Use search to look up a player or log in with your WG account to see your own stats"
 }

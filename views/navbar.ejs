@@ -1,13 +1,5 @@
 <%home = "/"+game%>
 
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({
-    google_ad_client: "ca-pub-9117810685246622",
-    enable_page_level_ads: true
-  });
-</script>
-
 <nav class="navbar navbar-default navbar-inverse navbar-custom" style="border-radius: 0; font-size:120%;">
 	<div id="main_navbar" class="container-fluid">
 		<div class="navbar-header">
@@ -67,31 +59,33 @@
 		</ul>
 
 		<%if (!user.no_ads) {%>
-			<%if (Math.random() >= 0.5) {%>
-				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-				<!-- main navbar -->
+			<%if (game == 'wot' || game == 'wows' || game == 'blitz' || Math.random() <= 0.75) {%>
+				<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 				<ins class="adsbygoogle hidden-xs"
-					 style="width:728px; height:90px; padding-left:50px; float:left"
+					 style="width:728px; height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left"
 					 data-ad-client="ca-pub-9117810685246622"
 					 data-ad-slot="8003811790"></ins>
 				<script>
 				(adsbygoogle = window.adsbygoogle || []).push({});
-				</script>
-			<%} else {%>
-				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-				<!-- main navbar -->
-				<ins class="adsbygoogle hidden-xs"
-					 style="width:728px; height:90px; padding-left:50px; float:left"
-					 data-ad-client="ca-pub-9117810685246622"
-					 data-ad-slot="8003811790"></ins>
-				<script>
-				(adsbygoogle = window.adsbygoogle || []).push({});
-				</script>
-			<%}%>
+			</script>
+			<% } else { %>
+				<% var ads; %>
+				<% if (locale == 'ru') { %>
+					<%ads = [{code: 3878, link:'WOT_Comics_728х90_RU.jpg'}, {code: 3724, link:'WoT_Sweden_TierX_728x90_RU.jpg'}, {code: 3298, link:'WOT_Adwords_728x90_2_RU.jpg'}];%>
+				<% } else if (locale == 'de') { %>
+					<%ads = [{code: 2147, link:'WoT_static_tank__728x90_1_DE.jpg'}, {code: 3739, link:'WoT_Sweden_TierX_728x90_DE.jpg'}];%>
+				<% } else if (locale == 'fr') { %>	
+					<%ads = [{code: 2974, link:'728x90_6_FR.jpg'}, {code: 3303, link:'WOT_Adwords_728x90_2_FR.jpg'}, {code: 3303, link:'WoT_Sweden_TierX_728x90_FR.jpg'}];%>
+				<% } else if (locale == 'pl') { %>	
+					<%ads = [{code: 2983, link:'728x90_6_PL.jpg'}, {code: 3293, link:'WOT_Adwords_728x90_2_PL.jpg'}, {code: 3729, link:'WoT_Sweden_TierX_728x90_PL.jpg'}];%>
+				<% } else { %>
+					<%ads = [{code: 2126, link:'WoT_static_tank_728x90_7_EN.jpg'}, {code: 2127, link:'WoT_static_tank_728x90_8_EN.jpg'}, {code: 2128, link:'WoT_static_tank_728x90_9_EN.jpg'}, {code: 2129, link:'WoT_static_tank_728x90_10_EN.jpg'}, {code: 3744, link:'WoT_Sweden_TierX_728x90_EN.jpg'}, {code: 3866, link:'WOT_Comics_728х90_EN.jpg'}];%>
+				<% } %>
+				<%var ad = ads[Math.floor(ads.length * Math.random())]%>
+				<a href="http://wgpartner.com/?a=777&c=+<%=ad.code%>+&s1="><img style="height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left" src="<%=static_host%>/ads/wot/728x90/<%=ad.link%>" alt="wot_ad"></a>	
+			<% } %>
 		<%}%>
-		
-		
-		
+				
 		<ul class="nav navbar-nav navbar-right">
 			<li class="dropdown">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
