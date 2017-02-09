@@ -490,6 +490,12 @@ function adjust_zoom(entity) {
 				create_area2(entity, DRAW_QUALITY * 1/scale, scale);
 				break;
 		}
+		
+		if (entity.scale) {
+			entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
+			entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
+		}
+		
 	}
 }
 
@@ -617,7 +623,7 @@ function correct() {
 
 var pan_state = {}
 function on_pan(e) {
-	limit_rate(15, pan_state, function() {
+	once_per_frame(pan_state, function() {
 		var mouse_location = mouse_loc();
 		var diff_x = mouse_location.x - last_pan_loc[0];
 		var diff_y = mouse_location.y - last_pan_loc[1];
@@ -1359,7 +1365,7 @@ var last_drag_position, last_drag_update;
 var dragged_entity;
 function on_drag_start(e) {
 	if (this == select_box) {
-		limit_rate(15, select_box_move_state, function() {});
+		once_per_frame(select_box_move_state, function() {});
 		select_box.mousemove = undefined;
 		select_box.touchmove = undefined;
 		select_box.mouseover = undefined;
@@ -1496,6 +1502,18 @@ function move_entity(entity, delta_x, delta_y) {
 }
 
 //limits the amount of time f can be called to once every interval
+function once_per_frame(state, f) {
+	state.cb = f;
+	if (!state.in_progress) {
+		state.in_progress = true;
+		requestAnimationFrame(function() {
+			state.in_progress = false;
+			state.cb();
+		})
+	}
+}
+
+//limits the amount of time f can be called to once every interval
 function limit_rate(interval, state, f) {
 	clearTimeout(state.timeout);
 	if (!state.last_trigger) {
@@ -1516,7 +1534,7 @@ function limit_rate(interval, state, f) {
 var drag_state = {};
 function on_drag_move(e) {
 	_this = this;	
-	limit_rate(15, drag_state, function() {
+	once_per_frame(drag_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var mouse_new = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 		//move by deltamouse	
@@ -1545,7 +1563,7 @@ function on_drag_move(e) {
 }
 
 function on_drag_end(e) {
-	limit_rate(15, drag_state, function() {});	
+	once_per_frame(drag_state, function() {});	
 	if (this.entity && Math.abs(this.entity.origin_x - this.entity.x) < EPSILON &&  Math.abs(this.entity.origin_y - this.entity.y) < EPSILON) {	
 		if (context_before_drag == 'remove_context') {
 			remove(this.entity.uid);
@@ -2027,7 +2045,7 @@ function on_eraser_end(e) {
 }
 
 function stop_tracking() {
-	limit_rate(15, track_state, function() {});
+	once_per_frame(track_state, function() {});
 	setup_mouse_events(undefined, undefined);
 	socket.emit("stop_track", room, my_tracker.uid);
 	background_sprite.removeChild(my_tracker.container);
@@ -2146,7 +2164,7 @@ var count
 var track_timeout;
 var track_state = {}
 function on_track_move(e) {
-	limit_rate(15, track_state, function() {		
+	once_per_frame(track_state, function() {		
 		clearTimeout(track_timeout);	
 		var mouse_location = mouse_loc();
 		var x = from_x_local(mouse_location.x);
@@ -2217,7 +2235,7 @@ function on_area_end(e) {
 var curve_state = {};
 var point_buffer = []
 function on_curve_move(e) {
-	limit_rate(20, curve_state, function() {
+	once_per_frame(curve_state, function() {
 		var mouse_location = mouse_loc();
 
 		var new_x = mouse_location.x;
@@ -2342,7 +2360,7 @@ function draw_shape(outline_thickness, outline_opacity, outline_color, fill_opac
 
 var ruler_state = {}
 function on_ruler_move(e) {
-	limit_rate(15, ruler_state, function() {
+	once_per_frame(ruler_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var map_size_x = background.size_x ? background.size_x : 0;
 		var map_size_y = background.size_y ? background.size_y : 0;
@@ -2381,14 +2399,14 @@ function on_ruler_move(e) {
 
 function on_ruler_end(e) {
 	setup_mouse_events(undefined, undefined);
-	limit_rate(15, ruler_state, function() {
+	once_per_frame(ruler_state, function() {
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);	
 	});
 }
 
 var circle_state = {}
 function on_circle_move(e) {
-	limit_rate(15, circle_state, function() {	
+	once_per_frame(circle_state, function() {	
 		//var mouse_location = e.data.getLocalPosition(background_sprite);
 		var mouse_location = mouse_loc();
 		var x_rel = from_x_local(mouse_location.x)
@@ -2447,7 +2465,7 @@ function on_circle_move(e) {
 }
 
 function on_circle_end(e) {
-	limit_rate(15, circle_state, function() {});
+	once_per_frame(circle_state, function() {});
 	var mouse_location = mouse_loc();		
 	var xrel = from_x_local(mouse_location.x)
 	var yrel = from_y_local(mouse_location.y)	
@@ -2484,7 +2502,7 @@ function on_circle_end(e) {
 
 var rectangle_state = {}
 function on_rectangle_move(e) {
-	limit_rate(15, rectangle_state, function() {
+	once_per_frame(rectangle_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);	
 		var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
 		var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
@@ -2498,7 +2516,7 @@ function on_rectangle_move(e) {
 }
 
 function on_rectangle_end(e) {
-	limit_rate(15, rectangle_state, function() {});
+	once_per_frame(rectangle_state, function() {});
 	var mouse_location = e.data.getLocalPosition(background_sprite);	
 	var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
 	var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
@@ -2536,7 +2554,7 @@ function on_ping_move(e) {
 }
 
 function on_ping_end(e) {
-	limit_rate(0, drag_state, function() {});
+	limit_rate(60, drag_state, function() {});
 	var mouse_location = mouse_loc();
 	
 	var x = from_x_local(mouse_location.x);
@@ -2550,7 +2568,7 @@ function on_ping_end(e) {
 
 var select_state = {}
 function on_select_move(e) {
-	limit_rate(15, select_state, function() {
+	once_per_frame(select_state, function() {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var left_x = Math.min(left_click_origin[0], mouse_x_rel(mouse_location.x));
 		var left_y = Math.min(left_click_origin[1], mouse_y_rel(mouse_location.y));
@@ -2564,7 +2582,7 @@ function on_select_move(e) {
 }
 
 function on_select_end(e) {	
-	limit_rate(15, select_state, function() {
+	once_per_frame(select_state, function() {
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);	
 	});
 	
@@ -2623,7 +2641,7 @@ function measure_text(entity) {
 }
 
 function select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) {
-	limit_rate(15, select_box_move_state, function() {
+	once_per_frame(select_box_move_state, function() {
 		var mouse_location = mouse_loc();
 		mouse_location.x = x_abs(from_x_local(mouse_location.x));
 		mouse_location.y = y_abs(from_y_local(mouse_location.y));
@@ -2661,7 +2679,7 @@ function select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lo
 }
 
 function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) {
-	limit_rate(15, select_box_move_state, function() {});
+	once_per_frame(select_box_move_state, function() {});
 
 	setup_mouse_events(undefined, undefined);
 	
@@ -2677,10 +2695,11 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 	for (var i in selected_entities) {
 		var entity = selected_entities[i];
 		
-		var scale = [1,1];
+		var scale = [1,1];		
 		if (entity.scale) {
 			scale = [entity.scale[0], entity.scale[1]];
 		}
+
 		var origin = [entity.x, entity.y, [scale[0], scale[1]]];
 		undo_action[1].push([origin, entity.uid]);	
 	
@@ -2748,7 +2767,7 @@ function prepare_resize(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) 
 
 var select_box_move_state = {}
 function on_selectbox_move(e) {
-	limit_rate(15, select_box_move_state, function() {
+	once_per_frame(select_box_move_state, function() {
 		var mouse_location = mouse_loc();
 		
 		mouse_location.x = x_abs(from_x_local(mouse_location.x));
@@ -2847,7 +2866,7 @@ function on_select_over(e) {
 }
 
 function on_select_out(e) {
-	limit_rate(15, select_box_move_state, function() {});
+	once_per_frame(select_box_move_state, function() {});
 	$('html,body').css('cursor', 'default');
 	select_box.mousemove = undefined;
 	select_box.touchmove = undefined;
@@ -2860,7 +2879,7 @@ function on_select_out(e) {
 
 function make_resizable(select_box) {
 	select_box.interactive = true;
-	select_box.buttonMode = true;
+	//select_box.buttonMode = true;
 	select_box.draggable = true;
 	select_box.mouseover = on_select_over;
 	select_box.mousedown = on_drag_start;
@@ -2926,7 +2945,7 @@ function redraw_select_box() {
 }
 
 function start_rotate_selection(angle, e) {
-	limit_rate(15, drag_state, function() {});	
+	once_per_frame(drag_state, function() {});	
 	objectContainer.buttonMode = true;
 	
 	setup_mouse_events(rotate_selection.bind(undefined, this, angle), stop_rotate_selection.bind(undefined, this, angle))
@@ -2949,7 +2968,7 @@ function start_rotate_selection(angle, e) {
 }
 
 function rotate_selection(base, angle, e) {
-	limit_rate(15, drag_state, function() {	
+	once_per_frame(drag_state, function() {	
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var mouse_new = [mouse_x_rel(mouse_location.x), mouse_y_rel(mouse_location.y)];
 		
@@ -2990,7 +3009,7 @@ function rotate_selection(base, angle, e) {
 }
 
 function stop_rotate_selection(base, angle, e) {
-	limit_rate(15, drag_state, function() {});
+	once_per_frame(drag_state, function() {});
 	objectContainer.buttonMode = false;
 		
 	setup_mouse_events(undefined, undefined);
@@ -3150,7 +3169,7 @@ function select_all() {
 }
 
 function remove_select_box() {
-	limit_rate(15, select_box_move_state, function() {});
+	once_per_frame(select_box_move_state, function() {});
 	if (select_box) {
 		select_box.mousedown = undefined;
 		select_box.touchstart = undefined;
@@ -3210,7 +3229,7 @@ function smooth_draw(context, point_buffer, closed, quality) {
 var draw_state = {}
 var point_buffer = []
 function on_draw_move(e) {
-	limit_rate(15, draw_state, function() {		
+	once_per_frame(draw_state, function() {		
 		var mouse_location = mouse_loc();
 
 		var new_x = last_point[0] * MOUSE_DRAW_SMOOTHING + (1-MOUSE_DRAW_SMOOTHING) * mouse_location.x;
@@ -3236,7 +3255,7 @@ function on_draw_move(e) {
 }
 
 function on_draw_end(e) {
-	limit_rate(15, draw_state, function() {});
+	once_per_frame(draw_state, function() {});
 
 	var mouse_location = mouse_loc();
 	var new_x = last_point[0];
@@ -3751,7 +3770,7 @@ function on_background_text_end(e) {
 //var line_graph;
 var line_state = {};
 function on_line_move(e) {
-	limit_rate(15, line_state, function() {		
+	once_per_frame(line_state, function() {		
 		/*
 		background_sprite.removeChild(line_graph);
 		line_graph = new PIXI.Graphics();
@@ -3796,7 +3815,7 @@ function on_line_move(e) {
 }
 
 function on_line_end(e) {
-	limit_rate(15, line_state, function() {});
+	once_per_frame(line_state, function() {});
 	try {
 		var mouse_location = mouse_loc();
 		var x = from_x_local(mouse_location.x) - new_drawing.x;
@@ -4591,14 +4610,25 @@ function clear_selected() {
 }
 
 function drag_entity(entity, x, y, scale, rotation) {
-	if (!entity.container) return;
-	entity.container.x += x_abs(x-entity.x);
-	entity.container.y += y_abs(y-entity.y);
+	//set option on the entity
+	var orig_x = entity.x;
+	var orig_y = entity.y;
 	entity.x = x;
 	entity.y = y;
-	entity.scale = scale;
+	if (scale) {
+		entity.scale = scale;
+	}
 	if (typeof rotation !== 'undefined' && rotation != null) {
 		entity.rotation = rotation;
+	}
+	
+	if (!entity.container) return;
+
+	//set option on the rendered container
+	entity.container.x += x_abs(x-orig_x);
+	entity.container.y += y_abs(y-orig_y);
+	
+	if (typeof rotation !== 'undefined' && rotation != null) {
 		entity.container.rotation = -rotation;
 	}
 	if (entity.type == 'note') {
@@ -5683,7 +5713,7 @@ $(document).ready(function() {
 	
 	var touchmove_state = {};
 	var touchmove = function(e) {
-		limit_rate(15, touchmove_state, function() {
+		once_per_frame(touchmove_state, function() {
 
 			var new_touches = e.changedTouches;
 			for (var i = 0; i < new_touches.length; i++) {
