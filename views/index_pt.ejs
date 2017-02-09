@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
+	<meta name="description" content="A tool for <%=game.toUpperCase()%> Planejador tático de batalhas para clãs, explore, compartilhe, discuta estratégias com seus amigos. Crie novas táticas para seus times. ">
+</head>
+<body style="overflow:scroll;">
+	<% include navbar.ejs %>
+	<script>
+		document.getElementById('home').className += " active";
+	</script>
+	<style>
+		#banner {
+			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
+			background-size: cover, cover;
+		}
+	</style>
+
+	<div class="container" style='width:100%; position:relative;'>
+		<div class="jumbotron content" style="padding-left:0px; padding-right:0px;">
+			<div id="banner" class="call_to_action" style='width:100%; background-color:#888ecb'>
+				<div class="container" id="big_button_frame" style="text-align:center;">
+					<h1>
+						<% if (game == 'wot') { %>
+							Táticas World of Tanks
+						<% } else if (game == 'wows') { %>
+							Táticas World of Warships
+						<% } else if (game == 'blitz') { %>
+							Táticas World of Tanks Blitz
+						<% } else if (game == 'aw') { %>
+							Táticas Armored Warfare
+						<% } else if (game == 'lol') { %>
+							Táticas League of legends
+						<% } else if (game == 'hots') { %>
+							Táticas Heroes of the Storm
+						<% } else if (game == 'sc2') { %>
+							Táticas Starcraft II
+						<% } else if (game == 'csgo') { %>
+							Táticas CS:GO
+						<% } else if (game == 'warface') { %>
+							Táticas Warface
+						<% } else if (game == 'squad') { %>
+							Táticas Squad
+						<% } else if (game == 'R6') { %>
+							Rainbox Six | Táticas de assalto
+						<% } else if (game == 'MWO') { %>
+							Táticas Mech Warrior Online
+						<% } else if (game == 'EC') { %>
+							Táticas Eternal Crusade
+						<% } %>	
+					</h1>
+					<div id="quote"></div><br />
+					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>
+					<br /><%=l('Or')%><br />
+					<a class="btn btn-primary new_room" href="<%=game%>3" role="button"><%=l('Video replay room')%> &raquo;</a>
+					<br /><br />
+					<a href="<%=game%>1" class="new_room" role="button" style="color:#ADD8E6">(<%= l('Use original ui')%>)</a><br /></p>
+					<script type="text/javascript">
+						//generate unique id
+						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+						function newUid() {
+							var text = "";
+							for(var i=0; i < 14; i++ ) {
+								text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+							}
+							return text;
+						}
+						window.onload = function() {
+							var els = document.getElementsByClassName('new_room');
+							for (var i = 0; i < els.length; i++) {
+								els[i].setAttribute('href', els[i].getAttribute('href') + '?room=' + newUid());
+							}
+						};
+					</script>
+				</div>
+			</div>
+
+			<div style="padding-left:20px; padding-right:20px;">
+				<div class="row">
+					<div class="col-md-4">
+						<h2>What is <%=url.split('/')[0]%> &#63;</h2>
+						<p><%=url.split('/')[0]%> É uma ferramenta interativos de planejamento tático de mapas para <%=game.toUpperCase()%>.
+						
+						<p><h4><b>Então, como isso funciona ?</b></h4>
+						
+						<p>Pressione o botão azul. Em seguida, selecione um <%=game%>Mapa e use as ferramentas à direita para começar a planejar sua estratégia. Você pode convidar outras pessoas enviando-lhes o link. 
+					</div>
+					<div class="col-md-4">
+						<h2>Sua entrada importa</h2>
+						<p>Pegue a 5 minutos para pegue a esta muito curta <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">pesquisa</a>, E deixe-me conhecer o que você quer em wottactic. Vou deixá-lo por pelo menos duas semanas e, em seguida, liberar os resultados.</p>
+						
+						<p>Depois de preenchê-lo, dê uma olhada no <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">resumo </a> Dos resultados
+						
+						<p>Se você tiver uma pergunta ou um problema, use os fóruns ou envie um e-mail diretamente para mim, eu não posso responder a suas perguntas na pesquisa, pois é anônimo e não tenho como contatá-lo.
+					</div>	
+					<%if (game == 'warface') { %>
+						<div class="col-md-4">
+							<h2>Procurando ajuda com mapas warface</h2>
+							<p>As imagens do mapa de guerra são um pouco inconsistentes, mas é o melhor que eu conseguir encontrar. Se você souber de qualquer site mais consistente, com mapas de boa qualidade para warface. Ou se você quiser criar esses mapas para warface, entre em contato.
+						</div>
+					<%} else { %>
+
+					<% } %>					
+				</div>
+				<div class="row">
+					<%if (game != 'wot') { %>
+					<div class="col-md-4">
+						<h2>Backup de fóruns</h2>
+						<p>Sinta-se à vontade para dizer olá.
+					</div>
+					<% } else { %>
+					<div class="col-md-4">
+						<h2>Outro Rastreador de Estatísticas</h2>
+						<p>Eu adicionei um jogador stats acompanhado para o site. É muito básico no momento, e ainda está reunindo informações históricas. Mas sinta-se livre para dar uma olhada. Uma página / opção de estatísticas do clã também está chegando.
+						<p>There's also an ad on the new page. This does not mean there will be ads on the tactic planner page. But it should cover the hosting cost with a little luck. Even with some donations, wottactic has been running at a bit of a loss, not even counting manhours.
+						<p>Os anúncios são desativados para todos os que doaram ofcourse ou qualquer pessoa que doa qualquer coisa no futuro. Exige que você faça o login novamente.
+					</div>
+					<% } %>	
+					<div class="col-md-4">
+						<h2>Últimas alterações</h2>
+						<p>
+						<ul>
+							<li>Adicionado modo de alternância de apresentador
+							<li>Adicionado MWO como um jogo suportado
+							<li>Movido para pixi 4.3.4
+							<li>Adicionado selecionador de cores personalizado para usuários de ie e borda
+							<li>Agora você pode usar UP/DOWN para alternar slides
+						</ul>
+						<p>Na parte dianteira da caça do erro:
+						<ul>
+							<li>Às vezes, o cursor de arrasto reverteria sobre uma caixa de seleção
+							<li>Alterar conta agora também altera a conta no fórum sem a necessidade de logout
+							<li>Corrigido o login do twitter em domínios diferentes de wottactic.tk
+							<li>Movimento de zoom feito em etapas previsíveis
+							<li>Corrigido problemas de alinhamento na sala de reprodução de vídeo
+						</ul>
+						<p>Se você encontrar qualquer erro, por menor que seja, por favor me avise.
+					</div>
+					<div class="col-md-4">					
+						<h2>Suporte para Mechwarrior online</a></h2>
+						<p>Dê uma <a href="http://gametactic.org/MWO">look</a>
+					</div>				
+				</div>
+				<div class='row'>
+					<div class='col-md-6'>
+						<%=l('Desenvolvido por')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
+					</div>
+					<div class='col-md-6' style='text-align:right;'>
+						<a href="older_news.html">Notícias mais antigas</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<% include footer.ejs %>
+	<% include index_js.ejs %>
+</body>

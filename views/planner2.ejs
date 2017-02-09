@@ -12,7 +12,9 @@
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'wows') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/wows_icons.css">
 	<% } else if (game == 'blitz') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_assets.css">
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 	<% } else if (game == 'lol') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
@@ -80,7 +82,7 @@
 	<script defer src="<%=static_host%>/javascripts/curve.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
-	
+		
 	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>		
@@ -106,36 +108,43 @@
 	}
 	</style>
 </head>
+
 <body style="width:100%; background-color:#495c93; padding:0px; margin:0px; border:0; color:white; min-width: 100%; height:100%; display: inline-block;">
-	<div id="left_side_bar" style="max-width:340px; height:100%; vertical-align:top; float:left; display:flex; flex-direction:column; padding:0px; margin:0px;">
-		<div style="flex: 0 1 auto; justify-content: flex-start;">
-			<nav id="left_navbar" class="navbar navbar-inverse container-fluid navbar-custom" style="border-radius:0px; margin:0; margin-left:5px; margin-right:5px; padding-left:0px; padding-right:0px">
-				<div id="home_button" class="navbar-header">
-					<button class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
+	<script type="text/javascript">
+		var fileref;
+		var debug = location.search.split('debug=')[1]	
+		if(debug) {
+			debug = debug.split("&")[0];	
+			fileref=document.createElement('script')
+			fileref.setAttribute("type","text/javascript")
+			fileref.setAttribute("src", "https://getfirebug.com/firebug-lite-debug.js")
+			var head = document.getElementsByTagName("head")[0]; 
+			head.appendChild(fileref);
+		}
+	</script>
+
+	<div id="left_side_bar" style="max-width:340px; height:100%; vertical-align:top; float:left; display:flex; flex-direction:column; padding:0px; margin:0px; z-index:10; background-color:rgba(73, 92, 147, 0.75);">
+		<nav id="left_navbar" class="navbar navbar-inverse container-fluid navbar-custom" style="flex: 0 1 auto; justify-content: flex-start; border-radius:0px; min-height:60px; margin:0; padding:0">
+			<ul id="left_icons" class="nav navbar-nav navbar-left">
+				<li id="home_button">
 					<a class="navbar-brand" style="padding-left:10px; padding-right:10px"
 						href="/<%=game%>"><i class="fa-lg icon-home "></i>
 					</a>
-				</div>
-				<div class="btn-group pull-left">
+				</li>
+				<li class="btn-group pull-left">
 					<button id="lock" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
 						<div class="icon icon-lock"></div>
 					</button>
 					<button id="link" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 						<div class="icon icon-link"></div>
 					</button>
-				</div>
-				<div class="collapse navbar-collapse" id="myNavbar">
-				<ul class="nav navbar-nav navbar-right container-fluid" style="padding-right: 0;">
-					<% include language_select.ejs %>
-					<% include login_button.ejs %>
-				</ul>
-				</div>
-			</nav>	
-		</div>
+				</li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right container-fluid" style="margin-right:-1px">
+				<% include language_select.ejs %>
+				<% include login_button.ejs %>
+			</ul>
+		</nav>	
 		<div id="map_select_section" style="padding:10px; padding-top:0px; flex: 0 1 auto; justify-content: flex-start;">
 			<div id="map_select_box">
 			<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
@@ -247,9 +256,9 @@
 		</div>
 	</div>	
 	
-	<div id="edit_window" class="edit_window" style="height:100%; width:calc(100vh); display: inline-block; vertical-align:top; padding:0px; margin:0px; border:0;"></div>
+	<div id="edit_window" class="edit_window" style="height:100%; width:100%; position:absolute; z-index:0; padding:0px; margin:0px; border:0; top:0px; left:0px"></div>
 
-	<div id="right_side_bar" style="height:100%; max-width:304px; display: inline-block; vertical-align:top;">
+	<div id="right_side_bar" style="height:100%; max-width:340px; position:relative; vertical-align:top; float:right; background-color:rgba(73, 92, 147, 0.75); z-index:10; right:0px">
 		<nav id="right_navbar" class="navbar navbar-inverse container-fluid navbar-custom" style="border-radius:0px; min-height:60px; margin-bottom: 0;">
 			<ul id="right_icons" class="nav navbar-nav navbar-left container-fluid" style="margin-left:-5px; margin-right:-10px; padding-left:0px; padding-right:0px">
 				<div id="right-buttons" class="btn-group">

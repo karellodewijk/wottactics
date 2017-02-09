@@ -1,5 +1,5 @@
-var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
-//var servers = [location.host];
+//var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
+var servers = [location.host];
 
 var game = $('meta[name=game]').attr("content");
 var is_video_replay = false;
@@ -27,22 +27,22 @@ if (game == "wows") { //wows
 	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "aw") {
 	assets.push(image_host+"rotate.png");
-	loader.add("aw_assets.png", asset_host + "aw_assets.png");
-	loader.add("aw_assets.json",  asset_host +  "aw_assets.json");
+	loader.add("aw_assets.png", asset_host + "aw_assets.png", {crossOrigin:true});
+	loader.add("aw_assets.json", asset_host + "aw_assets.json", {crossOrigin:true});
 } else if (game == "lol") {
 	assets.push(image_host+"rotate.png");
 	assets.push(image_host+"circle.png", image_host+"recticle.png", image_host+"dot.png", image_host+"note.png", image_host+"cursor.png", image_host+"grid.png");
 } else if (game == "hots") {
 	assets.push(image_host+"rotate.png");
-	loader.add("hots_assets.png", asset_host + "hots_assets.png");
-	loader.add("hots_assets.json",  asset_host +  "hots_assets.json");
+	loader.add("hots_assets.png", asset_host + "hots_assets.png", {crossOrigin:true});
+	loader.add("hots_assets.json", asset_host + "hots_assets.json", {crossOrigin:true});
 } else {
-	loader.add("wot_assets.png", asset_host + "wot_assets.png");
-	loader.add("wot_assets.json",  asset_host +  "wot_assets.json");
+	loader.add("wot_assets.png", asset_host + "wot_assets.png", {crossOrigin:true});
+	loader.add("wot_assets.json", asset_host + "wot_assets.json", {crossOrigin:true});
 }
 
 for (var i in assets) {
-	loader.add(assets[i], assets[i]);
+	loader.add(assets[i], assets[i], {crossOrigin:true});
 }
 
 var textures_loaded = false;
@@ -52,7 +52,7 @@ loader.on('complete', function(e) {
 loader.load();
 
 function img_texture(src) {
-	if (texture_atlas[src] && !is_safari()) {
+	if (texture_atlas[src]) {
 		var img = texture_atlas[src];
 		return new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
 	} else {
@@ -168,7 +168,7 @@ function random_color(){
 var ARROW_LOOKBACK = 4;
 var MOUSE_DRAW_SMOOTHING = 0.5;
 var LEFT_BAR_MIN_WIDTH = 340;
-var RIGHT_BAR_MIN_WIDTH = 302;
+var RIGHT_BAR_MIN_WIDTH = 340;
 var SINGLE_SIDE_BAR_MIN_WIDTH;
 if (game == 'blitz') {
 	SINGLE_SIDE_BAR_MIN_WIDTH = 350;
@@ -183,7 +183,7 @@ var NOTE_SCALE = 0.03;
 var THICKNESS_SCALE = 1;
 var FONT_SCALE = 0.002;
 var TEXT_QUALITY = 1;
-var DRAW_QUALITY = 2;
+var DRAW_QUALITY = 1;
 var ARROW_SCALE = 0.008;
 var ARROW_SCALE2 = 1.7;
 var TEND_SCALE = 0.008;
@@ -310,6 +310,9 @@ var dragging_enabled = true;
 var temp_canvas = document.createElement("canvas");
 var dragging_mode = {};
 var presentation_mode = true;
+var align_left = false;
+var left_sidebar_width = 0;
+var right_sidebar_width = 0;
 
 //these variables are only for the video replay room
 var offset = 0; // time offset from the server in ms 
@@ -367,7 +370,7 @@ $(document).on('keyup keydown', function(e) {
 				} else if (e.keyCode==86) { //v
 					paste();
 				}
-			} else if (e.keyCode==32) {
+			} else if (e.keyCode==32 && e.type == "keydown") {
 				if (video_layer) {
 					if (can_edit()) {
 						toggle_play();
@@ -490,22 +493,41 @@ function adjust_zoom(entity) {
 	}
 }
 
+/*
 function zoom(amount, isZoomIn, center, e) {
-	var old_zoom_level = zoom_level
+	var direction = isZoomIn ? 1 : -1;
+	var factor = (1 + amount * direction);
+	var steps = 10;	
+	
+	var step = Math.pow(factor, 1/(steps - 1)) //solution of x^steps = steps*x
+
+	for (var i = 0; i < steps; i++) {
+		setTimeout(function() {
+			exec_zoom(step, isZoomIn, JSON.parse(JSON.stringify(center)), e);
+			render_scene();
+		}, steps * i);
+	}
+}
+*/
+
+
+function zoom(amount, isZoomIn, center, e) {
 	var direction = isZoomIn ? 1 : -1;
 	var factor = (1 + amount * direction);
 	
 	objectContainer.scale.x *= factor;
 	objectContainer.scale.y *= factor;
 
+	center[0] += x_rel(background_sprite.x) / background_sprite.scale.x;
+	center[1] += y_rel(background_sprite.y) / background_sprite.scale.y;
+	
 	//pan to cursor
-	objectContainer.x -= x_abs(center[0] * (1 - 1/factor) * objectContainer.scale.x);
-	objectContainer.y -= y_abs(center[1] * (1 - 1/factor) * objectContainer.scale.y);
+	objectContainer.x -= x_abs(center[0] * (1 - 1/factor) * objectContainer.scale.x * background_sprite.scale.x);
+	objectContainer.y -= y_abs(center[1] * (1 - 1/factor) * objectContainer.scale.y * background_sprite.scale.y);
 
 	correct();
 
-	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
-	var zoom_factor = old_zoom_level / zoom_level;
+	zoom_level = 1/objectContainer.scale.y;
 	
 	if(room_data) {
 		for (var i in room_data.slides[active_slide].entities) {
@@ -517,23 +539,35 @@ function zoom(amount, isZoomIn, center, e) {
 	}
 }
 
-function emit_pan_zoom() {
-	if (presentation_mode) {
-		socket.emit('pan_zoom', room, zoom_level, from_x_local_vect(objectContainer.x), from_y_local_vect(objectContainer.y));
+//returns the focus point of the screen in rel coordinates
+function focus_point() {
+	if (align_left) {
+		var screenX = (window.innerWidth - right_sidebar_width) / 2;
+		var screenY = window.innerHeight / 2;
+		return [from_x_local(screenX), from_y_local(screenY)];
+	} else {
+		return [from_x_local(window.innerWidth/2), from_y_local(window.innerHeight/2)];
 	}
 }
 
-function pan_zoom(new_zoom_level, x, y) {	
+function pan_zoom(new_zoom_level, x, y) {
 	var zoom_factor = zoom_level / new_zoom_level;
 
 	objectContainer.scale.x *= zoom_factor;
-	objectContainer.scale.y *= zoom_factor;	
+	objectContainer.scale.y *= zoom_factor; 
 	
-	objectContainer.x = to_x_local_vect(x);
-	objectContainer.y = to_y_local_vect(y);
+	var focusp = focus_point();
+	var diff_x = x - focusp[0];
+	var diff_y = y - focusp[1];
+
+	objectContainer.x -= to_x_local_vect(diff_x);
+	objectContainer.y -= to_y_local_vect(diff_y);
 	
-	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
+	zoom_level = 1/objectContainer.scale.y
 	$('#zoom_level').text((1/zoom_level).toFixed(2));
+	
+	correct();
+	
 	render_scene();
 }
 
@@ -542,19 +576,19 @@ function correct() {
 	objectContainer.x = Math.min(0, objectContainer.x);
 	objectContainer.y = Math.min(0, objectContainer.y);
 	
-	var visible_width = (background_sprite.width * objectContainer.scale.x) + objectContainer.x;
+	var visible_width = (renderer.width * objectContainer.scale.x) + objectContainer.x;
 	if (visible_width < renderer.view.width) {
-		objectContainer.x = Math.min(0, renderer.view.width - (background_sprite.width * objectContainer.scale.x));
+		objectContainer.x = Math.min(0, renderer.view.width - (renderer.width * objectContainer.scale.x));
 		if (objectContainer.x == 0) {
-			objectContainer.scale.x = renderer.view.width / background_sprite.width;		
+			objectContainer.scale.x = renderer.view.width / renderer.width;		
 		}
 	}
 	
-	var visible_height = (background_sprite.height * objectContainer.scale.y) + objectContainer.y;
+	var visible_height = (renderer.height * objectContainer.scale.y) + objectContainer.y;
 	if (visible_height < renderer.view.height) {
-		objectContainer.y = Math.min(0, renderer.view.height - (background_sprite.height * objectContainer.scale.y));
+		objectContainer.y = Math.min(0, renderer.view.height - (renderer.height * objectContainer.scale.y));
 		if (objectContainer.y == 0) {
-			objectContainer.scale.y = renderer.view.height / background_sprite.height;		
+			objectContainer.scale.y = renderer.view.height / renderer.height;		
 		}
 	}
 	
@@ -595,24 +629,16 @@ function on_pan(e) {
 }
 
 //resize the render window
-function resize_renderer(new_size_x, new_size_y) {	
+function resize_renderer(new_size_x, new_size_y) {
 	if (video_layer) {
 		var videoRatio;
 		if (video_layer[0].videoWidth > 0) {
 			videoRatio = video_layer[0].videoWidth / video_layer[0].videoHeight;
 		} else {
 			videoRatio = 16.0/9.0;
-		}
-		var windowRatio = (new_size_x/new_size_y);
-		var border = (new_size_x * (1 - videoRatio/windowRatio) / 2);
-		
-		$("#edit_window").css('left', '' + border + 'px');
-		
-		new_size_x = new_size_x - 2 * border;
+		}		
 		video_layer.width(new_size_x);
 		video_layer.height(new_size_y);
-	} else {
-		$("#edit_window").css('left', '0px');	
 	}
 	
 	var last_size_x = size_x;
@@ -630,28 +656,52 @@ function resize_renderer(new_size_x, new_size_y) {
 	$(temp_draw_canvas).css("width", ""+new_size_x+"px");
 	$(temp_draw_canvas).css("height", ""+new_size_y+"px");
 
-	objectContainer.scale.x *= size_y/last_size_y;
-	objectContainer.scale.y *= size_y/last_size_y;
-
-	$("#edit_window").css('width', '' + new_size_x + 'px');
-	$("#edit_window").css('height', '' + new_size_y + 'px');
+	var factor = size_y/last_size_y;
 
 	renderer.resize(new_size_x, new_size_y);
-
-	grid_layer.width = background_sprite.width;
-	grid_layer.height = background_sprite.height;
+	
+	$("#edit_window").css('width', '' + new_size_x + 'px');
+	$("#edit_window").css('height', '' + new_size_y + 'px');
+	
+	var background_ratio = background_sprite.texture.width / background_sprite.texture.height
+	var background_width = Math.min(window.innerHeight * background_ratio,
+								   (window.innerWidth - iface_width));
+	var background_height = background_width / background_ratio;	
+	
+	if (!align_left) {
+		var ratio = new_size_x / new_size_y;	
+		var margin = (window.innerWidth - background_width) / 2;
+		background_sprite.x = margin;
+		background_sprite.y = 0;
+	} else {
+		background_sprite.x = 0;
+		background_sprite.y = 0;		
+	}	
+	
+	change_background_dim(background_width, background_height);
 	
 	if (renderer.plugins.interaction.eventData.data) {
 		var mouse_location = mouse_loc();	
 		zoom(0, true, [from_x_local(mouse_location.x), from_y_local(mouse_location.y)]);
 	}
+	
+	refresh_all_entities()
 };
 
+function refresh_all_entities() {
+	for (var i in room_data.slides[active_slide].entities) {
+		var entity = room_data.slides[active_slide].entities[i];
+		if (entity.type != 'background') {
+			remove(entity.uid, true);
+			create_entity(entity);
+		}
+	}
+}
+
 window.onresize = function() {
-	change_background_dim(renderer.view.height)
-	
 	if (is_video_replay) {
-		resize_renderer($(window).width(), $(window).height());
+		iface_width = 0;
+		resize_renderer(window.innerWidth, window.innerHeight);	
 		return;
 	}
 	
@@ -659,51 +709,79 @@ window.onresize = function() {
 	if (background_sprite.texture) {
 		ratio = background_sprite.texture.width /  background_sprite.texture.height;
 	}
-	var iface_width = 0;
-	if ($("#single_side_bar").length) {
+	var left_bar_only = false;
+	var left_sidebar_width, right_sidebar_width;
+	if (!$("#left_side_bar").length) {
 		iface_width = SINGLE_SIDE_BAR_MIN_WIDTH;
+		left_sidebar_width = 0;
+		right_sidebar_width = SINGLE_SIDE_BAR_MIN_WIDTH;
+		left_bar_only = true;
 	} else {
 		iface_width = LEFT_BAR_MIN_WIDTH + RIGHT_BAR_MIN_WIDTH;
+		left_sidebar_width = LEFT_BAR_MIN_WIDTH;
+		right_sidebar_width = RIGHT_BAR_MIN_WIDTH;
 	}
 	
-	if (iface_width < (window.innerWidth / 2)) {
-		var size_y;
-		if ($('#left_side_bar').length) {
-			$('#left_side_bar').detach().prependTo($("body"));
-			$('#map_select_box').prependTo($("#map_select_section"));
-			//$('#home_button').prependTo($("#left_navbar"));
-			
-		}
-		size_y = window.innerHeight - 5;
+	var screen_aspect = window.innerWidth / window.innerHeight;
+	var screen_aspect_minus_iface = (window.innerWidth-iface_width) / window.innerHeight;
+	var background_aspect = background_sprite.width / background_sprite.height;
 		
-		var size_x = size_y * ratio;
-		if (size_x + iface_width + MAGIC_NUMBER > window.innerWidth) {
-			size_x = window.innerWidth - iface_width - MAGIC_NUMBER;			
-			size_y = size_x / ratio;
+	if (screen_aspect_minus_iface >= 1 && !left_bar_only) {
+		align_left = false;
+		if ($('#left_side_bar').length) {
+			//$('#left_side_bar').detach().prependTo($("body"));
+			$('#left_side_bar').css('position', 'relative');
+			$('#left_side_bar').css('top', '');
 		}
-		resize_renderer(size_x, size_y);
+		$('#right_side_bar').css('position', 'relative');
+		$('#right_side_bar').css('top', '');	
+		$('#map_select_box').prependTo($("#map_select_section"));
+				
+		var height = window.innerHeight;
+		var width = window.innerWidth;
+		resize_renderer(width, height);		
 	} else {
-		if ($('#left_side_bar').length) {
-			$('#left_side_bar').detach().appendTo($("body"));
+		align_left = true;
+		if (window.innerWidth-right_sidebar_width >= window.innerHeight) {
+			var width, height;
+			if (window.innerWidth - right_sidebar_width > window.innerHeight) {
+				height = window.innerHeight;
+				width = height / ratio;			
+			} else {
+				width = window.innerWidth - right_sidebar_width;
+				height = width * ratio;				
+			}
+			if ($('#left_side_bar').length) {
+				//$('#left_side_bar').detach().appendTo($("body"));
+				$('#left_side_bar').css('position', 'absolute');
+				$('#left_side_bar').css('top', ''+height+'px');
+			}
+			$('#right_side_bar').css('position', 'relative');
+			$('#right_side_bar').css('top', '');				
 			$('#map_select_box').prependTo($(".left_column"));
-			//$('#home_button').prependTo($("#right-buttons"));
-			iface_width = RIGHT_BAR_MIN_WIDTH;
-		}
-		
-		var size_x = window.innerWidth - iface_width;
-		var size_y = size_x / ratio;
+			iface_width = right_sidebar_width;
+			resize_renderer(window.innerWidth, height);
+		} else {
+			var width, height;
+			if (window.innerWidth > window.innerHeight) {
+				height = window.innerHeight;
+				width = height / ratio;
+			} else {
+				width = window.innerWidth;
+				height = width * ratio;
+			}		
+			if ($('#left_side_bar').length) {
+				$('#left_side_bar').css('position', 'absolute');
+				$('#left_side_bar').css('top', ''+height+'px');
+			}
+			$('#right_side_bar').css('position', 'absolute');
+			$('#right_side_bar').css('top', ''+height+'px');
 			
-		if (size_x < RIGHT_BAR_MIN_WIDTH) {
-			var size_x = window.innerWidth
-			var size_y = size_x / ratio;
-		}
-		if (size_y > window.innerHeight) {
-			size_y = window.innerHeight;
-			size_x = size_y * ratio;
-		}
-		
-		resize_renderer(size_x, size_y);
+			iface_width = 0;
+			resize_renderer(window.innerWidth, height);
+		} 
 	}
+
 	render_scene();
 };
 
@@ -717,37 +795,47 @@ function mouse_loc() {
 
 //absolute -> relative
 function x_rel(x) {
-	return x/(background_sprite.height);
+	return x*background_sprite.scale.x/background_sprite.height;
 }
 
 //relative -> absolute
 function x_abs(x) {
-	return x*(background_sprite.height);
+	return x*background_sprite.height/background_sprite.scale.x;
 }
 
 //absolute -> relative
 function y_rel(y) {
-	return y/(background_sprite.height);
+	return y*background_sprite.scale.y/background_sprite.height;
 }
 
 //relative -> absolute
 function y_abs(y) {
-	return y*(background_sprite.height);
+	return y*background_sprite.height/background_sprite.scale.y;
 }
 
 //relative -> local
 function to_x_local(x) {
-	return objectContainer.x + (x * background_sprite.height) * objectContainer.scale.x;
-}
-
-//relative -> local, only scaling, no offset
-function to_x_local_vect(x) {
-	return (x * background_sprite.height) * objectContainer.scale.x;
+	return (x * background_sprite.height + background_sprite.x) * objectContainer.scale.x + objectContainer.x;
 }
 
 //local -> relative
 function from_x_local(x) {
-	return (x - objectContainer.x) / objectContainer.scale.x / background_sprite.height;
+	return ((x - objectContainer.x) / objectContainer.scale.x - background_sprite.x) / background_sprite.height;
+}
+
+//relative -> local
+function to_y_local(y) {
+	return (y * background_sprite.height + background_sprite.y) * objectContainer.scale.y + objectContainer.y;
+}
+
+//local -> relative
+function from_y_local(y) {
+	return ((y - objectContainer.y) / objectContainer.scale.y - background_sprite.y) / background_sprite.height;
+}
+
+//relative -> local, only scaling, no offset
+function to_x_local_vect(x) {
+	return x * background_sprite.height * objectContainer.scale.x;
 }
 
 //local -> relative, only scaling, no offset
@@ -755,19 +843,9 @@ function from_x_local_vect(x) {
 	return x / objectContainer.scale.x / background_sprite.height;
 }
 
-//relative -> local
-function to_y_local(y) {
-	return objectContainer.y +(y * background_sprite.height) * objectContainer.scale.y;
-}
-
 //relative -> local, only scaling, no offset
 function to_y_local_vect(y) {
-	return (y * background_sprite.height) * objectContainer.scale.y;
-}
-
-//local -> relaive
-function from_y_local(y) {
-	return (y - objectContainer.y) / objectContainer.scale.y / background_sprite.height;
+	return y * background_sprite.height * objectContainer.scale.y;
 }
 
 //local -> relaive, only scaling, no offset
@@ -993,17 +1071,18 @@ function wait_for_seek(cb) {
 	}, 5);
 }
 
-function change_background_dim(height) {	
+function change_background_dim(width, height) {	
 	var old_zoom_level = zoom_level;
 
 	var ratio = background_sprite.texture.width / background_sprite.texture.height;
-	var width = height * ratio; 
 	
 	var old_height = background_sprite.height;
+	
 	background_sprite.width = width;
 	background_sprite.height = height;
-	grid_layer.width = background_sprite.width;
-	grid_layer.height = background_sprite.height;
+	grid_layer.width = background_sprite.width / background_sprite.scale.x;
+	grid_layer.height = background_sprite.height / background_sprite.scale.y;
+
 	var ratio = height/old_height;
 	if (ratio != 1 && room_data) {
 		for (var key in room_data.slides[active_slide].entities) {
@@ -1017,9 +1096,28 @@ function change_background_dim(height) {
 		}
 	}
 	
-	zoom_level = size_y / (background_sprite.height * objectContainer.scale.y);
-	pan_zoom(old_zoom_level, from_x_local_vect(objectContainer.x), from_y_local_vect(objectContainer.y))
+	if (room_data.slides[active_slide].pan_zoom) {
+		var pz = room_data.slides[active_slide].pan_zoom;
+		pan_zoom(pz[0], pz[1], pz[2]);
+	} else {
+		var focusp = focus_point();
+		pan_zoom(old_zoom_level, focusp[0], focusp[1]);
+	}
 	
+	zoom_level = 1/objectContainer.scale.y;	
+}
+
+function create_empty_background_texture(width, height, alpha) {
+	if (typeof alpha == 'undefined') alpha = 1;
+	var empty_backround = new PIXI.Graphics();
+	empty_backround.beginFill(0xFFFFFF, alpha);
+	empty_backround.moveTo(0, 0);
+	empty_backround.lineTo(width, 0);
+	empty_backround.lineTo(width, height);
+	empty_backround.lineTo(0, height);
+	empty_backround.lineTo(0, 0);	
+	empty_backround.endFill();
+	return renderer.generateTexture(empty_backround);
 }
 
 function set_background(new_background, cb) {
@@ -1028,7 +1126,7 @@ function set_background(new_background, cb) {
 			resources_loading++;
 
 			var texture;
-			if (new_background.path.indexOf("://")) {
+			if (new_background.path.indexOf("://") == -1) {
 				texture = PIXI.Texture.fromImage(static_host + new_background.path);
 			} else {
 				texture = PIXI.Texture.fromImage(new_background.path);
@@ -1085,12 +1183,11 @@ function set_background(new_background, cb) {
 				} else {
 					$("#map_size").text("");
 				}
-					
+
 				window.onresize();
 				
 				render_scene();
-				
-				
+	
 				if (cb)	cb(true);
 			}
 			
@@ -1109,11 +1206,12 @@ function set_background(new_background, cb) {
 		} else {
 			reset_background();
 			
-			background_sprite.alpha = 0;
+			background_sprite.texture = create_empty_background_texture(1920, 1080, 0);
 			
 			background = new_background;
 			history[background.uid] = background;
-
+			room_data.slides[active_slide].entities[new_background.uid] = new_background;
+			
 			add_custom_map(background.path)
 			$('#wotbase_map_select_container').hide();
 			$('#map_select_container').show();
@@ -1164,7 +1262,7 @@ function set_background(new_background, cb) {
 					$('.mejs-controls').css('position', 'fixed');
 					$('.mejs-controls').css('left', '0px');
 					$('.mejs-controls').css('bottom', '0px');
-					$('.mejs-controls').css('height', '3%');
+					$('.mejs-controls').css('height', '26px');
 					init_video_triggers();
 					timeline = new FastPriorityQueue();
 					video_ready = true;
@@ -1229,7 +1327,7 @@ function set_background(new_background, cb) {
 		}
 	} else {
 		reset_background();		
-		
+
 		background = new_background;
 		history[background.uid] = background;
 
@@ -1238,28 +1336,16 @@ function set_background(new_background, cb) {
 		$('#map_select_container').show();
 		$('#wotbase_select_container').hide();
 		$('#new_minimap_select_container').hide();
-		
-		var empty_backround = new PIXI.Graphics();
-		empty_backround.beginFill(0xFFFFFF, 1);
-		
-		empty_backround.moveTo(0, 0);
-		if (!is_video_replay) {
-			empty_backround.lineTo(renderer.width, 0);
-			empty_backround.lineTo(renderer.width, renderer.height);
-			empty_backround.lineTo(0, renderer.height);
+
+		if (is_video_replay) {
+			background_sprite.texture = create_empty_background_texture(1920, 1080);	
 		} else {
-			empty_backround.lineTo($(window).width(), 0);
-			empty_backround.lineTo($(window).width(), $(window).height());
-			empty_backround.lineTo(0, $(window).height());
+			background_sprite.texture = create_empty_background_texture(1000, 1000);			
 		}
-		empty_backround.lineTo(0, 0);
-		
-		empty_backround.endFill();
-		background_sprite.texture = renderer.generateTexture(empty_backround);
-		
-		$("#map_size").text("");
 
 		window.onresize();
+		
+		$("#map_size").text("");
 		
 		render_scene();	
 		if (cb)	cb(true);
@@ -1275,8 +1361,10 @@ function on_drag_start(e) {
 	if (this == select_box) {
 		limit_rate(15, select_box_move_state, function() {});
 		select_box.mousemove = undefined;
+		select_box.touchmove = undefined;
 		select_box.mouseover = undefined;
 		select_box.mouseout = undefined;
+		select_box.touchend = undefined;
 	}
 
 	drag_delay_running = true;
@@ -1368,8 +1456,8 @@ function on_drag_start(e) {
 		for (var i in selected_entities) {
 			selected_entities[i].origin_x = selected_entities[i].x;
 			selected_entities[i].origin_y = selected_entities[i].y;			
-			objectContainer.removeChild(selected_entities[i].container);
-			objectContainer.addChild(selected_entities[i].container);
+			background_sprite.removeChild(selected_entities[i].container);
+			background_sprite.addChild(selected_entities[i].container);
 		}
 		if (_this.entity) {
 			_this.entity.origin_x = _this.entity.x;
@@ -1379,8 +1467,8 @@ function on_drag_start(e) {
 		drag_delay_running = false;
 	
 		if (select_box) {
-			objectContainer.removeChild(select_box);
-			objectContainer.addChild(select_box);
+			background_sprite.removeChild(select_box);
+			background_sprite.addChild(select_box);
 		}
 		
 		render_scene();
@@ -1447,8 +1535,8 @@ function on_drag_move(e) {
 		}
 		
 		if (select_box) {
-			objectContainer.removeChild(select_box);
-			objectContainer.addChild(select_box);
+			background_sprite.removeChild(select_box);
+			background_sprite.addChild(select_box);
 		}
 	
 		last_mouse_location = mouse_new;
@@ -1502,7 +1590,7 @@ function remove(uid, keep_entity) {
 			entity.container.menu.remove();
 		}
 		
-		objectContainer.removeChild(entity.container);
+		background_sprite.removeChild(entity.container);
 		delete entity.container;
 		
 		if (entity.type == "icon") {
@@ -1588,7 +1676,7 @@ function ping(x, y, color, size) {
 		var temp_sprite = new PIXI.Sprite(ping_texture);
 		var canvas = PIXI.CanvasTinter.getTintedTexture(temp_sprite, color);
 		ping_texture_atlas[color] = new PIXI.Texture.fromCanvas(canvas);
-		objectContainer.addChild(fast_container);
+		background_sprite.addChild(fast_container);
 	} else {
 		fast_container = ping_container_atlas[color];
 	}
@@ -1652,9 +1740,9 @@ function align_note_text(entity) {
 	if (entity.container) {
 		if (entity.is_open) {
 			var rect = $("#edit_window")[0].getBoundingClientRect();
-			var x = rect.left + to_x_local(entity.x) + entity.container.width * objectContainer.scale.x;
+			var x = rect.left + to_x_local(entity.x) + entity.container.width * objectContainer.scale.x * background_sprite.scale.x;
 			var y = rect.top + to_y_local(entity.y);
-			entity.container.menu.attr('style', 'top:' + y +'px; left:' + x + 'px; display:block; z-index:20');
+			entity.container.menu.attr('style', 'top:' + y +'px; left:' + x + 'px; display:block; z-index:8');
 		} else {
 			entity.container.menu.css('visibility', 'hidden');
 		}
@@ -1708,9 +1796,7 @@ function hexToRGBA(hex, alpha) {
   return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 }
 
-function init_canvas_simple(ctx, line_thickness, line_color, style, linedash_pattern) {
-	if (!linedash_pattern) linedash_pattern = [10, 10];
-	
+function init_canvas_simple(ctx, line_thickness, line_color, style) {	
 	var line_color = '#' + ('00000' + (line_color | 0).toString(16)).substr(-6); 
 
 	ctx.lineWidth = line_thickness * (size_y/1000) * THICKNESS_SCALE;
@@ -1724,7 +1810,7 @@ function init_canvas_simple(ctx, line_thickness, line_color, style, linedash_pat
 	
 	if ('setLineDash' in ctx) {	
 		if (style == "dashed") {
-			ctx.setLineDash(linedash_pattern);
+			ctx.setLineDash([5*line_thickness, 3*line_thickness]);
 			ctx.lineJoin = ctx.lineCap = 'round';
 		} else if (style == "dotted") {
 			ctx.setLineDash([line_thickness, line_thickness]);
@@ -1735,8 +1821,8 @@ function init_canvas_simple(ctx, line_thickness, line_color, style, linedash_pat
 	}	
 }
 
-function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity, linedash_pattern) {
-	init_canvas_simple(ctx, line_thickness, line_color, style, linedash_pattern);
+function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity) {
+	init_canvas_simple(ctx, line_thickness, line_color, style);
 	var line_color = '#' + ('00000' + (line_color | 0).toString(16)).substr(-6); 
 	
 	if (typeof fill_opacity !== 'undefined') {  // we assume && fill_color && outline_opacity
@@ -1752,8 +1838,8 @@ function init_canvas(ctx, line_thickness, line_color, style, fill_opacity, fill_
 
 function init_canvases(line_thickness, line_color, style, fill_opacity, fill_color, outline_opacity) {
 	start_drawing();
-	init_canvas(draw_context, line_thickness * DRAW_QUALITY, line_color, style, fill_opacity, fill_color, outline_opacity, [10*DRAW_QUALITY, 10*DRAW_QUALITY]);
-	init_canvas(temp_draw_context, line_thickness * DRAW_QUALITY, line_color, style, fill_opacity, fill_color, outline_opacity, [10*DRAW_QUALITY, 10*DRAW_QUALITY]);
+	init_canvas(draw_context, line_thickness * DRAW_QUALITY, line_color, style, fill_opacity, fill_color, outline_opacity);
+	init_canvas(temp_draw_context, line_thickness * DRAW_QUALITY, line_color, style, fill_opacity, fill_color, outline_opacity);
 	draw_context.beginPath();
 	temp_draw_context.beginPath();
 }
@@ -1779,6 +1865,13 @@ function on_left_click(e) {
 	if (!can_edit()) {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
 		init_canvases(0.1, 0xffffff, "full");
+		
+		temp_draw_context.lineWidth = 2 * (size_x/1000) * DRAW_QUALITY;
+		temp_draw_context.strokeStyle = "#FFFFFF";
+		temp_draw_context.fillStyle = "#FFFFFF";
+		var font_size = 22 * DRAW_QUALITY;
+		temp_draw_context.font = "" + font_size + "px Arial";
+		
 		left_click_origin = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];	
 		return;
 	}
@@ -1801,6 +1894,11 @@ function on_left_click(e) {
 	} else if (active_context == 'ruler_context') {
 		setup_mouse_events(on_ruler_move, on_ruler_end);
 		init_canvases(0.1, 0xffffff, "full");
+		temp_draw_context.lineWidth = 2 * (size_x/1000) * DRAW_QUALITY;
+		temp_draw_context.strokeStyle = "#FFFFFF";
+		temp_draw_context.fillStyle = "#FFFFFF";
+		var font_size = 22 * DRAW_QUALITY;
+		temp_draw_context.font = "" + font_size + "px Arial";
 		left_click_origin = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];	
 	} else if (active_context == 'line_context') {
 		if (!new_drawing) {
@@ -1824,7 +1922,7 @@ function on_left_click(e) {
 			graphics.lineStyle(new_drawing.outline_thickness * THICKNESS_SCALE, new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)));
 			graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), size_y * end_circle_radius * zoom_level));
-			objectContainer.addChild(graphics);
+			background_sprite.addChild(graphics);
 			
 			just_activated = true;
 			render_scene();
@@ -1854,7 +1952,7 @@ function on_left_click(e) {
 			graphics.lineStyle(new_drawing.outline_thickness * THICKNESS_SCALE, new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)));
 			graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), size_y * end_circle_radius * zoom_level));
-			objectContainer.addChild(graphics);
+			background_sprite.addChild(graphics);
 			
 			setup_mouse_events(on_curve_move, on_area_end);
 			just_activated = true;
@@ -1893,6 +1991,7 @@ function on_left_click(e) {
 			left_click_origin = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];		
 			init_canvases(circle_outline_thickness, circle_outline_color, $('#circle_type').find('.active').attr('data-style'), t2o(circle_fill_transparancy), circle_fill_color, t2o(circle_outline_transparancy));
 			circle_draw_style = $('#circle_draw_style').find('.active').attr('data-draw_style')
+			temp_draw_context.save();
 			new_drawing = true;
 			just_activated = true;
 		}
@@ -1931,7 +2030,7 @@ function stop_tracking() {
 	limit_rate(15, track_state, function() {});
 	setup_mouse_events(undefined, undefined);
 	socket.emit("stop_track", room, my_tracker.uid);
-	objectContainer.removeChild(my_tracker.container);
+	background_sprite.removeChild(my_tracker.container);
 	my_tracker = undefined;
 	render_scene();
 }
@@ -2005,7 +2104,7 @@ function create_note(note) {
 	align_note_text(note);
 		
 	init_dragging(note.container);	
-	objectContainer.addChild(note.container);
+	background_sprite.addChild(note.container);
 
 	render_scene();
 	sprite.texture.on('update', function() {	
@@ -2031,12 +2130,12 @@ function create_tracker(tracker) {
 	tracker.container.width = tracker.container.height * ratio;	
 		
 	trackers[tracker.uid] = tracker;
-	objectContainer.addChild(trackers[tracker.uid].container);
+	background_sprite.addChild(trackers[tracker.uid].container);
 	render_scene();
 }
 
 function remove_tracker(uid) {
-	objectContainer.removeChild(trackers[uid].container);
+	background_sprite.removeChild(trackers[uid].container);
 	render_scene();
 	delete trackers[uid];
 }
@@ -2102,7 +2201,7 @@ function on_area_end(e) {
 		emit_entity(new_drawing);
 		undo_list.push(clone_action(["add", [new_drawing]]));
 
-		objectContainer.removeChild(graphics);	
+		background_sprite.removeChild(graphics);	
 		render_scene();	
 		stop_drawing();
 		setup_mouse_events(undefined, undefined);
@@ -2158,7 +2257,7 @@ function on_curve_end(e) {
 		emit_entity(new_drawing);
 		undo_list.push(clone_action(["add", [new_drawing]]));
 		
-		objectContainer.removeChild(graphics);
+		background_sprite.removeChild(graphics);
 		
 		render_scene();	
 		stop_drawing();
@@ -2168,12 +2267,12 @@ function on_curve_end(e) {
 		point_buffer.push(mouse_location.x, mouse_location.y);
 		new_drawing.path.push([from_x_local(new_x) - new_drawing.x, from_y_local(new_y) - new_drawing.y]);
 
-		objectContainer.removeChild(graphics);		
+		background_sprite.removeChild(graphics);		
 		graphics = new PIXI.Graphics();
 		graphics.lineStyle(new_drawing.thickness * THICKNESS_SCALE, new_drawing.color, 1);
 		graphics.moveTo(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)));
 		graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), size_y * end_circle_radius * zoom_level));
-		objectContainer.addChild(graphics);
+		background_sprite.addChild(graphics);
 		render_scene();	
 		
 		on_curve_move(e);
@@ -2215,7 +2314,7 @@ function on_polygon_end(e) {
 		emit_entity(new_drawing);
 		undo_list.push(clone_action(["add", [new_drawing]]));
 		
-		objectContainer.removeChild(graphics);
+		background_sprite.removeChild(graphics);
 		render_scene();		
 		setup_mouse_events(undefined, undefined);
 		stop_drawing();
@@ -2247,9 +2346,7 @@ function on_ruler_move(e) {
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var map_size_x = background.size_x ? background.size_x : 0;
 		var map_size_y = background.size_y ? background.size_y : 0;
-		temp_draw_context.lineWidth = 2 * (size_x/1000) * DRAW_QUALITY;
-		temp_draw_context.strokeStyle = "#FFFFFF";
-		temp_draw_context.fillStyle = "#FFFFFF";
+
 		var center_x = to_x_local(left_click_origin[0]);
 		var center_y = to_y_local(left_click_origin[1]);
 		var border_x = to_x_local(mouse_x_rel(mouse_location.x));
@@ -2266,14 +2363,10 @@ function on_ruler_move(e) {
 		
 		var mid_line_x = (center_x + to_x_local(mouse_x_rel(mouse_location.x))) / 2;
 		var mid_line_y = (center_y + to_y_local(mouse_y_rel(mouse_location.y))) / 2;
-		
-		temp_draw_context.font = "44px Arial";		  
+ 
 		var length = Math.sqrt(Math.pow(map_size_x * (left_click_origin[0] - mouse_x_rel(mouse_location.x)), 2) 
 							 + Math.pow(map_size_y * (left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2));
-							 							 
-		temp_draw_context.lineWidth = to_x_local(0.5)/1000 * DRAW_QUALITY;
-		temp_draw_context.strokeStyle = "#000000";
-		temp_draw_context.fillStyle = "#FFFFFF";
+						 							 
 		var label = "";
 		if (game == "lol") {
 			label += Math.round(10*length)/10 + "u";
@@ -2315,6 +2408,7 @@ function on_circle_move(e) {
 							   Math.pow(to_y_local(left_click_origin[1]) - to_y_local(y_rel), 2));
 		}
 		
+		
 		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);	
 		temp_draw_context.beginPath();
 		temp_draw_context.arc(to_x_local(center_x) * DRAW_QUALITY, to_y_local(center_y) * DRAW_QUALITY, radius * DRAW_QUALITY, 0, 2*Math.PI);
@@ -2323,7 +2417,6 @@ function on_circle_move(e) {
 		
 		if (circle_draw_style == "radius" && background.size_x && background.size_x > 0 && background.size_y && background.size_y > 0) {
 			temp_draw_context.save();
-			temp_draw_context.lineWidth = 2 * (size_x/1000) * DRAW_QUALITY;
 			temp_draw_context.strokeStyle = "#FFFFFF";
 			temp_draw_context.fillStyle = "#FFFFFF";
 			temp_draw_context.shadowBlur = 0;
@@ -2333,10 +2426,9 @@ function on_circle_move(e) {
 			temp_draw_context.stroke();
 			var mid_line_x = to_x_local((center_x + x_rel) / 2);
 			var mid_line_y = to_y_local((center_y + y_rel) / 2);
-			temp_draw_context.font = "33px Arial";
-			var length = Math.sqrt(Math.pow(background.size_x * (center_x - x_rel), 2) + Math.pow(background.size_y * 
-			(center_y - y_rel), 2))
-			temp_draw_context.lineWidth = to_x_local(0.5)/1000 * DRAW_QUALITY;
+			var font_size = 22 * DRAW_QUALITY;
+			temp_draw_context.font = "" + font_size + "px Arial";
+			var length = Math.sqrt(Math.pow(background.size_x * (center_x - x_rel), 2) + Math.pow(background.size_y * (center_y - y_rel), 2))		
 			temp_draw_context.strokeStyle = "#000000";
 			temp_draw_context.fillStyle = "#FFFFFF";
 			var label = "";
@@ -2348,7 +2440,6 @@ function on_circle_move(e) {
 				label += Math.round(10*length)/10 + "m";
 			}	
 			temp_draw_context.fillText(label, mid_line_x * DRAW_QUALITY, mid_line_y * DRAW_QUALITY);
-			temp_draw_context.stroke();
 			temp_draw_context.restore();
 		}
 	});
@@ -2447,9 +2538,12 @@ function on_ping_move(e) {
 function on_ping_end(e) {
 	limit_rate(0, drag_state, function() {});
 	var mouse_location = mouse_loc();
+	
 	var x = from_x_local(mouse_location.x);
 	var y = from_y_local(mouse_location.y);
+	
 	ping(x, y, ping_color, ping_size);
+
 	socket.emit('ping_marker', room, x, y, ping_color, ping_size);
 	setup_mouse_events(undefined, undefined);
 }
@@ -2496,17 +2590,17 @@ function on_select_end(e) {
 			//rect.y = sprite.y - sprite.anchor.y * rect.height;
 
 			var rect = sprite.getBounds();
-			rect.width /= objectContainer.scale.x;
-			rect.height /= objectContainer.scale.y;
-			rect.x = (-objectContainer.x + rect.x) / objectContainer.scale.x;
-			rect.y = (-objectContainer.y + rect.y) / objectContainer.scale.y;
+			rect.width /= objectContainer.scale.x * background_sprite.scale.x;
+			rect.height /= objectContainer.scale.y * background_sprite.scale.y;
+			rect.x = (-objectContainer.x + rect.x - background_sprite.x) / background_sprite.scale.x  / objectContainer.scale.x;
+			rect.y = (-objectContainer.y + rect.y - background_sprite.y) / background_sprite.scale.y  / objectContainer.scale.y;
 
 			//enable to visualise bounding boxes
 			//var shape = new PIXI.Rectangle(0, 0, rect.width, rect.height);
 			//var container = draw_shape(1, 1, 0, 0, 16777215, shape);
 			//container.x = rect.x;
 			//container.y = rect.y;
-			//objectContainer.addChild(container)
+			//background_sprite.addChild(container)
 			
 			var box_min_x = rect.x;
 			var box_min_y = rect.y;
@@ -2610,6 +2704,7 @@ function select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock
 
 	select_box.mouseover = on_select_over;
 	select_box.mousemove = on_selectbox_move;
+	select_box.touchmove = on_selectbox_move;
 	
 	if (!lock_x) {
 		select_box.width = Math.abs(ref_x - mouse_location.x);
@@ -2635,10 +2730,10 @@ function prepare_resize(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) 
 		entity.container.start_scale = [entity.container.scale.x, entity.container.scale.y];
 	}
 	
-	objectContainer.removeChild(rotate_arrow0);
-	objectContainer.removeChild(rotate_arrow1);
-	objectContainer.removeChild(rotate_arrow2);
-	objectContainer.removeChild(rotate_arrow3);
+	background_sprite.removeChild(rotate_arrow0);
+	background_sprite.removeChild(rotate_arrow1);
+	background_sprite.removeChild(rotate_arrow2);
+	background_sprite.removeChild(rotate_arrow3);
 	
 	var mousemove = function(e) { select_box_mousemove(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
 	var mouseup =  function(e) { select_box_mouseup(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y); };
@@ -2646,6 +2741,7 @@ function prepare_resize(e, ref_x, ref_y, ref_width, ref_height, lock_x, lock_y) 
 	
 	select_box.mouseover = undefined;
 	select_box.mousemove = undefined;
+	select_box.touchmove = undefined;
 	
 	e.stopPropagation();
 }
@@ -2689,41 +2785,50 @@ function on_selectbox_move(e) {
 				$('html,body').css('cursor', 'nw-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, bottom_y, select_box.width, select_box.height, false, false); };
 				select_box.mousedown = objectContainer.mousedown;
+				select_box.touchstart = objectContainer.touchstart;
 			} else if (mouse_location.y > 1 - y_margin) { //bottom-left
 				$('html,body').css('cursor', 'sw-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, top_y, select_box.width, select_box.height, false, false); };
 				select_box.mousedown = objectContainer.mousedown;
+				select_box.touchstart = objectContainer.touchstart;
 			} else { //left
 				$('html,body').css('cursor', 'w-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, right_x, 0, select_box.width, select_box.height, false, true); };
 				select_box.mousedown = objectContainer.mousedown;
+				select_box.touchstart = objectContainer.touchstart;
 			}
 		} else if (mouse_location.x > 1 - x_margin) { //right
 			if (mouse_location.y < y_margin) { //top-right
 				$('html,body').css('cursor', 'ne-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, left_x, bottom_y, select_box.width, select_box.height, false, false); };
 				select_box.mousedown = objectContainer.mousedown;
+				select_box.touchstart = objectContainer.touchstart;
 			} else if (mouse_location.y > 1 - y_margin) { //bottom-right
 				$('html,body').css('cursor', 'se-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, left_x, top_y, select_box.width, select_box.height, false, false); };
 				select_box.mousedown = objectContainer.mousedown;
+				select_box.touchstart = objectContainer.touchstart;
 			} else { //right
 				$('html,body').css('cursor', 'e-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, left_x, 0, select_box.width, select_box.height, false, true); };
 				select_box.mousedown = objectContainer.mousedown;
+				select_box.touchstart = objectContainer.touchstart;
 			}
 		} else {			
 			if (mouse_location.y < y_margin) { //top
 				$('html,body').css('cursor', 'n-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, 0, bottom_y, select_box.width, select_box.height, true, false); };
 				select_box.mousedown = objectContainer.mousedown;
+				select_box.touchstart = objectContainer.touchstart;
 			} else if (mouse_location.y > 1 - y_margin) { //bottom
 				$('html,body').css('cursor', 's-resize');
 				objectContainer.mousedown = function(e) { prepare_resize(e, 0, top_y, select_box.width, select_box.height, true, false); };
 				select_box.mousedown = objectContainer.mousedown;
+				select_box.touchstart = objectContainer.touchstart;
 			} else {
 				$('html,body').css('cursor', 'move');
 				select_box.mousedown = on_drag_start;
+				select_box.touchstart = on_drag_start;
 				objectContainer.mousedown = on_left_click;
 			}
 		}
@@ -2736,21 +2841,30 @@ function on_selectbox_move(e) {
 
 function on_select_over(e) {
 	select_box.mousemove = on_selectbox_move;
+	select_box.touchmove = on_selectbox_move;
 	select_box.mouseout = on_select_out;
+	select_box.touchend = on_select_out;
 }
 
 function on_select_out(e) {
 	limit_rate(15, select_box_move_state, function() {});
 	$('html,body').css('cursor', 'default');
 	select_box.mousemove = undefined;
+	select_box.touchmove = undefined;
 	select_box.mousedown = undefined;
+	select_box.touchstart = undefined;
 	objectContainer.mousedown = on_left_click;
 	select_box.mouseout = undefined;
+	select_box.touchend = undefined;
 }
 
 function make_resizable(select_box) {
 	select_box.interactive = true;
+	select_box.buttonMode = true;
+	select_box.draggable = true;
 	select_box.mouseover = on_select_over;
+	select_box.mousedown = on_drag_start;
+	select_box.touchstart = on_drag_start;
 }
 
 function redraw_select_box() {
@@ -2792,18 +2906,18 @@ function redraw_select_box() {
 			rotate_arrow3.x = x_min + select_box.width/2;
 			rotate_arrow3.y = y_min + rotate_arrow3.width/2 +  select_box.height + y_abs(ROTATE_ARROW_MARGIN) * zoom_level;
 		
-			objectContainer.removeChild(rotate_arrow0);
-			objectContainer.removeChild(rotate_arrow1);
-			objectContainer.removeChild(rotate_arrow2);
-			objectContainer.removeChild(rotate_arrow3);
+			background_sprite.removeChild(rotate_arrow0);
+			background_sprite.removeChild(rotate_arrow1);
+			background_sprite.removeChild(rotate_arrow2);
+			background_sprite.removeChild(rotate_arrow3);
 			
-			objectContainer.addChild(rotate_arrow0);
-			objectContainer.addChild(rotate_arrow1);
-			objectContainer.addChild(rotate_arrow2);
-			objectContainer.addChild(rotate_arrow3);
+			background_sprite.addChild(rotate_arrow0);
+			background_sprite.addChild(rotate_arrow1);
+			background_sprite.addChild(rotate_arrow2);
+			background_sprite.addChild(rotate_arrow3);
 			
-			objectContainer.removeChild(select_box);
-			objectContainer.addChild(select_box);
+			background_sprite.removeChild(select_box);
+			background_sprite.addChild(select_box);
 		} else {
 			remove_select_box();
 		}	
@@ -2825,11 +2939,11 @@ function start_rotate_selection(angle, e) {
 		sprite.rotation_orig = sprite.rotation;
 	}
 	
-	objectContainer.removeChild(rotate_arrow0);
-	objectContainer.removeChild(rotate_arrow1);
-	objectContainer.removeChild(rotate_arrow2);
-	objectContainer.removeChild(rotate_arrow3);
-	objectContainer.addChild(this);
+	background_sprite.removeChild(rotate_arrow0);
+	background_sprite.removeChild(rotate_arrow1);
+	background_sprite.removeChild(rotate_arrow2);
+	background_sprite.removeChild(rotate_arrow3);
+	background_sprite.addChild(this);
 	
 	e.stopPropagation();
 }
@@ -2994,10 +3108,11 @@ function select_entities() {
 			sprite.buttonMode = true;
 			sprite.draggable = true;
 			sprite.mousedown = start_rotate_selection.bind(sprite, angle);
+			sprite.touchstart = start_rotate_selection.bind(sprite, angle);
 			sprite.rotation = -angle; //no idea why rotations are reversed, but they are
 			sprite.x = x;
 			sprite.y = y;
-			objectContainer.addChild(sprite);
+			background_sprite.addChild(sprite);
 			return sprite;
 		}
 				
@@ -3006,7 +3121,7 @@ function select_entities() {
 		rotate_arrow2 = create_rotate_arrow(box_x - arrow_width/2 - y_abs(ROTATE_ARROW_MARGIN) * zoom_level, box_y + select_box.height/2, Math.PI);
 		rotate_arrow3 = create_rotate_arrow(box_x + select_box.width/2, box_y + arrow_width/2 + select_box.height + y_abs(ROTATE_ARROW_MARGIN) * zoom_level, -Math.PI/2);
 
-		objectContainer.addChild(select_box);		
+		background_sprite.addChild(select_box);		
 	}
 
 	render_scene();
@@ -3038,17 +3153,21 @@ function remove_select_box() {
 	limit_rate(15, select_box_move_state, function() {});
 	if (select_box) {
 		select_box.mousedown = undefined;
+		select_box.touchstart = undefined;
 		select_box.mousemove = undefined;
+		select_box.touchmove = undefined;
 		select_box.mouseup = undefined;
+		select_box.touchend = undefined;
 		select_box.mouseout = undefined;
 		select_box.mouseover = undefined;
 		select_box.mouseupoutside = undefined;
+		select_box.touchendoutside = undefined;
 		objectContainer.mousedown = on_left_click;
-		objectContainer.removeChild(select_box);
-		objectContainer.removeChild(rotate_arrow0);
-		objectContainer.removeChild(rotate_arrow1);
-		objectContainer.removeChild(rotate_arrow2);
-		objectContainer.removeChild(rotate_arrow3);
+		background_sprite.removeChild(select_box);
+		background_sprite.removeChild(rotate_arrow0);
+		background_sprite.removeChild(rotate_arrow1);
+		background_sprite.removeChild(rotate_arrow2);
+		background_sprite.removeChild(rotate_arrow3);
 		select_box = undefined;
 		render_scene();
 	}
@@ -3200,7 +3319,7 @@ function draw_T(context, a, b, size, quality) {
 
 function init_shape_canvas(_context, shape, scale, quality) {
 	if(scale === undefined) scale = 1;
-	init_canvas(_context, shape.outline_thickness * scale, shape.outline_color, shape.style, shape.fill_opacity, shape.fill_color, shape.outline_opacity, [10*quality, 10*quality])
+	init_canvas(_context, shape.outline_thickness * scale, shape.outline_color, shape.style, shape.fill_opacity, shape.fill_color, shape.outline_opacity)
 }
 
 function canvas2container2(_context, _canvas, width, height, entity) {	
@@ -3227,14 +3346,14 @@ function canvas2container2(_context, _canvas, width, height, entity) {
 function draw_entity(drawing, quality_scale, thickness_scale, extra_margin, draw_function) {
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 
-	var base_resolution = background_sprite.height;
+	var base_resolution = background_sprite.height / background_sprite.scale.y;
 	
 	var quality = quality_scale;
 	if (drawing.draw_zoom_level) {
 		quality /= drawing.draw_zoom_level;
 	}
 	
-	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height);	
+	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height) / background_sprite.scale.y;	
 	var margin = 20 + extra_margin * base_thickness;
 
 	var points = [];
@@ -3277,11 +3396,11 @@ function draw_entity(drawing, quality_scale, thickness_scale, extra_margin, draw
 		
 		drawing.container.height /= (quality) ;
 		drawing.container.width /= (quality) ;
-		drawing.container.x = x_abs(drawing.x) + x_abs(left) - (margin/2) / quality;
-		drawing.container.y = y_abs(drawing.y) + y_abs(top) - (margin/2) / quality;
+		drawing.container.x = x_abs(drawing.x + left) - (margin/2) / quality;
+		drawing.container.y = y_abs(drawing.y + top) - (margin/2) / quality;
 	
 		drawing.container.orig_scale = [drawing.container.scale.x, drawing.container.scale.y];
-		objectContainer.addChild(drawing.container);
+		background_sprite.addChild(drawing.container);
 		
 		render_scene();
 	}
@@ -3295,7 +3414,7 @@ function create_drawing2(drawing, quality_scale, thickness_scale) {
 		extra_margin = 2 * drawing.end_size;
 	}
 	draw_entity(drawing, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
-		init_canvas_simple(_context, drawing.thickness * base_thickness, drawing.color, drawing.style, [10*quality, 10*quality]);	
+		init_canvas_simple(_context, drawing.thickness * base_thickness, drawing.color, drawing.style);	
 		var end_points = smooth_draw(_context, points, false, 1);
 		if (drawing.end) {
 			if (drawing.path.length >= ARROW_LOOKBACK) {
@@ -3315,7 +3434,7 @@ function create_curve2(drawing, quality_scale, thickness_scale) {
 		extra_margin = 2 * drawing.end_size;
 	}
 	draw_entity(drawing, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
-		init_canvas_simple(_context, drawing.thickness * base_thickness, drawing.color, drawing.style, [10*quality, 10*quality]);
+		init_canvas_simple(_context, drawing.thickness * base_thickness, drawing.color, drawing.style);
 		var end_points = smooth_draw(_context, points, false, 1);
 		if (drawing.end) {
 			draw_end(_context, drawing, end_points[0], end_points[1], base_thickness, 1);
@@ -3331,7 +3450,7 @@ function create_line2(line, quality_scale, thickness_scale) {
 		extra_margin = 2 * line.end_size;
 	}
 	draw_entity(line, quality_scale, thickness_scale, extra_margin, function(_context, points, quality, base_thickness) {
-		init_canvas_simple(_context, line.thickness * base_thickness, line.color, line.style, [10*quality, 10*quality]);
+		init_canvas_simple(_context, line.thickness * base_thickness, line.color, line.style);
 		_context.moveTo(points[0], points[1]);
 		for (var i = 2; i < points.length; i+=2) {
 			_context.lineTo(points[i], points[i+1]);
@@ -3378,14 +3497,14 @@ function create_rectangle2(rectangle, quality_scale, thickness_scale) {
 	if (!thickness_scale) thickness_scale = 1;
 	var extra_margin = rectangle.outline_thickness;
 	
-	var base_resolution = background_sprite.height;
+	var base_resolution = background_sprite.height / background_sprite.scale.y;
 	
 	var quality = quality_scale;
 	if (rectangle.draw_zoom_level) {
 		quality /= rectangle.draw_zoom_level;
 	}
 	
-	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height);	
+	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height) / background_sprite.scale.y;
 	var margin = 20 + extra_margin * base_thickness;
 	
 	var width = Math.ceil(base_resolution * rectangle.width * quality + margin);
@@ -3409,7 +3528,7 @@ function create_rectangle2(rectangle, quality_scale, thickness_scale) {
 	rectangle.container.height /= quality;
 	
 	rectangle.container.orig_scale = [rectangle.container.scale.x, rectangle.container.scale.y];
-	objectContainer.addChild(rectangle.container)
+	background_sprite.addChild(rectangle.container)
 	
 	render_scene();
 }
@@ -3419,14 +3538,14 @@ function create_circle2(circle, quality_scale, thickness_scale) {
 	if (!thickness_scale) thickness_scale = 1;
 	var extra_margin = circle.outline_thickness;
 
-	var base_resolution = background_sprite.height;
+	var base_resolution = background_sprite.height / background_sprite.scale.y;
 	
 	var quality = quality_scale;
 	if (circle.draw_zoom_level) {
 		quality /= circle.draw_zoom_level;
 	}
-	
-	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height);	
+		
+	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height) / background_sprite.scale.y;	
 	var margin = 20 + extra_margin * base_thickness;
 
 	var width = Math.ceil(2 * base_resolution * circle.radius * quality + margin);
@@ -3448,8 +3567,6 @@ function create_circle2(circle, quality_scale, thickness_scale) {
 	_context.stroke();
 
 	if (circle.draw_radius) {		
-		_context.save();
-		_context.lineWidth = 2 * (size_y/1000);
 		_context.strokeStyle = "#FFFFFF";
 		_context.fillStyle = "#FFFFFF";
 		_context.beginPath();
@@ -3458,10 +3575,11 @@ function create_circle2(circle, quality_scale, thickness_scale) {
 		_context.stroke();
 		var mid_line_x = offset + base_resolution * quality * (circle.draw_radius[0]) / 2;
 		var mid_line_y = offset + base_resolution * quality * (circle.draw_radius[1]) / 2;
-		_context.font = "33px Arial";
-		var length = Math.sqrt(Math.pow(background.size_x * (circle.draw_radius[0]), 2) + Math.pow(background.size_y * 
-		(circle.draw_radius[1]), 2))
-		_context.lineWidth = to_y_local(0.5)/1000;
+		
+		var font_size = 22 * base_thickness;	
+		_context.font = "" + font_size + "px Arial";
+		
+		var length = Math.sqrt(Math.pow(background.size_x * (circle.draw_radius[0]), 2) + Math.pow(background.size_y * (circle.draw_radius[1]), 2))
 		_context.strokeStyle = "#000000";
 		_context.fillStyle = "#FFFFFF";
 		var label = "";
@@ -3473,8 +3591,7 @@ function create_circle2(circle, quality_scale, thickness_scale) {
 			label += Math.round(10*length)/10 + "m";
 		}
 		_context.fillText(label, mid_line_x, mid_line_y);
-		_context.restore();
-}
+	}
 	
 	canvas2container2(_context, _canvas, width, height, circle);
 	
@@ -3484,7 +3601,7 @@ function create_circle2(circle, quality_scale, thickness_scale) {
 	circle.container.height /= quality;
 	
 	circle.container.orig_scale = [circle.container.scale.x, circle.container.scale.y];
-	objectContainer.addChild(circle.container)
+	background_sprite.addChild(circle.container)
 	
 	render_scene();
 }
@@ -3631,9 +3748,32 @@ function on_background_text_end(e) {
 	snap_and_emit_entity(background_text);
 }
 
+//var line_graph;
 var line_state = {};
 function on_line_move(e) {
-	limit_rate(15, line_state, function() {
+	limit_rate(15, line_state, function() {		
+		/*
+		background_sprite.removeChild(line_graph);
+		line_graph = new PIXI.Graphics();
+		line_graph.lineStyle(4, 0xffd900, 1);
+		
+		var mouse_location = e.data.getLocalPosition(objectContainer);
+		
+		var a;
+		if (new_drawing.path.length == 0) {
+			a = [x_abs(new_drawing.x), y_abs(new_drawing.y)];
+		} else {
+			a = [x_abs(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
+				 y_abs(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
+		}
+		
+		line_graph.moveTo(a[0], a[1]);
+		line_graph.lineTo(mouse_location.x, mouse_location.y);
+		
+		background_sprite.addChild(line_graph);
+		render_scene();	
+		*/
+		
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var a;
 		if (new_drawing.path.length == 0) {
@@ -3671,6 +3811,7 @@ function on_line_end(e) {
 					
 			setup_mouse_events(undefined, undefined);
 			stop_drawing();
+
 			new_drawing = null;
 		} else {
 			temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);
@@ -3732,10 +3873,8 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 	}
 	
 	_context.fillStyle = color;
-	_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality) + "px "+font;
+	_context.font = font_modifier + " " + Math.round(2 * font_size * scaling * text_quality) + "px "+font;	
 	_context.textBaseline = "middle";
-	
-	console.log(_context.font)
 
 	if (label_shadow) {
 		_context.shadowColor = "black";
@@ -3775,7 +3914,7 @@ function create_text2(text_entity) {
 		sprite.x = x_abs(text_entity.x)
 		sprite.y = y_abs(text_entity.y)
 		
-		objectContainer.addChild(sprite);
+		background_sprite.addChild(sprite);
 		
 		//make draggable
 		sprite.texture.baseTexture.source.src = text_entity.uid;
@@ -3801,7 +3940,7 @@ function create_background_text2(text_entity) {
 		sprite.x = x_abs(text_entity.x)
 		sprite.y = y_abs(text_entity.y)
 		
-		objectContainer.addChild(sprite);
+		background_sprite.addChild(sprite);
 		
 		//make draggable
 		sprite.texture.baseTexture.source.src = text_entity.uid;
@@ -3884,7 +4023,7 @@ function create_icon_cont(icon, texture) {
 
 	init_dragging(icon.container);	
 
-	objectContainer.addChild(icon['container']);
+	background_sprite.addChild(icon['container']);
 	
 	render_scene();	
 	
@@ -4052,6 +4191,7 @@ function add_user(user) {
 			$("#userlist").append(node);
 		}
 	}
+				
 	userlist[user.id] = user;
 	if (user.role) {
 		if (user.role == "owner") {
@@ -4062,16 +4202,18 @@ function add_user(user) {
 	} else {
 		$("#"+user.id).css('background-color','#EEEEEE');
 	}
-	
+		
 	if (user.id == my_user_id) {
 		update_my_user();
 	}
+		
 	$("#user_count").text(Object.keys(userlist).length.toString());
+	
 }
 
 //function should be called when anything about you as a user changes, it will update the interface
 //accordingly
-function update_my_user() {
+function update_my_user() {	
 	if (my_user.logged_in) { //logged in
 		$("#store_tactic_popover").show();
 		if (tactic_name && tactic_name != "") {
@@ -4084,6 +4226,7 @@ function update_my_user() {
 		$("#store_tactic_popover").hide();
 		$("#save").hide();
 	}
+	
 	update_lock();
 }
 
@@ -4095,7 +4238,7 @@ function update_lock() {
 	} else {
 		node.removeClass('icon-lock').addClass('icon-unlock');
 	}
-	
+		
 	if (is_room_locked && !my_user.role) {
 		$('.mejs-controls').hide();
 		$('.left_column').hide();
@@ -4133,7 +4276,7 @@ function update_lock() {
 			}
 		}
 	}
-	
+		
 	if (my_user.role == "owner" || !is_room_locked) {
 		if (my_user.logged_in) { //logged in
 			$("#store_tactic_popover").show();
@@ -4164,6 +4307,7 @@ function update_lock() {
 		$('#stop_present').prop("disabled", true);
 	}
 	
+	
 	update_slide_buttons()
 }
 
@@ -4187,6 +4331,7 @@ function escapeHtml(unsafe) {
  }
 
 function chat(message, color) {
+	$('#chat_tab_button').effect("pulsate", {times:1}, 1000);
 	message = escapeHtml(message);
 	message = message.split(":")
 	$("#chat_box").append('<div class="chatmsg"><b style="color:' + color + ';">'+message[0]+'</b>: '+ message.slice(1).join(':') +'<br/></div>');
@@ -4460,8 +4605,8 @@ function drag_entity(entity, x, y, scale, rotation) {
 		align_note_text(entity);
 	}
 	if (entity.container) {
-		objectContainer.removeChild(entity.container);
-		objectContainer.addChild(entity.container);
+		background_sprite.removeChild(entity.container);
+		background_sprite.addChild(entity.container);
 		if (scale) {
 			entity.container.scale.x = entity.container.orig_scale[0] * scale[0];
 			entity.container.scale.y = entity.container.orig_scale[1] * scale[1];
@@ -4663,15 +4808,18 @@ function transition(slide) {
 		}
 	}
 
+	function last() {
+		add_other_entities();
+		render_scene();
+	}
+	
 	//we need to set the background first cause the canvases may need to be resized before we can draw on them
 	if (new_background_uid) {	
 		set_background(room_data.slides[slide].entities[new_background_uid], function() {
-			add_other_entities();
-			render_scene();
+			last()
 		});
 	} else {
-		add_other_entities();
-		render_scene();
+		last()
 	}
 }
 
@@ -5027,8 +5175,7 @@ function hard_sync_video(frame, timestamp) {
 	} else {
 		var prog = video_progress();
 		video_player.pause();
-		setTimeout(function() {
-			sync_in_progress = false;
+		setTimeout(function() {		
 			if (!video_paused) {
 				video_player.play();
 				var play_start = Date.now();
@@ -5038,6 +5185,7 @@ function hard_sync_video(frame, timestamp) {
 				}
 				video_media.addEventListener('play', play_delay_listener);
 			}
+			sync_in_progress = false;
 		}, Math.max(0, (lag * 1000)/base_playback_rate - press_play_delay));	
 	}
 }
@@ -5160,7 +5308,7 @@ function wot_connect() {
 	function clear_icons() {
 		for (var i in icons) {
 			if (icons[i] && icons[i].container) {
-				objectContainer.removeChild(icons[i].container);
+				background_sprite.removeChild(icons[i].container);
 			}
 		}		
 		icons = {}
@@ -5261,7 +5409,7 @@ function wot_connect() {
 						}
 					} else if ('remove' in entity) {
 						var id = entity['remove'].toString()
-						objectContainer.removeChild(icons[id].container)
+						background_sprite.removeChild(icons[id].container)
 						icons[id] = undefined
 					} else {
 						var ids = new Set();
@@ -5375,6 +5523,14 @@ function set_presentation_mode(new_presentation_mode) {
 	}
 }
 
+function handle_pan_zoom() {
+	var focusp = focus_point();
+	room_data.slides[active_slide].pan_zoom = [zoom_level, focusp[0], focusp[1]];
+	if (control_camera) {		
+		socket.emit('pan_zoom', room, active_slide, zoom_level, focusp[0], focusp[1]);
+	}
+}
+
 //connect socket.io socket
 $(document).ready(function() {
 	//download polyfills
@@ -5391,12 +5547,10 @@ $(document).ready(function() {
 	initialize_map_select($("#new_minimap_select"));
 
 	//start pixi renderer
-	var border = 30;
-	size = Math.min(window.innerHeight, window.innerWidth) - border;
-	size_x = size;
-	size_y = size;
+	size_x = window.innerWidth;
+	size_y = window.innerHeight;
 
-	renderer = PIXI.autoDetectRenderer(size, size, {transparent:true});
+	renderer = PIXI.autoDetectRenderer(size_x, size_y, {transparent:true});
 	renderer.autoResize = true;
 	useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
@@ -5413,20 +5567,20 @@ $(document).ready(function() {
 			zoom_factor = (1-1/1.1);
 		}
 		zoom(zoom_factor, zoom_in, [from_x_local(mouse_location.x), from_y_local(mouse_location.y)],e);
-		$('#zoom_level').text((1/zoom_level).toFixed(2));
-		if (control_camera) {
-			emit_pan_zoom();
-		}
+		setTimeout(function() {
+			$('#zoom_level').text((1/zoom_level).toFixed(2));
+		}, 100);
+		handle_pan_zoom()
 		e.preventDefault();
 	});
 
 	//initialize background
+	background_container = new PIXI.Container();
 	background_sprite = new PIXI.Sprite();
 	
 	// create the root of the scene graph
 	objectContainer = new PIXI.Container();
-	
-	
+		
 	//initialize grid layer
 	if (game == "aw") {
 		grid_layer = new PIXI.Sprite.fromImage(image_host + "aw_grid.png");
@@ -5439,10 +5593,10 @@ $(document).ready(function() {
 	}
 	grid_layer.height = renderer.height;
 	grid_layer.width = renderer.width;
-	
+		
 	objectContainer.addChild(background_sprite);
-	objectContainer.addChild(grid_layer);
-	
+	background_sprite.addChild(grid_layer);
+
 	objectContainer.interactive = true;
 	objectContainer.mousedown = on_left_click;
 	objectContainer.touchstart = on_left_click;
@@ -5458,9 +5612,7 @@ $(document).ready(function() {
 	renderer.view.addEventListener('contextmenu', function(e) {
 		setup_mouse_events(undefined);
 		$('#zoom_level').text((1/zoom_level).toFixed(2));
-		if (control_camera) {
-			emit_pan_zoom();
-		}
+		handle_pan_zoom()
 		e.preventDefault();
 	});
 
@@ -5469,9 +5621,7 @@ $(document).ready(function() {
 		if (e.which === 3 || e.which === 2) {
 			$('#zoom_level').text((1/zoom_level).toFixed(2));
 			setup_mouse_events(undefined);
-			if (control_camera) {
-				emit_pan_zoom();
-			}
+			handle_pan_zoom()
 			e.preventDefault();
 		}
 	});
@@ -5508,7 +5658,7 @@ $(document).ready(function() {
 	var touchend = function(e) {
 		$('#zoom_level').text((1/zoom_level).toFixed(2));
 		if (zoom_pan_pending) {
-			emit_pan_zoom();
+			handle_pan_zoom()
 			zoom_pan_pending = false;			
 		}
 		
@@ -6057,17 +6207,15 @@ $(document).ready(function() {
 		$('#stop_present').click(function () {
 			set_presentation_mode(!presentation_mode);
 			socket.emit("presentation_mode", room, presentation_mode, active_slide);
-			if (presentation_mode) {
-				emit_pan_zoom();
-			}
+			handle_pan_zoom()
 		});
 		
 		$('#lock_camera').click(function () {
 			var node = $(this).find('div');	
 			if (node.hasClass('icon-lock_camera')) {
 				node.removeClass('icon-lock_camera').addClass('icon-unlock_camera');
-				emit_pan_zoom();
 				control_camera = true;
+				handle_pan_zoom();
 			} else {
 				node.removeClass('icon-unlock_camera').addClass('icon-lock_camera');
 				control_camera = false;
@@ -6097,17 +6245,13 @@ $(document).ready(function() {
 		$('#zoom_in').click(function() {
 			zoom(0.1, true, [0.5, 0.5]);
 			$('#zoom_level').text((1/zoom_level).toFixed(2));
-			if (control_camera) {
-				emit_pan_zoom();
-			}
+			handle_pan_zoom();
 		});
 
 		$('#zoom_out').click(function() {
 			zoom((1-1/1.1), false, [0.5, 0.5]);
 			$('#zoom_level').text((1/zoom_level).toFixed(2));
-			if (control_camera) {
-				emit_pan_zoom();
-			}
+			handle_pan_zoom();
 		});
 		
 		//tool select
@@ -6116,7 +6260,7 @@ $(document).ready(function() {
 			setup_mouse_events(undefined, undefined);
 			new_drawing = null;
 			if (graphics) {
-				objectContainer.removeChild(graphics)
+				background_sprite.removeChild(graphics)
 			}
 			if (new_drawing) {
 				new_drawing = undefined;
@@ -6389,6 +6533,14 @@ $(document).ready(function() {
 		if (socket.connected) {
 			socket.emit('join_room', room, game);
 		}
+		
+		console.assert(y_abs(y_rel(5)) == 5);
+		console.assert(x_abs(x_rel(5)) == 5);
+		console.assert(y_rel(y_abs(5)) == 5);
+		console.assert(x_rel(x_abs(5)) == 5);
+		console.assert(to_x_local(from_x_local(5)) == 5);
+		console.assert(to_y_local(from_y_local(5)) == 5);
+		
 	}
 	
 	socket.on('room_data', function(new_room_data, my_id, new_tactic_name, locale) {
@@ -6402,14 +6554,15 @@ $(document).ready(function() {
 		}
 		my_user_id = my_id;
 		tactic_name = new_tactic_name;
-		
+				
 		if (tactic_name && tactic_name != "") {
 			document.title = "Tactic - " +  tactic_name;
 		}
+				
 		for (var user in room_data.userlist) {
 			add_user(room_data.userlist[user]);
 		}
-
+		
 		var entities = [];
 		var background_entity;
 		for (var key in room_data.slides[active_slide].entities) {
@@ -6420,6 +6573,7 @@ $(document).ready(function() {
 			}
 		}
 		
+		
 		try {
 			entities.sort(function(a,b) {
 				return a.z_index - b.z_index;
@@ -6427,15 +6581,17 @@ $(document).ready(function() {
 		} catch (e) {}
 		
 		var on_done = function() {
-			if (room_data.pan_zoom) {
-				pan_zoom(room_data.pan_zoom[0], room_data.pan_zoom[1], room_data.pan_zoom[2]);
+			if (room_data.slides[active_slide].pan_zoom) {
+				var pz = room_data.slides[active_slide].pan_zoom;
+				pan_zoom(pz[0], pz[1], pz[2]);
 			} else {
-				pan_zoom(1, 0, 0);
+				pan_zoom(1, 0.5, 0.5);
 			}
 			if (wot_live) {
 				wot_connect();
-			}
+			}		
 		}
+		
 		
 		if (background_entity) {
 			//we need to set the background before we add other entities
@@ -6478,6 +6634,7 @@ $(document).ready(function() {
 				socket.emit('sync_clock');
 			}, 20000);
 		}
+		
 		render_scene();
 	});
 
@@ -6617,9 +6774,12 @@ $(document).ready(function() {
 		activity_animation(user_id)
 	});
 	
-	socket.on('pan_zoom', function(new_zoom_level, x, y, user_id) {
-		activity_animation(new_zoom_level, x, y);
-		pan_zoom(new_zoom_level, x, y);
+	socket.on('pan_zoom', function(slide, new_zoom_level, x, y, user_id) {
+		activity_animation(user_id);
+		room_data.slides[slide] = [new_zoom_level, x, y];
+		if (slide == active_slide) {
+			pan_zoom(new_zoom_level, x, y);
+		}
 	});
 	
 	socket.on('force_reconnect', function() {

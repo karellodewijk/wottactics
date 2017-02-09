@@ -2,7 +2,7 @@
 <html lang="<%=locale%>">
 <head>
 	<% include common_headers.ejs %>
-	<script defer type="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>		
+	<script defer src="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>		
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
 	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
 	<script defer type="text/javascript" src="<%=static_host%>/javascripts/calculate_stats.js"></script>
@@ -11,8 +11,16 @@
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - Clan stats</title>
 	<meta name="description" content="Track clan stats for <%=game.toUpperCase()%>.">
 	<meta name="user" content="<%=JSON.stringify(user)%>">
+
+	<style>
+		#member_list > td {
+			display: table-cell;
+			line-height: 32px;
+			padding: 0px;
+		}
+	</style>
 </head>
-<body style="overflow-y: scroll;">
+<body style="overflow-y: scroll; width:100%;">
 	<% include navbar.ejs %>
 	<% include stat_navbar.ejs %>	
 	<script>
@@ -23,28 +31,28 @@
 		<div class="jumbotron content content_margin">		
 			<nav class="navbar navbar-default navbar-inverse navbar-custom">
 				<ul id="server_select" class="nav navbar-nav">
-					<li class="server_li" id="ru"><a class="server_select"href="javascript:void(0)">RU</a></li>
+					<li class="server_li" id="ru"><a class="server_select" href="javascript:void(0)">RU</a></li>
 					<li class="server_li" id="eu"><a class="server_select" href="javascript:void(0)">EU</a></li>
 					<li class="server_li" id="com"><a class="server_select" href="javascript:void(0)">NA</a></li>
 					<li class="server_li" id="kr"><a class="server_select" href="javascript:void(0)">KOR</a></li>
 					<li class="server_li" id="asia"><a class="server_select" href="javascript:void(0)">SEA</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right" style="padding-right:8px">
-					<form class="navbar-form navbar-left" role="search">
+					<div class="navbar-form navbar-left" role="search">
 						<div class="input-group input-append">
 							<input type="text" class="form-control" placeholder="Clan" name="srch-term" id="srch-term">
 							<div class="input-group-btn">
 								<button id="search_button" class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
 							</div>
 						</div>
-					</form>
+					</div>
 				</ul>
 			</nav>
 			<span id="login_or_search" hidden><h4><%=l('Use search to look up a player or log in with your WG account to see your own stats')%></h4></span>
 			<span id="no_results" hidden><h4><%=l('No results found')%></h4></span>
 			<span id="no_battles" hidden><h4><%=l('This user has not played any battles')%></h4></span>
 			<span id="did_you_mean" hidden><h4><%=l('Did you mean:')%> <span id="alt_lists"></span></h4></span>
-			<h2 style="padding-top:0px; margin-top:0px;"><img id="clan_logo">&nbsp;<span id="clan_name"></span></img></h2>
+			<h2 style="padding-top:0px; margin-top:0px;"><img id="clan_logo">&nbsp;<span id="clan_name"></span></h2>
 			<div style="min-width:100%; display:flex">
 				<div style="width:70%;">
 					<ul class="nav nav-tabs">
@@ -70,29 +78,25 @@
 						</tr>
 						</thead>
 						<tbody id="total_table_body">
-							<style scoped>
-								h4 {padding:0; margin:0}
-							</style>
-							<tr id="wr_col"><td><h4><%=l("Winrate")%></h4></td></tr>
-							<tr id="wn8_col"><td><h4><%=l("WN8")%></h4></td></tr>
-							<tr id="wn9_col"><td><h4><%=l("WN9")%></h4></td></tr>
-							<tr id="battles_col"><td><h4><%=l("Battles")%></h4></td></tr>
-							<tr id="dam_col"><td><h4><%=l("Damage")%></h4></td></tr>
-							<tr id="kills_col"><td><h4><%=l("Kills")%></h4></td></tr>
-							<tr id="surv_col"><td><h4><%=l("Survived")%></h4></td></tr>
-							<tr id="kd_col"><td><h4><%=l("K/D")%></h4></td></tr>
-							<tr id="def_col"><td><h4><%=l("Defence points")%></h4></td></tr>
-							<tr id="cap_col"><td><h4><%=l("Capture points")%></h4></td></tr>
-							<tr id="spotted_col"><td><h4><%=l("Spotted")%></h4></td></tr>
-							<tr id="xp_col"><td><h4><%=l("XP")%></h4></td></tr>
-							<tr id="tier_col"><td><h4><%=l("Tier")%></h4></td></tr>					
+							<tr id="wr_col"><td><h4 style="padding:0; margin:0"><%=l("Winrate")%></h4></td></tr>
+							<tr id="wn8_col"><td style="padding:0; margin:0"><h4 style="padding:0; margin:0"><%=l("WN8")%></h4></td></tr>
+							<tr id="wn9_col"><td><h4 style="padding:0; margin:0"><%=l("WN9")%></h4></td></tr>
+							<tr id="battles_col"><td><h4 style="padding:0; margin:0"><%=l("Battles")%></h4></td></tr>
+							<tr id="dam_col"><td><h4 style="padding:0; margin:0"><%=l("Damage")%></h4></td></tr>
+							<tr id="kills_col"><td><h4 style="padding:0; margin:0"><%=l("Kills")%></h4></td></tr>
+							<tr id="surv_col"><td><h4 style="padding:0; margin:0"><%=l("Survived")%></h4></td></tr>
+							<tr id="kd_col"><td><h4 style="padding:0; margin:0"><%=l("K/D")%></h4></td></tr>
+							<tr id="def_col"><td><h4 style="padding:0; margin:0"><%=l("Defence points")%></h4></td></tr>
+							<tr id="cap_col"><td><h4 style="padding:0; margin:0"><%=l("Capture points")%></h4></td></tr>
+							<tr id="spotted_col"><td><h4 style="padding:0; margin:0"><%=l("Spotted")%></h4></td></tr>
+							<tr id="xp_col"><td><h4 style="padding:0; margin:0"><%=l("XP")%></h4></td></tr>
+							<tr id="tier_col"><td><h4 style="padding:0; margin:0"><%=l("Tier")%></h4></td></tr>					
 						</tbody>
 					</table>
 				</div>
 				<%if (!user.no_ads) {%>
 				<div class="inline" style="width:30%; padding:20px; padding-top:50px; display:flex; flex-direction:column; text-align:center">
 					<div style="width:100%; height:445px; flex: 1 1 auto;">
-					<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 					<ins class="adsbygoogle"
 						 style="display:block;"
 						 data-ad-client="ca-pub-9117810685246622"
@@ -109,13 +113,6 @@
 			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Players")%>(<span id="member_amount"></span>) <span style="font-size: 10px; vertical-align: middle;" class="glyphicon glyphicon-triangle-bottom"></span></h2></a>
 			<div id="tank_section">
 			<table class="table tablesorter table-bordered" id="member_list" style="background-color:white; text-align:center;">
-				<style scoped>
-					td {
-						display: table-cell;
-						line-height: 32px;
-						padding: 0px;
-					}
-				</style>
 				<col style="width:20%">
 				<col style="width:10%">
 				<col style="width:10%">

@@ -1,4 +1,5 @@
 var player = window.location.pathname.split('/');
+
 player = player[player.length - 1]
 
 if (!player) {
@@ -72,6 +73,7 @@ function reset_ui() {
 }
 
 function populate() {	
+
 	server = get_server(player);
 	$('#no_results').hide();
 	$("#did_you_mean").hide();
@@ -197,7 +199,7 @@ function populate() {
 			}
 			
 			var results = calculate_stats(tank_expected, tank_expected_wn9, stats_data, wg_src, wn9_src);
-											
+
 			for (var i in results.tanks) {
 				var totals = results.tanks[i];
 				
@@ -820,7 +822,6 @@ if (player && server) {
 	$(document).ready(function() {
 		$("#" + src + "_tab").addClass("active");
 	});
-	
 	populate();
 } else {
 	$("#login_or_search").show();
