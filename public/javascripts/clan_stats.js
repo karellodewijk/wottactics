@@ -472,7 +472,33 @@ function populate() {
 	}
 }
 
-$(document).ready(function() {	
+$(document).ready(function() {
+	function search() {
+		var link = 'https://api.worldoftanks.' + server + '/wgn/clans/list/?limit=20&application_id=0dbf88d72730ed7b843ab5934d8b3794&fields=clan_id,name,tag&game=wot&search=' + $('#srch-term').val();
+		$.get(link, {}, function(data) {
+			if (data.data.length == 0) {
+				$('#no_results').show();
+				$('#no_battles').hide();
+				return;
+			} else {
+				$('#no_results').hide();
+				if (data.data[0].name.toUpperCase() == $('#srch-term').val().toUpperCase() || data.data[0].tag.toUpperCase() == $('#srch-term').val().toUpperCase() || data.data.length == 1) {
+					clan = data.data[0].clan_id
+					reset_ui();
+					populate();
+				} else {
+					var alternatives = "";
+					for (var i = 0; i < Math.min(20, data.data.length); i++) {
+						alternatives += "<a href='/clan/"+ data.data[i].clan_id + "'>" + data.data[i].tag + "</a>, "
+					}
+					alternatives = alternatives.substring(0, alternatives.length - 2);
+					$('#alt_lists').html(alternatives);
+					$("#did_you_mean").show();
+				}
+			}
+		});		
+	}
+	
 	$("#"+server).addClass("active");
 	$('.server_select').click(function(e){
 		e.preventDefault();
@@ -496,29 +522,12 @@ $(document).ready(function() {
 	})
 	$('#search_button').click(function(e){
 		e.preventDefault();
-		var link = 'https://api.worldoftanks.' + server + '/wgn/clans/list/?limit=20&application_id=0dbf88d72730ed7b843ab5934d8b3794&fields=clan_id,name,tag&game=wot&search=' + $('#srch-term').val();
-		$.get(link, {}, function(data) {
-			if (data.data.length == 0) {
-				$('#no_results').show();
-				$('#no_battles').hide();
-				return;
-			} else {
-				$('#no_results').hide();
-				if (data.data[0].name.toUpperCase() == $('#srch-term').val().toUpperCase() || data.data[0].tag.toUpperCase() == $('#srch-term').val().toUpperCase() || data.data.length == 1) {
-					clan = data.data[0].clan_id
-					reset_ui();
-					populate();
-				} else {
-					var alternatives = "";
-					for (var i = 0; i < Math.min(20, data.data.length); i++) {
-						alternatives += "<a href='/clan/"+ data.data[i].clan_id + "'>" + data.data[i].tag + "</a>, "
-					}
-					alternatives = alternatives.substring(0, alternatives.length - 2);
-					$('#alt_lists').html(alternatives);
-					$("#did_you_mean").show();
-				}
-			}
-		});
+		search();
+	});
+	$("#srch-term").on('keyup', function (e) {
+		if (e.keyCode == 13) {
+			search();
+		}
 	});
 	$('.tab_link').click(function(e) {
 		e.preventDefault();
