@@ -1,5 +1,5 @@
-//var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
-var servers = [location.host];
+var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
+//var servers = [location.host];
 
 var game = $('meta[name=game]').attr("content");
 var is_video_replay = false;
@@ -748,7 +748,7 @@ window.onresize = function() {
 		resize_renderer(width, height);		
 	} else {
 		align_left = true;
-		if (window.innerWidth-right_sidebar_width >= window.innerHeight) {
+		if ((window.innerWidth-right_sidebar_width)*1.25 >= window.innerHeight) {
 			var width, height;
 			if (window.innerWidth - right_sidebar_width > window.innerHeight) {
 				height = window.innerHeight;
@@ -2588,44 +2588,32 @@ function on_select_end(e) {
 	
 	setup_mouse_events(undefined, undefined);
 
-	var mouse_location = e.data.getLocalPosition(background_sprite);
-	
-	var x_min = Math.min(x_abs(mouse_x_rel(mouse_location.x)), x_abs(left_click_origin[0]));
-	var y_min = Math.min(y_abs(mouse_y_rel(mouse_location.y)), y_abs(left_click_origin[1]));
-	var x_max = Math.max(x_abs(mouse_x_rel(mouse_location.x)), x_abs(left_click_origin[0]));
-	var y_max = Math.max(y_abs(mouse_y_rel(mouse_location.y)), y_abs(left_click_origin[1]));
+	var sel = {};
+	var mouse_location = mouse_loc();
+	sel.x = Math.min(from_x_local(mouse_location.x), left_click_origin[0]);
+	sel.y = Math.min(from_y_local(mouse_location.y), left_click_origin[1]);
+	sel.width = Math.max(from_x_local(mouse_location.x), left_click_origin[0]) - sel.x;
+	sel.height = Math.max(from_y_local(mouse_location.y), left_click_origin[1]) - sel.y;
 	
 	for (var key in room_data.slides[active_slide].entities) {
 		if (room_data.slides[active_slide].entities.hasOwnProperty(key) && room_data.slides[active_slide].entities[key].container) {
 			var entity = room_data.slides[active_slide].entities[key];
 			var sprite = room_data.slides[active_slide].entities[key].container;
 			
-			//var rect = {};
-			//var angle = -sprite.rotation;		
-			//rect.width = Math.abs(sprite.width * Math.cos(angle)) + Math.abs(sprite.height * Math.sin(angle));
-			//rect.height = Math.abs(sprite.width * Math.sin(angle)) + Math.abs(sprite.height * Math.cos(angle));
-			//rect.x = sprite.x - sprite.anchor.x * rect.width;
-			//rect.y = sprite.y - sprite.anchor.y * rect.height;
-
-			var rect = sprite.getBounds();
-			rect.width /= objectContainer.scale.x * background_sprite.scale.x;
-			rect.height /= objectContainer.scale.y * background_sprite.scale.y;
-			rect.x = (-objectContainer.x + rect.x - background_sprite.x) / background_sprite.scale.x  / objectContainer.scale.x;
-			rect.y = (-objectContainer.y + rect.y - background_sprite.y) / background_sprite.scale.y  / objectContainer.scale.y;
+			var rect = {};
+			rect.width = x_rel(sprite.width)
+			rect.height = y_rel(sprite.height)
+			rect.x = x_rel(sprite.x) - rect.width * sprite.anchor.x;
+			rect.y = y_rel(sprite.y) - rect.height * sprite.anchor.y
 
 			//enable to visualise bounding boxes
-			//var shape = new PIXI.Rectangle(0, 0, rect.width, rect.height);
+			//var shape = new PIXI.Rectangle(0, 0, x_abs(rect.width), y_abs(rect.height));
 			//var container = draw_shape(1, 1, 0, 0, 16777215, shape);
-			//container.x = rect.x;
-			//container.y = rect.y;
+			//container.x = x_abs(rect.x);
+			//container.y = y_abs(rect.y);
 			//background_sprite.addChild(container)
-			
-			var box_min_x = rect.x;
-			var box_min_y = rect.y;
-			var box_max_x = rect.x + rect.width;
-			var box_max_y = rect.y + rect.height;
-			
-			if (box_min_x > x_min && box_min_y > y_min && box_max_x < x_max && box_max_y < y_max) {
+
+			if (sel.x < rect.x && sel.y < rect.y && sel.x + sel.width > rect.x + rect.width && sel.y + sel.height > rect.y + rect.height) {
 				selected_entities.push(room_data.slides[active_slide].entities[key]);
 			}
 		}
