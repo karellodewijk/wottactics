@@ -3,12 +3,12 @@
   background-image: url('csgo_icons.png');
 }
 
-.csgo_icons-bomb {
+.csgo_icons-flash_circle {
   background-position: -0px -0px;
   width: 30px;
   height: 30px;
 }
-.csgo_icons-csgo {
+.csgo_icons-bomb {
   background-position: -0px -30px;
   width: 30px;
   height: 30px;
@@ -23,33 +23,58 @@
   width: 30px;
   height: 30px;
 }
-.csgo_icons-explosive {
+.csgo_icons-decoy_circle {
   background-position: -0px -120px;
   width: 30px;
   height: 30px;
 }
-.csgo_icons-flash {
+.csgo_icons-explosive {
   background-position: -0px -150px;
   width: 30px;
   height: 30px;
 }
-.csgo_icons-incendiary {
+.csgo_icons-flash {
   background-position: -0px -180px;
   width: 30px;
   height: 30px;
 }
-.csgo_icons-molotov {
+.csgo_icons-csgo {
   background-position: -0px -210px;
   width: 30px;
   height: 30px;
 }
-.csgo_icons-smoke {
+.csgo_icons-incendiary {
   background-position: -0px -240px;
   width: 30px;
   height: 30px;
 }
-.csgo_icons-terrorists {
+.csgo_icons-incendiary_circle {
   background-position: -0px -270px;
+  width: 30px;
+  height: 30px;
+}
+.csgo_icons-molotov {
+  background-position: -0px -300px;
+  width: 30px;
+  height: 30px;
+}
+.csgo_icons-molotov_circle {
+  background-position: -0px -330px;
+  width: 30px;
+  height: 30px;
+}
+.csgo_icons-smoke {
+  background-position: -0px -360px;
+  width: 30px;
+  height: 30px;
+}
+.csgo_icons-smoke_circle {
+  background-position: -0px -390px;
+  width: 30px;
+  height: 30px;
+}
+.csgo_icons-terrorists {
+  background-position: -0px -420px;
   width: 30px;
   height: 30px;
 }
