@@ -346,11 +346,13 @@ function populate() {
 								node += "<td data-toggle='tooltip' title='" + round(member_stats['recent'].wn9, 2) + "' style='color:#ffffff; background-color:" + wn9_color(member_stats['recent'].wn9) + "'>" + round(member_stats['recent'].wn9, 0) + "</td>";
 																
 								if (member_stats[interesting_points[1]] && Object.keys(member_stats[interesting_points[1]]).length > 0) {
-									var recent_wr = member_stats[interesting_points[1]].wins/member_stats[interesting_points[1]].battles;
+									var point = interesting_points[1];
+									var old_wr = member_stats[interesting_points[1]].wins/member_stats[interesting_points[1]].battles;									
+									var wr_interval = (member_stats["recent"].battles * wr - member_stats[point].battles * old_wr) / (member_stats["recent"].battles - member_stats[point].battles);
 									var point = interesting_points[1];
 									var wn8 = (member_stats["recent"].battles * member_stats["recent"].wn8 - member_stats[point].battles * member_stats[point].wn8) / (member_stats["recent"].battles - member_stats[point].battles);
 									var wn9 = (member_stats["recent"].battles * member_stats["recent"].wn9 - member_stats[point].battles * member_stats[point].wn9) / (member_stats["recent"].battles - member_stats[point].battles);									
-									node += "<td style='color:#ffffff; background-color:" + wr_color(recent_wr) + "'>" + round(100*recent_wr, 1) + "%</td>";
+									node += "<td style='color:#ffffff; background-color:" + wr_color(wr_interval) + "'>" + round(100*wr_interval, 1) + "%</td>";
 									node += "<td data-toggle='tooltip' title='" + round(wn8, 2) + "' style='color:#ffffff; background-color:" + wn8_color(wn8) + "'>" + round(wn8, 0) + "</td>";
 									node += "<td data-toggle='tooltip' title='" + round(wn9, 2) + "' style='color:#ffffff; background-color:" + wn9_color(wn9) + "'>" + round(wn9, 0) + "</td>";	
 								} else {

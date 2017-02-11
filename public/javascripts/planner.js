@@ -212,6 +212,7 @@ var active_menu = 'ping_context';
 var userlist = {};
 var selected_icon;
 var selected_icon_no_color = false;
+var selected_icon_circle_radius = 0;
 var label_position = "pos_bottom";
 var icon_extra_scale = 1;
 var icon_color = 0xff0000;
@@ -452,6 +453,7 @@ function adjust_zoom(entity) {
 			case 'icon': case 'note':
 				entity.container.scale.x = entity.container.orig_scale[0] * scale;
 				entity.container.scale.y = entity.container.orig_scale[1] * scale;
+				redraw_circle(entity)
 				break;
 			case 'text': 
 				remove(entity.uid);
@@ -697,7 +699,7 @@ function resize_renderer(new_size_x, new_size_y) {
 function refresh_all_entities() {
 	for (var i in room_data.slides[active_slide].entities) {
 		var entity = room_data.slides[active_slide].entities[i];
-		if (entity.type != 'background') {
+		if (entity.type != 'background' && entity.container) {
 			remove(entity.uid, true);
 			create_entity(entity);
 		}
@@ -1610,7 +1612,6 @@ function remove(uid, keep_entity) {
 		
 		background_sprite.removeChild(entity.container);
 		delete entity.container;
-		
 		if (entity.type == "icon") {
 			try {
 				var counter = $('button[id*="'+room_data.slides[active_slide].entities[uid].tank+'"]').find("span");
@@ -3721,7 +3722,11 @@ function on_icon_end(e) {
 	var y = mouse_y_rel(mouse_location.y) - (size/2);
 	
  	var icon = {uid:newUid(), type: 'icon', tank:selected_icon, x:x, y:y, size:size, color:color, alpha:1, label:$('#icon_label').val(), label_font_size: label_font_size * zoom_level, label_color: "#ffffff", label_font: "Arial", label_pos:label_position, label_background:$('#label_background').get(0).checked, draw_zoom_level:zoom_level}
-	
+		
+	if (selected_icon_circle_radius) {
+		icon.circle = selected_icon_circle_radius;
+	}
+		
 	if (icon.label_background) {
 		icon.label_color = "#000000";
 	}
@@ -3964,6 +3969,57 @@ function nearestPow2( aSize ){
   return Math.pow( 2, Math.round( Math.log( aSize ) / Math.log( 2 ) ) ); 
 }
 
+function draw_circle(icon) {
+	var map_size_y = background.size_y;
+	var quality = 1/zoom_level;
+	var radius = y_abs(icon.circle / map_size_y);	
+	var color = icon.color;
+	var lineWidth = 1;
+	
+	var margin = 0.3 * radius * quality;
+	var width = 2 * radius * quality + margin;
+	var height = 2 * radius * quality + margin;
+	
+	var _canvas = document.createElement("canvas");
+	_canvas.width = width;
+	_canvas.height = height;
+	var _context = _canvas.getContext("2d");
+	
+	init_canvas(_context, lineWidth * quality, color, 0, 0.2, color, 1);
+	
+	_context.arc(radius * quality + margin/2, radius * quality + margin/2, radius * quality, 0, 2*Math.PI);
+	_context.fill();
+	_context.stroke();
+	
+	var texture = PIXI.Texture.fromCanvas(_canvas);	
+	var sprite = new PIXI.Sprite(texture);
+
+	var icon_width = icon.container.width / icon.container.scale.x
+	var icon_height = icon.container.height / icon.container.scale.y
+	
+	sprite.width /= icon.container.scale.y * quality;
+	sprite.height /= icon.container.scale.y * quality;
+	sprite.anchor.x = 0.5;
+	sprite.anchor.y = 0.5;
+	
+	return sprite;
+}
+
+function redraw_circle(icon) {
+	if (icon.circle) {
+		if (icon.container.circle_container) {
+			icon.container.removeChild(icon.container.circle_container);
+			icon.container.circle_container = null;
+		}
+		var map_size_y = background.size_y ? background.size_y : 0;
+		if (map_size_y > 0) {
+			var circle_sprite = draw_circle(icon);
+			icon.container.addChild(circle_sprite);
+			icon.container.circle_container = circle_sprite;
+		}
+	}
+}
+
 function create_icon_cont(icon, texture) {
 	var sprite = new PIXI.Sprite(texture);
 	sprite.tint = icon.color;
@@ -3987,6 +4043,7 @@ function create_icon_cont(icon, texture) {
 			label_scale = 450;
 		}
 		
+		
 		var text = create_text_sprite(icon.label, icon.label_color, ICON_LABEL_SCALE * icon.label_font_size, icon.label_font, icon.label_background, !icon.label_background, icon.label_font_modifier)
 	
 		var label_pos = icon.label_pos;
@@ -3994,6 +4051,9 @@ function create_icon_cont(icon, texture) {
 			label_pos = "pos_bottom";
 		}
 
+		text.height /= icon.container.scale.y;
+		text.width /= icon.container.scale.y;	
+		
 		icon.container.addChild(text);
 		
 		var sprite_width = sprite.width / sprite.scale.x
@@ -4024,6 +4084,8 @@ function create_icon_cont(icon, texture) {
 		}
 		
 	}
+	
+	redraw_circle(icon)
 	
 	icon.container.entity = icon; 
 	icon.container.alpha = icon.alpha;
@@ -4061,8 +4123,10 @@ function create_icon(icon, cb_after) {
 	}
 	
 	if (!texture.baseTexture.hasLoaded) {
-		texture.baseTexture.on('loaded', function(){
-			onloaded()
+		texture.baseTexture.on('loaded', function() {
+			if (!icon.container) {
+				onloaded()
+			}
 		});
 	} else {
 		onloaded();
@@ -5549,6 +5613,30 @@ function handle_pan_zoom() {
 	}
 }
 
+function select_icon(node) {
+	$('.tank_select.selected').removeClass('selected'); // removes the previous selected class
+	node.addClass('selected'); // adds the class to the clicked image
+	selected_icon = node.attr('id');
+	
+	if (node.attr('data-no_color') == 'true') {
+		selected_icon_no_color = true;
+	} else {
+		selected_icon_no_color = false;
+	}
+	
+	if (node.attr('data-circle')) {
+		selected_icon_circle_radius = parseFloat(node.attr('data-circle'));
+	} else {
+		selected_icon_circle_radius = 0;
+	}
+	
+	if (node.attr('data-scale')) {
+		icon_extra_scale = parseFloat(node.attr('data-scale'));
+	} else {
+		icon_extra_scale = 1;
+	}
+}
+
 //connect socket.io socket
 $(document).ready(function() {
 	//download polyfills
@@ -5917,19 +6005,7 @@ $(document).ready(function() {
 
 		
 		var first_icon = $("#icon_context").find("button:first");
-		first_icon.addClass('selected');
-		if (first_icon.attr('data-no_color') == 'true') {
-			selected_icon_no_color = true;
-		} else {
-			selected_icon_no_color = false;
-		}
-		
-		selected_icon = first_icon.attr("id");
-		if (first_icon.attr('data-scale')) {
-			icon_extra_scale = parseFloat(first_icon.attr('data-scale'));
-		} else {
-			icon_extra_scale = 1;
-		}
+		select_icon(first_icon);
 		
 		slide_name = $('#slide_interactive').attr('slide_name');
 		
@@ -6525,20 +6601,7 @@ $(document).ready(function() {
 
 		//tank icon select
 		$('body').on('click', '.tank_select', function() {
-			$('.tank_select.selected').removeClass('selected'); // removes the previous selected class
-			$(this).addClass('selected'); // adds the class to the clicked image
-			selected_icon = $(this).attr('id');
-			
-			if ($(this).attr('data-no_color') == 'true') {
-				selected_icon_no_color = true;
-			} else {
-				selected_icon_no_color = false;
-			}
-			if ($(this).attr('data-scale')) {
-				icon_extra_scale = parseFloat($(this).attr('data-scale'));
-			} else {
-				icon_extra_scale = 1;
-			}
+			select_icon($(this));
 		});
 		
 		assets_loaded = true;
