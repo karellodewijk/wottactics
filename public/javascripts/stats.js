@@ -199,7 +199,7 @@ function populate() {
 			}
 			
 			var results = calculate_stats(tank_expected, tank_expected_wn9, stats_data, wg_src, wn9_src);
-
+						
 			for (var i in results.tanks) {
 				var totals = results.tanks[i];
 				
@@ -267,7 +267,7 @@ function populate() {
 				$("#spotted_col").append("<td></rd>");
 			}
 	
-			function add_column(now, then) {
+			function add_column(now, then) {				
 				var results = {}
 				if (!then || Object.keys(then).length == 0) {
 					add_msg_column("Coming soon");
