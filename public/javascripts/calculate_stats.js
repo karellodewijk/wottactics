@@ -249,10 +249,10 @@ function calculate_stats(tank_expected_wn8, tank_expected_wn8_wn9, stats_data, s
 		achieved_totals.spotted += tank.spotted;
 		achieved_totals.frags += tank.frags;
 		achieved_totals.dropped_capture_points += tank.dropped_capture_points;
-		achieved_totals.wins += tank.wins;
+		achieved_totals.wins += tank.wins;	
 		achieved_totals.battles += tank.battles;
 	}
-				
+					
 	for (var i in stats_data) {	
 		var tank = stats_data[i][src];
 		

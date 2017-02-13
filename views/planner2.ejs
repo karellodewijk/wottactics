@@ -85,11 +85,11 @@
 		
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>		
-	
+		
 	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>		
 	<%}%>
-	
+
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
@@ -265,7 +265,7 @@
 				<button id="save" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-placement="bottom" data-toggle="tooltip" title="<%=l('Save')%>">
 					<div class="icon icon-save"></div>
 				</button>
-				<button id='store_tactic_popover' data-placement="right" data-toggle="popover" style="color:black" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' style='border-radius: 0px;' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
+				<button id='store_tactic_popover' data-placement="left" data-toggle="popover" style="color:black" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' style='border-radius: 0px;' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<div class="icon icon-save_as"></div>
 				</button>
 				<% if (game == 'wot' || game == 'wows' || game == 'aw' || game == 'squad'|| game == 'MWO') { %>
@@ -427,7 +427,7 @@
 						<small><%=l('Label size')%></small>
 					</div>	
 					<div class="col-sm-6">
-						<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"18"<%} else {%>"8"<%}%> max="100" step="1" list="label_font_size_ticks">
+						<input type="range" id="label_font_size" min="3" value=<%if (game == 'blitz') { %>"18"<%} else {%>"9"<%}%> max="100" step="1" list="label_font_size_ticks">
 					</div>	
 					<div class="col-sm-2">
 						<input id="label_font_size_text" class="slider_text_input" type="text"/>

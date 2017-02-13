@@ -2387,7 +2387,7 @@ function on_ruler_move(e) {
 							 + Math.pow(map_size_y * (left_click_origin[1] - mouse_y_rel(mouse_location.y)), 2));
 						 							 
 		var label = "";
-		if (game == "lol") {
+		if (game == "lol" || game == "csgo") {
 			label += Math.round(10*length)/10 + "u";
 		} else if (game == "wows") {
 			label += Math.round(0.01*length)/10 + "km";
@@ -4042,17 +4042,13 @@ function create_icon_cont(icon, texture) {
 		} else {
 			label_scale = 450;
 		}
+				
+		var text = create_text_sprite(icon.label, icon.label_color, icon.label_font_size * x_abs(0.0013) / icon.container.scale.y, icon.label_font, icon.label_background, !icon.label_background, icon.label_font_modifier)
 		
-		
-		var text = create_text_sprite(icon.label, icon.label_color, ICON_LABEL_SCALE * icon.label_font_size, icon.label_font, icon.label_background, !icon.label_background, icon.label_font_modifier)
-	
 		var label_pos = icon.label_pos;
 		if (!label_pos) {
 			label_pos = "pos_bottom";
 		}
-
-		text.height /= icon.container.scale.y;
-		text.width /= icon.container.scale.y;	
 		
 		icon.container.addChild(text);
 		
@@ -6063,12 +6059,6 @@ $(document).ready(function() {
 			initialize_slider("delay", "delay_text", "delay");
 		}
 		
-		$('html').click(function(e) {
-			if (e.target.id != 'tactic_name') {
-				$('[data-toggle="popover"]').popover('hide');
-			}
-		});
-		
 		$('[data-toggle="popover"]').popover({
 			container: 'body',
 			trigger: 'manual',
@@ -6079,6 +6069,7 @@ $(document).ready(function() {
 			}
 		}).click(function(e) {
 			$(this).popover('toggle');
+			var _this = $(this);
 			document.getElementById("tactic_name").setAttribute("value", tactic_name);
 			var popover = $(this);
 			$(document).on('click', '#store_tactic', function(e) {
@@ -6094,6 +6085,7 @@ $(document).ready(function() {
 					alert('Tactic stored as: "' + tactic_name + '"');
 					e.stopPropagation();
 				}
+				_this.popover('toggle');
 			});
 			e.stopPropagation();
 		});
