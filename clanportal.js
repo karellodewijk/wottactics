@@ -281,7 +281,8 @@ module.exports.load = function(router, http, secrets, db, escaper) {
 	});	
 	
 	function verify_access(req) {
-		if (req.session.passport.user.identity == "505943778-Kalith") { //special access, can't test this without
+		console.log(req.session.passport.user.identity)
+		if (req.session.passport.user.identity == "wg-505943778") { //special access, can't test this without
 			return true;
 		}
 		if (!req.session.passport.user.clan_role || req.session.passport.user.clan_role == 'recruit' || req.session.passport.user.clan_role == 'private') {

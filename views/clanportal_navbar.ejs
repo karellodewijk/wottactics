@@ -7,7 +7,7 @@
 		<% if (clan) { %>
 		  <li><a href="members.html"><%=l('Members')%></a></li>
 		  <li><a href="battles.html"><%=l('Battles')%></a></li>	
-		  <% if (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private') { %>
+		  <% if (user.identity == "wg-505943778" || user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private') { %>
 		    <li><a href="payout.html"><%=l('Calculate payout')%></a></li>
 		  <% } %>
 		<% } %>

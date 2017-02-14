@@ -1,0 +1,163 @@
+<!doctype html>
+<html style="border:0; padding:0">
+<head>
+	<meta charset="utf-8" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.3.4/pixi.js"></script>
+</head>
+<body style="border:0; padding:0">
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var renderer = PIXI.autoDetectRenderer($(window).height(), $(window).height(),{backgroundColor : 0x1099bb});
+		var stage = new PIXI.Container();
+
+		stage.interactive = true;
+
+		//load map
+		var img = new Image();
+		img.crossOrigin = "Anonymous";
+		img.onload = function() {
+			var texture = new PIXI.Texture(new PIXI.BaseTexture(img));		
+			for (var i = 0; i < 10; i++) {
+				for (var j = 0; j < 10; j++) {
+					console.log("adding map")
+					var map = new PIXI.Sprite(texture);
+					map.width = $(window).height();
+					map.height = $(window).height();
+					stage.addChild(map);
+					map.x = i * map.width;
+					map.y = j * map.height; 
+				}
+			}
+
+			renderer.render(stage)
+		}
+		img.src = 'http://karellodewijk.github.io/maps/paris.jpg';
+		
+		function correct() {
+			//keep in frame
+			var remaining_width = (stage.width + stage.x) - renderer.view.width
+			if (remaining_width < 0) {	
+				stage.x -= remaining_width;
+			}
+			
+			var remaining_height = (stage.height + stage.y) - renderer.view.height
+			if (remaining_height < 0) {	
+				stage.y -= remaining_height;
+			}
+
+			stage.x = Math.min(0, stage.x);
+			stage.y = Math.min(0, stage.y);	
+
+			stage.width = Math.max(stage.width, renderer.view.width)
+			stage.height = Math.max(stage.height, renderer.view.height)
+
+			//keep aspect ratio
+			if (stage.scale.y != stage.scale.x) {
+				stage.scale.x = Math.max(stage.scale.x, stage.scale.y)
+				stage.scale.y = Math.max(stage.scale.x, stage.scale.y)
+			}
+		}
+		
+		function zoom(factor) {
+			//zoom
+			stage.scale.x *= factor;
+			stage.scale.y *= factor;
+
+			//center on cursor
+			var mouse_loc = renderer.plugins.interaction.eventData.data.global;
+			stage.x -= (mouse_loc.x - stage.x) * (factor - 1);
+			stage.y -= (mouse_loc.y - stage.y) * (factor - 1);
+			
+			correct();
+			
+			renderer.render(stage);
+		}
+		
+		var remaining_factor = 1;
+		var zooming = false;
+		var last_update;
+		var EPSILON = 0.001;
+		function smooth_zoom() {
+			var time = Date.now();
+			var delta_t = time - last_update;
+			last_update = time;
+
+			var step = Math.pow(remaining_factor, delta_t/100)		
+			remaining_factor /= step;
+			zoom(step)
+				
+			if (Math.abs(remaining_factor - 1) < EPSILON) {
+				zoom(remaining_factor)
+				remaining_factor = 1;
+				zooming = false;				
+			} else {
+				requestAnimationFrame(smooth_zoom);
+			}
+		}
+		
+		renderer.view.addEventListener("wheel", function(e) {
+			var zoom_in = e.deltaY < 0 ? true : false;
+			var zoom_factor;			
+			if (zoom_in) {
+				zoom_factor = 1.1;
+			} else {
+				zoom_factor = (1/1.1);
+			}
+			remaining_factor *= zoom_factor;
+			if (!zooming) {
+				last_update = Date.now();
+				zooming = true;
+				requestAnimationFrame(smooth_zoom);
+			}
+			e.preventDefault();
+		});
+		
+		renderer.view.addEventListener("mousedown", function(e) {
+			var mouse_loc = renderer.plugins.interaction.eventData.data.global;
+			last_pan_loc = [mouse_loc.x, mouse_loc.y];
+			
+			var panning = false;
+			function pan() {
+				panning = false;
+				var mouse_loc = renderer.plugins.interaction.eventData.data.global;
+				var diff_x = mouse_loc.x - last_pan_loc[0];
+				var diff_y = mouse_loc.y - last_pan_loc[1];	
+				last_pan_loc = [mouse_loc.x, mouse_loc.y];
+				stage.x += diff_x;
+				stage.y += diff_y;
+				correct();
+				renderer.render(stage);
+			}
+			
+			function schedule_pan() {
+				if (!panning) {
+					panning = true;
+					requestAnimationFrame(pan);
+				}
+			}
+			
+			stage.mousemove = schedule_pan
+			stage.mousemoveoutside = schedule_pan
+			
+			function stop_pan(e) {
+				panning = false;
+				var mouse_loc = renderer.plugins.interaction.eventData.data.global;
+				last_pan_loc = [mouse_loc.x, mouse_loc.y];
+				delete stage.mousemove;
+				delete stage.mousemoveoutside;
+			}
+			
+			stage.mouseup = stop_pan
+			stage.mouseupoutside = stop_pan
+			
+			e.preventDefault();
+		});
+
+		
+		document.body.appendChild(renderer.view);
+		renderer.render(stage)
+	});
+</script>
