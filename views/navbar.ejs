@@ -70,19 +70,36 @@
 			</script>
 			<% } else { %>
 				<% var ads; %>
-				<% if (locale == 'ru') { %>
-					<%ads = [{code: 3878, link:'WOT_Comics_728х90_RU.jpg'}, {code: 3724, link:'WoT_Sweden_TierX_728x90_RU.jpg'}, {code: 3298, link:'WOT_Adwords_728x90_2_RU.jpg'}];%>
-				<% } else if (locale == 'de') { %>
-					<%ads = [{code: 2147, link:'WoT_static_tank__728x90_1_DE.jpg'}, {code: 3739, link:'WoT_Sweden_TierX_728x90_DE.jpg'}];%>
-				<% } else if (locale == 'fr') { %>	
-					<%ads = [{code: 2974, link:'728x90_6_FR.jpg'}, {code: 3303, link:'WOT_Adwords_728x90_2_FR.jpg'}, {code: 3303, link:'WoT_Sweden_TierX_728x90_FR.jpg'}];%>
-				<% } else if (locale == 'pl') { %>	
-					<%ads = [{code: 2983, link:'728x90_6_PL.jpg'}, {code: 3293, link:'WOT_Adwords_728x90_2_PL.jpg'}, {code: 3729, link:'WoT_Sweden_TierX_728x90_PL.jpg'}];%>
+				<% var path; %>
+				<% if (Math.random() <= 0.0) { %>
+					<% path = "/ads/wot/728x90/"; %>
+					<% if (locale == 'ru') { %>
+						<%ads = [{code: 3878, link:'WOT_Comics_728х90_RU.jpg'}, {code: 3724, link:'WoT_Sweden_TierX_728x90_RU.jpg'}, {code: 3298, link:'WOT_Adwords_728x90_2_RU.jpg'}];%>
+					<% } else if (locale == 'de') { %>
+						<%ads = [{code: 2147, link:'WoT_static_tank__728x90_1_DE.jpg'}, {code: 3739, link:'WoT_Sweden_TierX_728x90_DE.jpg'}];%>
+					<% } else if (locale == 'fr') { %>	
+						<%ads = [{code: 2974, link:'728x90_6_FR.jpg'}, {code: 3303, link:'WOT_Adwords_728x90_2_FR.jpg'}, {code: 3303, link:'WoT_Sweden_TierX_728x90_FR.jpg'}];%>
+					<% } else if (locale == 'pl') { %>	
+						<%ads = [{code: 2983, link:'728x90_6_PL.jpg'}, {code: 3293, link:'WOT_Adwords_728x90_2_PL.jpg'}, {code: 3729, link:'WoT_Sweden_TierX_728x90_PL.jpg'}];%>
+					<% } else { %>
+						<%ads = [{code: 2126, link:'WoT_static_tank_728x90_7_EN.jpg'}, {code: 2127, link:'WoT_static_tank_728x90_8_EN.jpg'}, {code: 2128, link:'WoT_static_tank_728x90_9_EN.jpg'}, {code: 2129, link:'WoT_static_tank_728x90_10_EN.jpg'}, {code: 3744, link:'WoT_Sweden_TierX_728x90_EN.jpg'}, {code: 3866, link:'WOT_Comics_728х90_EN.jpg'}];%>
+					<% } %>
 				<% } else { %>
-					<%ads = [{code: 2126, link:'WoT_static_tank_728x90_7_EN.jpg'}, {code: 2127, link:'WoT_static_tank_728x90_8_EN.jpg'}, {code: 2128, link:'WoT_static_tank_728x90_9_EN.jpg'}, {code: 2129, link:'WoT_static_tank_728x90_10_EN.jpg'}, {code: 3744, link:'WoT_Sweden_TierX_728x90_EN.jpg'}, {code: 3866, link:'WOT_Comics_728х90_EN.jpg'}];%>
+					<% path = "/ads/wows/728x90/"; %>
+					<% if (locale == 'ru') { %>
+						<%ads = [{code: 2512, link:'WoWs_RU_728x90_5.jpg'}, {code: 2513, link:'WoWs_RU_728x90_3.jpg'}, {code: 2514, link:'WoWs_RU_728x90_1.jpg'}, {code: 2515, link:'WoWs_RU_728x90_2.jpg'}];%>  
+					<% } else if (locale == 'de') { %>
+						<%ads = [{code: 2399, link:'WoWs_DE_728x90_5.jpg'}, {code: 2400, link:'WoWs_DE_728x90_1.jpg'}, {code: 2400, link:'WoWs_DE_728x90_1.jpg'}, {code: 2401, link:'WoWs_DE_728x90_3.jpg'}, {code: 2402, link:'WoWs_DE_728x90_2.jpg'}];%> 
+					<% } else if (locale == 'fr') { %>	
+						<%ads = [{code: 2379, link:'WoWs_FR_728x90_3.jpg'}, {code: 2381, link:'WoWs_FR_728x90_2.jpg'}, {code: 2382, link:'WoWs_FR_728x90_1.jpg'}];%>
+					<% } else if (locale == 'pl') { %>	
+						<%ads = [{code: 2479, link:'WoWs_PL_728x90_1.jpg'}, {code: 2480, link:'WoWs_PL_728x90_5.jpg'}, {code: 2481, link:'WoWs_PL_728x90_2.jpg'}];%>
+					<% } else { %>
+						<%ads = [{code: 2341, link:'Wows_EN_728x90_1.jpg'}, {code: 2343, link:'Wows_EN_728x90_5.jpg'}, {code: 3341, link:'WOWS_German_Battleship_V1_Adwords_728x90_4_EN_NA.jpg'}, {code: 3416, link:'WOWS_British_Cruisers_Google_Adwords_728x90_3_EN_NA.jpg'}];%>
+					<% } %>					
 				<% } %>
 				<%var ad = ads[Math.floor(ads.length * Math.random())]%>
-				<a href="http://wgpartner.com/?a=777&c=+<%=ad.code%>+&s1="><img style="height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left" src="<%=static_host%>/ads/wot/728x90/<%=ad.link%>" alt="wot_ad"></a>	
+				<a href="http://wgpartner.com/?a=777&c=+<%=ad.code%>+&s1="><img style="height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left" src="<%=static_host%><%=path%><%=ad.link%>" alt="wot_ad"></a>	
 			<% } %>
 		<%}%>
 				

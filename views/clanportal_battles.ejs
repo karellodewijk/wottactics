@@ -16,7 +16,7 @@
 		<% include clanportal_navbar.ejs %>
 		<% if (clan) { %>
 		
-		<% if (user.identity == "505943778-Kalith" || (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private')) { %>
+		<% if (user.identity == "wg-505943778" || (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private')) { %>
 			<h3>Attendance <button id="create_attendance_link" class="btn">New link</button></h3>
 			<table class="table" style="background-color:white;">
 			<thead>
@@ -107,7 +107,7 @@
 								<%=clan.battles[i].reserves[j][1]%>, 
 							<% } %>						 
 						 </td>	
-						 <%if (user.identity == "505943778-Kalith" || (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private')) {%>
+						 <%if (user.identity == "wg-505943778" || (user.clan_role && user.clan_role != 'recruit' && user.clan_role != 'private')) {%>
 							<td><button class="btn btn-warning remove_battle"><img src="<%=static_host%>/icons/bin.png" /></button></td>
 						 <%}%>
 					    </tr>
