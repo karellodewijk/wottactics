@@ -22,8 +22,8 @@ db.createUser(
 - install redis
 - install nodejs, stable branch
 - Install dependencies with npm ("npm install" in project directory)
-- Check the secrets.txt file, at the very least you need:
-	- cookie secret: any random string
+- Rename secrets.txt.template to secrets.txt and open it, at the very least you need to fill in:
+	- cookie secret: some random string
 	- valid mongodb info from step 1
 	- valid redis server info from step 2
 	- socket_io_servers: localhost will do for testing locally. But if you are hosting it, it should contain your public hostname or ip. Or a comma seperated list of hosts/ips for load balancing. e.g.: "socket_io_servers": "server1.wottactic.eu:80,server2.wottactic.eu:80" (IMPORTANT)
@@ -33,7 +33,7 @@ db.createUser(
 
 Login options:
 
-WG login should work out of the box.
+For wg login you need to fill in a valid WG api key, doesn't matter which region
 
 If you want facebook/google/twitter/battlesnet/vk/steam login to work, you need to fill in the "secrets.txt" files with secrets/ids generated when you register the app at their respecive services.
 
