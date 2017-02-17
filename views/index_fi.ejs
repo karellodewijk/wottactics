@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
+	<meta name="description" content="Työkalu pelille <%=game.toUpperCase()%> taktiikoiden suunnittelemiseen ja jakamiseen sekä niistä keskustelemiseen. Voit suunnitella taktiikoita esimerkiksi klaani- ja joukkuetaisteluita varten ja jakaa ne ystäviesi, tiimisi, osastokavereidesi tai klaanisi kanssa.">
+</head>
+<body style="overflow:scroll;">
+	<% include navbar.ejs %>
+	<script>
+		document.getElementById('home').className += " active";
+	</script>
+	<style>
+		#banner {
+			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
+			background-size: cover, cover;
+		}
+	</style>
+
+	<div class="container" style='width:100%; position:relative;'>
+		<div class="jumbotron content" style="padding-left:0px; padding-right:0px;">
+			<div id="banner" class="call_to_action" style='width:100%; background-color:#888ecb'>
+				<div class="container" id="big_button_frame" style="text-align:center;">
+					<h1>
+						<% if (game == 'wot') { %>
+							World of Tanks Tactics
+						<% } else if (game == 'wows') { %>
+							World of Warships Tactics
+						<% } else if (game == 'blitz') { %>
+							World of Tanks Blitz Tactics
+						<% } else if (game == 'aw') { %>
+							Armored Warfare Tactics
+						<% } else if (game == 'lol') { %>
+							League of Legends Tactics
+						<% } else if (game == 'hots') { %>
+							Heroes of the Storm Tactics
+						<% } else if (game == 'sc2') { %>
+							Starcraft II Tactics
+						<% } else if (game == 'csgo') { %>
+							CS:GO Tactics
+						<% } else if (game == 'warface') { %>
+							Warface Tactics
+						<% } else if (game == 'squad') { %>
+							Squad Tactics
+						<% } else if (game == 'R6') { %>
+							Rainbox Six | Siege Tactics
+						<% } else if (game == 'MWO') { %>
+							Mech Warrior Online Tactics
+						<% } else if (game == 'EC') { %>
+							Eternal Crusade Tactics
+						<% } %>	
+					</h1>
+					<div id="quote"></div><br />
+					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>
+					<br /><%=l('Or')%><br />
+					<a class="btn btn-primary new_room" href="<%=game%>3" role="button"><%=l('Video replay room')%> &raquo;</a>
+					<br /><br />
+					<a href="<%=game%>1" class="new_room" role="button" style="color:#ADD8E6">(<%= l('Use original ui')%>)</a><br /></p>
+					<script type="text/javascript">
+						//generate unique id
+						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+						function newUid() {
+							var text = "";
+							for(var i=0; i < 14; i++ ) {
+								text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+							}
+							return text;
+						}
+						window.onload = function() {
+							var els = document.getElementsByClassName('new_room');
+							for (var i = 0; i < els.length; i++) {
+								els[i].setAttribute('href', els[i].getAttribute('href') + '?room=' + newUid());
+							}
+						};
+					</script>
+				</div>
+			</div>
+
+			<div style="padding-left:20px; padding-right:20px;">
+				<div class="row">
+					<div class="col-md-4">
+						<h2>Mikä on <%=url.split('/')[0]%> &#63;</h2>
+						<p><%=url.split('/')[0]%> on interaktiivinen taistelutaktiikoiden suunnittelutyökalu pelille <%=game.toUpperCase()%>.
+						
+						<p><h4><b>Kuinka se toimii?</b></h4>
+						
+						<p>Paina vain sinistä nappulaa. Valitse sitten pelin <%=game%> kartta ja käytä oikealla olevia työkaluja alkaaksesi suunnittelemaan taistelutaktiikkaa. Voit kutsua muut katsomaan taktiikkaasi jakamalla heille linkin. 
+					</div>
+					<div class="col-md-4">
+						<h2>Palautteellasi on merkitystä</h2>
+						<p>Käytä 5 minuuttia osallistuaksesi tähän lyhyeen <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">kyselyyn</a> ja auta meitä tietätämään, mitä haluaisit parantaa palvelussamme. Jätän kyselyn auki ainakin kahdeksi viikoksi ja julkaisun sitten tulokset.</p>
+						
+						<p>Kun olet täyttänyt kyselyn, katso <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">yhteenveto</a> vastauksista.
+						
+						<p>Jos sinulla on jotain kysyttävää, jätä viesti foorumillemme tai lähetä minulle suoraan sähköpostia. En voi vastata kyselyyn jätettyihin kysymyksiin, sillä ne ovat nimettömiä enkä siten voi ottaa sinuun yhteyttä.
+					</div>	
+					<div class="col-md-4">					
+						<h2>Muutoksia renderöinnissä</h2>
+						<p>Koko ikkuna on nyt renderöityvä. Käyttöliittymästä on tehty osittain läpinäkyvä ja ylhäältä kerroksittainen. Zoomaa hieman, niin näet muutokset.						
+						<p>Olen testannut muutoksia ennen julkaisua, mutta konepellin alla on niin paljon uutta, että virheitä saattaa olla. Ilmoitathan niistä mahdollisimman pian.
+					</div>			
+				</div>
+				<div class="row">
+
+					<div class="col-md-4">
+						<h2>Viimeisimmät muutokset</h2>
+						<p>
+						<ul>
+							<li>Roberto on tehnyt portugalinkielisen käännöksen
+							<li>Iso päivitys käyttöliittymään ja renderöintiin
+							<li>Lisätty esitysnäkymä
+							<li>Lisätty MechWarrior Online tuettuihin peleihin
+							<li>Siirrytty käyttämään pixi 4.3.4:ää
+						</ul>
+						<p>Korjattuja bugeja:
+						<ul>
+							<li>Kursori palautui joskus liikuteltaessa valintaruudun ylle
+							<li>Käyttäjätilin vaihto vaihtaa nyt käyttäjätilin myös foorumeilta ilman uloskirjautumista												<li>Parannaltu Twitter-kirjautumista muiden domainien, kuin wottactic.tk:n kautta
+							<li>Muutettu zoomaus liikkumaan sulevammin välein
+							<li>Korjattu kohdistuksen ongelmia videotallennushuoneessa
+						</ul>
+						<p>Jos löydät sivustolta bugeja, ilmoitathan niistä minulle.
+					</div>
+					<div class="col-md-4">					
+						<h2>Tuki MechWarrior Onlinelle ja Eternal Crusadelle</h2>
+						<p>Katso <a href="http://gametactic.org/MWO">uusi sivusto</a>
+					</div>
+					<%if (game == 'warface') { %>
+						<div class="col-md-4">
+							<h2>Tarvitaan apua karttojen kanssa</h2>
+							<p>Pelin karttojen kuvat ovat melko huonolaatuisia, koska en löytänyt parempia. Jos tiedät jonkin sivuston, josta saa parempilaatuisia karttoja, ilmoita minulle.
+						</div>
+					<%} else { %>
+						<%if (game != 'wot') { %>
+						<div class="col-md-4">
+							<h2>Foorumit palautettu käyttöön</h2>
+							<p>Nyt voit jättää palautetta foorumille.
+						</div>
+						<% } else { %>
+						<div class="col-md-4">
+							<h2>Tilastojen katselu lisätty</h2>
+							<p>Olen lisännyt pelaajien ja klaanien tilastot sivustolle. Tilastot näyttävä osio on vielä melko yksinkertainen ja se näyttää hieman vanhaa tietoa.
+							<p>Uudella sivulla on myös yksi mainos palvelun ylläpidon kulujen kattamiseksi. Taktiikan suunnittelusivulle ei kuitenkaan lisätä mainoksia. Jopa lahjoitusten kerta wottactic tuottaa hieman tappiota ja vie paljon työaikaa.
+							<p>Mainokset poistetaan käyttäjiltä, jotka ovat lahjoittaneet tai lahjoittavat tulevaisuudessa. Mainosten poistaminen lahjoittamisen jälkeen vaatii sisäänkirjautumisen.
+						</div>
+						<% } %>	
+					<% } %>						
+				</div>
+				<div class='row'>
+					<div class='col-md-6'>
+						<%=l('Kehittänyt')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
+					</div>
+					<div class='col-md-6' style='text-align:right;'>
+						<a href="older_news.html">Vanhemmat uutiset</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<% include footer.ejs %>
+	<% include index_js.ejs %>
+</body>
