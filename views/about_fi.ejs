@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('About')%></title>
+</head>
+<body>
+	<% include navbar.ejs %>
+	<script>
+		document.getElementById('about').className += " active";
+	</script>
+	<div class="container" style='width:100%;'>	
+		<div class="jumbotron content content_margin">
+			<p>
+			Hei! Hienoa, että olet kiinnostustunut tästä sivustosta.
+
+			<h3>Ehdotusten jättäminen</h3>
+			<p>
+			Olen aina avoin ehdotuksille, kritiikille ja kiitoksille. Yhteystiedot-osiosta löydät monia tapoja ottaa minuun yhteyttä.
+
+			<h3>Avustaminen</h3>
+			<p>
+			Jos haluat auttaa jollain tavalla, kerro ihmeessä minulle. Tällä hetkellä etsin erityisesti korkealaatuisia karttoja World of Warshipsiin. Jos tällainen työkalu olisi mielestäsi hyödyllinen jossakin muussa pelissä, luon sellaisen mielelläni. Tarvitsen vain muutamia välttämättömiä karttoja ja ikoneita. Jos haluat auttaa kääntämisessä, apu on aina tervetullutta.
+	
+			<h3>Koodi</h3>
+			<p>
+			Haluan tavoittaa mahdollisimman monia ihmisiä, joten olen päättänyt pitää projektin avoimena lähdekoodina MIT-lisenssin alaisena. Voit käyttää sitä parhaaksi katsomillasi tavoilla mihin tahansa, paitsi omiin kaupallisiin tai ei-kaupallisiin hankkeisiisi.
+			
+			Lähdekoodi on saatavilla osoitteesta 
+			<a href='https://github.com/karellodewijk/wottactics'>https://github.com/karellodewijk/wottactics</a>
+			
+			<h3>Yhteystiedot</h3>
+			
+			<p>
+			<div class="row">
+				<div class="col-md-2">Nimi</div>
+				<div class="col-md-2">Kalith</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">Sähköposti</div>
+				<div class="col-md-2"><a href="mailto:pkalith@gmail.com">pkalith@gmail.com</a></div>
+			</div>
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">Profiilini EU-palvelimella</div>
+				<div class="col-md-10"><a href='http://worldoftanks.eu/community/accounts/505943778-Kalith/'>http://worldoftanks.eu/community/accounts/505943778-Kalith/</a></div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">Profiilini NA-palvelimella</div>
+				<div class="col-md-10"><a href='http://worldoftanks.com/community/accounts/1003817145-Kalid/'>http://worldoftanks.com/community/accounts/1003817145-Kalid/</a></div>
+			</div>
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">Keskustelu EU-palvelimen foorumilla</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.eu/index.php?/topic/517375-wot-tactic-planner-wottactictk/</a></div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">Keskustelu RU-palvelimen foorumilla</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.ru/index.php?/topic/1744734-ruwottacticeu/'>http://forum.worldoftanks.ru/index.php?/topic/1744734-ruwottacticeu/</a></div>
+			</div>		
+			<div class="row">
+				<div class="col-md-2">Keskustelu NA-palvelimen foorumilla</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.com/index.php?/topic/456773-wot-tactic-planner-wottactictk/</a></div>
+			</div>		
+			<div class="row">
+				<div class="col-md-2">Keskustelu SEA-palvelimen foorumilla</div>
+				<div class="col-md-10"><a href='http://forum.worldoftanks.asia/index.php?/topic/63198-wot-tactic-planner-wottactictk/'>http://forum.worldoftanks.asia/index.php?/topic/63198-wot-tactic-planner-wottactictk/</a></div>
+			</div>						
+			
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">EU-palvelimen WoT Blitz -foorumi</div>
+				<div class="col-md-10"><a href='http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/'>http://forum.wotblitz.eu/index.php?/topic/16048-tactic-planner-website/</a></div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">NA-palvelimen WoT Blitz -foorumi</div>
+				<div class="col-md-10"><a href='http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/'>http://forum.wotblitz.com/index.php?/topic/35189-tactic-planner-website-wottactictkblitzhtml/</a></div>
+			</div>	
+			&nbsp;
+			<div class="row">
+				<div class="col-md-2">Armored Warfare -foorumi</div>
+				<div class="col-md-10"><a href='http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29'>http://aw.my.com/en/forum/showthread.php?26923-Armored-warfare-tactic-planning-website-%28awtactic-tk%29</a></div>
+			</div>	
+				
+			<p><p>
+			<h3>Erityiskiitokset</h3>
+			<p>
+			<ul>
+			<li>Etna99_ (suomen kielen käännöksestä).</li>
+			<li>Roberto Phenos (portugalin kielen käännöksestä).</li>
+			<li>Daveyboy (Eternal Crusaden karttojen ja ikonien lähettämisestä).</li>
+			<li>Smurfy sivustolta <a href="http://mwo.smurfy-net.de/">http://mwo.smurfy-net.de/</a> (MechWarrior Onlinen karttojen parantelusta).</li>
+			<li><a href="https://maps.mrbcleague.com:8443/">https://maps.mrbcleague.com:8443/</a> (joidenkin MechWarrior Onlinen ikonien lähettämisestä).</li>
+			<li>WOT_Avenger (kreikan kielen käännöksestä).</li>
+			<li>juho-p (palvelusta <a href="https://github.com/juho-p/wot-debugserver">wot-debugserver</a>).</li>
+			<li>TomNedry (joistakin kartoista).</li>
+			<li><a href="http://www.simpleradar.com/">simpleradar.com</a> (korkealaatuisista CG:GO-kartoista).</li>
+			<li>David Patterson, Aragorn2lyon, plissken (hyvistä parannusehdotuksista).</li>
+			<li>SebastCBien[1-AUS], N3w2012[1-AUS] (ranskan kielen käännöksestä).</li>
+			<li>locastan, ShuraBB (<a href="http://worldof-tanks.com/locastans-enh-hd-minimap-gen-2/">HD-laatuisista pienoiskartoista</a>).</li>
+			<li><a href="http://wotbase.net">wotbase</a> (vaihtoehtoisista kartoista).</li>
+			<li>Андрей (venäjän kielen käännöksestä).</li>
+			<li>GPS4ever, maroar, H311fi5h (kaikesta testaamisesta ja parannusehdotuksista).</li> 
+			<li>Jingles (sanan <a href="https://www.youtube.com/watch?v=7aBl7YTJxqk">levittämisestä</a>).</li>
+			<li><a href='http://maptactic.com'>maptactic</a> and <a href='https://www.pyratron.com/stratsketch'>stratsketch</a> (inspiraatiosta).</li> 
+			<li><a href='http://aw-guide.com'>aw-guide</a> (Armored Warfare -kartoista).</li>
+			<li>Reluctanttheist (WoT Blitz -kartoista).</li>
+			<li>Aleksandar[Ultra_Seljacina] (serbian kielen käännöksestä).</li>
+			<li>Daniel Janssen[DeeJayBass] (saksan kielen käännöksestä).</li>
+			<li>Adriel Vargas[adrieeel] (espanjan kielen käännöksestä).</li>
+			<li>toxohut (puolan kielen käännöksestä ja erinomaisesta palautteesta).</li>
+			<li>Olaf Darkpassenger (tšekin kielen käännöksestä).</li>
+			<li>Jackhammer, Tomsa (<a href="http://forum.worldoftanks.eu/index.php?/topic/457860-0914-tomsas-contour-icons-mod-jackhammers-style/">modissaan käytetyistä ikoneista</a>).</li>
+			<li><a href='https://github.com/'>GitHub</a> (koodin ylläpidosta).</li>
+			<li>Wargaming, Obsidian, Riot games, Blizzard, Valve, Ubisoft, Crytek, Piranha Games, Bandai Nameco ja Offworld Industries (mahtavista peleistä).</li>
+			</ul>
+
+			<h3>Lahjoittajat</h3>
+			<p>
+			<ul>
+			<li>SMCPO
+			<li>3meyc
+			<li>Zombie_Farmer
+			<li>H311fi5h
+			<li>Boris Fekar (FPC-klaani)
+			<li>Toms teteris
+			<li>Sounds Alive
+			<li>Jouni Muttilainen
+			</ul>
+			
+			<h3>Juridiset seikat</h3>
+			<p>
+			<ul><li><a href="privacypolicy.html">Tietosuojakäytäntö</a></li></ul>			
+		</div>
+	</div>
+	<% include footer.ejs %>
+</body>

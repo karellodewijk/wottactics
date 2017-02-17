@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Getting started')%></title>
+	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy planner.')%> - <%=l('Getting started')%>">
+</head>
+<body>
+	<% include navbar.ejs %>
+	<script>
+		document.getElementById('getting_started').className += " active";
+	</script>
+	<div class="container" style='width:100%;'>
+		<div class="jumbotron content content_margin">
+			<p>
+			Tämän sivun lisäksi olen tehnyt <a href="https://youtu.be/K-yl_WNjvwk">opastusvideon</a>. Myös Stewiejp on tehnyt yhden <a href="https://www.youtube.com/watch?v=sLWv7yXYQ-c">opastusvideon</a>.
+			
+			<p>
+			Painettuasi "Luo uusi huone" -nappulaa näytön tulisi näyttää suunnilleen tältä:
+			<p>
+			<img src="<%=static_host%>/icons/tutorial1.jpg" alt="tutorial image 1">
+			<p>
+			Aivan ensimmäisenä tee seuraavat toimenpiteet:
+			<ol>
+				<li>Valitse kartta.</li>
+				<li>Kopioi sivulle johtava linkki painamalla tätä nappulaa tai vain kopioimalla linkki selaimen osoiteriviltä.</li>
+			</ol>
+
+			<p>
+			Voit jakaa linkin pelikavereidesi kanssa, jotta he voivat katsella taktiikkaasi ja sinä voit samalla selittää sitä.
+			<p>
+			<img src="<%=static_host%>/icons/tutorial2.jpg" alt="tutorial image 2">
+			<p>
+			Kun olet valinnut kartan ja ihmiset ovat liittyneet siihen:
+			<ol start=3>
+				<li>Lista käyttäjistä, jotka katselevat taktiikkaasi. Klikkaa heidän nimiään muokataksesi heidän oikeuksiaan (keltainen = voi muokata, vihreä = voi muokata ja antaa oikeuksia muille).</li>
+				<li>Vaihtoehtoisesti voit antaa muokkausoikeudet kaikille avaamalla huoneen muokkausoikeuksien lukituksen tästä nappulasta.</</li>
+				<li>Voit luoda tai selittää taktiikkaasi täällä olevilla työkaluilla. Saat tarkemmat kuvaukset kunkin työkalun merkityksestä laittamalla kursorin työkalun päälle.</li>
+				<li>Valitsemasi työkalun asetukset.</li>
+				<li>Voit keskutella huoneessa olevien ihmisten kanssa.</li>
+				<li>Voit kirjautua sisään Wargaming.net-tililläsi. Se on täysin vapaaehtoista, mutta ilman kirjautumista et voi tallentaa tekemiäsi taktiikoita.</li>
+			</ol>
+
+			<p>
+			<img src="<%=static_host%>/icons/tutorial3.jpg" alt="tutorial image 3">
+			<p>
+			
+			Kirjauduttuasi sisään saat käyttöösi joitakin lisätoimintoja:
+			<ol start=9>
+				<li>Tämä näkyy nyt vihreänä ilmaisten, että olet kirjautunut sisään.</li>
+				<li>Klikkaamalla tätä nappulaa voit tallentaa taktiikkasi haluamallasi nimellä. Myöhemmin voit katsella tallentamiasi taktiikoita etusivulta aukeavan "Tallennetut taktiikat" -linkin kautta.</li>
+				<li>Tallennettuasi taktiikkasi voit muokata sitä ja tallentaa sen helposti samalla nimellä tällä nappulalla.</li>
+				<li>Vaihtoehtoisesti voit ladata taktiikan kuvana painamalla tätä nappulaa.</li>
+			</ol>
+		</div>
+	</div>
+	<% include footer.ejs %>
+</body>
