@@ -134,13 +134,13 @@
 					</button>
 				<% } %>
 				<button id="stop_present" class="btn btn-default navbar-btn" data-toggle="tooltip" data-disable="<%=l('Disable presentation mode (All users will be able to browse all slides freely)')%>" data-enable="<%=l('Enable presentation mode (All users will see only your slide)')%>" title="<%=l('Disable presentation mode (All users will be able to browse all slides freely)')%>">
-					<div class="icon icon-stop_present"></div>
+					<div class="icon icon-present"></div>
 				</button>	
-				<button id="lock_camera" style='border-radius: 0px;' class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('locks the view (zoom/pan) of all users to yours')%>">
-					<div class="icon icon-lock_camera"></div>
+				<button id="lock_camera" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" data-disable="<%=l('locks the view (zoom/pan) of all users to yours')%>" data-enable="<%=l('unlocks the view')%>" title="<%=l('locks the view (zoom/pan) of all users to yours')%>">
+					<div class="icon icon-unlock_camera"></div>
 				</button>
 				<button id="disable_dragging" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" data-disable="<%=l('Disable dragging')%>" data-enable="<%=l('Enable dragging')%>" title="<%=l('Disable dragging')%>">
-					<div class="icon icon-disable_dragging"></div>
+					<div class="icon icon-enable_dragging"></div>
 				</button>				
 				</div>
 				</li>
