@@ -5197,8 +5197,8 @@ function video_progress() {
 function enable_dragging() {
 	if (!dragging_enabled) {	
 		var icon = $("#disable_dragging > div");
-		icon.removeClass("icon-enable_dragging");
-		icon.addClass("icon-disable_dragging");
+		icon.removeClass("icon-disable_dragging");
+		icon.addClass("icon-enable_dragging");
 		$("#disable_dragging").attr('title', $("#disable_dragging").attr('data-disable'))
 	
 		dragging_enabled = true;
@@ -5218,8 +5218,8 @@ function enable_dragging() {
 function disable_dragging() {
 	if (dragging_enabled) {
 		var icon = $("#disable_dragging > div");
-		icon.removeClass("icon-disable_dragging");
-		icon.addClass("icon-enable_dragging");
+		icon.removeClass("icon-enable_dragging");
+		icon.addClass("icon-disable_dragging");
 		$("#disable_dragging").attr('title', $("#disable_dragging").attr('data-enable'))
 				
 		dragging_enabled = false;			
@@ -5591,12 +5591,12 @@ function set_presentation_mode(new_presentation_mode) {
 	presentation_mode = new_presentation_mode;
 	var node = $('#stop_present').find('div');		
 	if (presentation_mode == true) {
-		node.removeClass('icon-present');
-		node.addClass('icon-stop_present');
-		$('#stop_present').attr('title', $('#stop_present').attr('data-disable'))
-	} else {
 		node.removeClass('icon-stop_present');
 		node.addClass('icon-present');
+		$('#stop_present').attr('title', $('#stop_present').attr('data-disable'))
+	} else {
+		node.removeClass('icon-present');
+		node.addClass('icon-stop_present');
 		$('#stop_present').attr('title', $('#stop_present').attr('data-enable'))
 	}
 }
@@ -6159,8 +6159,14 @@ $(document).ready(function() {
 		});
 
 		$('#export').click(function () {
-			var new_renderer = new PIXI.CanvasRenderer(size_x, size_y,{backgroundColor : 0xBBBBBB});
-			new_renderer.render(objectContainer);			
+			var new_renderer = new PIXI.CanvasRenderer(background_sprite.width, background_sprite.height, {backgroundColor : 0xBBBBBB});
+			
+			var temp_x = background_sprite.x, temp_y = background_sprite.y;
+			background_sprite.x = 0;
+			background_sprite.y = 0;
+			new_renderer.render(background_sprite);			
+			background_sprite.x = temp_x;
+			background_sprite.y = temp_y;
 
 			$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function() {
 				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.3.0/js/canvas-to-blob.min.js", function() {
@@ -6179,7 +6185,7 @@ $(document).ready(function() {
 			$.getScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js", function(){
 				var original_slide = active_slide;
 				var zip = new JSZip();
-				var new_renderer = new PIXI.CanvasRenderer(size_x, size_y, {backgroundColor : 0xBBBBBB});
+				var new_renderer = new PIXI.CanvasRenderer(background_sprite.width, background_sprite.height, {backgroundColor : 0xBBBBBB});
 				var first_slide_uid = find_first_slide();
 				var n = 1;
 				
@@ -6188,7 +6194,12 @@ $(document).ready(function() {
 					change_slide(slide_uid);
 					var it = setInterval(function() {
 						if (resources_loading == 0) {
-							new_renderer.render(objectContainer);
+							var temp_x = background_sprite.x, temp_y = background_sprite.y;
+							background_sprite.x = 0;
+							background_sprite.y = 0;
+							new_renderer.render(background_sprite);			
+							background_sprite.x = temp_x;
+							background_sprite.y = temp_y;
 							var data = new_renderer.view.toDataURL("image/jpeg", 0.9);
 							data = data.replace("data:image/jpeg;base64,","");
 							zip.file(n.toString() + '-' + room_data.slides[slide_uid].name + ".jpg", data, {base64:true});
@@ -6298,19 +6309,21 @@ $(document).ready(function() {
 		
 		$('#lock_camera').click(function () {
 			var node = $(this).find('div');	
-			if (node.hasClass('icon-lock_camera')) {
-				node.removeClass('icon-lock_camera').addClass('icon-unlock_camera');
+			if (node.hasClass('icon-unlock_camera')) {
+				node.removeClass('icon-unlock_camera').addClass('icon-lock_camera');
+				$("#lock_camera").attr('title', $("#lock_camera").attr('data-enable'))
 				control_camera = true;
 				handle_pan_zoom();
 			} else {
-				node.removeClass('icon-unlock_camera').addClass('icon-lock_camera');
+				node.removeClass('icon-lock_camera').addClass('icon-unlock_camera');
+				$("#lock_camera").attr('title', $("#lock_camera").attr('data-disable'))
 				control_camera = false;
 			}
 		});
 		
 		$('#disable_dragging').click(function () {
 			var icon = $("#disable_dragging > div");
-			if (icon.hasClass("icon-disable_dragging")) {
+			if (icon.hasClass("icon-enable_dragging")) {
 				dragging_mode[active_context] = "disabled";
 				disable_dragging();
 			} else {
