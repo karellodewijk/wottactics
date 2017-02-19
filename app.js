@@ -334,9 +334,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (!req.session.passport || !req.session.passport.user) {
 			create_anonymous_user(req);		
 		}
-		if (subDomain.length > 2 && locales.indexOf(subDomain[0]) != -1) {
+		if (locales.indexOf(subDomain[0]) != -1) {
 			set_locale(req, res, subDomain[0]);
-			subDomain = subDomain.slice(1);
 		} else {
 			if (req.query.lang) {
 				set_locale(req, res, req.query.lang);
@@ -348,7 +347,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				}
 			}
 		}
-		
+		if (subDomain.length > 2) {
+			subDomain = subDomain.slice(1);
+		}
 		if (req.query.game) {
 			set_game(req, res, req.query.game)
 		}
@@ -973,12 +974,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		var SteamWebAPI = require('steam-web');
 		var steam = new SteamWebAPI({ apiKey: secrets.steam.api_key, format: 'json' });
 		passport.use('steam', new OpenIDStrategy({
-				returnURL: function(req) { 
-					return "http://wottactic.com/steam_redirect.html?dest=" + "http://" + req.hostname + "/auth/steam/callback/";
-				},
-				realm: function(req) { 
-					return "http://wottactic.com"; 
-				},
+				returnURL: "http://wottactic.com/steam_redirect.html",
+				realm: "http://wottactic.com",
 				provider: 'steam',
 				name:'steam',
 				profile:false,
@@ -1011,9 +1008,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				});			
 			}
 		));
-		
+
 		//steam
-		router.post('/auth/steam', save_return, passport.authenticate('steam'));
+		router.post('/auth/steam', save_return, function(req,res,next) { passport.authenticate('steam', { returnURL: "http://wottactic.com/steam_redirect.html?dest=" + "http://" + req.hostname + "/auth/steam/callback/" })(req, res, next); } );
 		router.get('/auth/steam/callback', passport.authenticate('steam'), redirect_return);
 	}
 	
