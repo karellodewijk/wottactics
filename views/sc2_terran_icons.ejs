@@ -7,8 +7,19 @@
 	  <li><a class="icon_group" id="sc2_upgrades_terran" data-toggle="tab" href="#sc2_upgrades_tab"><%=l('Upgrades')%></a></li>
 	  <li><a class="icon_group" id="sc2_abilities_terran" data-toggle="tab" href="#sc2_abilitites_tab"><%=l('Abilities')%></a></li>
 	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	  <%if (user.identity) { %><li><a class="icon_group" id="custom_icons" data-toggle="tab" href="#custom_tab"><%=l('Custom')%></a></li><% } %>
 	</ul>
 	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<%if (user.identity) { %>
+		<div class="tab-pane" id="custom_tab">
+			<div class="row">
+				<div id="custom_icons_list"></div>
+				<button class="btn btn-default" aria-label="Left Align" id="upload_icon" data-toggle="tooltip" title="<%=l('Upload icon')%>">
+					<div class="icon icon-upload_sm"></div>
+				</button>	
+			</div>
+		</div>
+		<% } %>
 		<div class="tab-pane" id="sc2_units_tab">
 			<div class="row">
 				<div id="sc2_units_terran_list" data-path="sc2_units_terran" data-scale="3" data-height="60" data-no_color="true" data-style="sc2_units_terran.css" hidden>

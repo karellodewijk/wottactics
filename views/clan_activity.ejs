@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<script defer src="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>		
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/clan_activity.js"></script>
+	<link rel="stylesheet" href="<%=static_host%>/stylesheets/tablesorter/style.css" />	
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - l('Clan Activity')</title>
+	<meta name="description" content="Track clan stats for <%=game.toUpperCase()%>.">
+	<meta name="user" content="<%=JSON.stringify(user)%>">
+	<meta name="clan" content="<%=JSON.stringify(clan)%>">
+</head>
+<body style="overflow-y: scroll; width:100%;">
+	<% include navbar.ejs %>
+	<% include stat_navbar.ejs %>	
+	
+	<nav class="navbar navbar-default navbar-inverse main_navbar navbar-custom" style="border-radius: 0; margin-top:-20px; font-size:120%; background-color: #2e2e2e;">
+		<ul class="nav navbar-nav">
+			<li id="member_overview"><a href="clan_activity"><h2><%=l('Member overview')%></h2></a></li>
+			<li id="clan_config"><a href="clan_config"><h2><%=l('Clan config')%></h2></a></li>
+		</ul>
+	</nav>
+	
+	<script>
+		document.getElementById('stats').className = "beta_button active";
+		document.getElementById('clan_activity').className = "active";
+		document.getElementById('member_overview').className = "active";
+	</script>
+	
+	<div class="container" style='width:100%; position:relative;'>
+		<div class="jumbotron content content_margin">		
+			<span id="not_logged_in" hidden><h4><%=l('Log in with your wargaming account')%></h4></span>
+			<span id="no_clan" hidden><h4><%=l('You are not in a clan')%></h4></span>
+			<h2 style="padding-top:0px; margin-top:0px;"><img id="clan_logo">&nbsp;<span id="clan_name"></span></h2>
+			
+			<a class="collapsable" href="#" style="text-decoration: none; color:inherit;"><h2><%=l("Players")%>(<span id="member_amount"></span>) <span style="font-size: 10px; vertical-align: middle;" class="glyphicon glyphicon-triangle-bottom"></span></h2></a>
+			<div>
+			<table class="table tablesorter table-bordered" id="member_list" style="background-color:white; text-align:center;">				
+				<col style="width:10%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<col style="width:6%">
+				<thead>
+				<tr>
+				  <th colspan="1"></th>
+				  <th colspan="6" class="header" data-toggle="tooltip" title="<%=l("Clan War")%>"><%=l("Clan War")%></th>
+				  <th colspan="6" class="header" data-toggle="tooltip" title="<%=l("Skirmish")%>"><%=l("Skirmish")%></th>
+				  <th colspan="2" class="header" data-toggle="tooltip" title="<%=l("Stronghold")%>"><%=l("Stronghold")%></th>
+				  <th colspan="1" class="header" data-toggle="tooltip" title="<%=l("Estimated gold")%>"><%=l("Gold")%></th>
+				</tr>
+				<tr>
+				  <th colspan="1"></th>
+				  <th colspan="2" class="header" data-toggle="tooltip" title="<%=l("VI")%>"><%=l("VI")%></th>
+				  <th colspan="2" class="header" data-toggle="tooltip" title="<%=l("VIII")%>"><%=l("VIII")%></th>
+				  <th colspan="2" class="header" data-toggle="tooltip" title="<%=l("X")%>"><%=l("X")%></th>
+				  <th colspan="2" class="header" data-toggle="tooltip" title="<%=l("VI")%>"><%=l("VI")%></th>
+				  <th colspan="2" class="header" data-toggle="tooltip" title="<%=l("VIII")%>"><%=l("VIII")%></th>
+				  <th colspan="2" class="header" data-toggle="tooltip" title="<%=l("X")%>"><%=l("X")%></th>
+				  <th colspan="2"></th>
+				  <th colspan="1"></th>
+				</tr>
+				<tr>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Name")%>"><%=l("Name")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("CW tier 6 Wins")%>"><%=l("Win")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("CW tier 6 Losses")%>"><%=l("Loss")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("CW tier 8 Wins")%>"><%=l("Win")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("CW tier 8 Losses")%>"><%=l("Loss")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("CW tier 10 Wins")%>"><%=l("Win")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("CW tier 10 Losses")%>"><%=l("Loss")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Skirmish tier 6 Wins")%>"><%=l("Win")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Skirmish tier 6 Losses")%>"><%=l("Loss")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Skirmish tier 8 Wins")%>"><%=l("Win")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Skirmish tier 8 Losses")%>"><%=l("Loss")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Skirmish tier 10 Wins")%>"><%=l("Win")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Skirmish tier 10 Losses")%>"><%=l("Loss")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Stronghold defence/attack Wins")%>"><%=l("Win")%></th>
+				  <th class="header" data-toggle="tooltip" title="<%=l("Stronghold defence/attack Losses")%>"><%=l("Loss")%></th>
+				  <th colspan="1"></th>
+				</tr>
+				</thead> 
+				<tbody id="member_list_body">
+				</tbody>
+			</table>
+			</div>
+			
+			<a href="/stats_info">Click here</a> for more info about the ratings.
+		</div>	
+	</div>
+	<% include footer.ejs %>		
+</body>

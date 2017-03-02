@@ -14,6 +14,7 @@ function is_safari() {
 var static_host = $("#static_host").attr("data-static_host");
 var image_host = static_host + "/icons/";
 var asset_host = static_host + "/";
+var upload_path = $("#upload_path").attr("data-upload_path");
 
 var loader = PIXI.loader;
 var assets = [];
@@ -56,7 +57,11 @@ function img_texture(src) {
 		var img = texture_atlas[src];
 		return new PIXI.Texture(loader.resources[img.sprite].texture, new PIXI.Rectangle(img.x, img.y, img.width, img.height));
 	} else {
-		return PIXI.Texture.fromImage(image_host + src);
+		if (src.indexOf("://") == -1) {
+			return PIXI.Texture.fromImage(image_host + src);
+		} else {
+			return PIXI.Texture.fromImage(src);
+		}
 	}
 	
 }
@@ -5964,11 +5969,167 @@ $(document).ready(function() {
 		});
 
 		$('#custom_map').click(function (e) {
-			socket.emit("save_room", room);
 			$('#map_modal').modal('show');
 			$('#map_modal').on('shown.bs.modal', function () {
 				$("#send_link").focus();
 			});
+		});
+		
+		function refresh_icon_menu() {
+			var icon_list = $('#icon_list');
+			icon_list.empty();
+			if (my_user && my_user.identity) {
+				$.ajax({
+					url:upload_path+"/list_icons.php?user_id="+my_user.identity,
+					type:'GET',
+					cache: false,
+					success : function(response) {
+						try {
+							var icons = JSON.parse(response);
+							if (icons.length > 0) {
+								$('#no_uploaded_icons').hide();
+							} else {
+								$('#no_uploaded_icons').show();
+							}
+							for (var i in icons) {
+								icon_list.append('<div class="inline" style="padding:20px"><input id="' + icons[i] + '" type="checkbox"> <img src="' + upload_path + '/icons/' + my_user.identity + '/thumbs/' + icons[i] + '"></div>')
+							}
+						} catch(e) {
+							alert(response);
+						}
+					}
+				});
+			}
+		}
+		
+		function refresh_custom_icons() {
+			var icon_list = $('#custom_icons_list')
+			icon_list.empty();
+						
+			if (my_user && my_user.identity) {
+				$.ajax({
+					url:upload_path+"/list_icons.php?user_id="+my_user.identity,
+					type:'GET',
+					cache: false,
+					success : function(response) {
+						try {
+							var icons = JSON.parse(response);
+							for (var i in icons) {
+								var color = 'data-no_color="true"';
+								if (icons[i].substring(0, 3) == "bw-") {
+									color = '';
+								}
+								icon_list.append('<button id="' + upload_path + '/icons/' + my_user.identity + '/' + icons[i] + '" data-scale=2 '+ color +' class="tank_select" data-toggle="tooltip" title="' + icons[i] + '"><img src="' + upload_path + '/icons/' + my_user.identity + '/thumbs/' + icons[i] + '"></button>');
+							}
+						} catch(e) {
+							alert(response);
+						}
+					}
+				});
+			}
+		}
+		
+		$('#upload_icon').click(function (e) {
+			$('#upload_icon_modal').modal('show');
+			refresh_icon_menu();
+		});
+		
+		$("#upload_icon_browse").change(function (e) {
+			var form = $("#upload_icon_form")
+			var formData = new FormData(form[0]);
+			$.ajax({
+				url:form.attr("action"),
+				data:formData,
+				type:'POST',
+				contentType: false,
+				processData: false,
+				success : function(response) {
+					try {
+						var result = JSON.parse(response);
+						if (result.status == "OK") {
+							refresh_icon_menu();
+							refresh_custom_icons();
+						} else {
+							alert(response);
+						}
+					} catch(e) {
+						alert(response);
+					}
+				}
+			});
+		});
+		
+		$('#icon_modal_select_all').click(function() {
+			$('#icon_list :checkbox').each(function() {
+				$(this).prop("checked",true);
+			})
+		})
+		
+		$('#icon_modal_deselect_all').click(function() {
+			$('#icon_list :checkbox').each(function() {
+				$(this).prop("checked",false);
+			})
+		})
+
+		$("a[href='#custom_tab']").on('show.bs.tab', function(e) {
+			refresh_custom_icons();
+		});
+		
+		$('#icon_modal_remove_selected').click(function() {
+			var to_remove = [];
+			$('#icon_list :checkbox').each(function() {
+				if ($(this).prop("checked")) {
+					to_remove.push($(this).attr('id'));
+				}
+			})
+			if (to_remove.length > 0) {
+				$.ajax({
+					url:upload_path + "/remove_icons.php?user_id="+my_user.identity,
+					data:{to_remove},
+					type:'POST',
+					success : function(response) {
+						try {
+							var result = JSON.parse(response);
+							if (result.status == "OK") {
+								refresh_icon_menu();
+								refresh_custom_icons();
+							} else {
+								alert(response);
+							}
+						} catch(e) {
+							alert(response);
+						}
+					}
+				});
+			}
+		})
+		
+		$('#select_icon_files').click(function (e) {
+			 $("#upload_icon_browse").click();
+		});
+		
+		$("#upload_background_browse").change(function (e) {
+			var form = $("#upload_map_form")
+			var formData = new FormData(form[0]);
+			$.ajax({
+				url:form.attr("action"),
+				data:formData,
+				type:'POST',
+				contentType: false,
+				processData: false,
+				success : function(response) {
+					try {
+						response = JSON.parse(response);
+						try_select_map($('#map_select'), response.path, true);						
+					} catch(e) {
+						alert(response);
+					}
+				}
+			});
+		});
+		
+		$('#upload_map').click(function (e) {
+			 $("#upload_background_browse").click();
 		});
 		
 		$('#map_modal_cancel').click(function (e) {
@@ -6634,6 +6795,9 @@ $(document).ready(function() {
 		room_data = new_room_data;
 		video_paused = new_room_data.video_paused;
 		active_slide = room_data.active_slide;
+		if (!room_data.slides[active_slide]) {
+			active_slide = Object.keys(room_data.slides)[0];
+		}		
 		is_room_locked = room_data.locked;
 		if (room_data.hasOwnProperty("presentation_mode")) {
 			set_presentation_mode(room_data.presentation_mode);

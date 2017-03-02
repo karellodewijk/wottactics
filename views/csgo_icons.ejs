@@ -51,10 +51,21 @@
 <p>
 
 <div class='icon_tabs'>
-	<ul class="nav nav-tabs" id="bottom_tabs">
+	<ul class="nav nav-tabs" id="bottom_tabs">  
 	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	  <%if (user.identity) { %><li><a class="icon_group" id="custom_icons" data-toggle="tab" href="#custom_tab"><%=l('Custom')%></a></li><% } %>
 	</ul>
 	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<%if (user.identity) { %>
+		<div class="tab-pane" id="custom_tab">
+			<div class="row">
+				<div id="custom_icons_list"></div>
+				<button class="btn btn-default" aria-label="Left Align" id="upload_icon" data-toggle="tooltip" title="<%=l('Upload icon')%>">
+					<div class="icon icon-upload_sm"></div>
+				</button>	
+			</div>
+		</div>
+		<% } %>
 		<div class="tab-pane" id="extra_tab">
 			<div class="row">
 				<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" data-style="wot_icon_set4.css" hidden>

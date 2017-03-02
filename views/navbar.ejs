@@ -61,11 +61,13 @@
 		</ul>
 
 		<%if (!user.no_ads) {%>
-			<%if (game == 'wot' || game == 'wows' || game == 'blitz' || Math.random() <= 0.75) {%>
-				<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			<div class="hidden-xs" style="width:728px; height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left">
+			<%if (game == 'wot' || game == 'wows' || game == 'blitz' || Math.random() <= 0.75) {%>			
+				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+				<!-- main navbar -->
 				<ins class="adsbygoogle hidden-xs"
-					 style="width:728px; height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left"
-					 data-ad-client="ca-pub-9117810685246622"
+					 style="display:inline-block;width:728px;height:90px"
+					 data-ad-client="<%=secrets.adsense_id%>"
 					 data-ad-slot="8003811790"></ins>
 				<script>
 				(adsbygoogle = window.adsbygoogle || []).push({});
@@ -101,8 +103,9 @@
 					<% } %>					
 				<% } %>
 				<%var ad = ads[Math.floor(ads.length * Math.random())]%>
-				<a href="http://wgpartner.com/?a=777&c=+<%=ad.code%>+&s1="><img style="height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left" src="<%=static_host%><%=path%><%=ad.link%>" alt="wot_ad"></a>	
+				<a href="http://wgpartner.com/?a=777&c=+<%=ad.code%>+&s1="><img src="<%=static_host%><%=path%><%=ad.link%>" alt="wot_ad"></a>	
 			<% } %>
+			</div>
 		<%}%>
 				
 		<ul class="nav navbar-nav navbar-right">

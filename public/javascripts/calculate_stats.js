@@ -133,12 +133,14 @@ function calculate_stats(tank_expected_wn8, tank_expected_wn8_wn9, stats_data, s
 		var totbat = 0;
 		for (var i=0; i<tanks.length; i++)
 		{
-			var exp = expvals[tanks[i].tank_id];
-			if (!exp || exp.type == "SPG") continue;	// don't use SPGs & missing tanks
-			var wn9 = CalcWN9Tank(tanks[i], expvals, false);
-			var tankentry = { wn9:wn9, bat:tanks[i].random.battles, exp:exp };
-			tanklist.push(tankentry);
-			totbat += tankentry.bat;
+			if (tanks[i].random.battles > 0) { // <-- code was modified here
+				var exp = expvals[tanks[i].tank_id];
+				if (!exp || exp.type == "SPG") continue;	// don't use SPGs & missing tanks
+				var wn9 = CalcWN9Tank(tanks[i], expvals, false);
+				var tankentry = { wn9:wn9, bat:tanks[i].random.battles, exp:exp };
+				tanklist.push(tankentry);
+				totbat += tankentry.bat;
+			}
 		}
 		if (!totbat) return -1;		// handle case with no valid tanks
 
@@ -150,7 +152,7 @@ function calculate_stats(tank_expected_wn8, tank_expected_wn8_wn9, stats_data, s
 			var batcap = exp.tier*(40.0 + exp.tier*totbat/2000.0);
 			tanklist[i].weight = Math.min(batcap, tanklist[i].bat);
 			if (exp.wn9nerf) tanklist[i].weight /= 2;
-			totweight += tanklist[i].weight;
+			totweight += tanklist[i].weight;	
 		}
 
 		// sort tanks by WN9 decreasing

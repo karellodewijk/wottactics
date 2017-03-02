@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<script defer src="http://cdn.jsdelivr.net/async/2.1.4/async.min.js"></script>		
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.26.2/js/jquery.tablesorter.min.js"></script>
+	<script defer type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/calculate_stats.js"></script>
+	<script defer type="text/javascript" src="<%=static_host%>/javascripts/clan_config.js"></script>
+	<link rel="stylesheet" href="<%=static_host%>/stylesheets/tablesorter/style.css" />	
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - Clan stats</title>
+	<meta name="description" content="Track clan stats for <%=game.toUpperCase()%>.">
+	<meta name="user" content="<%=JSON.stringify(user)%>">
+	<meta name="update_message" content="<%=('Weights and treasury updated')%>">
+	<meta name="reset_interval_warning" content="<%=('Are you sure, this will reset all battle totals and can not be undone !')%>">
+	<meta name="reset_interval_confirm" content="<%=('Interval reset')%>">
+	
+	<style>
+		#member_list > td {
+			display: table-cell;
+			line-height: 32px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body style="overflow-y: scroll; width:100%;">
+	<% include navbar.ejs %>
+	<% include stat_navbar.ejs %>	
+
+	<nav class="navbar navbar-default navbar-inverse main_navbar navbar-custom" style="border-radius: 0; margin-top:-20px; font-size:120%; background-color: #2e2e2e;">
+		<ul class="nav navbar-nav">
+			<li id="member_overview"><a href="/clan_activity"><h2><%=l('Member overview')%></h2></a></li>
+			<li id="clan_config"><a href="/clan_config"><h2><%=l('Clan config')%></h2></a></li>
+		</ul>
+	</nav>	
+	<script>
+		document.getElementById('stats').className = "beta_button active";
+		document.getElementById('clan_activity').className = "active";
+		document.getElementById('clan_config').className = "active";
+	</script>
+	<div class="container" style='width:100%; position:relative;'>
+		<div class="jumbotron content content_margin">
+			<h2 style="padding-top:0px; margin-top:0px;"><%=l('Weights & Treasury')%> <span id="alt_lists"></span></h2>
+			<div class="container inline" style="text-align:left;">
+    		<div class="list-group-item row">
+			  <div class="col-md-4"><b>Gold to distribute:</b> <input id="treasury" type='text' value=<%=clan.treasury%> /></div>
+			</div>
+    		<div class="list-group-item row">
+			  <%console.log(clan._id)%>
+			  <div class="col-md-1"><b>CW</b></div>
+			  <div class="col-md-1">T6 <input id="CW6" style="width: 50px;" type='text' value=<%=clan.multipliers.CW[0]%> /></div>
+			  <div class="col-md-1">T8 <input id="CW8" style="width: 50px;" type='text' value=<%=clan.multipliers.CW[1]%> /></div>
+			  <div class="col-md-1">T10 <input id="CW10" style="width: 50px;" type='text' value=<%=clan.multipliers.CW[2]%> /></div>
+			  <div class="col-md-1">win: <input id="CWW" style="width: 50px;" type='text' value=<%=clan.multipliers.CWW%> /></div>
+			  <div class="col-md-1">loss: <input id="CWL" style="width: 50px;" type='text' value=<%=clan.multipliers.CWL%> /></div>
+			</div>
+    		<div class="list-group-item row">
+			  <div class="col-md-1"><b>SH</b></div>
+			  <div class="col-md-1">T6 <input id="SH6" style="width: 50px;" type='text' value=<%=clan.multipliers.SH[0]%> /></div>
+			  <div class="col-md-1">T8 <input id="SH8" style="width: 50px;" type='text' value=<%=clan.multipliers.SH[1]%> /></div>
+			  <div class="col-md-1">T10 <input id="SH10" style="width: 50px;" type='text' value=<%=clan.multipliers.SH[2]%> /></div>
+			  <div class="col-md-1">win: <input id="SHW" style="width: 50px;" type='text' value=<%=clan.multipliers.SHW%> /></div>
+			  <div class="col-md-1">loss: <input id="SHL" style="width: 50px;" type='text' value=<%=clan.multipliers.SHL%> /></div>
+			</div>
+    		<div class="list-group-item row">
+			  <div class="col-md-1"><b>SK</b></div>
+			  <div class="col-md-1">T6 <input id="SK6" style="width: 50px;" width=10 type='text' value=<%=clan.multipliers.SK[0]%> /></div>
+			  <div class="col-md-1">T8 <input id="SK8" style="width: 50px;" type='text' value=<%=clan.multipliers.SK[1]%> /></div>
+			  <div class="col-md-1">T10 <input id="SK10" style="width: 50px;" type='text' value=<%=clan.multipliers.SK[1]%> /></div>
+			  <div class="col-md-1">win: <input id="SKW" style="width: 50px;" type='text' value=<%=clan.multipliers.SKW%> /></div>
+			  <div class="col-md-1">loss: <input id="SKL" style="width: 50px;" type='text' value=<%=clan.multipliers.SKL%> /></div>
+			</div>	
+    		<div class="list-group-item row">
+			  <div class="col-md-12"><b>Attendance</b> <input id="A" type='text' value=<%=clan.multipliers.A%> /></div>	  
+			</div>
+			<div class="list-group-item row">
+			  <button id="recalculate" data-toggle="tooltip" title="<%=l('Applies the new weights to calculate')%>" class="btn btn-primary"><%=l('Recalculate')%></button>
+			  <button id="reset_interval" data-toggle="tooltip" title="<%=l('Resets all battle counts')%>" class="btn btn-primary"><%=l('Reset Interval')%></button>
+			</div>
+			</div>
+		</div>
+		<h2 style="padding-top:0px; margin-top:0px;"><%=l('Weights & Treasury')%> <span id="alt_lists"></span></h2>
+	</div>
+	<% include footer.ejs %>		
+</body>
+
