@@ -88,15 +88,16 @@
 	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>		
-	<%}%>	
+	<%}%>
 	
-	<script defer src="<%=static_host%>/javascripts/combined.js"></script>		
+	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
 	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
 	<script id="static_host" data-static_host="<%=static_host%>"></script>
-	<script id="socket_io_servers" data-socket_io_servers="<%=socket_io_servers%>"></script>
+	<script id="socket_io_servers" data-socket_io_servers="<%=secrets.socket_io_servers%>"></script>
+	<script id="upload_path" data-upload_path="<%=secrets.upload_path%>"></script>
 	
 	<style>
 	input, textarea, .chatmsg, .userlist {
@@ -169,9 +170,14 @@
 					<select class="selectpicker" data-live-search="true" id="wotbase_select"><%include R6_maps_annotated.ejs%></select>
 				</div>		
 			<%} %>
-			<button class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
+			<div class="btn-group">
+			<button class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Background from link')%>">
 				<div class="icon icon-link_sm"></div>
 			</button>
+			<button class="btn btn-default menu_btn" aria-label="Left Align" id="upload_map" data-toggle="tooltip" title="<%=l('Upload background')%>">
+				<div class="icon icon-upload_sm"></div>
+			</button>
+			</div>
 			
 			<div style="padding-top:5px;">
 			<div class="btn-group">
@@ -1183,6 +1189,58 @@
 		</div>
 	  </div>
 	</div>
+	
+	<div id="upload_icon_modal" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content" style="color:black">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title"><%=l('Icon upload menu')%></h4>
+		</div>
+		<div class="modal-body">
+			<div class="alert alert-info">
+			  <%=l('Here you can manage your custom icons.')%> 
+			  <ul>
+				<li><%=l('Icons stay with your account across tactics.')%> 
+				<li><%=l('If you want icons to take different colors, start the filename with "bw-".')%>
+				<li><%=l('Removing icons will also remove them from all tactics.')%>
+			  </ul>
+			</div>
+		
+			<button id="icon_modal_select_all" class="btn btn-default menu_btn" aria-label="Left Align" data-toggle="tooltip" title="<%=l('Select all')%>">
+				<%=l('Select all')%>
+			</button>
+			<button id="icon_modal_deselect_all" class="btn btn-default menu_btn" aria-label="Left Align" data-toggle="tooltip" title="<%=l('Deselect all')%>">
+				<%=l('Deselect all')%>
+			</button>
+			<br />
+			<span id="no_uploaded_icons"><%=l('You have not uploaded any icons')%></span>
+			<div id="icon_list">			
+			</div>
+			<button id="icon_modal_remove_selected" class="btn btn-default menu_btn" aria-label="Left Align" data-toggle="tooltip" title="<%=l('Remove selected icons')%>">
+				<%=l('Remove selected')%>
+			</button>
+			<button id="select_icon_files" class="btn btn-default menu_btn" aria-label="Left Align" data-toggle="tooltip" title="<%=l('Upload icon(s)')%>">
+				<%=l('Upload icons')%>
+			</button>
+		</div>
+		</div>
+	  </div>
+	</div>
+	
+	<form id="upload_map_form" method="POST" action="<%=secrets.upload_path%>/upload.php" enctype="multipart/form-data" hidden>
+		<input name="MAX_FILE_SIZE" type="hidden"  value="10000000"/>
+		<input name="pictures" id="upload_background_browse" type="file" />
+		<input type="submit" value="upload"/>
+	</form>
+	
+	<form name="file_submit" id="upload_icon_form" method="POST" action="<%=secrets.upload_path%>/upload_icon.php" enctype="multipart/form-data" hidden>
+		<input type="hidden" name="MAX_FILE_SIZE" value="10000000"/>
+		<input type="hidden" name="user_id" value="<%=user.identity%>"/>
+		<input type="file" id="upload_icon_browse" name="pictures[]" multiple>
+		<input type="submit" value="upload"/>
+	</form>
 	
 	<div id='dpitest' style='height: 1in; left: -100%; position: absolute; top: -100%; width: 1in;'></div>
 </body>

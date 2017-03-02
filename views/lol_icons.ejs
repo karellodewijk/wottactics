@@ -25,6 +25,7 @@
 <div class='icon_tabs'>
 	<ul class="nav nav-tabs" id="bottom_tabs">
 	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	  <%if (user.identity) { %><li><a class="icon_group" id="custom_icons" data-toggle="tab" href="#custom_tab"><%=l('Custom')%></a></li><% } %>
 	  <li><a class="icon_group" id="lol_champions" data-toggle="tab" href="#lol_champions_tab"><%=l('Champions')%></a></li>
 	  <li><a class="icon_group" id="lol_wards" data-toggle="tab" href="#lol_wards_tab"><%=l('Wards')%></a></li>
 	  <li><a class="icon_group" id="lol_npcs" data-toggle="tab" href="#lol_npcs_tab"><%=l('Npc')%></a></li>
@@ -33,6 +34,16 @@
 	  <li><a class="icon_group" id="lol_runes" data-toggle="tab" href="#lol_runes_tab"><%=l('Runes')%></a></li>
 	</ul>
 	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<%if (user.identity) { %>
+		<div class="tab-pane" id="custom_tab">
+			<div class="row">
+				<div id="custom_icons_list"></div>
+				<button class="btn btn-default" aria-label="Left Align" id="upload_icon" data-toggle="tooltip" title="<%=l('Upload icon')%>">
+					<div class="icon icon-upload_sm"></div>
+				</button>	
+			</div>
+		</div>
+		<% } %>
 		<div class="tab-pane" id="lol_champions_tab">
 			<div id="lol_champions_list" data-path="lol_champions" data-scale="2" data-height="60" data-no_color="true" data-style="lol_champions.css" hidden>
 				Aatrox_Square_0.jpg

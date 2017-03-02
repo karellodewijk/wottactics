@@ -97,8 +97,8 @@
 	$("#done").click(function() {
 	    var r = confirm("Are you sure you have made the payouts, this can not be undone !");
 		if (r == true) {
-			$.post("/reset.html").done(function( data ) {
-			  window.location.reload();
+			$.post("/reset).done(function( data ) {
+			  alert('interval reset');
 			});	
 		}
 	});

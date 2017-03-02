@@ -430,8 +430,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-                            static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
+                            static_host: secrets.static_host,
+							secrets:secrets});
 	});
 	router.get(['/health_check', '/health_check.html'], function(req, res, next) {
 	  res.sendStatus(200);
@@ -466,8 +466,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								 url: req.fullUrl,
 								 sid: req.sessionID,
 								 static_host: secrets.static_host,
-								 socket_io_servers: secrets.socket_io_servers, 
-								 ga_id:secrets.ga_id});
+								 secrets:secrets});
 								  
 		  if (req.session.passport.user.identity) {
 			  setImmediate(function() {
@@ -493,8 +492,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								user: req.session.passport.user,
 								locale: req.session.locale,
 								url: req.fullUrl,
-								static_host: secrets.static_host, 
-								ga_id:secrets.ga_id});
+								static_host: secrets.static_host,
+								secrets:secrets});
 		});
 		router.get(['/'+game+'1', '/'+game+'planner.html'], function(req, res, next) {
 		  planner_redirect(req, res, game, 'planner');
@@ -506,88 +505,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		  planner_redirect(req, res, game, 'planner3');
 		});			
 	});
-	
-	router.get('/player/:wid?', function(req, res, next) {
-		var wid = req.params.wid;
-		if (!wid) {
-			var user = req.session.passport.user;
-			if (user.wg_account_id) {
-				wid = user.wg_account_id;
-			}			
-		}
-		if (!req.session.game) {
-			set_game(req, res,'wot');
-		}
-		res.render('stats', { game: req.session.game, 
-							  user: req.session.passport.user,
-							  locale: req.session.locale,
-							  url: req.fullUrl,
-							  static_host: secrets.static_host, 
-							  ga_id:secrets.ga_id});
-	});
-	router.get('/clan/:cid?', function(req, res, next) {
-		var cid = req.params.cid;
-		if (!cid) {
-			var user = req.session.passport.user;
-			if (user.clan_id) {
-				cid = user.wg_account_id;
-			}			
-		}
-		if (!req.session.game) {
-			set_game(req, res,'wot');
-		}
-		res.render('clan_stats', { game: req.session.game, 
-							  user: req.session.passport.user,
-							  locale: req.session.locale,
-							  url: req.fullUrl,
-							  static_host: secrets.static_host, 
-							  ga_id:secrets.ga_id});
-	});
-	
-	router.get('/stats_info', function(req, res, next) {
-		if (!req.session.game) {
-			set_game(req, res,'wot');
-		}
-		res.render('stats_info', { game: req.session.game, 
-							  user: req.session.passport.user,
-							  locale: req.session.locale,
-							  url: req.fullUrl,
-							  static_host: secrets.static_host, 
-							  ga_id:secrets.ga_id});
-	});
-	
-	router.get('/stats/player/:wid', function(req, res, next) {
-		var wid = req.params.wid;
-		var field = req.query.field;
-		if (!field) {
-			field = "all";
-		}
-		db.collection('ws_' + field + '_summary').findOne({_id:wid}, function(err, result) {
-			if (!err && result) {
-				res.status(200).send(JSON.stringify(result));
-			} else {
-				res.status(404).send(null);
-			}
-			db.collection('tracked_players').replaceOne({_id:wid}, {_id:wid}, {upsert: true});
-		});	
-	});
-	
-	router.get('/stats/clan/:wid', function(req, res, next) {
-		var wid = req.params.wid;
-		var field = req.query.field;
-		if (!field) {
-			field = "all";
-		}
-		db.collection('ws_clan_' + field + '_summary').findOne({_id:wid}, function(err, result) {
-			if (!err && result) {
-				res.status(200).send(JSON.stringify(result));
-			} else {
-				res.status(404).send(null);
-			}
-			db.collection('tracked_clans').replaceOne({_id:wid}, {_id:wid}, {upsert: true});
-		});	
-	});
-	
+		
 	var count = 0;
 	//form {pw: pw, data: {field: field, users: [{_id:user, ...}]}}
 	router.post('/submit_summaries', function(req, res, next) {
@@ -615,8 +533,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-							static_host: secrets.static_host, 
-							ga_id:secrets.ga_id});
+							static_host: secrets.static_host,
+						    secrets:secrets});
 	});
 	router.get(['/getting_started.html','/getting_started'], function(req, res, next) {
 	  if (!req.session.game) {
@@ -626,8 +544,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 									  user: req.session.passport.user,
 									  locale: req.session.locale,
 									  url: req.fullUrl,
-									  static_host: secrets.static_host, 
-									  ga_id:secrets.ga_id});
+									  static_host: secrets.static_host,
+									  secrets:secrets});
 	});
 	router.get(['/privacypolicy.html', '/privacypolicy'], function(req, res, next) {
 	  if (!req.session.game) {
@@ -637,8 +555,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								    user: req.session.passport.user,
 									locale: req.session.locale,
 									url: req.fullUrl,
-									static_host: secrets.static_host, 
-									ga_id:secrets.ga_id});
+									static_host: secrets.static_host,
+									secrets:secrets});
 	});
 	
 	router.get(['/older_news.html','/older_news'], function(req, res, next) {
@@ -649,8 +567,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 								 user: req.session.passport.user,
 								 locale: req.session.locale,
 								 url: req.fullUrl,
-								 static_host: secrets.static_host, 
-								 ga_id:secrets.ga_id});
+								 static_host: secrets.static_host,
+								 secrets:secrets});
 	});
 	
 	router.get(['/stored_tactics.html','/stored_tactics'], function(req, res, next) {
@@ -667,8 +585,8 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 										 url: req.fullUrl,
 										 sid: req.sessionID,
 										 static_host: secrets.static_host,
-										 socket_io_servers: secrets.socket_io_servers, 
-										 ga_id:secrets.ga_id});
+										 socket_io_servers: secrets.socket_io_servers,
+										 secrets:secrets});
 		});
 	  } else {
 		  res.redirect('/');
@@ -1227,7 +1145,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	//////////////
 
 	var cp = require(__dirname + "/clanportal.js");
-	cp.load(router, http, secrets, db, escaper);
+	cp.load(router, secrets, db, request, escaper);
 
 	//////////////////
 	//end clanportal//

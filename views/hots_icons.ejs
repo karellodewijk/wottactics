@@ -25,12 +25,23 @@
 <div class='icon_tabs'>
 	<ul class="nav nav-tabs" id="bottom_tabs">
 	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	  <%if (user.identity) { %><li><a class="icon_group" id="custom_icons" data-toggle="tab" href="#custom_tab"><%=l('Custom')%></a></li><% } %>
 	  <li><a class="icon_group" id="hots_heroes" data-toggle="tab" href="#hots_heroes_tab"><%=l('Heroes')%></a></li>
 	  <li><a class="icon_group" id="hots_map_icons" data-toggle="tab" href="#hots_map_icons_tab"><%=l('Map icons')%></a></li>
 	  <li><a class="icon_group" id="hots_minions" data-toggle="tab" href="#hots_minions_tab"><%=l('Minions')%></a></li>
 	  <li><a class="icon_group" id="hots_abilities" data-toggle="tab" href="#hots_abilities_tab"><%=l('Abilities')%></a></li>
 	</ul>
 	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<%if (user.identity) { %>
+		<div class="tab-pane" id="custom_tab">
+			<div class="row">
+				<div id="custom_icons_list"></div>
+				<button class="btn btn-default" aria-label="Left Align" id="upload_icon" data-toggle="tooltip" title="<%=l('Upload icon')%>">
+					<div class="icon icon-upload_sm"></div>
+				</button>	
+			</div>
+		</div>
+		<% } %>
 		<div class="tab-pane" id="hots_heroes_tab">
 			<div id="hots_heroes_list" data-path="hots_heroes" data-scale="2" data-height="60" data-no_color="true" data-style="hots_heroes.css" hidden>
 				storm_ui_ingame_heroselect_btn_anubarak.png

@@ -12,6 +12,7 @@
 		 <table id="tank_list">
 			<tr>
 				<th>Tank
+				<th>battles
 				<th>wn8
 				<th>wn9
 			</tr>
@@ -148,6 +149,24 @@
 		return wn9tot / totweight;
 	}
 	
+	//borrowed from http://stackoverflow.com/questions/22697936/binary-search-in-javascript
+	function binarySearch(ar, el, compare_fn) {
+		var m = 0;
+		var n = ar.length - 1;
+		while (m <= n) {
+			var k = (n + m) >> 1;
+			var cmp = compare_fn(el, ar[k]);
+			if (cmp > 0) {
+				m = k + 1;
+			} else if(cmp < 0) {
+				n = k - 1;
+			} else {
+				return k;
+			}
+		}
+		return -m - 1;
+	}
+	
 	function get_server(id) {
 		if(id > 3000000000){return "kr";}
 		if(id > 2000000000){return "asia";}
@@ -159,7 +178,7 @@
 	$('#search_btn').click(function() {
 		var id = $('#id').val();
 		var server = get_server(id);
-		var tank_data, tank_stats, tank_expected_wn8, tank_expected_wn9; 
+		var tank_data, tank_stats, tank_expected_wn8, tank_expected_wn9, valid_tanks; 
 		
 		//get all the data
 		$.when(
@@ -200,8 +219,25 @@
 					}
 					self.resolve();
 				});
+			}),
+			//this is to fix a bug with reset account, where wg still reports old stats for tanks
+			$.Deferred(function() {
+				var self = this;
+				$.get("https://api.worldoftanks." + server + "/wot/account/tanks/?application_id=" + wg_app_id + "&account_id=" + id + "&fields=tank_id").done(function(data) {
+					data = data.data[id];
+					valid_tanks = data.map(function(x) {return parseInt(x.tank_id)});
+					valid_tanks.sort(function(a,b) {return a-b});
+					self.resolve();
+				});
 			})
 		).then(function() {	
+			//this is to fix a bug with reset account, where wg still reports old stats for tanks
+			tank_stats = tank_stats.filter(function(x) {
+				var tank_id = x.tank_id;
+				var pos = binarySearch(valid_tanks, tank_id, function(a,b) {return a-b});
+				return (pos >= 0)
+			})
+					
 			//calculate the stats
 			var wn8 = calculate_account_wn8(tank_stats, tank_expected_wn8);
 			var wn9 = CalcWN9Account(tank_stats, tank_expected_wn9);
@@ -210,7 +246,7 @@
 			$("#account_wn9").append(wn9);
 			
 			for (var i in tank_stats) {
-				var tank_id = tank_stats[i].tank_id;
+				var tank_id = tank_stats[i].tank_id;				
 				var tank = tank_stats[i];
 
 				var wn8, wn9;
@@ -222,6 +258,9 @@
 				} else {
 					node += "<td>" + tank_id + "</td>";
 				}
+				
+				//battles
+				node += "<td>" + tank.all.battles + "</td>";
 				
 				//wn8
 				if (tank_expected_wn8[tank_id]) {
@@ -240,7 +279,7 @@
 					var wn9 = CalcWN9Tank(tank, tank_expected_wn9, true);
 					node += "<td>" + wn9 + "</td>";
 				}
-
+				
 				node += "</tr>"
 				$('#tank_list').append(node)
 			}

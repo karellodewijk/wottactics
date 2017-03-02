@@ -10,6 +10,7 @@ if (!player) {
 }
 
 var server = get_server(player);
+var charts = [];
 
 function get_server(id) {
 	if(id > 3000000000){return "kr";}
@@ -70,10 +71,12 @@ function reset_ui() {
 	$('#total_table_body').children().each(function() {
 		$(this).children().slice(1).remove();
 	})
+	for (var i in charts) {
+		charts[i].destroy();
+	}
 }
 
 function populate() {	
-
 	server = get_server(player);
 	$('#no_results').hide();
 	$("#did_you_mean").hide();
@@ -105,6 +108,15 @@ function populate() {
 				self.resolve();
 			}).fail(function() {
 				summary = null;
+				self.resolve();
+			});
+		}),
+		//this is to fix a bug with reset account, where wg still reports old stats for tanks
+		$.Deferred(function() {
+			var self = this;
+			get_wg_data("/account/tanks/?", ["tank_id"], function(data) {
+				valid_tanks = data.map(function(x) {return parseInt(x.tank_id)});
+				valid_tanks.sort(function(a,b) {return a-b});
 				self.resolve();
 			});
 		}),
@@ -177,6 +189,32 @@ function populate() {
 		} else {
 			$('#no_battles').hide();
 		}
+
+		//borrowed from http://stackoverflow.com/questions/22697936/binary-search-in-javascript
+		function binarySearch(ar, el, compare_fn) {
+			var m = 0;
+			var n = ar.length - 1;
+			while (m <= n) {
+				var k = (n + m) >> 1;
+				var cmp = compare_fn(el, ar[k]);
+				if (cmp > 0) {
+					m = k + 1;
+				} else if(cmp < 0) {
+					n = k - 1;
+				} else {
+					return k;
+				}
+			}
+			return -m - 1;
+		}
+		
+		//this is to fix a bug with reset account, where wg still reports old stats for tanks
+		stats_data = stats_data.filter(function(x) {
+			var tank_id = x.tank_id;
+			var pos = binarySearch(valid_tanks, tank_id, function(a,b) {return a-b});
+			return (pos >= 0)
+		})
+		
 				
 		$( document ).ready(function() {
 			$("#tank_list").tablesorter({sortList: [[5,1], [0,0],[1,0],[2,0],[3,0],[4,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0]], sortStable:true, sortAppend: [[5,1]]}); 		
@@ -483,7 +521,7 @@ function populate() {
 			};				
 	
 			var ctx = document.getElementById("tier_battles").getContext('2d');
-			var myBarChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'bar',
 				data: tierBattleDesc,
 				options: {
@@ -495,10 +533,10 @@ function populate() {
 					  }]
 					}
 				}
-			});
+			}));
 
 			var ctx = document.getElementById("tier_wins").getContext('2d');
-			var myBarChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'bar',
 				data: tierWinsDesc,
 				options: {
@@ -515,10 +553,10 @@ function populate() {
 					  }]
 					}
 				}
-			});
+			}));
 			
 			var ctx = document.getElementById("tier_wn8").getContext('2d');
-			var myBarChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'bar',
 				data: tierWN8Desc,
 				options: {
@@ -530,10 +568,10 @@ function populate() {
 					  }]
 					}
 				}
-			});
+			}));
 
 			var ctx = document.getElementById("tier_wn9").getContext('2d');
-			var myBarChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'bar',
 				data: tierWN9Desc,
 				options: {
@@ -545,7 +583,7 @@ function populate() {
 					  }]
 					}
 				}
-			});
+			}));
 
 			var types = ["Light", "Medium", "Heavy", "TD", "SPG"];
 			var wn9_types = ["Light", "Medium", "Heavy", "TD"];
@@ -607,7 +645,7 @@ function populate() {
 			};				
 	
 			var ctx = document.getElementById("type_battles").getContext('2d');
-			var myBarChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'bar',
 				data: typeBattleDesc,
 				options: {
@@ -619,10 +657,10 @@ function populate() {
 					  }]
 					}
 				}
-			});
+			}));
 
 			var ctx = document.getElementById("type_wins").getContext('2d');
-			var myBarChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'bar',
 				data: typeWinsDesc,
 				options: {
@@ -639,10 +677,10 @@ function populate() {
 					  }]
 					}
 				}
-			});			
+			}));			
 			
 			var ctx = document.getElementById("type_wn8").getContext('2d');
-			var myBarChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'bar',
 				data: typeWN8Desc,
 				options: {
@@ -654,10 +692,10 @@ function populate() {
 					  }]
 					}
 				}
-			});
+			}));
 
 			var ctx = document.getElementById("type_wn9").getContext('2d');
-			var myBarChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'bar',
 				data: typeWN9Desc,
 				options: {
@@ -669,11 +707,11 @@ function populate() {
 					  }]
 					}
 				}
-			});
+			}));
 			
 		});
 
-		if (summary.battles) {
+		if (summary && summary.battles) {
 			$('#line_chart').show();
 			var wn8_dataset = []
 			var wn9_dataset = []
@@ -686,7 +724,7 @@ function populate() {
 			var max_x = summary.battles[summary.battles.length-1];
 					
 			var ctx = document.getElementById('wn8_progress').getContext('2d');
-			var myChart = new Chart(ctx, {
+			charts.push(new Chart(ctx, {
 				type: 'line',
 				data: {
 					labels: summary.battles,
@@ -744,7 +782,7 @@ function populate() {
 					  }]
 					}
 				}
-			})
+			}))
 		} else {
 			$('#line_chart').hide();
 		}
