@@ -1,5 +1,6 @@
 var servers = $("#socket_io_servers").attr("data-socket_io_servers").split(',')
-//var servers = [location.host];
+
+if (servers.length == 1 && servers[0] == "") servers = [location.host];
 
 var game = $('meta[name=game]').attr("content");
 var is_video_replay = false;
@@ -2031,10 +2032,27 @@ function on_left_click(e) {
 	}
 }
 
+/* uncomment for pixi 4.4.1+
 var eraser_state = {}
 function on_eraser_move(e) {
 	limit_rate(5, eraser_state, function() {
 		renderer.plugins.interaction.processInteractive(renderer.plugins.interaction.eventData, objectContainer, function(e, container, hit) {
+			if (hit && container.entity && container.entity.type != 'background') {
+				var entity = container.entity;
+				remove(entity.uid);
+				undo_list.push(clone_action(["remove", [entity]]));
+				socket.emit('remove', room, entity.uid, active_slide);
+			}
+		}, true);	
+	});
+}
+*/
+
+var eraser_state = {}
+function on_eraser_move(e) {
+	var mouse_location = mouse_loc();
+	limit_rate(5, eraser_state, function() {	
+		renderer.plugins.interaction.processInteractive(mouse_location, objectContainer, function(container, hit) {
 			if (hit && container.entity && container.entity.type != 'background') {
 				var entity = container.entity;
 				remove(entity.uid);
