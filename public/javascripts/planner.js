@@ -2033,9 +2033,8 @@ function on_left_click(e) {
 
 var eraser_state = {}
 function on_eraser_move(e) {
-	var mouse_location = mouse_loc();
-	limit_rate(5, eraser_state, function() {	
-		renderer.plugins.interaction.processInteractive(mouse_location, objectContainer, function(container, hit) {
+	limit_rate(5, eraser_state, function() {
+		renderer.plugins.interaction.processInteractive(renderer.plugins.interaction.eventData, objectContainer, function(e, container, hit) {
 			if (hit && container.entity && container.entity.type != 'background') {
 				var entity = container.entity;
 				remove(entity.uid);
