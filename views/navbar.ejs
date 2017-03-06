@@ -61,17 +61,23 @@
 		</ul>
 
 		<%if (!user.no_ads) {%>
-			<div class="hidden-xs" style="width:728px; height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left">
-			<%if (game == 'wot' || game == 'wows' || game == 'blitz' || Math.random() <= 0.75) {%>			
-				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-				<!-- main navbar -->
-				<ins class="adsbygoogle hidden-xs"
-					 style="display:inline-block;width:728px;height:90px"
-					 data-ad-client="<%=secrets.adsense_id%>"
-					 data-ad-slot="8003811790"></ins>
-				<script>
-				(adsbygoogle = window.adsbygoogle || []).push({});
-			</script>
+			<div class="hidden-xs" style="background-color:white; width:728px; height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left">
+			<%if (game == 'wot' || game == 'wows' || game == 'blitz' || Math.random() <= 0.75) {%>
+				<%if (url.includes("wottactic.com")) {%>
+					<SCRIPT SRC="http://bdv.bidvertiser.com/BidVertiser.dbm?pid=763668&bid=1873593" TYPE="text/javascript"></SCRIPT>
+				<%} else if (url.includes("gametactic.org")) {%>
+					<SCRIPT SRC="http://bdv.bidvertiser.com/BidVertiser.dbm?pid=763668&bid=1873597" TYPE="text/javascript"></SCRIPT>
+				<%} else {%>
+					<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+					<!-- main navbar -->
+					<ins class="adsbygoogle hidden-xs"
+						 style="display:inline-block;width:728px;height:90px"
+						 data-ad-client="<%=secrets.adsense_id%>"
+						 data-ad-slot="8003811790"></ins>
+					<script>
+					(adsbygoogle = window.adsbygoogle || []).push({});
+					</script>
+				<%}%>
 			<% } else { %>
 				<% var ads; %>
 				<% var path; %>
