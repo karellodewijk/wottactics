@@ -2926,6 +2926,7 @@ function redraw_select_box() {
 			select_box.height = y_max - y_min;
 			select_box.x = x_min + select_box.width/2;
 			select_box.y = y_min + select_box.height/2;
+			make_resizable(select_box);
 			
 			rotate_arrow0.x = x_min + select_box.width + rotate_arrow0.width/2 + y_abs(ROTATE_ARROW_MARGIN) * zoom_level;
 			rotate_arrow0.y = y_min + select_box.height/2;
