@@ -70,6 +70,18 @@
 	<% } else if (game == 'EC') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 		<link rel="stylesheet" href="<%=static_host%>/EC_icons.css">
+	<% } else if (game == 'pr') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_icons.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_attack_markers.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_defence_markers.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_flags.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_kits.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_landing_zone.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_mini.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_player.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_spotted.css">
+		<link rel="stylesheet" href="<%=static_host%>/pr_vehicles.css">
 	<% } %>
 
 	<script defer src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>	
@@ -276,7 +288,7 @@
 				<button id='store_tactic_popover' data-placement="left" data-toggle="popover" style="color:black" data-content="<div class='input-group'><input type='text' class='form-control' id='tactic_name'><span class='input-group-btn'><button id='store_tactic' style='border-radius: 0px;' class='btn btn-default'><%=l('Store')%></button></span></div>" class="btn btn-default navbar-btn" title="<%=l('Save as')%>">
 					<div class="icon icon-save_as"></div>
 				</button>
-				<% if (game == 'wot' || game == 'wows' || game == 'aw' || game == 'squad' || game == 'MWO') { %>
+				<% if (game == 'wot' || game == 'wows' || game == 'aw' || game == 'squad' || game == 'MWO' || game == 'pr') { %>
 					<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
 						<div class="icon icon-grid_icon"></div>
 					</button>

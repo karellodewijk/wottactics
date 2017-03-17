@@ -1,0 +1,325 @@
+
+.pr_mini {
+  background-image: url('pr_mini.png');
+}
+
+.pr_mini-placedaction_micromap {
+  background-position: -0px -0px;
+  width: 8px;
+  height: 8px;
+}
+.pr_mini-icon_vehicledrop {
+  background-position: -0px -8px;
+  width: 8px;
+  height: 8px;
+}
+.pr_mini-laserpainttarget {
+  background-position: -0px -16px;
+  width: 13px;
+  height: 13px;
+}
+.pr_mini-laserpainttargetactive {
+  background-position: -0px -29px;
+  width: 13px;
+  height: 13px;
+}
+.pr_mini-icon_defend {
+  background-position: -0px -42px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_destroy {
+  background-position: -0px -57px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_lz {
+  background-position: -0px -72px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_medic {
+  background-position: -0px -87px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_mine {
+  background-position: -0px -102px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_mortar {
+  background-position: -0px -117px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_move {
+  background-position: -0px -132px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_regroup {
+  background-position: -0px -147px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reguest {
+  background-position: -0px -162px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reinforcements {
+  background-position: -0px -177px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_repair {
+  background-position: -0px -192px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_repaircrate {
+  background-position: -0px -207px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reqbombcar {
+  background-position: -0px -222px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_artillery {
+  background-position: -0px -237px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reqcivtransport {
+  background-position: -0px -252px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reqtank {
+  background-position: -0px -267px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reqtechnical {
+  background-position: -0px -282px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reqtransapc {
+  background-position: -0px -297px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reqtranshelo {
+  background-position: -0px -312px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_skull {
+  background-position: -0px -327px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_smallammo {
+  background-position: -0px -342px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_supply {
+  background-position: -0px -357px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_target {
+  background-position: -0px -372px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_uav {
+  background-position: -0px -387px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_attack {
+  background-position: -0px -402px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_cas {
+  background-position: -0px -417px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-minimapsquadorderoff {
+  background-position: -0px -432px;
+  width: 80px;
+  height: 15px;
+}
+.pr_mini-minimapsquadorderon {
+  background-position: -0px -447px;
+  width: 80px;
+  height: 15px;
+}
+.pr_mini-supplycrate {
+  background-position: -0px -462px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-icon_reqcas {
+  background-position: -0px -477px;
+  width: 15px;
+  height: 15px;
+}
+.pr_mini-bridge_broken {
+  background-position: -0px -492px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-uavtrailer {
+  background-position: -0px -511px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-airdef {
+  background-position: -0px -530px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-icon_radar {
+  background-position: -0px -549px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-airdef_broken {
+  background-position: -0px -568px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-repairdepot_broken {
+  background-position: -0px -587px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-repairdepot {
+  background-position: -0px -606px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-radar_broken {
+  background-position: -0px -625px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-radar {
+  background-position: -0px -644px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-bridge {
+  background-position: -0px -663px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-uavtrailer_broken {
+  background-position: -0px -682px;
+  width: 19px;
+  height: 19px;
+}
+.pr_mini-orderdestroy {
+  background-position: -0px -701px;
+  width: 15px;
+  height: 31px;
+}
+.pr_mini-ordermine {
+  background-position: -0px -732px;
+  width: 15px;
+  height: 31px;
+}
+.pr_mini-orderattack {
+  background-position: -0px -763px;
+  width: 15px;
+  height: 31px;
+}
+.pr_mini-ordermove {
+  background-position: -0px -794px;
+  width: 15px;
+  height: 31px;
+}
+.pr_mini-ordercancel {
+  background-position: -0px -825px;
+  width: 15px;
+  height: 31px;
+}
+.pr_mini-orderregroup {
+  background-position: -0px -856px;
+  width: 15px;
+  height: 31px;
+}
+.pr_mini-orderdefend {
+  background-position: -0px -887px;
+  width: 15px;
+  height: 31px;
+}
+.pr_mini-orderrepair {
+  background-position: -0px -918px;
+  width: 15px;
+  height: 31px;
+}
+.pr_mini-ordermovecommander {
+  background-position: -0px -949px;
+  width: 15px;
+  height: 47px;
+}
+.pr_mini-orderrepaircommander {
+  background-position: -0px -996px;
+  width: 15px;
+  height: 47px;
+}
+.pr_mini-orderminecommander {
+  background-position: -0px -1043px;
+  width: 15px;
+  height: 47px;
+}
+.pr_mini-orderregroupcommander {
+  background-position: -0px -1090px;
+  width: 15px;
+  height: 47px;
+}
+.pr_mini-ordercancelcommander {
+  background-position: -0px -1137px;
+  width: 15px;
+  height: 47px;
+}
+.pr_mini-orderdestroycommander {
+  background-position: -0px -1184px;
+  width: 15px;
+  height: 47px;
+}
+.pr_mini-orderattackcommander {
+  background-position: -0px -1231px;
+  width: 15px;
+  height: 47px;
+}
+.pr_mini-orderdefendcommander {
+  background-position: -0px -1278px;
+  width: 15px;
+  height: 47px;
+}
+.pr_mini-request_circle {
+  background-position: -0px -1325px;
+  width: 58px;
+  height: 58px;
+}
+.pr_mini-placedairstrike {
+  background-position: -0px -1383px;
+  width: 58px;
+  height: 58px;
+}
+.pr_mini-icon_supplies {
+  background-position: -0px -1441px;
+  width: 64px;
+  height: 64px;
+}

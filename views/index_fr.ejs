@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html lang="<%=locale%>">
+<head>
+	<% include common_headers.ejs %>
+	<title><%=game.toUpperCase()%> <%=l('Tactics')%></title>
+	<meta name="description" content="A tool for <%=game.toUpperCase()%> to plan cw's, team battles or explore, share and discuss maps or map strategies with your friends, team, platoon or clan.">
+</head>
+<body style="overflow:scroll;">
+	<% include navbar.ejs %>
+	<script>
+		document.getElementById('home').className += " active";
+	</script>
+	<style>
+		#banner {
+			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
+			background-size: cover, cover;
+		}
+	</style>
+
+	<div class="container" style='width:100%; position:relative;'>
+		<div class="jumbotron content" style="padding-left:0px; padding-right:0px;">
+			<div id="banner" class="call_to_action" style='width:100%; background-color:#888ecb'>
+				<div class="container" id="big_button_frame" style="text-align:center;">
+					<h1>
+						<% if (game == 'wot') { %>
+							World of Tanks Tactics
+						<% } else if (game == 'wows') { %>
+							World of Warships Tactics
+						<% } else if (game == 'blitz') { %>
+							World of Tanks Blitz Tactics
+						<% } else if (game == 'aw') { %>
+							Armored Warfare Tactics
+						<% } else if (game == 'lol') { %>
+							League of legends Tactics
+						<% } else if (game == 'hots') { %>
+							Heroes of the Storm Tactics
+						<% } else if (game == 'sc2') { %>
+							Starcraft II Tactics
+						<% } else if (game == 'csgo') { %>
+							CS:GO Tactics
+						<% } else if (game == 'warface') { %>
+							Warface Tactics
+						<% } else if (game == 'squad') { %>
+							Squad Tactics
+						<% } else if (game == 'R6') { %>
+							Rainbox Six | Siege Tactics
+						<% } else if (game == 'MWO') { %>
+							Mech Warrior Online Tactics
+						<% } else if (game == 'EC') { %>
+							Eternal Crusade Tactics
+						<% } else if (game == 'propilkki2') { %>
+							Propilkki 2 Tactics
+						<% } else if (game == 'pr') { %>
+							Project Reality Tactics
+						<% } %>	
+					</h1>
+					<div id="quote"></div><br />
+					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>
+					<br /><%=l('Or')%><br />
+					<a class="btn btn-primary new_room" href="<%=game%>3" role="button"><%=l('Video replay room')%> &raquo;</a>
+					<br /><br />
+					<a href="<%=game%>1" class="new_room" role="button" style="color:#ADD8E6">(<%= l('Use original ui')%>)</a><br /></p>
+					<script type="text/javascript">
+						//generate unique id
+						var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+						function newUid() {
+							var text = "";
+							for(var i=0; i < 14; i++ ) {
+								text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
+							}
+							return text;
+						}
+						window.onload = function() {
+							var els = document.getElementsByClassName('new_room');
+							for (var i = 0; i < els.length; i++) {
+								els[i].setAttribute('href', els[i].getAttribute('href') + '?room=' + newUid());
+							}
+						};
+					</script>
+				</div>
+			</div>
+
+			<div style="padding-left:20px; padding-right:20px;">
+				<div class="row">
+					<div class="col-md-4">
+						<h2>Qu’est-ce que <%=url.split('/')[0]%> &#63;</h2>
+						<p><%=url.split('/')[0]%> est un outil de planification stratégique des cartes d'<%=game.toUpperCase()%>.
+						
+						<p><h4><b>Comment ça marche ?</b></h4>
+						
+						<p>Appuyez sur le bouton bleu. Puis sélectionnez une carte d’AW et utilisez les outils sur la droite pour commencer à planifier votre stratégie. Vous pouvez inviter d’autres personnes en leur envoyant un lien.
+					</div>
+					<div class="col-md-4">
+						<h2>Votre contribution compte</h2>
+						<p>Prenez 5 minutes pour remplir ce petit <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewform">sondage</a>, et faites-moi part de vos attentes dans awtactic.tk. Je le laisse disponible pour au moins deux semaines avant de publier les résultats.
+												
+						<p>près l’avoir rempli, allez jeter un coup d’œil au  <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">résumé</a> des résultats.
+						
+						<p>After you have filled it in, take a look at the <a href="https://docs.google.com/forms/d/1HvU6HrJVuLsRqI1cx5YLzZd011rUt_EirMU3BGgySrA/viewanalytics?usp=form_confirm">summary</a> of the results
+						
+						<p>Si vous avez une question ou un problème, utilisez le forum ou envoyez moi un directement un e-mail. Je ne peux pas répondre à vos questions dans le sondage car celui est anonyme et je n’y ai aucune possibilité de vous contacter.
+					</div>	
+					<div class="col-md-4">					
+						<h2>Changements sur le rendu</h2>
+						<p>I've tested it obviously but there's a fair bit of changes under the hood, let me know if you run into any issues. 
+						<p>La fenêtre entière est maintenant une fenêtre de rendu, avec l’IU semi-transparent et avec des couches en haut. Ceci est vraiment visible si vous zoomez un petit peu.
+						<p>Je l’ai évidemment testé cependant il y a pas mal de petits changements à faire, dites-moi si vous rencontrez n’importe quel problème. 
+				</div>			
+				</div>
+				<div class="row">
+
+					<div class="col-md-4">
+						<h2>Derniers changements</h2>
+						<p>
+						<ul>
+							<li>Ajout d’une option pour télécharger vos propres icones
+							<li>Ajout des cartes de wot 9.17.1
+							<li>Ajout de l’option permettant le téléchargement de cartes
+							<li>Mise à jour de la traduction Finnoise par Etna99
+							<li>Traduction Portugaise par Roberto
+						</ul>
+						<p>Concernant la chasse aux bugs:
+						<ul>
+							<li>Les statistiques pour les personnes ayant eu leur compte remis à zéro sont maintenant corrigées
+							<li>Fond transparent
+							<li>Quelque chose tire le curseur en arrière sur une boite de sélection
+							<li>Le changement des comptes change aussi le compte sur le forum sans avoir besoin de se déconnecter
+							<li>Connection via Twitter sur les autres domaines 
+						</ul>
+						<p>Si vous trouvez quoi que ce soit d’autre, même minuscule, faites le moi savoir svp.
+					</div>
+					<div class="col-md-4">					
+						<h2>Support pour Mechwarrior online et Eternal Crusade</h2>
+						<p>Allez jeter un <a href="http://gametactic.org/MWO">coup d’œil</a>
+					</div>
+					<%if (game == 'warface') { %>
+						<div class="col-md-4">
+							<h2>Looking for help with warface maps</h2>
+							<p>The warface map images are a little inconsistent but it's the best I could find. If you know of any site with consistent, good quality maps for warface. Or if you want to create those maps for warface, please get in touch.
+						</div>
+					<%} else { %>
+						<%if (game != 'wot') { %>
+						<div class="col-md-4">
+							<h2>Forums de retours</h2>
+							<p>Sentez-vous libres de passer le bonjour.
+						</div>
+						<% } else { %>
+						<div class="col-md-4">
+							<h2>Yet another stats tracker</h2>
+							<p>I've added a player stats tracked to the website. It's pretty basic at the moment, and it's still gathering historical info. But feel free to take a look. A clan stats page/option is also coming.
+							<p>There's also an ad on the new page. This does not mean there will be ads on the tactic planner page. But it should cover the hosting cost with a little luck. Even with some donations, wottactic has been running at a bit of a loss, not even counting manhours.
+							<p>Ads are disabled for everyone who donated ofcourse or anyone who donates anything in the future. It does require you to log back in.
+						</div>
+						<% } %>	
+					<% } %>						
+				</div>
+				<div class='row'>
+					<div class='col-md-6'>
+						<%=l('Developed by')%> <a href="mailto:pkalith@gmail.com">Kalith</a>
+					</div>
+					<div class='col-md-6' style='text-align:right;'>
+						<a href="older_news.html">Older news</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<% include footer.ejs %>
+	<% include index_js.ejs %>
+
+</body>

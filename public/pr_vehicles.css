@@ -1,0 +1,705 @@
+
+.pr_vehicles {
+  background-image: url('pr_vehicles.png');
+}
+
+.pr_vehicles-mini_plane {
+  background-position: -0px -0px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-bunker_mini_white {
+  background-position: -0px -16px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_adv_heavy {
+  background-position: -0px -32px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_adv_light {
+  background-position: -0px -48px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_adv_medium {
+  background-position: -0px -64px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_ahe_heavy {
+  background-position: -0px -80px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_ahe_light {
+  background-position: -0px -96px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_ahe_medium {
+  background-position: -0px -112px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_ahe_scout {
+  background-position: -0px -128px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_airdefsmall {
+  background-position: -0px -144px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_apc_aavp7 {
+  background-position: -0px -160px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_apc_heavy {
+  background-position: -0px -176px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_apc_light {
+  background-position: -0px -192px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_apc_logistics {
+  background-position: -0px -208px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_apc_medium {
+  background-position: -0px -224px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_apc_medium_aavp7 {
+  background-position: -0px -240px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_artillery {
+  background-position: -0px -256px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_atgmsmall {
+  background-position: -0px -272px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_atgmvehicle {
+  background-position: -0px -288px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_atgun {
+  background-position: -0px -304px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_attack_heli {
+  background-position: -0px -320px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_atv {
+  background-position: -0px -336px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_boat {
+  background-position: -0px -352px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_boat_heavy {
+  background-position: -0px -368px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_boat_medium {
+  background-position: -0px -384px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_bombcar {
+  background-position: -0px -400px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_bombtruck {
+  background-position: -0px -416px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_chinook {
+  background-position: -0px -432px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_civ_atv {
+  background-position: -0px -448px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_civ_car {
+  background-position: -0px -464px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_civ_car_bomb {
+  background-position: -0px -480px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_civ_dirtbike {
+  background-position: -0px -496px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_civ_forklift {
+  background-position: -0px -512px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_civ_truck_bomb {
+  background-position: -0px -528px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_civ_truck_semi {
+  background-position: -0px -544px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_civicar {
+  background-position: -0px -560px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_vip {
+  background-position: -0px -576px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_trk_support {
+  background-position: -0px -592px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_trk_logistics {
+  background-position: -0px -608px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_dirtbike {
+  background-position: -0px -624px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_forklift {
+  background-position: -0px -640px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_harrier {
+  background-position: -0px -656px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_heavyhelo {
+  background-position: -0px -672px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jeep {
+  background-position: -0px -688px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jeep2 {
+  background-position: -0px -704px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jeep3 {
+  background-position: -0px -720px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jep_atgm {
+  background-position: -0px -736px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jep_light {
+  background-position: -0px -752px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jep_logistics {
+  background-position: -0px -768px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jep_medium {
+  background-position: -0px -784px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jep_support {
+  background-position: -0px -800px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet {
+  background-position: -0px -816px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_antiship {
+  background-position: -0px -832px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_asf {
+  background-position: -0px -848px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_attack_heavy {
+  background-position: -0px -864px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_attack_light {
+  background-position: -0px -880px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_attack_light2 {
+  background-position: -0px -896px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_transport_heli {
+  background-position: -0px -912px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_figherbomber {
+  background-position: -0px -928px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_plane {
+  background-position: -0px -944px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_strikefighter {
+  background-position: -0px -960px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_strikefighter2 {
+  background-position: -0px -976px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jetattack {
+  background-position: -0px -992px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_lightattackhelo {
+  background-position: -0px -1008px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_lighthelo {
+  background-position: -0px -1024px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_logisticstruck {
+  background-position: -0px -1040px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_medattackhelo {
+  background-position: -0px -1056px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_misc_prbot {
+  background-position: -0px -1072px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_mortardefsmall {
+  background-position: -0px -1088px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_mv22 {
+  background-position: -0px -1104px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-firebase_mini_white {
+  background-position: -0px -1120px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_prbot {
+  background-position: -0px -1136px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_rec_atgm {
+  background-position: -0px -1152px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_rec_light {
+  background-position: -0px -1168px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_rec_medium {
+  background-position: -0px -1184px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_rib {
+  background-position: -0px -1200px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_sampan {
+  background-position: -0px -1216px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_scimitar {
+  background-position: -0px -1232px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_scout_light {
+  background-position: -0px -1248px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_scouthelo {
+  background-position: -0px -1264px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_semitruck {
+  background-position: -0px -1280px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_shp_heavy {
+  background-position: -0px -1296px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_shp_light {
+  background-position: -0px -1312px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_shp_light_sampan {
+  background-position: -0px -1328px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_shp_medium {
+  background-position: -0px -1344px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_towjeep {
+  background-position: -0px -1360px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_the_medium {
+  background-position: -0px -1376px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_smgsmall {
+  background-position: -0px -1392px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_the_light {
+  background-position: -0px -1408px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_the_heavy_mv22 {
+  background-position: -0px -1424px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_the_heavy_chinook {
+  background-position: -0px -1440px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_the_heavy {
+  background-position: -0px -1456px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_tank_medium {
+  background-position: -0px -1472px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_tank_heavy {
+  background-position: -0px -1488px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_supporttruck {
+  background-position: -0px -1504px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_mortar {
+  background-position: -0px -1520px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_mg {
+  background-position: -0px -1536px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_atgun {
+  background-position: -0px -1552px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_atgm {
+  background-position: -0px -1568px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_artillery {
+  background-position: -0px -1584px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_antiship {
+  background-position: -0px -1600px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_aa_medium_rh202 {
+  background-position: -0px -1616px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_aa_medium {
+  background-position: -0px -1632px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_aa_light {
+  background-position: -0px -1648px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_aa_heavy2 {
+  background-position: -0px -1664px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_stw_aa_heavy {
+  background-position: -0px -1680px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-rallypoint_mini_white {
+  background-position: -0px -1696px;
+  width: 16px;
+  height: 16px;
+}
+.pr_vehicles-mini_jet_cargo {
+  background-position: -0px -1712px;
+  width: 32px;
+  height: 32px;
+}
+.pr_vehicles-mini_squadsmall_3 {
+  background-position: -0px -1744px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadsmall_4 {
+  background-position: -0px -1808px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadsmall_5 {
+  background-position: -0px -1872px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadsmall_6 {
+  background-position: -0px -1936px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadsmall_7 {
+  background-position: -0px -2000px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadsmall_8 {
+  background-position: -0px -2064px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadsmall_9 {
+  background-position: -0px -2128px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_9 {
+  background-position: -0px -2192px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_8 {
+  background-position: -0px -2256px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_7 {
+  background-position: -0px -2320px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_6 {
+  background-position: -0px -2384px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_5 {
+  background-position: -0px -2448px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_4 {
+  background-position: -0px -2512px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_3 {
+  background-position: -0px -2576px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_2 {
+  background-position: -0px -2640px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadsmall_2 {
+  background-position: -0px -2704px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_9 {
+  background-position: -0px -2768px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_8 {
+  background-position: -0px -2832px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_7 {
+  background-position: -0px -2896px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_6 {
+  background-position: -0px -2960px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_5 {
+  background-position: -0px -3024px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_4 {
+  background-position: -0px -3088px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_3 {
+  background-position: -0px -3152px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_2 {
+  background-position: -0px -3216px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadlarge_1 {
+  background-position: -0px -3280px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_shp_type21 {
+  background-position: -0px -3344px;
+  width: 64px;
+  height: 64px;
+}
+.pr_vehicles-mini_shp_ssac {
+  background-position: -0px -3408px;
+  width: 64px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadsmall_1 {
+  background-position: -0px -3472px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_commandersmall {
+  background-position: -0px -3536px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_commandermedium {
+  background-position: -0px -3600px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_commanderlarge {
+  background-position: -0px -3664px;
+  width: 16px;
+  height: 64px;
+}
+.pr_vehicles-mini_squadmedium_1 {
+  background-position: -0px -3728px;
+  width: 16px;
+  height: 64px;
+}

@@ -1159,6 +1159,7 @@ function set_background(new_background, cb) {
 					img.crossOrigin = "Anonymous";
 					img.onload = function() {
 						grid_layer.texture = new PIXI.Texture(new PIXI.BaseTexture(img));
+						render_scene();
 					}
 					img.src = image_host + grid;
 				}

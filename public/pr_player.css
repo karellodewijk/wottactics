@@ -1,0 +1,120 @@
+
+.pr_player {
+  background-image: url('pr_player.png');
+}
+
+.pr_player-mini_squad_8_small {
+  background-position: -0px -0px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad_9_small {
+  background-position: -0px -16px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad {
+  background-position: -0px -32px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad_0_small {
+  background-position: -0px -48px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad_1_small {
+  background-position: -0px -64px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad_3_small {
+  background-position: -0px -80px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad_4_small {
+  background-position: -0px -96px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad_5_small {
+  background-position: -0px -112px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad_6_small {
+  background-position: -0px -128px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_squad_7_small {
+  background-position: -0px -144px;
+  width: 16px;
+  height: 16px;
+}
+.pr_player-mini_commander1 {
+  background-position: -0px -160px;
+  width: 32px;
+  height: 32px;
+}
+.pr_player-mini_commander2 {
+  background-position: -0px -192px;
+  width: 32px;
+  height: 32px;
+}
+.pr_player-mini_squadnumber_4 {
+  background-position: -0px -224px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squadnumber_9 {
+  background-position: -0px -260px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squadnumber_1 {
+  background-position: -0px -296px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squadnumber_2 {
+  background-position: -0px -332px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squadnumber_3 {
+  background-position: -0px -368px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squad_request {
+  background-position: -0px -404px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squadnumber_5 {
+  background-position: -0px -440px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squadnumber_6 {
+  background-position: -0px -476px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squadnumber_7 {
+  background-position: -0px -512px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_squadnumber_8 {
+  background-position: -0px -548px;
+  width: 36px;
+  height: 36px;
+}
+.pr_player-mini_localarrow2 {
+  background-position: -0px -584px;
+  width: 50px;
+  height: 70px;
+}
