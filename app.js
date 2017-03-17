@@ -371,8 +371,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		done(null, user);
 	});
 
-	// session support for socket.io
-	
+	// session support for socket.io	
 	function session_from_sessionid_host(sessionId, host, cb) {
 		if (!mwCache[host]) {
 			var store = new RedisStore(secrets.redis_options);
@@ -398,13 +397,19 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		var sessionId = socket.request._query.connect_sid;
 		var host = socket.request._query.host;
 		
+		function done() {
+			if (!socket.request.session.passport || !socket.request.session.passport.user) {
+				create_anonymous_user(socket.request);
+			}
+			next();
+		}	
 		session_from_sessionid_host(sessionId, host, function(session) {
 			if (session) {
 				socket.request.session = session;
-				next();
+				done();
 			} else {
 				socket.request.hostname = socket.handshake.headers.host;
-				virtualHostSession(socket.request, socket.request.res, next);					
+				virtualHostSession(socket.request, socket.request.res, done);					
 			}
 		});
 	});
@@ -484,7 +489,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	}
 	
-	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2'];	
+	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr'];	
 	games.forEach(function(game) {
 		router.get(['/' + game + '.html', '/' + game], function(req, res, next) {
 		  set_game(req, res, game);
@@ -1242,11 +1247,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			socket.emit('sync_clock', Date.now());
 		});
 		
-		socket.on('join_room', function(room, game) {
-			if (!socket.request.session.passport || !socket.request.session.passport.user) {
-				create_anonymous_user(socket.request);
-			}
-			
+		socket.on('join_room', function(room, game) {			
 			if (!(room in room_data)) {
 				db.collection('tactics').findOne({_id:room}, function(err, result) {
 					if (!err && result) {
@@ -1273,27 +1274,31 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 		
 		socket.onclose = function(reason) {
-			//hijack the onclose event because otherwise we lose socket.rooms data
-			var user = socket.request.session.passport.user;
-			for (var room in socket.rooms) { //first room is clients own little private room so we start at 1			
-				if (room_data[room] && room_data[room].userlist[user.id]) {
-					if (room_data[room].userlist[user.id].count == 1) {
-						socket.broadcast.to(room).emit('remove_user', user.id);
-						delete room_data[room].userlist[user.id];
-						for (var key in room_data[room].trackers) {
-							if (room_data[room].trackers[key].owner == user.id) {
-								delete room_data[room].trackers[key];
-								break;
+			//hijack the onclose event because otherwise we lose socket.rooms data		
+			if (socket.request.session.passport) { //users, even anonymouse ones should always have a passport, but sometimes they don't
+				var user = socket.request.session.passport.user;
+				for (var room in socket.rooms) {
+					if (room_data[room] && room_data[room].userlist[user.id]) {
+						if (room_data[room].userlist[user.id].count == 1) {
+							socket.broadcast.to(room).emit('remove_user', user.id);
+							delete room_data[room].userlist[user.id];
+							for (var key in room_data[room].trackers) {
+								if (room_data[room].trackers[key].owner == user.id) {
+									delete room_data[room].trackers[key];
+									break;
+								}
 							}
+						} else {
+							room_data[room].userlist[user.id].count--;
 						}
-					} else {
-						room_data[room].userlist[user.id].count--;
-					}
-				}	
+					}	
+				}
+			}
+			for (var room in socket.rooms) {
 				if (io.sockets.adapter.rooms[room].length <= 1) {	//we're the last one in the room and we're leaving
 					clean_up_room(room);
 				}
-			}	
+			}
 			Object.getPrototypeOf(this).onclose.call(this,reason); //call original onclose
 		}
 		

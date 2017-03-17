@@ -1,0 +1,50 @@
+
+.pr_flags {
+  background-image: url('../images/pr_flags.png');
+}
+
+.pr_flags-cs {
+  background-position: -0px -0px;
+  width: 24px;
+  height: 24px;
+}
+.pr_flags-de {
+  background-position: -0px -24px;
+  width: 24px;
+  height: 24px;
+}
+.pr_flags-en {
+  background-position: -0px -48px;
+  width: 24px;
+  height: 24px;
+}
+.pr_flags-es {
+  background-position: -0px -72px;
+  width: 24px;
+  height: 24px;
+}
+.pr_flags-fi {
+  background-position: -0px -96px;
+  width: 24px;
+  height: 24px;
+}
+.pr_flags-fr {
+  background-position: -0px -120px;
+  width: 24px;
+  height: 24px;
+}
+.pr_flags-pl {
+  background-position: -0px -144px;
+  width: 24px;
+  height: 24px;
+}
+.pr_flags-rs {
+  background-position: -0px -168px;
+  width: 24px;
+  height: 24px;
+}
+.pr_flags-ru {
+  background-position: -0px -192px;
+  width: 24px;
+  height: 24px;
+}

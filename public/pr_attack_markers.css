@@ -1,0 +1,85 @@
+
+.pr_attack_markers {
+  background-image: url('pr_attack_markers.png');
+}
+
+.pr_attack_markers-sec_area {
+  background-position: -0px -0px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-pri_area {
+  background-position: -0px -32px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-pri_area_revealed {
+  background-position: -0px -64px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-pri_area_revealed_a {
+  background-position: -0px -96px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-pri_point {
+  background-position: -0px -128px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-pri_point_a {
+  background-position: -0px -160px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-pri_point_revealed {
+  background-position: -0px -192px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-pri_point_revealed_a {
+  background-position: -0px -224px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-pri_area_a {
+  background-position: -0px -256px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-sec_area_a {
+  background-position: -0px -288px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-sec_area_revealed {
+  background-position: -0px -320px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-sec_area_revealed_a {
+  background-position: -0px -352px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-sec_point {
+  background-position: -0px -384px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-sec_point_a {
+  background-position: -0px -416px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-sec_point_revealed {
+  background-position: -0px -448px;
+  width: 32px;
+  height: 32px;
+}
+.pr_attack_markers-sec_point_revealed_a {
+  background-position: -0px -480px;
+  width: 32px;
+  height: 32px;
+}

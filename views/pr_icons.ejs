@@ -1,0 +1,416 @@
+<hr />
+
+<div class='icon_tabs'>
+	<ul class="nav nav-tabs" id="bottom_tabs">
+	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	  <%if (user.identity) { %><li><a class="icon_group" id="custom_icons" data-toggle="tab" href="#custom_tab"><%=l('Custom')%></a></li><% } %>
+	  <li><a class="icon_group" id="pr_attack_markers" data-toggle="tab" href="#pr_attack_markers_tab"><%=l('Attack markers')%></a></li>
+	  <li><a class="icon_group" id="pr_defence_markers" data-toggle="tab" href="#pr_defence_markers_tab"><%=l('Defence markers')%></a></li>
+	  <li><a class="icon_group" id="pr_flags" data-toggle="tab" href="#pr_flags_tab"><%=l('Flags')%></a></li>
+	  <li><a class="icon_group" id="pr_kits" data-toggle="tab" href="#pr_kits_tab"><%=l('Kits')%></a></li>
+	  <li><a class="icon_group" id="pr_landing_zone" data-toggle="tab" href="#pr_landing_zone_tab"><%=l('Landing Zones')%></a></li>
+	  <li><a class="icon_group" id="pr_mini" data-toggle="tab" href="#pr_mini_tab"><%=l('Minimap')%></a></li>
+	  <li><a class="icon_group" id="pr_player" data-toggle="tab" href="#pr_player_tab"><%=l('Player')%></a></li>
+	  <li><a class="icon_group" id="pr_spotted" data-toggle="tab" href="#pr_spotted_tab"><%=l('Spotted')%></a></li>
+	  <li><a class="icon_group" id="pr_vehicles" data-toggle="tab" href="#pr_vehicles_tab"><%=l('Vehicles')%></a></li>
+	</ul>
+	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<%if (user.identity) { %>
+		<div class="tab-pane" id="custom_tab">
+			<div class="row">
+				<div id="custom_icons_list"></div>
+				<button class="btn btn-default" aria-label="Left Align" id="upload_icon" data-toggle="tooltip" title="<%=l('Upload icon')%>">
+					<div class="icon icon-upload_sm"></div>
+				</button>	
+			</div>
+		</div>
+		<% } %>
+		<div class="tab-pane" id="extra_tab">
+			<div class="row">
+				<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" data-style="wot_icon_set4.css" hidden>
+					battle.png
+					danger.png
+					defend.png
+					explosion1.png
+					explosion2.png
+					focus.png
+					spot.png
+					warning.png
+					finish.png
+					map_marker.png
+				</div>
+				<div id="extra_icons_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_attack_markers_tab">
+			<div class="row">
+				<div id="pr_attack_markers_list" data-path="pr_attack_markers" data-scale="1" data-no_color=true data-height="30" data-style="pr_attack_markers.css" hidden>
+					pri_area.png
+					pri_area_a.png
+					pri_area_revealed.png
+					pri_area_revealed_a.png
+					pri_point.png
+					pri_point_a.png
+					pri_point_revealed.png
+					pri_point_revealed_a.png
+					sec_area.png
+					sec_area_a.png
+					sec_area_revealed.png
+					sec_area_revealed_a.png
+					sec_point.png
+					sec_point_a.png
+					sec_point_revealed.png
+					sec_point_revealed_a.png
+				</div>
+				<div id="pr_attack_markers_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_defence_markers_tab">
+			<div class="row">
+				<div id="pr_defence_markers_list" data-path="pr_defence_markers" data-scale="1" data-no_color=true data-height="30" data-style="pr_defence_markers.css" hidden>
+					pri_area.png
+					pri_area_a.png
+					pri_area_revealed.png
+					pri_area_revealed_a.png
+					pri_point.png
+					pri_point_a.png
+					pri_point_revealed.png
+					pri_point_revealed_a.png
+					sec_area.png
+					sec_area_a.png
+					sec_area_revealed.png
+					sec_area_revealed_a.png
+					sec_point.png
+					sec_point_a.png
+					sec_point_revealed.png
+					sec_point_revealed_a.png
+				</div>
+				<div id="pr_defence_markers_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_flags_tab">
+			<div class="row">
+				<div id="pr_flags_list" data-path="pr_flags" data-scale="1" data-no_color=true data-height="30" data-style="pr_flags.css" hidden>
+					arf.png
+					cf.png
+					ch.png
+					chinsurgent.png
+					fr.png
+					fsa.png
+					gb.png
+					ger.png
+					hamas.png
+					idf.png
+					mec.png
+					meinsurgent.png
+					neutral.png
+					nl.png
+					ru.png
+					taliban.png
+					usa.png
+					vnnva.png
+				</div>
+				<div id="pr_flags_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_kits_tab">
+			<div class="row">
+				<div id="pr_kits_list" data-path="pr_kits" data-scale="1" data-height="30" data-style="pr_kits.css" hidden>
+					kit_aa_outline.png
+					kit_ataa_outline.png
+					kit_at_outline.png
+					kit_battle_rifle_assault_outline.png
+					kit_carbine_assault_outline.png
+					kit_civilian_outline.png
+					kit_claymore_outline.png
+					kit_commander_outline.png
+					kit_crewman_outline.png
+					kit_engineer_outline.png
+					kit_grenadier_outline.png
+					kit_heavy_assault_outline.png
+					kit_light_ammo_outline.png
+					kit_light_assault_outline.png
+					kit_light_scope_outline.png
+					kit_marksman_outline.png
+					kit_medic_outline.png
+					kit_mg_outline.png
+					kit_mountaineer_outline.png
+					kit_officer_outline.png
+					kit_pilot_outline.png
+					kit_recon_outline.png
+					kit_rifle_outline.png
+					kit_sniper_outline.png
+					kit_specops_outline.png
+					kit_spotter_outline.png
+				</div>
+				<div id="pr_kits_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_landing_zone_tab">
+			<div class="row">
+				<div id="pr_landing_zone_list" data-path="pr_landing_zone" data-no_color=true data-scale="1.5" data-height="30" data-style="pr_landing_zone.css" hidden>
+					landing.png
+					landinga.png
+					landingb.png
+					landingc.png
+					landingd.png
+					landinge.png
+					landingf.png
+					landingg.png
+				</div>
+				<div id="pr_landing_zone_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_mini_tab">
+			<div class="row">
+				<div id="pr_mini_list" data-path="pr_mini" data-no_color=true data-scale="1.5" data-height="30" data-style="pr_mini.css" hidden>
+					airdef.png
+					airdef_broken.png
+					bridge.png
+					bridge_broken.png
+					icon_artillery.png
+					icon_attack.png
+					icon_cas.png
+					icon_defend.png
+					icon_destroy.png
+					icon_lz.png
+					icon_medic.png
+					icon_mine.png
+					icon_mortar.png
+					icon_move.png
+					icon_radar.png
+					icon_regroup.png
+					icon_reguest.png
+					icon_reinforcements.png
+					icon_repair.png
+					icon_repaircrate.png
+					icon_reqbombcar.png
+					icon_reqcas.png
+					icon_reqcivtransport.png
+					icon_reqtank.png
+					icon_reqtechnical.png
+					icon_reqtransapc.png
+					icon_reqtranshelo.png
+					icon_skull.png
+					icon_smallammo.png
+					icon_supply.png
+					icon_target.png
+					icon_uav.png
+					icon_vehicledrop.png
+					laserpainttarget.png
+					laserpainttargetactive.png
+					orderattack.png
+					orderattackcommander.png
+					ordercancel.png
+					ordercancelcommander.png
+					orderdefend.png
+					orderdefendcommander.png
+					orderdestroy.png
+					orderdestroycommander.png
+					ordermine.png
+					orderminecommander.png
+					ordermove.png
+					ordermovecommander.png
+					orderregroup.png
+					orderregroupcommander.png
+					orderrepair.png
+					orderrepaircommander.png
+					placedaction_micromap.png
+					radar.png
+					radar_broken.png
+					repairdepot.png
+					repairdepot_broken.png
+					supplycrate.png
+					uavtrailer.png
+					uavtrailer_broken.png
+				</div>
+				<div id="pr_mini_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_player_tab">
+			<div class="row">
+				<div id="pr_player_list" data-path="pr_player" data-scale="1" data-height="30" data-style="pr_player.css" hidden>
+					mini_commander1.png
+					mini_commander2.png
+					mini_squad.png
+					mini_squad_1_small.png
+					mini_squad_3_small.png
+					mini_squad_4_small.png
+					mini_squad_5_small.png
+					mini_squad_6_small.png
+					mini_squad_7_small.png
+					mini_squad_8_small.png
+					mini_squad_9_small.png
+				</div>
+				<div id="pr_player_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_player_tab">
+			<div class="row">
+				<div id="pr_player_list" data-path="pr_player" data-scale="1" data-height="30" data-style="pr_player.css" hidden>
+					mini_commander1.png
+					mini_commander2.png
+					mini_squad.png
+					mini_squad_1_small.png
+					mini_squad_3_small.png
+					mini_squad_4_small.png
+					mini_squad_5_small.png
+					mini_squad_6_small.png
+					mini_squad_7_small.png
+					mini_squad_8_small.png
+					mini_squad_9_small.png
+				</div>
+				<div id="pr_player_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_spotted_tab">
+			<div class="row">
+				<div id="pr_spotted_list" data-path="pr_spotted" data-scale="1" data-height="30" data-style="pr_spotted.css" hidden>
+					icon_aavspotted.png
+					icon_antiairmissilespotted.png
+					icon_apcspotted.png
+					icon_atgmspotted.png
+					icon_atgmvehiclespotted.png
+					icon_bridgespotted.png
+					icon_bunkerspotted.png
+					icon_destroyedbridgespotted.png
+					icon_enemyforcesspotted.png
+					icon_firebasespotted.png
+					icon_heavyaaspotted.png
+					icon_heavyatspotted.png
+					icon_hmgspotted.png
+					icon_ifvspotted.png
+					icon_jeepspotted.png
+					icon_mortarspotted.png
+					icon_objectivespotted.png
+					icon_rallyspotted.png
+					icon_razorwirespotted.png
+					icon_sniperspotted.png
+					icon_spotterspotted.png
+					icon_tankspotted.png
+					icon_truckspotted.png
+				</div>
+				<div id="pr_spotted_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="pr_vehicles_tab">
+			<div class="row">
+				<div id="pr_vehicles_list" data-path="pr_vehicles" data-scale="1" data-height="30" data-style="pr_vehicles.css" hidden>
+					bunker_mini_white.png
+					firebase_mini_white.png
+					mini_adv_heavy.png
+					mini_adv_light.png
+					mini_adv_medium.png
+					mini_ahe_heavy.png
+					mini_ahe_light.png
+					mini_ahe_medium.png
+					mini_ahe_scout.png
+					mini_airdefsmall.png
+					mini_apc_aavp7.png
+					mini_apc_heavy.png
+					mini_apc_light.png
+					mini_apc_logistics.png
+					mini_apc_medium.png
+					mini_apc_medium_aavp7.png
+					mini_artillery.png
+					mini_atgmsmall.png
+					mini_atgmvehicle.png
+					mini_atgun.png
+					mini_attack_heli.png
+					mini_atv.png
+					mini_boat.png
+					mini_boat_heavy.png
+					mini_boat_medium.png
+					mini_bombcar.png
+					mini_bombtruck.png
+					mini_chinook.png
+					mini_civicar.png
+					mini_civ_atv.png
+					mini_civ_car.png
+					mini_civ_car_bomb.png
+					mini_civ_dirtbike.png
+					mini_civ_forklift.png
+					mini_civ_truck_bomb.png
+					mini_civ_truck_semi.png
+					mini_dirtbike.png
+					mini_forklift.png
+					mini_harrier.png
+					mini_heavyhelo.png
+					mini_jeep.png
+					mini_jeep2.png
+					mini_jeep3.png
+					mini_jep_atgm.png
+					mini_jep_light.png
+					mini_jep_logistics.png
+					mini_jep_medium.png
+					mini_jep_support.png
+					mini_jet.png
+					mini_jetattack.png
+					mini_jet_antiship.png
+					mini_jet_asf.png
+					mini_jet_attack_heavy.png
+					mini_jet_attack_light.png
+					mini_jet_attack_light2.png
+					mini_jet_cargo.png
+					mini_jet_figherbomber.png
+					mini_jet_plane.png
+					mini_jet_strikefighter.png
+					mini_jet_strikefighter2.png
+					mini_lightattackhelo.png
+					mini_lighthelo.png
+					mini_logisticstruck.png
+					mini_medattackhelo.png
+					mini_misc_prbot.png
+					mini_mortardefsmall.png
+					mini_mv22.png
+					mini_plane.png
+					mini_prbot.png
+					mini_rec_atgm.png
+					mini_rec_light.png
+					mini_rec_medium.png
+					mini_rib.png
+					mini_sampan.png
+					mini_scimitar.png
+					mini_scouthelo.png
+					mini_scout_light.png
+					mini_semitruck.png
+					mini_shp_heavy.png
+					mini_shp_light.png
+					mini_shp_light_sampan.png
+					mini_shp_medium.png
+					mini_shp_ssac.png
+					mini_shp_type21.png
+					mini_smgsmall.png
+					mini_stw_aa_heavy.png
+					mini_stw_aa_heavy2.png
+					mini_stw_aa_light.png
+					mini_stw_aa_medium.png
+					mini_stw_aa_medium_rh202.png
+					mini_stw_antiship.png
+					mini_stw_artillery.png
+					mini_stw_atgm.png
+					mini_stw_atgun.png
+					mini_stw_mg.png
+					mini_stw_mortar.png
+					mini_supporttruck.png
+					mini_tank_heavy.png
+					mini_tank_medium.png
+					mini_the_heavy.png
+					mini_the_heavy_chinook.png
+					mini_the_heavy_mv22.png
+					mini_the_light.png
+					mini_the_medium.png
+					mini_towjeep.png
+					mini_transport_heli.png
+					mini_trk_logistics.png
+					mini_trk_support.png
+					mini_vip.png
+					rallypoint_mini_white.png
+				</div>
+				<div id="pr_vehicles_menu"></div>				
+			</div>
+		</div>
+	</div>
+</div>
+
+<br/>

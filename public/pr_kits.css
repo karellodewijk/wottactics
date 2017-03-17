@@ -1,0 +1,275 @@
+
+.pr_kits {
+  background-image: url('pr_kits.png');
+}
+
+.pr_kits-kit_light_assault_outline {
+  background-position: -0px -0px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_aa {
+  background-position: -0px -15px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_at {
+  background-position: -0px -30px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_at_outline {
+  background-position: -0px -45px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_ataa {
+  background-position: -0px -60px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_ataa_outline {
+  background-position: -0px -75px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_battle_rifle_assault {
+  background-position: -0px -90px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_battle_rifle_assault_outline {
+  background-position: -0px -105px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_carbine_assault {
+  background-position: -0px -120px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_carbine_assault_outline {
+  background-position: -0px -135px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_civilian {
+  background-position: -0px -150px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_civilian_outline {
+  background-position: -0px -165px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_claymore {
+  background-position: -0px -180px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_claymore_outline {
+  background-position: -0px -195px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_commander {
+  background-position: -0px -210px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_commander_outline {
+  background-position: -0px -225px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_crewman {
+  background-position: -0px -240px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_crewman_outline {
+  background-position: -0px -255px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_engineer {
+  background-position: -0px -270px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_engineer_outline {
+  background-position: -0px -285px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_grenadier {
+  background-position: -0px -300px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_grenadier_outline {
+  background-position: -0px -315px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_heavy_assault {
+  background-position: -0px -330px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_heavy_assault_outline {
+  background-position: -0px -345px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_light_ammo {
+  background-position: -0px -360px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_light_ammo_outline {
+  background-position: -0px -375px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_light_assault {
+  background-position: -0px -390px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_aa_outline {
+  background-position: -0px -405px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_light_scope {
+  background-position: -0px -420px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_light_scope_outline {
+  background-position: -0px -435px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_marksman {
+  background-position: -0px -450px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_marksman_outline {
+  background-position: -0px -465px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_medic {
+  background-position: -0px -480px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_medic_outline {
+  background-position: -0px -495px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_mg {
+  background-position: -0px -510px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_mg_outline {
+  background-position: -0px -525px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_mountaineer {
+  background-position: -0px -540px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_mountaineer_outline {
+  background-position: -0px -555px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_officer {
+  background-position: -0px -570px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_officer_outline {
+  background-position: -0px -585px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_pilot {
+  background-position: -0px -600px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_pilot_outline {
+  background-position: -0px -615px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_recon {
+  background-position: -0px -630px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_recon_outline {
+  background-position: -0px -645px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_rifle {
+  background-position: -0px -660px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_rifle_outline {
+  background-position: -0px -675px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_sniper {
+  background-position: -0px -690px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_sniper_outline {
+  background-position: -0px -705px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_specops {
+  background-position: -0px -720px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_specops_outline {
+  background-position: -0px -735px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_spotter {
+  background-position: -0px -750px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_spotter_outline {
+  background-position: -0px -765px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_squad {
+  background-position: -0px -780px;
+  width: 15px;
+  height: 15px;
+}
+.pr_kits-kit_squad_big {
+  background-position: -0px -795px;
+  width: 20px;
+  height: 20px;
+}

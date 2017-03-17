@@ -1,0 +1,120 @@
+
+.pr_spotted {
+  background-image: url('pr_spotted.png');
+}
+
+.pr_spotted-icon_aavspotted {
+  background-position: -0px -0px;
+  width: 15px;
+  height: 15px;
+}
+.pr_spotted-icon_apcspotted {
+  background-position: -0px -15px;
+  width: 15px;
+  height: 15px;
+}
+.pr_spotted-icon_atgmspotted {
+  background-position: -0px -30px;
+  width: 15px;
+  height: 15px;
+}
+.pr_spotted-icon_atgmvehiclespotted {
+  background-position: -0px -45px;
+  width: 15px;
+  height: 15px;
+}
+.pr_spotted-icon_ifvspotted {
+  background-position: -0px -60px;
+  width: 15px;
+  height: 15px;
+}
+.pr_spotted-icon_tankspotted {
+  background-position: -0px -75px;
+  width: 15px;
+  height: 15px;
+}
+.pr_spotted-icon_bunkerspotted {
+  background-position: -0px -90px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_destroyedbridgespotted {
+  background-position: -0px -106px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_enemyforcesspotted {
+  background-position: -0px -122px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_firebasespotted {
+  background-position: -0px -138px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_heavyaaspotted {
+  background-position: -0px -154px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_antiairmissilespotted {
+  background-position: -0px -170px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_hmgspotted {
+  background-position: -0px -186px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_truckspotted {
+  background-position: -0px -202px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_jeepspotted {
+  background-position: -0px -218px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_mortarspotted {
+  background-position: -0px -234px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_objectivespotted {
+  background-position: -0px -250px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_rallyspotted {
+  background-position: -0px -266px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_razorwirespotted {
+  background-position: -0px -282px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_sniperspotted {
+  background-position: -0px -298px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_spotterspotted {
+  background-position: -0px -314px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_bridgespotted {
+  background-position: -0px -330px;
+  width: 16px;
+  height: 16px;
+}
+.pr_spotted-icon_heavyatspotted {
+  background-position: -0px -346px;
+  width: 16px;
+  height: 16px;
+}

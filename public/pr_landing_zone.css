@@ -1,0 +1,45 @@
+
+.pr_landing_zone {
+  background-image: url('pr_landing_zone.png');
+}
+
+.pr_landing_zone-landing {
+  background-position: -0px -0px;
+  width: 32px;
+  height: 32px;
+}
+.pr_landing_zone-landinga {
+  background-position: -0px -32px;
+  width: 32px;
+  height: 32px;
+}
+.pr_landing_zone-landingb {
+  background-position: -0px -64px;
+  width: 32px;
+  height: 32px;
+}
+.pr_landing_zone-landingc {
+  background-position: -0px -96px;
+  width: 32px;
+  height: 32px;
+}
+.pr_landing_zone-landingd {
+  background-position: -0px -128px;
+  width: 32px;
+  height: 32px;
+}
+.pr_landing_zone-landinge {
+  background-position: -0px -160px;
+  width: 32px;
+  height: 32px;
+}
+.pr_landing_zone-landingf {
+  background-position: -0px -192px;
+  width: 32px;
+  height: 32px;
+}
+.pr_landing_zone-landingg {
+  background-position: -0px -224px;
+  width: 32px;
+  height: 32px;
+}

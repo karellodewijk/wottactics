@@ -1,0 +1,95 @@
+
+.pr_flags {
+  background-image: url('pr_flags.png');
+}
+
+.pr_flags-idf {
+  background-position: -0px -0px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-arf {
+  background-position: -0px -30px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-ch {
+  background-position: -0px -60px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-chinsurgent {
+  background-position: -0px -90px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-fr {
+  background-position: -0px -120px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-fsa {
+  background-position: -0px -150px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-gb {
+  background-position: -0px -180px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-ger {
+  background-position: -0px -210px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-hamas {
+  background-position: -0px -240px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-cf {
+  background-position: -0px -270px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-mec {
+  background-position: -0px -300px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-meinsurgent {
+  background-position: -0px -330px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-neutral {
+  background-position: -0px -360px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-nl {
+  background-position: -0px -390px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-ru {
+  background-position: -0px -420px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-taliban {
+  background-position: -0px -450px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-usa {
+  background-position: -0px -480px;
+  width: 45px;
+  height: 30px;
+}
+.pr_flags-vnnva {
+  background-position: -0px -510px;
+  width: 45px;
+  height: 30px;
+}
