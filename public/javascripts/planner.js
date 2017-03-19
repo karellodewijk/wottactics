@@ -314,6 +314,7 @@ var grid_layer;
 var zoom_level = 1;
 var control_camera = false;
 var dragging_enabled = true;
+var dragging = false;
 var temp_canvas = document.createElement("canvas");
 var dragging_mode = {};
 var presentation_mode = true;
@@ -1432,6 +1433,7 @@ function on_drag_start(e) {
 			return;
 		}
 		
+		dragging = true;
 		var mouse_location = mouse_loc();
 		last_drag_update = Date.now();
 		last_drag_position = [from_x_local(mouse_location.x), from_y_local(mouse_location.y)];
@@ -1825,7 +1827,7 @@ function hexToRGBA(hex, alpha) {
 function init_canvas_simple(ctx, line_thickness, line_color, style) {	
 	var line_color = '#' + ('00000' + (line_color | 0).toString(16)).substr(-6); 
 
-	ctx.lineWidth = line_thickness * (size_y/1000) * THICKNESS_SCALE;
+	ctx.lineWidth = line_thickness * THICKNESS_SCALE;
 			
 	ctx.strokeStyle = line_color;
 	ctx.fillStyle = line_color;
@@ -1833,7 +1835,7 @@ function init_canvas_simple(ctx, line_thickness, line_color, style) {
 	//provides some AA
 	ctx.shadowBlur = ctx.lineWidth / 2;
 	ctx.shadowColor = '#000000';
-	
+		
 	if ('setLineDash' in ctx) {	
 		if (style == "dashed") {
 			ctx.setLineDash([5*line_thickness, 3*line_thickness]);
@@ -1945,9 +1947,9 @@ function on_left_click(e) {
 			var end_circle_radius = (e.type == "touchstart") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
 			
 			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.outline_thickness * THICKNESS_SCALE, new_drawing.outline_color, new_drawing.outline_opacity);
+			graphics.lineStyle(new_drawing.outline_thickness / background_sprite.scale.y * THICKNESS_SCALE, new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)));
-			graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), size_y * end_circle_radius * zoom_level));
+			graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), background_sprite.height / background_sprite.scale.y * end_circle_radius * zoom_level));
 			background_sprite.addChild(graphics);
 			
 			just_activated = true;
@@ -1975,9 +1977,9 @@ function on_left_click(e) {
 			var end_circle_radius = (e.type == "touchstart") ? MIN_POLYGON_END_DISTANCE_TOUCH : MIN_POLYGON_END_DISTANCE;
 			
 			graphics = new PIXI.Graphics();
-			graphics.lineStyle(new_drawing.outline_thickness * THICKNESS_SCALE, new_drawing.outline_color, new_drawing.outline_opacity);
+			graphics.lineStyle(new_drawing.outline_thickness / background_sprite.scale.y * THICKNESS_SCALE, new_drawing.outline_color, new_drawing.outline_opacity);
 			graphics.moveTo(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)));
-			graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), size_y * end_circle_radius * zoom_level));
+			graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), background_sprite.height / background_sprite.scale.y * end_circle_radius * zoom_level));
 			background_sprite.addChild(graphics);
 			
 			setup_mouse_events(on_curve_move, on_area_end);
@@ -2309,12 +2311,14 @@ function on_curve_end(e) {
 		point_buffer.push(mouse_location.x, mouse_location.y);
 		new_drawing.path.push([from_x_local(new_x) - new_drawing.x, from_y_local(new_y) - new_drawing.y]);
 
-		background_sprite.removeChild(graphics);		
+		background_sprite.removeChild(graphics);
+		
 		graphics = new PIXI.Graphics();
-		graphics.lineStyle(new_drawing.thickness * THICKNESS_SCALE, new_drawing.color, 1);
+		graphics.lineStyle(new_drawing.thickness / background_sprite.scale.y * THICKNESS_SCALE, new_drawing.color, 1);
 		graphics.moveTo(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)));
-		graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), size_y * end_circle_radius * zoom_level));
+		graphics.drawShape(new PIXI.Circle(x_abs(from_x_local(mouse_location.x)), y_abs(from_y_local(mouse_location.y)), background_sprite.height / background_sprite.scale.y * end_circle_radius * zoom_level));
 		background_sprite.addChild(graphics);
+		
 		render_scene();	
 		
 		on_curve_move(e);
@@ -2871,22 +2875,26 @@ function on_selectbox_move(e) {
 }
 
 function on_select_over(e) {
-	select_box.mousemove = on_selectbox_move;
-	select_box.touchmove = on_selectbox_move;
-	select_box.mouseout = on_select_out;
-	select_box.touchend = on_select_out;
+	if (!dragging) {
+		select_box.mousemove = on_selectbox_move;
+		select_box.touchmove = on_selectbox_move;
+		select_box.mouseout = on_select_out;
+		select_box.touchend = on_select_out;
+	}
 }
 
 function on_select_out(e) {
-	once_per_frame(select_box_move_state, function() {});
-	$('html,body').css('cursor', 'default');
-	select_box.mousemove = undefined;
-	select_box.touchmove = undefined;
-	select_box.mousedown = undefined;
-	select_box.touchstart = undefined;
-	objectContainer.mousedown = on_left_click;
-	select_box.mouseout = undefined;
-	select_box.touchend = undefined;
+	if (!dragging) {
+		once_per_frame(select_box_move_state, function() {});
+		$('html,body').css('cursor', 'default');
+		select_box.mousemove = undefined;
+		select_box.touchmove = undefined;
+		select_box.mousedown = undefined;
+		select_box.touchstart = undefined;
+		objectContainer.mousedown = on_left_click;
+		select_box.mouseout = undefined;
+		select_box.touchend = undefined;
+	}
 }
 
 function make_resizable(select_box) {
@@ -4119,7 +4127,7 @@ function create_icon_cont(icon, texture) {
 	room_data.slides[active_slide].entities[icon.uid] = icon;
 }
 	
-function create_icon(icon, cb_after) {
+function create_icon(icon, done) {
 	try {
 		var counter = $('button[id*="'+icon.tank+'"]').find("span");
 		counter[0].innerHTML = parseInt(counter[0].innerHTML)+1;
@@ -4138,7 +4146,7 @@ function create_icon(icon, cb_after) {
 	resources_loading++;
 	var onloaded = function() {
 		create_icon_cont(icon, texture);
-		if (cb_after) cb_after(icon);
+		if (done) done(icon);
 		resources_loading--;
 	}
 	
@@ -4192,50 +4200,64 @@ function create_entity(entity) {
 	if (room_data.slides[active_slide].entities[entity.uid]) {
 		remove(entity.uid);
 	}
+	
 	if (entity.type == 'background') {
 		set_background(entity);
+		done()
 	} else if (entity.type == 'icon') {
-		create_icon(entity);
+		create_icon(entity, done);
 	} else if (entity.type == 'drawing') {
 		create_drawing2(entity, DRAW_QUALITY);
+		done()
 	} else if (entity.type == 'curve') {
 		create_curve2(entity, DRAW_QUALITY);
+		done()
 	} else if (entity.type == 'line') {
 		create_line2(entity, DRAW_QUALITY);
+		done()
 	} else if (entity.type == 'text') {
 		create_text2(entity);
+		done()
 	} else if (entity.type == 'background_text') {
 		create_background_text2(entity);
+		done()
 	} else if (entity.type == 'note') {
 		create_note(entity);
+		done()
 	} else if (entity.type == 'rectangle') {
 		create_rectangle2(entity, DRAW_QUALITY);
+		done()
 	} else if (entity.type == 'circle') {
+		done()
 		create_circle2(entity, DRAW_QUALITY);
 	} else if (entity.type == 'polygon') {
 		create_polygon2(entity, DRAW_QUALITY);
+		done()
 	} else if (entity.type == 'area') {
 		create_area2(entity, DRAW_QUALITY);
+		done()
 	}
 
-	if (entity.container) {
-		if (entity.scale) {
-			entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
-			entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
-		}
+	function done() {
+		if (entity.container) {
+			if (entity.scale) {
+				entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
+				entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
+			}
+				
+			if (entity.container.anchor) {
+				set_anchor(entity.container, 0.5, 0.5);
+			}
 			
-		if (entity.container.anchor) {
-			set_anchor(entity.container, 0.5, 0.5);
-		}
+			if (entity.rotation) {
+				entity.container.rotation = -entity.rotation;
+			}
+			
+			adjust_zoom(entity)
 		
-		if (entity.rotation) {
-			entity.container.rotation = -entity.rotation;
-		}
-		
-		adjust_zoom(entity)
-	
-		if (background.is_video) {
-			update_timeline(entity);
+			if (background.is_video) {
+				update_timeline(entity);
+			}
 		}
 	}
 }
@@ -4928,6 +4950,7 @@ function transition(slide) {
 function cancel_drag(abort) {
 	clearTimeout(drag_timeout);
 	objectContainer.buttonMode = false;	
+	dragging = false;
 	
 	if (context_before_drag) {
 		active_context = context_before_drag;
