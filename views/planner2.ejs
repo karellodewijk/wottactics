@@ -72,7 +72,6 @@
 		<link rel="stylesheet" href="<%=static_host%>/EC_icons.css">
 	<% } else if (game == 'pr') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
-		<link rel="stylesheet" href="<%=static_host%>/pr_icons.css">
 		<link rel="stylesheet" href="<%=static_host%>/pr_attack_markers.css">
 		<link rel="stylesheet" href="<%=static_host%>/pr_defence_markers.css">
 		<link rel="stylesheet" href="<%=static_host%>/pr_flags.css">
@@ -97,12 +96,12 @@
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
 		
-	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>		
-	<%}%>
 	
+	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
+	<%}%>
 	
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
