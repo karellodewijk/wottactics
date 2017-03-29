@@ -1342,14 +1342,18 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			socket.broadcast.to(room).emit('ping_marker', x, y, color, size, socket.request.session.passport.user.id);
 		});
 
-		socket.on('show_grid', function(room, slide, bool) {
-			room_data[room].slides[slide].show_grid = bool;
-			socket.broadcast.to(room).emit('show_grid', slide, bool, socket.request.session.passport.user.id);
+		socket.on('show_grid', function(room, slide, show_gid) {
+			if (room_data[room] && room_data[room].slides[slide]) {
+				room_data[room].slides[slide].show_grid = show_gid;
+				socket.broadcast.to(room).emit('show_grid', slide, show_gid, socket.request.session.passport.user.id);
+			}
 		});
 		
 		socket.on('track', function(room, tracker) {
-			room_data[room].trackers[tracker.uid] = tracker;
-			socket.broadcast.to(room).emit('track', tracker, socket.request.session.passport.user.id);
+			if (room_data[room]) {
+				room_data[room].trackers[tracker.uid] = tracker;
+				socket.broadcast.to(room).emit('track', tracker, socket.request.session.passport.user.id);
+			}
 		});
 		
 		socket.on('track_move', function(room, uid, delta_x, delta_y) {
@@ -1361,8 +1365,10 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 		
 		socket.on('stop_track', function(room, uid) {
-			delete room_data[room].trackers[uid];
-			socket.broadcast.to(room).emit('stop_track', uid);
+			if (room_data[room]) {
+				delete room_data[room].trackers[uid];
+				socket.broadcast.to(room).emit('stop_track', uid);
+			}
 		});
 		
 		socket.on('remove', function(room, uid, slide) {
@@ -1566,24 +1572,32 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 		
 		socket.on('play_video', function(room, frame, rate) {
-			room_data[room].playing = true;
-			io.to(room).emit('play_video', frame, Date.now()+500, rate, socket.request.session.passport.user.id);
+			if (room_data[room]) {
+				room_data[room].playing = true;
+				io.to(room).emit('play_video', frame, Date.now()+500, rate, socket.request.session.passport.user.id);
+			}
 		});
 		
 		socket.on('pause_video', function(room, frame) {
-			room_data[room].last_sync = [frame, Date.now()];
-			room_data[room].playing = false;
-			socket.broadcast.to(room).emit('pause_video', frame, socket.request.session.passport.user.id);
+			if (room_data[room]) {
+				room_data[room].last_sync = [frame, Date.now()];
+				room_data[room].playing = false;
+				socket.broadcast.to(room).emit('pause_video', frame, socket.request.session.passport.user.id);
+			}
 		});
 
 		socket.on('sync_video', function(room, frame, timestamp) {
-			room_data[room].last_sync = [frame, timestamp];
-			io.to(room).emit('sync_video', frame, timestamp, socket.request.session.passport.user.id);
+			if (room_data[room]) {
+				room_data[room].last_sync = [frame, timestamp];
+				io.to(room).emit('sync_video', frame, timestamp, socket.request.session.passport.user.id);
+			}
 		});
 
 		socket.on('seek_video', function(room, frame, timestamp) {
-			room_data[room].last_sync = [frame, timestamp];
-			socket.broadcast.to(room).emit('seek_video', frame, timestamp, socket.request.session.passport.user.id);
+			if (room_data[room]) {
+				room_data[room].last_sync = [frame, timestamp];
+				socket.broadcast.to(room).emit('seek_video', frame, timestamp, socket.request.session.passport.user.id);
+			}
 		});
 		
 		socket.on('request_sync', function(room) {
@@ -1591,13 +1605,17 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		});
 
 		socket.on('change_rate', function(room, rate) {
-			room_data[room].playback_rate = rate;
-			socket.broadcast.to(room).emit('change_rate', rate);
+			if (room_data[room]) {
+				room_data[room].playback_rate = rate;
+				socket.broadcast.to(room).emit('change_rate', rate);
+			}
 		});
 		
 		socket.on('pan_zoom', function(room, slide, zoom_level, x, y) {
-			room_data[room].slides[slide].pan_zoom = [zoom_level, x, y];
-			socket.broadcast.to(room).emit('pan_zoom', slide, zoom_level, x, y, socket.request.session.passport.user.id);
+			if (room_data[room] && room_data[room].slides[slide]) {
+				room_data[room].slides[slide].pan_zoom = [zoom_level, x, y];
+				socket.broadcast.to(room).emit('pan_zoom', slide, zoom_level, x, y, socket.request.session.passport.user.id);
+			}
 		});
 		
 	});
