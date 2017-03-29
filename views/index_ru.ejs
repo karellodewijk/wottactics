@@ -70,12 +70,13 @@
 							}
 							return text;
 						}
-						window.onload = function() {
-							var els = document.getElementsByClassName('new_room');
-							for (var i = 0; i < els.length; i++) {
-								els[i].setAttribute('href', els[i].getAttribute('href') + '?room=' + newUid());
-							}
-						};
+						var els = document.getElementsByClassName('new_room');
+						for (var i = 0; i < els.length; i++) {
+							els[i].addEventListener("click", function(e) {
+								e.preventDefault();
+								window.location = this.getAttribute('href') + '?room=' + newUid();
+							})
+						}
 					</script>
 				</div>
 			</div>

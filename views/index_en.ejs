@@ -70,12 +70,13 @@
 							}
 							return text;
 						}
-						window.onload = function() {
-							var els = document.getElementsByClassName('new_room');
-							for (var i = 0; i < els.length; i++) {
-								els[i].setAttribute('href', els[i].getAttribute('href') + '?room=' + newUid());
-							}
-						};
+						var els = document.getElementsByClassName('new_room');
+						for (var i = 0; i < els.length; i++) {
+							els[i].addEventListener("click", function(e) {
+								e.preventDefault();
+								window.location = this.getAttribute('href') + '?room=' + newUid();
+							})
+						}
 					</script>
 				</div>
 			</div>
@@ -111,11 +112,11 @@
 						<h2>Latest changes</h2>
 						<p>
 						<ul>
+							<li>Updated wows and squad maps
 							<li>Added the option to upload your own icons
 							<li>Added now wot 9.17.1 minimaps
 							<li>Added upload map option
 							<li>Updated Finnish translation from Etna99
-							<li>Translation into Portuguese from Roberto
 						</ul>
 						<p>On the bug hunting front:
 						<ul>
@@ -128,8 +129,8 @@
 						<p>If you find anything else, however small, that is broken, pls let me know. 
 					</div>
 					<div class="col-md-4">					
-						<h2>Support for Mechwarrior online and Eternal Crusade</h2>
-						<p>Take a <a href="http://gametactic.org/MWO">look</a>
+						<h2>Support for Project Reality</h2>
+						<p>Take a <a href="http://gametactic.org/pr">look</a>
 					</div>
 					<%if (game == 'warface') { %>
 						<div class="col-md-4">
