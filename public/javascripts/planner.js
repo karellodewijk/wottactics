@@ -3694,9 +3694,9 @@ function rebuild_timeline(entity) {
 	for (var key in room_data.slides[active_slide].entities) {
 		if (room_data.slides[active_slide].entities.hasOwnProperty(key)) {
 			if (room_data.slides[active_slide].entities[key].container) {
-				update_timeline(room_data.slides[active_slide].entities[key]);
 				remove(key, true);
 			}
+			update_timeline(room_data.slides[active_slide].entities[key]);
 		}
 	}
 }
@@ -6372,14 +6372,14 @@ $(document).ready(function() {
 			background_sprite.y = temp_y;
 
 			$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function() {
-				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.3.0/js/canvas-to-blob.min.js", function() {
+				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.7.0/js/canvas-to-blob.min.js", function() {
 					new_renderer.view.toBlob(function(blob){
 						if (tactic_name && tactic_name != "") {
 							saveAs(blob, tactic_name + ".jpg");
 						} else {
-							saveAs(blob, "map.jpg");
+							saveAs(blob, "map.jpg", 1);
 						}	
-					});
+					}, 'image/jpeg');
 				});					
 			});
 		});
