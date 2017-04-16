@@ -26,7 +26,6 @@ db.createUser(
 	- cookie secret: some random string
 	- valid mongodb info from step 1
 	- valid redis server info from step 2
-	- socket_io_servers: localhost will do for testing locally. But if you are hosting it, it should contain your public hostname or ip. Or a comma seperated list of hosts/ips for load balancing. e.g.: "socket_io_servers": "server1.wottactic.eu:80,server2.wottactic.eu:80" (IMPORTANT)
 - run "node app.js" or "sudo node app.js" (sudo because default port 80 requires elevated privileges)
 
 
@@ -42,16 +41,15 @@ Also for facebook/google/battlesnet/vk you'll need to whitelist the redirect uri
 
 Other optional options:
 
-static_host: This is for using a CDN. Upload the contents of the public map to your cdn and fill in a the full url here e.g.: "static_host": "http://some_address/public". Clients will now prefer to load all statics files (icons/js/stylesheets/maps) from that address. 
+static_host: This is for using a CDN. Upload the contents of the public map to your cdn and fill in a the full url here e.g.: "static_host": "http://server/public". Clients will now prefer to load all statics files (icons/js/stylesheets/maps) from that address. 
 
 ga_id: Your google analytics unique id if you want to enable google analytics tracking.
 
+socket_io_servers: If you run more than 1 instance of the node app it should contain a comma seperated list of public ips/hostnames that should be identical for each instance. When connecting to a tactic it will select a server to connect to based on the a hash of the room id. e.g.: "server1.myhost.com, server2.myhost.com" or even "myhost.com:3000, myhost.com:3001" when running multiple instances on the same host.
 
 Caveats:
 
-Use the stable/lts node releases (v4), some of the libraries have issues with (v6).
+Use the stable/lts node releases (v6) of node.
 
-Putting a public address for your host under socket_io_servers in secrets.txt is not optional. The client will try to open a websocket to this address, it won't work if this fails. I also recommends you make it an url and not an ip address as some clients security configurations do not like it when you connect to an ip without a prior dns request.
-
-If you are doing some port redirection wizardry with nginx for example. Make sure it properly handles incoming websockets.
+If you are doing some reverse proxy/port redirection wizardry with nginx for example, make sure it properly handles websockets.
 
