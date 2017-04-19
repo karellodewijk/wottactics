@@ -1,0 +1,60 @@
+sprity create "./dist" "./icons/*.png" "./icons/flags/*.png" -s style.css --margin 0
+sprity create "./dist" "./for_good_icons/*.png" "./for_good_icons/flags/*.png" -s style.css --margin 0
+
+sprity create "./dist" "./wot_assets/*.png" -n wot_assets -s wot_assets.json --processor sprity-json --margin 4
+sprity create "./dist" "./wot_assets/*.png" --prefix wot -n wot_assets -s wot_assets.css --margin 4
+
+sprity create "./dist" "./aw_assets/*.png" -n aw_assets -s aw_assets.json --processor sprity-json --margin 4
+sprity create "./dist" "./aw_assets/*.png" --prefix aw -n aw_assets -s aw_assets.css --margin 4
+
+
+
+
+
+#sprity create "./dist" "./public/icons/lol_champions/*" -n lol_champions -s lol_champions.json --processor sprity-json --margin 0 --prefix lol_champions
+
+sprity create "./dist" "./lol_abilities/*.jpg" -n lol_abilities -s lol_abilities.css --margin 0 --prefix lol_abilities
+sprity create "./dist" "./lol_champions/*.jpg" -n lol_champions -s lol_champions.css --margin 0 --prefix lol_champions
+sprity create "./dist" "./lol_runes/*.png" -n lol_runes -s lol_runes.css --margin 0 --prefix lol_runes
+sprity create "./dist" "./lol_spells/*.jpg" -n lol_spells -s lol_spells.css --margin 0 --prefix lol_spells
+sprity create "./dist" "./lol_wards/*.png" -n lol_wards -s lol_wards.css --margin 0 --prefix lol_wards
+sprity create "./dist" "./lol_npcs/*.png" -n lol_npcs -s lol_npcs.css --margin 0 --prefix lol_npcs
+
+sprity create "./dist" "./wot-icon-set1/*.png" -n wot-icon-set1 -s wot-icon-set1.css --margin 0 --prefix wot-icon-set1
+sprity create "./dist" "./wot-icon-set2/*.png" -n wot-icon-set2 -s wot-icon-set2.css --margin 0 --prefix wot-icon-set2
+sprity create "./dist" "./wot-icon-set3/*.png" -n wot-icon-set3 -s wot-icon-set3.css --margin 0 --prefix wot-icon-set3
+sprity create "./dist" "./wot_icon_set4/*.png" -n wot_icon_set4 -s wot_icon_set4.css --margin 0 --prefix wot_icon_set4
+
+sprity create "./dist" "./hots_main_full/*.png" -n hots_assets -s hots_assets.json --processor sprity-json --margin 0
+sprity create "./dist" "./hots_main_full/*.png" -n hots_main -s hots_main.css --margin 0 --prefix hots_main
+sprity create "./dist" "./hots_abilities/*.jpg" -n hots_abilities -s hots_abilities.css --margin 0 --prefix hots_abilities
+sprity create "./dist" "./hots_heroes/*.png" -n hots_heroes -s hots_heroes.css --margin 0 --prefix hots_heroes
+sprity create "./dist" "./hots_map_icons/*.png" -n hots_map_icons -s hots_map_icons.css --margin 0 --prefix hots_map_icons
+sprity create "./dist" "./hots_minions/*.png" -n hots_minions -s hots_minions.css --margin 0 --prefix hots_minions
+
+sprity create "./dist" "./wows_icons/*.png" -n wows_icons -s wows_icons.css --margin 0 --prefix wows_icons
+
+sprity create "./dist" "./sc2_units_terran/*.png" -n sc2_units_terran -s sc2_units_terran.css --margin 0 --prefix sc2_units_terran
+sprity create "./dist" "./sc2_units_zerg/*.png" -n sc2_units_zerg -s sc2_units_zerg.css --margin 0 --prefix sc2_units_zerg
+sprity create "./dist" "./sc2_units_protoss/*.png" -n sc2_units_protoss -s sc2_units_protoss.css --margin 0 --prefix sc2_units_protoss
+sprity create "./dist" "./sc2_buildings_terran/*.png" -n sc2_buildings_terran -s sc2_buildings_terran.css --margin 0 --prefix sc2_buildings_terran
+sprity create "./dist" "./sc2_buildings_zerg/*.png" -n sc2_buildings_zerg -s sc2_buildings_zerg.css --margin 0 --prefix sc2_buildings_zerg
+sprity create "./dist" "./sc2_buildings_protoss/*.png" -n sc2_buildings_protoss -s sc2_buildings_protoss.css --margin 0 --prefix sc2_buildings_protoss
+sprity create "./dist" "./sc2_abilities_terran/*.png" -n sc2_abilities_terran -s sc2_abilities_terran.css --margin 0 --prefix sc2_abilities_terran
+sprity create "./dist" "./sc2_abilities_zerg/*.png" -n sc2_abilities_zerg -s sc2_abilities_zerg.css --margin 0 --prefix sc2_abilities_zerg
+sprity create "./dist" "./sc2_abilities_protoss/*.png" -n sc2_abilities_protoss -s sc2_abilities_protoss.css --margin 0 --prefix sc2_abilities_protoss
+sprity create "./dist" "./sc2_upgrades_terran/*.png" -n sc2_upgrades_terran -s sc2_upgrades_terran.css --margin 0 --prefix sc2_upgrades_terran
+sprity create "./dist" "./sc2_upgrades_zerg/*.png" -n sc2_upgrades_zerg -s sc2_upgrades_zerg.css --margin 0 --prefix sc2_upgrades_zerg
+sprity create "./dist" "./sc2_upgrades_protoss/*.png" -n sc2_upgrades_protoss -s sc2_upgrades_protoss.css --margin 0 --prefix sc2_upgrades_protoss
+
+sprity create "./dist" "./csgo_icons/*.png" -n csgo_icons -s csgo_icons.css --margin 0 --prefix csgo_icons
+sprity create "./dist" "./warface_icons/*.png" -n warface_icons -s warface_icons.css --margin 0 --prefix warface_icons
+sprity create "./dist" "./MWO_icons/*.png" -n MWO_icons -s MWO_icons.css --margin 0 --prefix MWO_icons
+
+sprity create "./dist" "./EC_icons/*.png" -n EC_icons -s EC_icons.css --margin 0 --prefix EC_icons
+
+sprity create "./dist" "./squad_icons/*.png" -n squad_icons -s squad_icons.css --margin 0 --prefix squad_icons
+
+sprity create "./dist" "./R6_attac/*.png" -n R6_attac_icons -s R6_attac_icons.css --margin 0 --prefix R6_attac_icons
+sprity create "./dist" "./R6_def/*.png" -n R6_def_icons -s R6_def_icons.css --margin 0 --prefix R6_def_icons
+

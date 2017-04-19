@@ -1,0 +1,65 @@
+
+.wot {
+  background-image: url('../images/wot_assets.png');
+}
+
+.wot-note {
+  background-position: -0px -0px;
+  width: 30px;
+  height: 30px;
+}
+.wot-light {
+  background-position: -0px -30px;
+  width: 37px;
+  height: 37px;
+}
+.wot-arty {
+  background-position: -0px -67px;
+  width: 37px;
+  height: 37px;
+}
+.wot-medium {
+  background-position: -0px -104px;
+  width: 37px;
+  height: 37px;
+}
+.wot-heavy {
+  background-position: -0px -141px;
+  width: 37px;
+  height: 37px;
+}
+.wot-td {
+  background-position: -0px -178px;
+  width: 37px;
+  height: 37px;
+}
+.wot-dot {
+  background-position: -0px -215px;
+  width: 38px;
+  height: 38px;
+}
+.wot-circle {
+  background-position: -0px -253px;
+  width: 58px;
+  height: 58px;
+}
+.wot-recticle {
+  background-position: -0px -311px;
+  width: 58px;
+  height: 58px;
+}
+.wot-rotate {
+  background-position: -0px -369px;
+  width: 26px;
+  height: 58px;
+}
+.wot-cursor {
+  background-position: -0px -427px;
+  width: 63px;
+  height: 91px;
+}
+.wot-grid {
+  background-position: -0px -518px;
+  width: 1008px;
+  height: 1008px;
+}

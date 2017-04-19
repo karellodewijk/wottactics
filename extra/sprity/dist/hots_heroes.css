@@ -1,0 +1,290 @@
+
+.hots_heroes {
+  background-image: url('http://karellodewijk.github.io/hots_heroes.png');
+}
+
+.hots_heroes-storm_ui_ingame_heroselect_btn_malfurion {
+  background-position: -0px -0px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_anubarak {
+  background-position: -0px -50px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_arthas {
+  background-position: -0px -100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_azmodan {
+  background-position: -0px -150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_butcher {
+  background-position: -0px -200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_chen {
+  background-position: -0px -250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_dehaka {
+  background-position: -0px -300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_demonhunter {
+  background-position: -0px -350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_diablo {
+  background-position: -0px -400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_empty {
+  background-position: -0px -450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_etc {
+  background-position: -0px -500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_faeriedragon {
+  background-position: -0px -550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_femalebarbarian {
+  background-position: -0px -600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_gall {
+  background-position: -0px -650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_gazlowe {
+  background-position: -0px -700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_genngreymane {
+  background-position: -0px -750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_goblintinker {
+  background-position: -0px -800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_gryphon_rider {
+  background-position: -0px -850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_illidan {
+  background-position: -0px -900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_infestor {
+  background-position: -0px -950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_jaina {
+  background-position: -0px -1000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_johanna {
+  background-position: -0px -1050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_kaelthas {
+  background-position: -0px -1100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_kerrigan {
+  background-position: -0px -1150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_leoric {
+  background-position: -0px -1200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_lili {
+  background-position: -0px -1250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_lostvikings {
+  background-position: -0px -1300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_lunara {
+  background-position: -0px -1350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_artanis {
+  background-position: -0px -1400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_medic {
+  background-position: -0px -1450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_monk {
+  background-position: -0px -1500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_muradin {
+  background-position: -0px -1550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_murky {
+  background-position: -0px -1600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_necromancer {
+  background-position: -0px -1650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_nova {
+  background-position: -0px -1700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_raynor {
+  background-position: -0px -1750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_rehgar {
+  background-position: -0px -1800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_rexxar {
+  background-position: -0px -1850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_sgthammer {
+  background-position: -0px -1900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_stitches {
+  background-position: -0px -1950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_sylvanas {
+  background-position: -0px -2000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_tassadar {
+  background-position: -0px -2050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_thrall {
+  background-position: -0px -2100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_tracer {
+  background-position: -0px -2150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_tychus {
+  background-position: -0px -2200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_tyrael {
+  background-position: -0px -2250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_tyrande {
+  background-position: -0px -2300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_uther {
+  background-position: -0px -2350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_witchdoctor {
+  background-position: -0px -2400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_wizard {
+  background-position: -0px -2450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_zagara {
+  background-position: -0px -2500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-storm_ui_ingame_heroselect_btn_zeratul {
+  background-position: -0px -2550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-ui_targetportrait_hero_baelog {
+  background-position: -0px -2600px;
+  width: 49px;
+  height: 50px;
+}
+.hots_heroes-ui_targetportrait_hero_erik {
+  background-position: -0px -2650px;
+  width: 49px;
+  height: 50px;
+}
+.hots_heroes-ui_targetportrait_hero_misha {
+  background-position: -0px -2700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-ui_targetportrait_hero_murkysegg {
+  background-position: -0px -2750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_heroes-ui_targetportrait_hero_olaf {
+  background-position: -0px -2800px;
+  width: 49px;
+  height: 50px;
+}

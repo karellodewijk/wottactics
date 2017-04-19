@@ -1,0 +1,800 @@
+
+.hots_minions {
+  background-image: url('http://karellodewijk.github.io/hots_minions.png');
+}
+
+.hots_minions-ui_targetportrait_bbay_doubloon {
+  background-position: -0px -0px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-hud_bg_killcounter_skull_tier6 {
+  background-position: -0px -50px;
+  width: 46px;
+  height: 50px;
+}
+.hots_minions-hud_bg_mechanicicon_golem {
+  background-position: -0px -100px;
+  width: 42px;
+  height: 50px;
+}
+.hots_minions-hud_bg_mechanicicon_lg_skull {
+  background-position: -0px -150px;
+  width: 37px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_anubis {
+  background-position: -0px -200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_anubis_blue {
+  background-position: -0px -250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_anubis_off {
+  background-position: -0px -300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_anubis_red {
+  background-position: -0px -350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_anubis_yellow {
+  background-position: -0px -400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_cobra {
+  background-position: -0px -450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_cobra_blue {
+  background-position: -0px -500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_cobra_off {
+  background-position: -0px -550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_cobra_red {
+  background-position: -0px -600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_cobra_yellow {
+  background-position: -0px -650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_gator {
+  background-position: -0px -700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_gator_blue {
+  background-position: -0px -750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_gator_off {
+  background-position: -0px -800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_gator_red {
+  background-position: -0px -850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_gator_yellow {
+  background-position: -0px -900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_skytemple_temple {
+  background-position: -0px -950px;
+  width: 47px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_spiderqueen_nameplate_soul {
+  background-position: -0px -1000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_spiderqueen_nameplate_soul_blue {
+  background-position: -0px -1050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_spiderqueen_nameplate_soul_red {
+  background-position: -0px -1100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_spiderqueen_soul_bar_blue {
+  background-position: -0px -1150px;
+  width: 54px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_spiderqueen_soul_bar_red {
+  background-position: -0px -1200px;
+  width: 54px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_spiderqueen_souleater {
+  background-position: -0px -1250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_spiderqueen_souleater_portrait {
+  background-position: -0px -1300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_mapmechanic_spiderqueen_souleater_red {
+  background-position: -0px -1350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_bay_cannon {
+  background-position: -0px -1400px;
+  width: 56px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_bay_chest {
+  background-position: -0px -1450px;
+  width: 45px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_bay_chest_closed {
+  background-position: -0px -1500px;
+  width: 45px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_bay_doubloom {
+  background-position: -0px -1550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_bay_doubloon_red {
+  background-position: -0px -1600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_boe_incoming_angel {
+  background-position: -0px -1650px;
+  width: 48px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_boe_incoming_demon {
+  background-position: -0px -1700px;
+  width: 48px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_boe_portrait_angel_blue {
+  background-position: -0px -1750px;
+  width: 44px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_boe_portrait_angel_red {
+  background-position: -0px -1800px;
+  width: 44px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_boe_portrait_demon_blue {
+  background-position: -0px -1850px;
+  width: 52px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_boe_portrait_demon_red {
+  background-position: -0px -1900px;
+  width: 52px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_dragon_dragonhud {
+  background-position: -0px -1950px;
+  width: 45px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_dragon_shrine_moon_blue_enable {
+  background-position: -0px -2000px;
+  width: 53px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_dragon_shrine_moon_red_enable {
+  background-position: -0px -2050px;
+  width: 53px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_dragon_shrine_star_blue_enable {
+  background-position: -0px -2100px;
+  width: 53px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_dragon_shrine_star_red_enable {
+  background-position: -0px -2150px;
+  width: 53px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_dragon_stone {
+  background-position: -0px -2200px;
+  width: 51px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_centerpiece_day {
+  background-position: -0px -2250px;
+  width: 44px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_centerpiece_night {
+  background-position: -0px -2300px;
+  width: 54px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_golemhud {
+  background-position: -0px -2350px;
+  width: 36px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_moon {
+  background-position: -0px -2400px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_sun {
+  background-position: -0px -2450px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_team1_golemgrowing {
+  background-position: -0px -2500px;
+  width: 56px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_team1_golemready {
+  background-position: -0px -2550px;
+  width: 56px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_team1_seed_closed {
+  background-position: -0px -2600px;
+  width: 83px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_team1_seed_open {
+  background-position: -0px -2650px;
+  width: 83px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_team2_golemgrowing {
+  background-position: -0px -2700px;
+  width: 56px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_team2_golemready {
+  background-position: -0px -2750px;
+  width: 56px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_team2_seed_closed {
+  background-position: -0px -2800px;
+  width: 94px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_garden_team2_seed_open {
+  background-position: -0px -2850px;
+  width: 94px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_mines_golemhud {
+  background-position: -0px -2900px;
+  width: 43px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_mines_mine_open {
+  background-position: -0px -2950px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_mines_skull {
+  background-position: -0px -3000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_raven_blue_wing {
+  background-position: -0px -3050px;
+  width: 54px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_raven_head {
+  background-position: -0px -3100px;
+  width: 39px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_raven_red_wing {
+  background-position: -0px -3150px;
+  width: 54px;
+  height: 50px;
+}
+.hots_minions-hud_minimap_tribute {
+  background-position: -0px -3200px;
+  width: 39px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_butcher_stage1 {
+  background-position: -0px -3250px;
+  width: 55px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_butcher_stage2 {
+  background-position: -0px -3300px;
+  width: 53px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_butcher_stage3 {
+  background-position: -0px -3350px;
+  width: 55px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_dehaka_muscular_augmentation {
+  background-position: -0px -3400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_dehaka_tissue_regeneration {
+  background-position: -0px -3450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_heromechanic_leoric_cheatedicon {
+  background-position: -0px -3500px;
+  width: 57px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_heromechanic_thrall_activate {
+  background-position: -0px -3550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_heromechanic_thrall_mainimage {
+  background-position: -0px -3600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_heromechanic_vikings_boot_large {
+  background-position: -0px -3650px;
+  width: 57px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_heromechanic_vikings_boot_large_off {
+  background-position: -0px -3700px;
+  width: 57px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_heromechanic_vikings_shield_large {
+  background-position: -0px -3750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_heromechanic_vikings_sword_large {
+  background-position: -0px -3800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_heromechanic_vikings_sword_large_off {
+  background-position: -0px -3850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-storm_ui_hud_necro_icon {
+  background-position: -0px -3900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-hud_bg_mechanicicon_coin {
+  background-position: -0px -3950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_doubloonchest {
+  background-position: -0px -4000px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_ghostship {
+  background-position: -0px -4050px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_gravegolem_base_blue {
+  background-position: -0px -4100px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_gravegolem_base_red {
+  background-position: -0px -4150px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_gravegolem_cave_blue {
+  background-position: -0px -4200px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_gravegolem_cave_red {
+  background-position: -0px -4250px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_gravegolem_docks {
+  background-position: -0px -4300px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_hauntedskeleton_blue {
+  background-position: -0px -4350px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_hauntedskeleton_red {
+  background-position: -0px -4400px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_knight_dark_blue {
+  background-position: -0px -4450px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_knight_dark_red {
+  background-position: -0px -4500px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_knight_docks_blue {
+  background-position: -0px -4550px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_knight_docks_red {
+  background-position: -0px -4600px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_knight_kings_blue {
+  background-position: -0px -4650px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_knight_kings_red {
+  background-position: -0px -4700px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_siegegiant_blue {
+  background-position: -0px -4750px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_siegegiant_docks_blue {
+  background-position: -0px -4800px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_siegegiant_docks_red {
+  background-position: -0px -4850px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_siegegiant_knight_blue {
+  background-position: -0px -4900px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_siegegiant_knight_red {
+  background-position: -0px -4950px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_siegegiant_red {
+  background-position: -0px -5000px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_sorceror_cursed_blue {
+  background-position: -0px -5050px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_sorceror_cursed_red {
+  background-position: -0px -5100px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_sorceror_docks_blue {
+  background-position: -0px -5150px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_sorceror_docks_red {
+  background-position: -0px -5200px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_sorceror_kings_blue {
+  background-position: -0px -5250px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_mercs_sorceror_kings_red {
+  background-position: -0px -5300px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_archer_blue {
+  background-position: -0px -5350px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_archer_red {
+  background-position: -0px -5400px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_armoredminion_blue {
+  background-position: -0px -5450px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_armoredminion_red {
+  background-position: -0px -5500px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_catapult_1 {
+  background-position: -0px -5550px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_catapult_2 {
+  background-position: -0px -5600px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_catapult_3 {
+  background-position: -0px -5650px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_footman_blue {
+  background-position: -0px -5700px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_footman_red {
+  background-position: -0px -5750px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_healer_blue {
+  background-position: -0px -5800px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_healer_red {
+  background-position: -0px -5850px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_summonedskeleton_blue {
+  background-position: -0px -5900px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_summonedskeleton_red {
+  background-position: -0px -5950px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_summoner_blue {
+  background-position: -0px -6000px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_summoner_red {
+  background-position: -0px -6050px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_wizard_blue {
+  background-position: -0px -6100px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_minions_wizard_red {
+  background-position: -0px -6150px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_piratecaptain {
+  background-position: -0px -6200px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_pirateskeletonblue {
+  background-position: -0px -6250px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_bbay_pirateskeletonred {
+  background-position: -0px -6300px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_cursedhollow_curseicon {
+  background-position: -0px -6350px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_cursedhollow_tribute {
+  background-position: -0px -6400px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_dragonshire_dragonknight {
+  background-position: -0px -6450px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_armyofdeadghoulblue {
+  background-position: -0px -6500px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_armyofdeadghoulred {
+  background-position: -0px -6550px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_bansheeblue {
+  background-position: -0px -6600px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_bansheered {
+  background-position: -0px -6650px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_drakkenlaserdrill {
+  background-position: -0px -6700px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_gargantuanblue {
+  background-position: -0px -6750px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_gargantuanred {
+  background-position: -0px -6800px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_healingtotemblue {
+  background-position: -0px -6850px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_healingtotemred {
+  background-position: -0px -6900px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_immortalservitudeskeletonblue {
+  background-position: -0px -6950px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_immortalservitudeskeletonred {
+  background-position: -0px -7000px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_impalingblades {
+  background-position: -0px -7050px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_locustblue {
+  background-position: -0px -7100px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_locustred {
+  background-position: -0px -7150px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_muleblue {
+  background-position: -0px -7200px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_mulered {
+  background-position: -0px -7250px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_retchlingblue {
+  background-position: -0px -7300px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_retchlingred {
+  background-position: -0px -7350px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_skeletalpirateblue {
+  background-position: -0px -7400px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_skeletalpiratered {
+  background-position: -0px -7450px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_spiderblue {
+  background-position: -0px -7500px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_spidermineblue {
+  background-position: -0px -7550px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_spiderminered {
+  background-position: -0px -7600px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_spiderred {
+  background-position: -0px -7650px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_treantblue {
+  background-position: -0px -7700px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_zerglingblue {
+  background-position: -0px -7750px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_zerglingred {
+  background-position: -0px -7800px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_zombieblue {
+  background-position: -0px -7850px;
+  width: 49px;
+  height: 50px;
+}
+.hots_minions-ui_targetportrait_hero_zombiered {
+  background-position: -0px -7900px;
+  width: 49px;
+  height: 50px;
+}

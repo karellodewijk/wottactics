@@ -1,0 +1,420 @@
+
+.hots_map_icons {
+  background-image: url('http://karellodewijk.github.io/hots_map_icons.png');
+}
+
+.hots_map_icons-hud_minimap_dragon_shrine_moon_red_enable {
+  background-position: -0px -0px;
+  width: 53px;
+  height: 50px;
+}
+.hots_map_icons-hud_bg_killcounter_skull_tier6 {
+  background-position: -0px -50px;
+  width: 46px;
+  height: 50px;
+}
+.hots_map_icons-hud_bg_mechanicicon_golem {
+  background-position: -0px -100px;
+  width: 42px;
+  height: 50px;
+}
+.hots_map_icons-hud_bg_mechanicicon_lg_skull {
+  background-position: -0px -150px;
+  width: 37px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_anubis {
+  background-position: -0px -200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_anubis_blue {
+  background-position: -0px -250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_anubis_off {
+  background-position: -0px -300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_anubis_red {
+  background-position: -0px -350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_anubis_yellow {
+  background-position: -0px -400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_cobra {
+  background-position: -0px -450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_cobra_blue {
+  background-position: -0px -500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_cobra_off {
+  background-position: -0px -550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_cobra_red {
+  background-position: -0px -600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_cobra_yellow {
+  background-position: -0px -650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_gator {
+  background-position: -0px -700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_gator_blue {
+  background-position: -0px -750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_gator_off {
+  background-position: -0px -800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_gator_red {
+  background-position: -0px -850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_gator_yellow {
+  background-position: -0px -900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_skytemple_temple {
+  background-position: -0px -950px;
+  width: 47px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_spiderqueen_nameplate_soul {
+  background-position: -0px -1000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_spiderqueen_nameplate_soul_blue {
+  background-position: -0px -1050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_spiderqueen_nameplate_soul_red {
+  background-position: -0px -1100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_spiderqueen_soul_bar_blue {
+  background-position: -0px -1150px;
+  width: 54px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_spiderqueen_soul_bar_red {
+  background-position: -0px -1200px;
+  width: 54px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_spiderqueen_souleater {
+  background-position: -0px -1250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_spiderqueen_souleater_portrait {
+  background-position: -0px -1300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_mapmechanic_spiderqueen_souleater_red {
+  background-position: -0px -1350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_bay_cannon {
+  background-position: -0px -1400px;
+  width: 56px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_bay_chest {
+  background-position: -0px -1450px;
+  width: 45px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_bay_chest_closed {
+  background-position: -0px -1500px;
+  width: 45px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_bay_doubloom {
+  background-position: -0px -1550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_bay_doubloon_red {
+  background-position: -0px -1600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_boe_incoming_angel {
+  background-position: -0px -1650px;
+  width: 48px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_boe_incoming_demon {
+  background-position: -0px -1700px;
+  width: 48px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_boe_portrait_angel_blue {
+  background-position: -0px -1750px;
+  width: 44px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_boe_portrait_angel_red {
+  background-position: -0px -1800px;
+  width: 44px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_boe_portrait_demon_blue {
+  background-position: -0px -1850px;
+  width: 52px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_boe_portrait_demon_red {
+  background-position: -0px -1900px;
+  width: 52px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_dragon_dragonhud {
+  background-position: -0px -1950px;
+  width: 45px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_dragon_shrine_moon_blue_enable {
+  background-position: -0px -2000px;
+  width: 53px;
+  height: 50px;
+}
+.hots_map_icons-hud_bg_mechanicicon_coin {
+  background-position: -0px -2050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_dragon_shrine_star_blue_enable {
+  background-position: -0px -2100px;
+  width: 53px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_dragon_shrine_star_red_enable {
+  background-position: -0px -2150px;
+  width: 53px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_dragon_stone {
+  background-position: -0px -2200px;
+  width: 51px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_centerpiece_day {
+  background-position: -0px -2250px;
+  width: 44px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_centerpiece_night {
+  background-position: -0px -2300px;
+  width: 54px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_golemhud {
+  background-position: -0px -2350px;
+  width: 36px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_moon {
+  background-position: -0px -2400px;
+  width: 49px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_sun {
+  background-position: -0px -2450px;
+  width: 49px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_team1_golemgrowing {
+  background-position: -0px -2500px;
+  width: 56px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_team1_golemready {
+  background-position: -0px -2550px;
+  width: 56px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_team1_seed_closed {
+  background-position: -0px -2600px;
+  width: 83px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_team1_seed_open {
+  background-position: -0px -2650px;
+  width: 83px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_team2_golemgrowing {
+  background-position: -0px -2700px;
+  width: 56px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_team2_golemready {
+  background-position: -0px -2750px;
+  width: 56px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_team2_seed_closed {
+  background-position: -0px -2800px;
+  width: 94px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_garden_team2_seed_open {
+  background-position: -0px -2850px;
+  width: 94px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_mines_golemhud {
+  background-position: -0px -2900px;
+  width: 43px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_mines_mine_open {
+  background-position: -0px -2950px;
+  width: 49px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_mines_skull {
+  background-position: -0px -3000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_raven_blue_wing {
+  background-position: -0px -3050px;
+  width: 54px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_raven_head {
+  background-position: -0px -3100px;
+  width: 39px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_raven_red_wing {
+  background-position: -0px -3150px;
+  width: 54px;
+  height: 50px;
+}
+.hots_map_icons-hud_minimap_tribute {
+  background-position: -0px -3200px;
+  width: 39px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_butcher_stage1 {
+  background-position: -0px -3250px;
+  width: 55px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_butcher_stage2 {
+  background-position: -0px -3300px;
+  width: 53px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_butcher_stage3 {
+  background-position: -0px -3350px;
+  width: 55px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_dehaka_muscular_augmentation {
+  background-position: -0px -3400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_dehaka_tissue_regeneration {
+  background-position: -0px -3450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_heromechanic_leoric_cheatedicon {
+  background-position: -0px -3500px;
+  width: 57px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_heromechanic_thrall_activate {
+  background-position: -0px -3550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_heromechanic_thrall_mainimage {
+  background-position: -0px -3600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_heromechanic_vikings_boot_large {
+  background-position: -0px -3650px;
+  width: 57px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_heromechanic_vikings_boot_large_off {
+  background-position: -0px -3700px;
+  width: 57px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_heromechanic_vikings_shield_large {
+  background-position: -0px -3750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_heromechanic_vikings_sword_large {
+  background-position: -0px -3800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_heromechanic_vikings_sword_large_off {
+  background-position: -0px -3850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-storm_ui_hud_necro_icon {
+  background-position: -0px -3900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_map_icons-ui_targetportrait_bbay_doubloon {
+  background-position: -0px -3950px;
+  width: 49px;
+  height: 50px;
+}
+.hots_map_icons-ui_targetportrait_bbay_doubloonchest {
+  background-position: -0px -4000px;
+  width: 49px;
+  height: 50px;
+}
+.hots_map_icons-ui_targetportrait_hero_healingtotemblue {
+  background-position: -0px -4050px;
+  width: 49px;
+  height: 50px;
+}
+.hots_map_icons-ui_targetportrait_hero_healingtotemred {
+  background-position: -0px -4100px;
+  width: 49px;
+  height: 50px;
+}

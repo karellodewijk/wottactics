@@ -1,0 +1,5070 @@
+
+.hots_abilities {
+  background-image: url('http://karellodewijk.github.io/hots_abilities.png');
+}
+
+.hots_abilities-storm_ui_icon_deathrecap_npc_unit {
+  background-position: -0px -0px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_anubarak-carrionbeetles {
+  background-position: -0px -50px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_anubarak-impale {
+  background-position: -0px -100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_anubarak-sandstorm {
+  background-position: -0px -150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_malfurion-entanglingroots {
+  background-position: -0px -200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_malfurion-moonfire {
+  background-position: -0px -250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_malfurion-regrowth {
+  background-position: -0px -300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_malfurion-rejuvenation {
+  background-position: -0px -350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_malfurion-tranquility {
+  background-position: -0px -400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra {
+  background-position: -0px -450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_armor_0 {
+  background-position: -0px -500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_armor_1 {
+  background-position: -0px -550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_armor_2 {
+  background-position: -0px -600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_armor_3 {
+  background-position: -0px -650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_armor_base {
+  background-position: -0px -700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_attackspeed_0 {
+  background-position: -0px -750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_attackspeed_1 {
+  background-position: -0px -800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_attackspeed_2 {
+  background-position: -0px -850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_attackspeed_3 {
+  background-position: -0px -900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_attackspeed_base {
+  background-position: -0px -950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dex_0 {
+  background-position: -0px -1000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dex_1 {
+  background-position: -0px -1050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dex_2 {
+  background-position: -0px -1100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dex_3 {
+  background-position: -0px -1150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dex_base {
+  background-position: -0px -1200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dmg_0 {
+  background-position: -0px -1250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dmg_1 {
+  background-position: -0px -1300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dmg_2 {
+  background-position: -0px -1350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dmg_3 {
+  background-position: -0px -1400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_dmg_base {
+  background-position: -0px -1450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energy_0 {
+  background-position: -0px -1500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energy_1 {
+  background-position: -0px -1550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energy_2 {
+  background-position: -0px -1600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energy_3 {
+  background-position: -0px -1650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energy_base {
+  background-position: -0px -1700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energyregen_0 {
+  background-position: -0px -1750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energyregen_1 {
+  background-position: -0px -1800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energyregen_2 {
+  background-position: -0px -1850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energyregen_3 {
+  background-position: -0px -1900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_energyregen_base {
+  background-position: -0px -1950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_fortification_1 {
+  background-position: -0px -2000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_fortification_2 {
+  background-position: -0px -2050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_fortification_3 {
+  background-position: -0px -2100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_int_0 {
+  background-position: -0px -2150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_int_1 {
+  background-position: -0px -2200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_int_2 {
+  background-position: -0px -2250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_int_3 {
+  background-position: -0px -2300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_int_base {
+  background-position: -0px -2350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_life_0 {
+  background-position: -0px -2400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_life_1 {
+  background-position: -0px -2450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_life_2 {
+  background-position: -0px -2500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_life_3 {
+  background-position: -0px -2550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_life_base {
+  background-position: -0px -2600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_liferegen_0 {
+  background-position: -0px -2650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_liferegen_1 {
+  background-position: -0px -2700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_liferegen_2 {
+  background-position: -0px -2750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_liferegen_3 {
+  background-position: -0px -2800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_liferegen_base {
+  background-position: -0px -2850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_nodeturret_1 {
+  background-position: -0px -2900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_nodeturret_2 {
+  background-position: -0px -2950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_nodeturret_3 {
+  background-position: -0px -3000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_poisoneddart_1 {
+  background-position: -0px -3050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_poisoneddart_2 {
+  background-position: -0px -3100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_poisoneddart_3 {
+  background-position: -0px -3150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_ringofregeneration_1 {
+  background-position: -0px -3200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_ringofregeneration_2 {
+  background-position: -0px -3250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_ringofregeneration_3 {
+  background-position: -0px -3300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_str_0 {
+  background-position: -0px -3350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_str_1 {
+  background-position: -0px -3400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_str_2 {
+  background-position: -0px -3450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_str_3 {
+  background-position: -0px -3500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_str_base {
+  background-position: -0px -3550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_truesight {
+  background-position: -0px -3600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_warp_0 {
+  background-position: -0px -3650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_warp_1 {
+  background-position: -0px -3700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_warp_2 {
+  background-position: -0px -3750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_warp_3 {
+  background-position: -0px -3800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-extra_warp_base {
+  background-position: -0px -3850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_ancientspear {
+  background-position: -0px -3900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_bash {
+  background-position: -0px -3950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_battlerage {
+  background-position: -0px -4000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_calloftheancients {
+  background-position: -0px -4050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_cleave {
+  background-position: -0px -4100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_earthquake {
+  background-position: -0px -4150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_frenzy {
+  background-position: -0px -4200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_furiouscharge {
+  background-position: -0px -4250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_groundstomp {
+  background-position: -0px -4300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_hammeroftheancients {
+  background-position: -0px -4350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_ignorepain {
+  background-position: -0px -4400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_leap {
+  background-position: -0px -4450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_overpower {
+  background-position: -0px -4500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_rend {
+  background-position: -0px -4550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_revenge {
+  background-position: -0px -4600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_seismicslam {
+  background-position: -0px -4650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_sprint {
+  background-position: -0px -4700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_threateningshout {
+  background-position: -0px -4750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_warcry {
+  background-position: -0px -4800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_weaponthrow {
+  background-position: -0px -4850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_whirlwind {
+  background-position: -0px -4900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_barbarian_wrathoftheberserker {
+  background-position: -0px -4950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_bolashot {
+  background-position: -0px -5000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_caltrops {
+  background-position: -0px -5050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_chakram {
+  background-position: -0px -5100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_clusterarrow {
+  background-position: -0px -5150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_companion {
+  background-position: -0px -5200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_elementalarrow {
+  background-position: -0px -5250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_entangle {
+  background-position: -0px -5300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_evasivefire {
+  background-position: -0px -5350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_fanofknives {
+  background-position: -0px -5400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_grenades {
+  background-position: -0px -5450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_hungeringarrow {
+  background-position: -0px -5500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_impale {
+  background-position: -0px -5550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_markedfordeath {
+  background-position: -0px -5600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_multishot {
+  background-position: -0px -5650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_preparation {
+  background-position: -0px -5700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_rainofvengeance {
+  background-position: -0px -5750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_rapidfire {
+  background-position: -0px -5800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_sentry {
+  background-position: -0px -5850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_shadowpower {
+  background-position: -0px -5900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_smokescreen {
+  background-position: -0px -5950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_spiketrap {
+  background-position: -0px -6000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_strafe {
+  background-position: -0px -6050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_demonhunter_vault {
+  background-position: -0px -6100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_blindingflash {
+  background-position: -0px -6150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_breathofheaven {
+  background-position: -0px -6200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_cripplingwave {
+  background-position: -0px -6250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_cyclonestrike {
+  background-position: -0px -6300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_dashingstrike {
+  background-position: -0px -6350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_deadlyreach {
+  background-position: -0px -6400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_explodingpalm {
+  background-position: -0px -6450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_fistsofthunder {
+  background-position: -0px -6500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_innersanctuary {
+  background-position: -0px -6550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_lashingtailkick {
+  background-position: -0px -6600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_mantraofconviction {
+  background-position: -0px -6650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_mantraofevasion {
+  background-position: -0px -6700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_mantraofhealing {
+  background-position: -0px -6750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_mantraofretribution {
+  background-position: -0px -6800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_mystically {
+  background-position: -0px -6850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_serenity {
+  background-position: -0px -6900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_sevensidedstrike {
+  background-position: -0px -6950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_sweepingwind {
+  background-position: -0px -7000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_tempestrush {
+  background-position: -0px -7050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_waveoflight {
+  background-position: -0px -7100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_monk_wayofthehundredfists {
+  background-position: -0px -7150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_arcaneaegis {
+  background-position: -0px -7200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_astralpresence {
+  background-position: -0px -7250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_audacity {
+  background-position: -0px -7300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_blackice {
+  background-position: -0px -7350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_blur {
+  background-position: -0px -7400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_conflagration {
+  background-position: -0px -7450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_criticalmass {
+  background-position: -0px -7500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_drainpower {
+  background-position: -0px -7550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_elementalexposure {
+  background-position: -0px -7600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_empoweredarmor {
+  background-position: -0px -7650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_energyreserves {
+  background-position: -0px -7700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_expertdefense {
+  background-position: -0px -7750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_flightbeforefight {
+  background-position: -0px -7800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_glasscannon {
+  background-position: -0px -7850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_knowledgeispower {
+  background-position: -0px -7900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_lucky {
+  background-position: -0px -7950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_piercingattacks {
+  background-position: -0px -8000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_quickening {
+  background-position: -0px -8050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_telekinesis {
+  background-position: -0px -8100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_temporalflux {
+  background-position: -0px -8150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_temporalshift {
+  background-position: -0px -8200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_unstableenergy {
+  background-position: -0px -8250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_unwaveringwill {
+  background-position: -0px -8300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_wandspecialization {
+  background-position: -0px -8350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_traits_wizard_weaponspecialization {
+  background-position: -0px -8400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_acidcloud {
+  background-position: -0px -8450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_bigbadvoodoo {
+  background-position: -0px -8500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_corpsespiders {
+  background-position: -0px -8550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_fetisharmy {
+  background-position: -0px -8600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_firebats {
+  background-position: -0px -8650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_firebomb {
+  background-position: -0px -8700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_gargantuan {
+  background-position: -0px -8750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_graspofthedead {
+  background-position: -0px -8800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_haunt {
+  background-position: -0px -8850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_hex {
+  background-position: -0px -8900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_hex_chickenwalk {
+  background-position: -0px -8950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_hex_explode {
+  background-position: -0px -9000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_horrify {
+  background-position: -0px -9050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_locustswarm {
+  background-position: -0px -9100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_massconfusion {
+  background-position: -0px -9150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_plagueoftoads {
+  background-position: -0px -9200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_poisondart {
+  background-position: -0px -9250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_sacrifice {
+  background-position: -0px -9300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_soulharvest {
+  background-position: -0px -9350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_spiritbarrage {
+  background-position: -0px -9400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_spiritwalk {
+  background-position: -0px -9450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_summonzombiedogs {
+  background-position: -0px -9500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_wallofzombies {
+  background-position: -0px -9550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_witchdoctor_zombiecharger {
+  background-position: -0px -9600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_arcaneorb {
+  background-position: -0px -9650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_arcanetorrent {
+  background-position: -0px -9700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_arcaneweakness {
+  background-position: -0px -9750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_archon {
+  background-position: -0px -9800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_archon_arcaneblast {
+  background-position: -0px -9850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_archon_arcanestrike {
+  background-position: -0px -9900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_archon_cancel {
+  background-position: -0px -9950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_archon_disintegrationwave {
+  background-position: -0px -10000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_archon_slowtime {
+  background-position: -0px -10050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_archon_teleport {
+  background-position: -0px -10100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_blizzard {
+  background-position: -0px -10150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_chargedbolt {
+  background-position: -0px -10200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_deepfreeze {
+  background-position: -0px -10250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_diamondskin {
+  background-position: -0px -10300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_disintegrate {
+  background-position: -0px -10350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_electrocute {
+  background-position: -0px -10400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_energyarmor {
+  background-position: -0px -10450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_energyshield {
+  background-position: -0px -10500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_energytwister {
+  background-position: -0px -10550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_expandedmind {
+  background-position: -0px -10600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_explosiveblast {
+  background-position: -0px -10650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_familiar {
+  background-position: -0px -10700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_frostnova {
+  background-position: -0px -10750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_hydra {
+  background-position: -0px -10800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_icearmor {
+  background-position: -0px -10850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_magicmissile {
+  background-position: -0px -10900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_magicweapon {
+  background-position: -0px -10950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_meteor {
+  background-position: -0px -11000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_mirrorimage {
+  background-position: -0px -11050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_rayoffrost {
+  background-position: -0px -11100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_shockpulse {
+  background-position: -0px -11150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_slowtime {
+  background-position: -0px -11200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_spectralblade {
+  background-position: -0px -11250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_stoneskin {
+  background-position: -0px -11300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_stormarmor {
+  background-position: -0px -11350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_teleport {
+  background-position: -0px -11400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_tornado {
+  background-position: -0px -11450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizard_waveofforce {
+  background-position: -0px -11500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3_wizardeofforce {
+  background-position: -0px -11550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_akkarat {
+  background-position: -0px -11600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_birdofprey {
+  background-position: -0px -11650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_blessedhammer {
+  background-position: -0px -11700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_blessedshield {
+  background-position: -0px -11750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_consecration {
+  background-position: -0px -11800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_deflection {
+  background-position: -0px -11850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_diehard {
+  background-position: -0px -11900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_dragoon {
+  background-position: -0px -11950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_fistofheaven {
+  background-position: -0px -12000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_flail {
+  background-position: -0px -12050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_glare {
+  background-position: -0px -12100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_godray {
+  background-position: -0px -12150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_holybolt {
+  background-position: -0px -12200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_incite {
+  background-position: -0px -12250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_judge {
+  background-position: -0px -12300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_justice {
+  background-position: -0px -12350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_lawsoffate {
+  background-position: -0px -12400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_lawsofhope {
+  background-position: -0px -12450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_lawsofjustice {
+  background-position: -0px -12500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_lawsofvalor {
+  background-position: -0px -12550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_phalanx {
+  background-position: -0px -12600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_provoke {
+  background-position: -0px -12650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_punish {
+  background-position: -0px -12700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_shieldbash {
+  background-position: -0px -12750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_shieldthrow {
+  background-position: -0px -12800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_shieldwall {
+  background-position: -0px -12850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_slash {
+  background-position: -0px -12900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_stampede {
+  background-position: -0px -12950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_steedcharge {
+  background-position: -0px -13000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_strike {
+  background-position: -0px -13050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_trebuchet {
+  background-position: -0px -13100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_wall {
+  background-position: -0px -13150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_wrath {
+  background-position: -0px -13200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_d3ros_crusader_zeal {
+  background-position: -0px -13250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_temp_kerrigan_impalingblades {
+  background-position: -0px -13300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_tychus_commandeerodin {
+  background-position: -0px -13350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_tychus_drakkenlaserdrill {
+  background-position: -0px -13400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_tychus_fraggrenade {
+  background-position: -0px -13450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_tychus_minigun {
+  background-position: -0px -13500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_tychus_overkill {
+  background-position: -0px -13550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_tychus_runandgun {
+  background-position: -0px -13600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn_wow_arcanepower {
+  background-position: -0px -13650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_100caliburblast {
+  background-position: -0px -13700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_carapace {
+  background-position: -0px -13750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_evolvemonstrosity {
+  background-position: -0px -13800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_locustnest {
+  background-position: -0px -13850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_spawnlocust {
+  background-position: -0px -13900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_spawnlocust_var1 {
+  background-position: -0px -13950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_spikeburst {
+  background-position: -0px -14000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_stab {
+  background-position: -0px -14050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_symbiote {
+  background-position: -0px -14100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_toxicnest {
+  background-position: -0px -14150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_toxicnest_var1 {
+  background-position: -0px -14200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_abathur_ultimateevolution {
+  background-position: -0px -14250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ankhofreincarnation {
+  background-position: -0px -14300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_anubarak_burrowcharge {
+  background-position: -0px -14350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_anubarak_burrowchargecancel {
+  background-position: -0px -14400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_anubarak_hardencarapace_var1 {
+  background-position: -0px -14450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_anubarak_hardencarapace_var2 {
+  background-position: -0px -14500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_anubarak_impale {
+  background-position: -0px -14550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_anubarak_locustswarm {
+  background-position: -0px -14600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_anubarak_scarabhost {
+  background-position: -0px -14650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_anubarak_webblast {
+  background-position: -0px -14700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_disruptionweb {
+  background-position: -0px -14750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_doubleslash_off {
+  background-position: -0px -14800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_doubleslash_on {
+  background-position: -0px -14850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_doubleslash_var1 {
+  background-position: -0px -14900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_doubleslash_var2 {
+  background-position: -0px -14950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_powerstrikes {
+  background-position: -0px -15000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_powerstrikes_var1 {
+  background-position: -0px -15050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_purifierbeam {
+  background-position: -0px -15100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_repositionmatrix {
+  background-position: -0px -15150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_artanis_shieldoverload {
+  background-position: -0px -15200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas {
+  background-position: -0px -15250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_armyofthedead {
+  background-position: -0px -15300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_armyofthedead_var1 {
+  background-position: -0px -15350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_deathcoil {
+  background-position: -0px -15400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_deathcoil_a {
+  background-position: -0px -15450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_deathcoil_b {
+  background-position: -0px -15500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_deathcoil_c {
+  background-position: -0px -15550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frosentempest {
+  background-position: -0px -15600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frosentempest_var1 {
+  background-position: -0px -15650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frosentempest_var2 {
+  background-position: -0px -15700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_off {
+  background-position: -0px -15750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_off_a {
+  background-position: -0px -15800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_off_b {
+  background-position: -0px -15850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_off_c {
+  background-position: -0px -15900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_off_d {
+  background-position: -0px -15950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_off_e {
+  background-position: -0px -16000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_on {
+  background-position: -0px -16050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_on_a {
+  background-position: -0px -16100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_on_b {
+  background-position: -0px -16150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_on_c {
+  background-position: -0px -16200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_on_d {
+  background-position: -0px -16250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_frostmournehungers_on_e {
+  background-position: -0px -16300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_howlingblast {
+  background-position: -0px -16350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_howlingblast_var1 {
+  background-position: -0px -16400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_howlingblast_var2 {
+  background-position: -0px -16450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_runetap {
+  background-position: -0px -16500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_sacrifice {
+  background-position: -0px -16550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_summonsindragosa {
+  background-position: -0px -16600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_arthas_summonsindragosa_var1 {
+  background-position: -0px -16650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_avatar {
+  background-position: -0px -16700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_allshallburn {
+  background-position: -0px -16750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_blackpool {
+  background-position: -0px -16800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_demonicinvasion {
+  background-position: -0px -16850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_generalofhell {
+  background-position: -0px -16900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_globeofannihilation {
+  background-position: -0px -16950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_globeofannihilation_a {
+  background-position: -0px -17000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_gluttonousward {
+  background-position: -0px -17050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_relentless {
+  background-position: -0px -17100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_sinsgrasp {
+  background-position: -0px -17150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_azmodan_summondemonwarrior {
+  background-position: -0px -17200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_bansheeshot {
+  background-position: -0px -17250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_bansheeshot_2 {
+  background-position: -0px -17300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_battlestandard {
+  background-position: -0px -17350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_bazooka {
+  background-position: -0px -17400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_bazooka_2 {
+  background-position: -0px -17450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_bazooka_3 {
+  background-position: -0px -17500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_bloodlust {
+  background-position: -0px -17550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_arcaneflare {
+  background-position: -0px -17600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_blinkheal {
+  background-position: -0px -17650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_emeraldwind {
+  background-position: -0px -17700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_pixiedust {
+  background-position: -0px -17750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_pixiedust_a {
+  background-position: -0px -17800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_pixiedust_var1 {
+  background-position: -0px -17850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_polymorph {
+  background-position: -0px -17900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_polymorph_a {
+  background-position: -0px -17950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_polymorph_var1 {
+  background-position: -0px -18000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_brightwing_soothingmist {
+  background-position: -0px -18050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_butcher_freshmeat {
+  background-position: -0px -18100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_butcher_fullboar {
+  background-position: -0px -18150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_butcher_furnaceblast {
+  background-position: -0px -18200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_butcher_hamstring {
+  background-position: -0px -18250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_butcher_hamstring_var1 {
+  background-position: -0px -18300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_butcher_lambtotheslaughter {
+  background-position: -0px -18350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_butcher_tenderize {
+  background-position: -0px -18400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chainhealing {
+  background-position: -0px -18450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chainlightning {
+  background-position: -0px -18500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_charm_of_wisdom {
+  background-position: -0px -18550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_charm_of_wisdom_2 {
+  background-position: -0px -18600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_breathoffire {
+  background-position: -0px -18650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_flyingkick {
+  background-position: -0px -18700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_flyingkick_a {
+  background-position: -0px -18750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_fortifyingbrew {
+  background-position: -0px -18800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_fortifyingbrew_a {
+  background-position: -0px -18850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_kegsmash {
+  background-position: -0px -18900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_splitup {
+  background-position: -0px -18950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_stormearthfire {
+  background-position: -0px -19000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_swiftreflexes {
+  background-position: -0px -19050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_tripleattack {
+  background-position: -0px -19100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_chen_wanderingkeg {
+  background-position: -0px -19150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_consumingflame {
+  background-position: -0px -19200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_consumingflame_var1 {
+  background-position: -0px -19250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_hammeroftwilight {
+  background-position: -0px -19300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_moltensurge_a {
+  background-position: -0px -19350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_moltensurge_b {
+  background-position: -0px -19400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_moltensurge_var1 {
+  background-position: -0px -19450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_runebomb {
+  background-position: -0px -19500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_runebomb_var1 {
+  background-position: -0px -19550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_twoheaded {
+  background-position: -0px -19600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cho_upheaval {
+  background-position: -0px -19650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_clawsofattack {
+  background-position: -0px -19700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cleave {
+  background-position: -0px -19750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cloakofflames {
+  background-position: -0px -19800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cloakofreflection {
+  background-position: -0px -19850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cloakofreflection_1 {
+  background-position: -0px -19900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cloakofreflection_2 {
+  background-position: -0px -19950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_cloakofreflection_3 {
+  background-position: -0px -20000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_closesearch_disabled {
+  background-position: -0px -20050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_closesearch_hover {
+  background-position: -0px -20100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_damage {
+  background-position: -0px -20150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_damage_2 {
+  background-position: -0px -20200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_deathanddecay {
+  background-position: -0px -20250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_deathanddecay_2 {
+  background-position: -0px -20300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_deathpact {
+  background-position: -0px -20350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_deathpact_2 {
+  background-position: -0px -20400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_deathpact_3 {
+  background-position: -0px -20450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_deathrecap_npc_structure {
+  background-position: -0px -20500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_btn-ability_anubarak-carrionswarm {
+  background-position: -0px -20550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_adaptation {
+  background-position: -0px -20600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_brushstalker {
+  background-position: -0px -20650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_brushstalker_a {
+  background-position: -0px -20700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_burrow {
+  background-position: -0px -20750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_burrow_a {
+  background-position: -0px -20800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_drag {
+  background-position: -0px -20850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_drag_b {
+  background-position: -0px -20900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_drag_var1 {
+  background-position: -0px -20950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_essencecollection {
+  background-position: -0px -21000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_essencecollection_var1 {
+  background-position: -0px -21050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_essencecollection_var2 {
+  background-position: -0px -21100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_isolation {
+  background-position: -0px -21150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_trample {
+  background-position: -0px -21200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dehaka_trample_a {
+  background-position: -0px -21250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dethlazor {
+  background-position: -0px -21300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_devineshield {
+  background-position: -0px -21350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_devour {
+  background-position: -0px -21400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_devour_2 {
+  background-position: -0px -21450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_apocalypse {
+  background-position: -0px -21500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_blacksoulstone_var1 {
+  background-position: -0px -21550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_blacksoulstone_var2 {
+  background-position: -0px -21600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_firestomp {
+  background-position: -0px -21650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_lightningbreath {
+  background-position: -0px -21700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_lordofterror {
+  background-position: -0px -21750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_overpower_var1 {
+  background-position: -0px -21800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_overpower_var2 {
+  background-position: -0px -21850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_shadowcharge_var1 {
+  background-position: -0px -21900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_diablo_shadowcharge_var2 {
+  background-position: -0px -21950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_divineshield {
+  background-position: -0px -22000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_dwarftoss {
+  background-position: -0px -22050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_earthbindtotem {
+  background-position: -0px -22100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_enervate {
+  background-position: -0px -22150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_enervate_2 {
+  background-position: -0px -22200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_epicmount {
+  background-position: -0px -22250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_echopedal {
+  background-position: -0px -22300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_facemelt {
+  background-position: -0px -22350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_facemelt_a {
+  background-position: -0px -22400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_guitarsolo {
+  background-position: -0px -22450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_guitarsolo_a {
+  background-position: -0px -22500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_moshpit {
+  background-position: -0px -22550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_moshpit_a {
+  background-position: -0px -22600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_powerslide {
+  background-position: -0px -22650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_rockstar {
+  background-position: -0px -22700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_speedmetal {
+  background-position: -0px -22750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_etc_stagedive {
+  background-position: -0px -22800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_barrelroll {
+  background-position: -0px -22850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_boomerang {
+  background-position: -0px -22900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_epicmount {
+  background-position: -0px -22950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_hammerang {
+  background-position: -0px -23000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_hammerang_a {
+  background-position: -0px -23050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_hinterlandblast {
+  background-position: -0px -23100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_lightningrod {
+  background-position: -0px -23150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_lightningrod_a {
+  background-position: -0px -23200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_mightygust {
+  background-position: -0px -23250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_falstad_tailwind {
+  background-position: -0px -23300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_fortification {
+  background-position: -0px -23350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_chaoscollision {
+  background-position: -0px -23400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_chaoscollision_var1 {
+  background-position: -0px -23450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_chaoscollision_var2 {
+  background-position: -0px -23500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_detonaterunes {
+  background-position: -0px -23550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_shadowboltvolley {
+  background-position: -0px -23600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_shadowflame {
+  background-position: -0px -23650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_shadowflame_var1 {
+  background-position: -0px -23700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_shove {
+  background-position: -0px -23750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_twistingnether_a {
+  background-position: -0px -23800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_twistingnether_b {
+  background-position: -0px -23850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gall_twoheaded {
+  background-position: -0px -23900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gauntletsofdamagedealt {
+  background-position: -0px -23950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gauntletsofdamagedealt_2 {
+  background-position: -0px -24000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_dethlazor {
+  background-position: -0px -24050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_explodiumcharge {
+  background-position: -0px -24100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_gravobomb {
+  background-position: -0px -24150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_itsrainingscrap {
+  background-position: -0px -24200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_robogoblin {
+  background-position: -0px -24250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_rockitturret {
+  background-position: -0px -24300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_rockitturret_var1 {
+  background-position: -0px -24350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_salvager {
+  background-position: -0px -24400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_gazlowe_salvager_var1 {
+  background-position: -0px -24450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_goblinrocketboots {
+  background-position: -0px -24500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_goblinrocketboots_1 {
+  background-position: -0px -24550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_goblinrocketboots_2 {
+  background-position: -0px -24600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_goblinrocketboots_3 {
+  background-position: -0px -24650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_beastfocus {
+  background-position: -0px -24700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_beastfocus_var1 {
+  background-position: -0px -24750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_curseoftheworgen {
+  background-position: -0px -24800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_curseoftheworgen_var1 {
+  background-position: -0px -24850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_darkflight {
+  background-position: -0px -24900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_darkflight_var1 {
+  background-position: -0px -24950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_disengage {
+  background-position: -0px -25000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_goforthethroat {
+  background-position: -0px -25050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_qattack {
+  background-position: -0px -25100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_qattack_var1 {
+  background-position: -0px -25150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_snapshot {
+  background-position: -0px -25200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_snapshotleap {
+  background-position: -0px -25250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_swipe {
+  background-position: -0px -25300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_swipe_var1 {
+  background-position: -0px -25350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_greymane_worgen_beastfocus {
+  background-position: -0px -25400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_hammerofjustice {
+  background-position: -0px -25450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_hammerofjustice_2 {
+  background-position: -0px -25500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_hammerofjustice_3 {
+  background-position: -0px -25550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_hatestrike {
+  background-position: -0px -25600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_health {
+  background-position: -0px -25650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_healthpotion {
+  background-position: -0px -25700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_healthstone {
+  background-position: -0px -25750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_healthstone_1 {
+  background-position: -0px -25800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_healthstone_2 {
+  background-position: -0px -25850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_healthstone_3 {
+  background-position: -0px -25900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_holylight {
+  background-position: -0px -25950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_holylight_2 {
+  background-position: -0px -26000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_holyradiance {
+  background-position: -0px -26050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_hook {
+  background-position: -0px -26100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_hook_2 {
+  background-position: -0px -26150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_howlingblast {
+  background-position: -0px -26200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_howlingblast_2 {
+  background-position: -0px -26250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_howlingblast_3 {
+  background-position: -0px -26300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_howlingblast_4 {
+  background-position: -0px -26350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_iceblock {
+  background-position: -0px -26400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_iceblock_1 {
+  background-position: -0px -26450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_iceblock_2 {
+  background-position: -0px -26500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_iceblock_3 {
+  background-position: -0px -26550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_betrayersthirst {
+  background-position: -0px -26600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_betrayersthirst_a {
+  background-position: -0px -26650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_betrayersthirst_b {
+  background-position: -0px -26700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_dive {
+  background-position: -0px -26750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_dive_a {
+  background-position: -0px -26800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_evasion {
+  background-position: -0px -26850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_evasion_a {
+  background-position: -0px -26900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_evasion_b {
+  background-position: -0px -26950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_metamorphosis {
+  background-position: -0px -27000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_sweepingstrike {
+  background-position: -0px -27050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_sweepingstrike_a {
+  background-position: -0px -27100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_sweepingstrike_b {
+  background-position: -0px -27150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_sweepingstrike_c {
+  background-position: -0px -27200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_illidan_thehunt {
+  background-position: -0px -27250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_insanitypotion {
+  background-position: -0px -27300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_insanitypotion_2 {
+  background-position: -0px -27350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_jaina_blizzard {
+  background-position: -0px -27400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_jaina_coneofcold {
+  background-position: -0px -27450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_jaina_coneofcold_var1 {
+  background-position: -0px -27500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_jaina_frostbite {
+  background-position: -0px -27550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_jaina_frostbite_var1 {
+  background-position: -0px -27600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_jaina_frostbolt {
+  background-position: -0px -27650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_jaina_ringoffrost {
+  background-position: -0px -27700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_jaina_summonwaterelemental {
+  background-position: -0px -27750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_johanna_blessed_shield {
+  background-position: -0px -27800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_johanna_condemn {
+  background-position: -0px -27850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_johanna_falling_sword {
+  background-position: -0px -27900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_johanna_iron_skin {
+  background-position: -0px -27950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_johanna_punish {
+  background-position: -0px -28000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_johanna_shield_glare {
+  background-position: -0px -28050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_flamestrike {
+  background-position: -0px -28100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_gravitylapse {
+  background-position: -0px -28150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_gravitylapse_a {
+  background-position: -0px -28200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_livingbomb {
+  background-position: -0px -28250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_livingbomb_b {
+  background-position: -0px -28300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_livingbomb_var1 {
+  background-position: -0px -28350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_phoenix {
+  background-position: -0px -28400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_pyroblast {
+  background-position: -0px -28450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_verdantspheres {
+  background-position: -0px -28500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kaelthas_verdantspheres_2 {
+  background-position: -0px -28550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kerrigan_assimilation {
+  background-position: -0px -28600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kerrigan_impalingblades {
+  background-position: -0px -28650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kerrigan_maelstrom {
+  background-position: -0px -28700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kerrigan_primalgrasp {
+  background-position: -0px -28750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kerrigan_ravage {
+  background-position: -0px -28800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_kerrigan_ultralisk {
+  background-position: -0px -28850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_drainhope {
+  background-position: -0px -28900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_drainhope_undead {
+  background-position: -0px -28950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_drainhope_var1 {
+  background-position: -0px -29000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_entomb {
+  background-position: -0px -29050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_r2 {
+  background-position: -0px -29100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_skeletalswing {
+  background-position: -0px -29150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_skeletalswing_undead {
+  background-position: -0px -29200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_skeletalswing_var1 {
+  background-position: -0px -29250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_trait {
+  background-position: -0px -29300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_wraithwalk {
+  background-position: -0px -29350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_wraithwalk_end {
+  background-position: -0px -29400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_leoric_wraithwalk_var1 {
+  background-position: -0px -29450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lightningshield {
+  background-position: -0px -29500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lightningshield_2 {
+  background-position: -0px -29550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lightningshield_3 {
+  background-position: -0px -29600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_blindingwind {
+  background-position: -0px -29650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_blindingwind_a {
+  background-position: -0px -29700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_cloudserpent {
+  background-position: -0px -29750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_fastfeet {
+  background-position: -0px -29800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_healingbrew {
+  background-position: -0px -29850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_healingbrew_a {
+  background-position: -0px -29900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_jugofathousandcups {
+  background-position: -0px -29950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_shakeitoff {
+  background-position: -0px -30000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lili_waterdragon {
+  background-position: -0px -30050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_locustswarm {
+  background-position: -0px -30100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_locustswarm_2 {
+  background-position: -0px -30150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_fastrestart {
+  background-position: -0px -30200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_jump {
+  background-position: -0px -30250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_longboatraid {
+  background-position: -0px -30300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_norseforce {
+  background-position: -0px -30350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_playagain {
+  background-position: -0px -30400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_selectall {
+  background-position: -0px -30450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_selectbaleog {
+  background-position: -0px -30500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_selecterik {
+  background-position: -0px -30550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_selecterik_var1 {
+  background-position: -0px -30600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_selectolaf {
+  background-position: -0px -30650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_spintowin {
+  background-position: -0px -30700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lostvikings_vikinghoard {
+  background-position: -0px -30750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_boundlessstride {
+  background-position: -0px -30800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_fullbloom {
+  background-position: -0px -30850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_fullbloom_a {
+  background-position: -0px -30900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_fullbloom_b {
+  background-position: -0px -30950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_fullbloom_c {
+  background-position: -0px -31000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_pollencloud {
+  background-position: -0px -31050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_stiflingblossom {
+  background-position: -0px -31100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_stiflingblossom_var1 {
+  background-position: -0px -31150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_wildspear {
+  background-position: -0px -31200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_wisp {
+  background-position: -0px -31250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_wisp_a {
+  background-position: -0px -31300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_wisp_b {
+  background-position: -0px -31350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_wisp_c {
+  background-position: -0px -31400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_lunara_wispredirect {
+  background-position: -0px -31450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_maelstrom {
+  background-position: -0px -31500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_maelstrom_2 {
+  background-position: -0px -31550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_maelstrom_4 {
+  background-position: -0px -31600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_maelstromkerrigan {
+  background-position: -0px -31650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_cleanse {
+  background-position: -0px -31700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_elunesgrace {
+  background-position: -0px -31750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_entanglingroots {
+  background-position: -0px -31800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_innerrvate {
+  background-position: -0px -31850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_moonfire {
+  background-position: -0px -31900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_moonfire_a {
+  background-position: -0px -31950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_mule {
+  background-position: -0px -32000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_regrowth {
+  background-position: -0px -32050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_scoutingdrone {
+  background-position: -0px -32100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_tranquility {
+  background-position: -0px -32150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_malfurion_twilightdream {
+  background-position: -0px -32200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_manapotion {
+  background-position: -0px -32250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_manapotion_2 {
+  background-position: -0px -32300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_manastone {
+  background-position: -0px -32350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_manastone_1 {
+  background-position: -0px -32400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_manastone_2 {
+  background-position: -0px -32450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_manastone_3 {
+  background-position: -0px -32500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_mastery {
+  background-position: -0px -32550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_masterycrystal {
+  background-position: -0px -32600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_masterycrystal_2 {
+  background-position: -0px -32650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_masterycrystal_3 {
+  background-position: -0px -32700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_masterycrystal_4 {
+  background-position: -0px -32750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_caduceusreactor {
+  background-position: -0px -32800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_deployshield {
+  background-position: -0px -32850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_deployshield_b {
+  background-position: -0px -32900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_deployshield_c {
+  background-position: -0px -32950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_displacementgrenade {
+  background-position: -0px -33000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_displacementgrenade_b {
+  background-position: -0px -33050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_healingbeam {
+  background-position: -0px -33100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_healingbeam_b {
+  background-position: -0px -33150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_healingbeam_c {
+  background-position: -0px -33200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_healingbeam_target {
+  background-position: -0px -33250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_medivacdropship {
+  background-position: -0px -33300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_medic_stim {
+  background-position: -0px -33350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_mirrorimage {
+  background-position: -0px -33400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_breath0fheaven {
+  background-position: -0px -33450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_breath0fheaven_var1 {
+  background-position: -0px -33500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_dash {
+  background-position: -0px -33550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_deadlyreach {
+  background-position: -0px -33600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_deadlyreachactive {
+  background-position: -0px -33650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_divinepalm {
+  background-position: -0px -33700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_sevensidedstrike {
+  background-position: -0px -33750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_trait1 {
+  background-position: -0px -33800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_trait_insight {
+  background-position: -0px -33850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_trait_ironfist {
+  background-position: -0px -33900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_monk_trait_transcendence {
+  background-position: -0px -33950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_multishot {
+  background-position: -0px -34000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_avatar {
+  background-position: -0px -34050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_dwarftoss {
+  background-position: -0px -34100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_dwarftoss_a {
+  background-position: -0px -34150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_haymaker {
+  background-position: -0px -34200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_secondwind {
+  background-position: -0px -34250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_stormbolt {
+  background-position: -0px -34300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_stormbolt_a {
+  background-position: -0px -34350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_thunderclap {
+  background-position: -0px -34400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_muradin_thunderclap_a {
+  background-position: -0px -34450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_murky_marchofthemurlocs {
+  background-position: -0px -34500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_murky_octograb {
+  background-position: -0px -34550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_murky_pufferfish {
+  background-position: -0px -34600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_murky_safetybubble {
+  background-position: -0px -34650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_murky_slime {
+  background-position: -0px -34700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_murky_slime_var1 {
+  background-position: -0px -34750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_murky_trait_spawnegg {
+  background-position: -0px -34800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_murky_trait_spawnegg_var1 {
+  background-position: -0px -34850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_corpsespider {
+  background-position: -0px -34900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_gargantuan {
+  background-position: -0px -34950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_gargantuanstomp {
+  background-position: -0px -35000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_plagueoftoads {
+  background-position: -0px -35050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_plagueoftoads_a {
+  background-position: -0px -35100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_ravenousspirit {
+  background-position: -0px -35150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_voodooritual {
+  background-position: -0px -35200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_voodooritual_a {
+  background-position: -0px -35250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nazeebo_zombiewall {
+  background-position: -0px -35300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_bonearmor {
+  background-position: -0px -35350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_bonearmor_b {
+  background-position: -0px -35400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_bonearmor_c {
+  background-position: -0px -35450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_boneprison {
+  background-position: -0px -35500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_bonespear {
+  background-position: -0px -35550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_cursedstrikes_b {
+  background-position: -0px -35600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_cursedstrikes_off {
+  background-position: -0px -35650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_cursedstrikes_on {
+  background-position: -0px -35700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_poisonnova {
+  background-position: -0px -35750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_raiseskeleton {
+  background-position: -0px -35800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_reap {
+  background-position: -0px -35850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_necromancer_skeletalmages {
+  background-position: -0px -35900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_netlauncher {
+  background-position: -0px -35950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_netlauncher_1 {
+  background-position: -0px -36000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_netlauncher_2 {
+  background-position: -0px -36050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_netlauncher_3 {
+  background-position: -0px -36100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nodeturret {
+  background-position: -0px -36150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_holodecoy {
+  background-position: -0px -36200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_holodecoy_var1 {
+  background-position: -0px -36250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_holodecoy_var2 {
+  background-position: -0px -36300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_orbitalstrike {
+  background-position: -0px -36350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_personalcloaking {
+  background-position: -0px -36400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_personalcloaking_var1 {
+  background-position: -0px -36450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_pinningshot {
+  background-position: -0px -36500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_pinningshot_var1 {
+  background-position: -0px -36550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_snipe {
+  background-position: -0px -36600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_snipe_var1 {
+  background-position: -0px -36650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_nova_tripletap {
+  background-position: -0px -36700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_orboffrost {
+  background-position: -0px -36750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_overclock {
+  background-position: -0px -36800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_plaguetoads {
+  background-position: -0px -36850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_platearmor {
+  background-position: -0px -36900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_platearmor_2 {
+  background-position: -0px -36950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_poisondart {
+  background-position: -0px -37000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_poisondart_0 {
+  background-position: -0px -37050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_poisondart_1 {
+  background-position: -0px -37100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_poisondart_3 {
+  background-position: -0px -37150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_potionofrejuvenation_2 {
+  background-position: -0px -37200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_psionicblast {
+  background-position: -0px -37250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_psionicblast_2 {
+  background-position: -0px -37300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_putridbile {
+  background-position: -0px -37350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_raynor_adrenalinrush {
+  background-position: -0px -37400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_raynor_advancedoptics {
+  background-position: -0px -37450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_raynor_hyperion {
+  background-position: -0px -37500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_raynor_inspire {
+  background-position: -0px -37550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_raynor_penetratinground {
+  background-position: -0px -37600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_raynor_penetratinground_var1 {
+  background-position: -0px -37650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_raynor_raynorsraiders {
+  background-position: -0px -37700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_ancestralhealing {
+  background-position: -0px -37750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_bloodlust {
+  background-position: -0px -37800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_chainheal {
+  background-position: -0px -37850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_chainheal_a {
+  background-position: -0px -37900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_earthbindtotem {
+  background-position: -0px -37950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_earthbindtotem_a {
+  background-position: -0px -38000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_farsight {
+  background-position: -0px -38050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_ghostwolf {
+  background-position: -0px -38100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_lightningshield {
+  background-position: -0px -38150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rehgar_lightningshield_a {
+  background-position: -0px -38200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rejuvenationcrystal {
+  background-position: -0px -38250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rejuvenationcrystal_2 {
+  background-position: -0px -38300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rejuvenationcrystal_3 {
+  background-position: -0px -38350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rejuvenationcrystal_4 {
+  background-position: -0px -38400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rejuvenationcrystal_5 {
+  background-position: -0px -38450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rejuvenationpotion {
+  background-position: -0px -38500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rend {
+  background-position: -0px -38550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_bestialwrath {
+  background-position: -0px -38600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_feigndeath {
+  background-position: -0px -38650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_heremisha {
+  background-position: -0px -38700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_heremishaactive {
+  background-position: -0px -38750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_heremishaactive_var1 {
+  background-position: -0px -38800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_mendpet {
+  background-position: -0px -38850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_mishacharge {
+  background-position: -0px -38900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_mishacharge_var1 {
+  background-position: -0px -38950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_mishafixate {
+  background-position: -0px -39000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_spiritswoop {
+  background-position: -0px -39050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_spiritswoop_var1 {
+  background-position: -0px -39100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rexxar_unleashtheboars {
+  background-position: -0px -39150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ridingcrop {
+  background-position: -0px -39200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ringofmanaregen {
+  background-position: -0px -39250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ringofmanaregen_2 {
+  background-position: -0px -39300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ringofmanaregen_3 {
+  background-position: -0px -39350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ringofregeneration {
+  background-position: -0px -39400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ringofregeneration_1 {
+  background-position: -0px -39450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ringofregeneration_2 {
+  background-position: -0px -39500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_ringofregeneration_3 {
+  background-position: -0px -39550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_robogoblin {
+  background-position: -0px -39600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_robogobo {
+  background-position: -0px -39650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rocketturret {
+  background-position: -0px -39700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_rockitturret {
+  background-position: -0px -39750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_satchelcharge {
+  background-position: -0px -39800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_satchelcharge_2 {
+  background-position: -0px -39850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sgthammer_artillery {
+  background-position: -0px -39900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sgthammer_bluntforcegun {
+  background-position: -0px -39950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sgthammer_concussiveblast {
+  background-position: -0px -40000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sgthammer_napalmstrike {
+  background-position: -0px -40050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sgthammer_siegemode {
+  background-position: -0px -40100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sgthammer_siegemode_var1 {
+  background-position: -0px -40150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sgthammer_spidermines {
+  background-position: -0px -40200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sgthammer_tankmode {
+  background-position: -0px -40250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_shadowblast {
+  background-position: -0px -40300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_shadowblast_2 {
+  background-position: -0px -40350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_shrinkray {
+  background-position: -0px -40400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_slam {
+  background-position: -0px -40450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sonya_ancientspear {
+  background-position: -0px -40500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sonya_ancientspear_var1 {
+  background-position: -0px -40550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sonya_fury {
+  background-position: -0px -40600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sonya_fury_var1 {
+  background-position: -0px -40650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sonya_leap {
+  background-position: -0px -40700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sonya_seismicslam {
+  background-position: -0px -40750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sonya_whirlwind {
+  background-position: -0px -40800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sonya_wrathoftheberserker {
+  background-position: -0px -40850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stickybomb {
+  background-position: -0px -40900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stitches_acidcloud {
+  background-position: -0px -40950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stitches_cannibalize {
+  background-position: -0px -41000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stitches_devour {
+  background-position: -0px -41050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stitches_devour_var1 {
+  background-position: -0px -41100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stitches_hook {
+  background-position: -0px -41150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stitches_hook_var1 {
+  background-position: -0px -41200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stitches_putridbile {
+  background-position: -0px -41250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stitches_slam {
+  background-position: -0px -41300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_stormbolt {
+  background-position: -0px -41350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_bansheequeen {
+  background-position: -0px -41400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_blackarrows {
+  background-position: -0px -41450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_blackarrows_2 {
+  background-position: -0px -41500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_hauntingwave {
+  background-position: -0px -41550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_hauntingwave_2 {
+  background-position: -0px -41600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_mindcontrol {
+  background-position: -0px -41650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_possession {
+  background-position: -0px -41700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_shadowdagger {
+  background-position: -0px -41750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_wailingarrow {
+  background-position: -0px -41800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_wailingarrow_2 {
+  background-position: -0px -41850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_witheringfire {
+  background-position: -0px -41900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_sylvanas_witheringfire_var1 {
+  background-position: -0px -41950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_amplifiedhealing {
+  background-position: -0px -42000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_antiarmorshells {
+  background-position: -0px -42050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_aoe {
+  background-position: -0px -42100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_base {
+  background-position: -0px -42150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_building {
+  background-position: -0px -42200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_cooldown {
+  background-position: -0px -42250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_damage {
+  background-position: -0px -42300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_heal {
+  background-position: -0px -42350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_mana {
+  background-position: -0px -42400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_range {
+  background-position: -0px -42450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_reveal {
+  background-position: -0px -42500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_searing {
+  background-position: -0px -42550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_slow {
+  background-position: -0px -42600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_speed {
+  background-position: -0px -42650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_autoattack_stun {
+  background-position: -0px -42700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_block {
+  background-position: -0px -42750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_bloodforblood {
+  background-position: -0px -42800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_boltofthestorm {
+  background-position: -0px -42850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_bribe {
+  background-position: -0px -42900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_burningrage {
+  background-position: -0px -42950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_clairvoyance {
+  background-position: -0px -43000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_cleanse {
+  background-position: -0px -43050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_conjurerspursuit {
+  background-position: -0px -43100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_elunesgrace {
+  background-position: -0px -43150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_envenom {
+  background-position: -0px -43200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_furyofthestorm {
+  background-position: -0px -43250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_gatheringpower {
+  background-position: -0px -43300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_gidbin {
+  background-position: -0px -43350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_hardenedfocus {
+  background-position: -0px -43400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_hardenedshield {
+  background-position: -0px -43450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_healingward {
+  background-position: -0px -43500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_iceblock {
+  background-position: -0px -43550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_imposingpresence {
+  background-position: -0px -43600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_mercenarylord {
+  background-position: -0px -43650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_mule {
+  background-position: -0px -43700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_overdrive {
+  background-position: -0px -43750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_powerhungry {
+  background-position: -0px -43800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_promote {
+  background-position: -0px -43850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_protectiveshield {
+  background-position: -0px -43900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_regenerationmaster {
+  background-position: -0px -43950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_relentless {
+  background-position: -0px -44000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_rewind {
+  background-position: -0px -44050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_scoutingdrone {
+  background-position: -0px -44100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_searingarrow {
+  background-position: -0px -44150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_seasonedmarksman {
+  background-position: -0px -44200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_shrinkray {
+  background-position: -0px -44250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_spellshield {
+  background-position: -0px -44300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_sprint {
+  background-position: -0px -44350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_stoneskin {
+  background-position: -0px -44400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talent_stormshield {
+  background-position: -0px -44450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_talents {
+  background-position: -0px -44500px;
+  width: 43px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tassadar_archon {
+  background-position: -0px -44550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tassadar_dimensionalshift {
+  background-position: -0px -44600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tassadar_forcewall {
+  background-position: -0px -44650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tassadar_oracle {
+  background-position: -0px -44700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tassadar_plasmashield {
+  background-position: -0px -44750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tassadar_psionicstorm {
+  background-position: -0px -44800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tassadar_psionicstorm_var1 {
+  background-position: -0px -44850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_teleportationscroll {
+  background-position: -0px -44900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_thrall_chainlightning {
+  background-position: -0px -44950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_thrall_earthquake {
+  background-position: -0px -45000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_thrall_feralspirit {
+  background-position: -0px -45050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_thrall_frostwolfresilience {
+  background-position: -0px -45100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_thrall_sundering {
+  background-position: -0px -45150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_thrall_windfury {
+  background-position: -0px -45200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_thrall_windfury_var1 {
+  background-position: -0px -45250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_thunderclap {
+  background-position: -0px -45300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tikimask {
+  background-position: -0px -45350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tomeofdamage {
+  background-position: -0px -45400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tomeofhealth {
+  background-position: -0px -45450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tomeofmastery {
+  background-position: -0px -45500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_blink {
+  background-position: -0px -45550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_blink_b {
+  background-position: -0px -45600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_blink_b_empty {
+  background-position: -0px -45650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_blink_c {
+  background-position: -0px -45700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_blink_d {
+  background-position: -0px -45750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_blink_empty {
+  background-position: -0px -45800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_medpack {
+  background-position: -0px -45850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_melee {
+  background-position: -0px -45900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_melee_b {
+  background-position: -0px -45950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_pulsebomb {
+  background-position: -0px -46000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_pulsebomb_b {
+  background-position: -0px -46050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_pulsebomb_c {
+  background-position: -0px -46100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_recall {
+  background-position: -0px -46150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_recall_b {
+  background-position: -0px -46200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_reload {
+  background-position: -0px -46250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_reload_b {
+  background-position: -0px -46300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tracer_reload_c {
+  background-position: -0px -46350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_trap {
+  background-position: -0px -46400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_commandeerodin {
+  background-position: -0px -46450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_commandeerodin_a {
+  background-position: -0px -46500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_drakkinlaserdrill {
+  background-position: -0px -46550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_drakkinlaserdrill_a {
+  background-position: -0px -46600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_fraggrenade {
+  background-position: -0px -46650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_fraggrenade_a {
+  background-position: -0px -46700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_minigun {
+  background-position: -0px -46750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_minigun_a {
+  background-position: -0px -46800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_minigun_b {
+  background-position: -0px -46850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_overkill {
+  background-position: -0px -46900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_overkill_a {
+  background-position: -0px -46950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_runandgun {
+  background-position: -0px -47000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_runandgun_a {
+  background-position: -0px -47050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_runandgun_b {
+  background-position: -0px -47100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tychus_runandgun_c {
+  background-position: -0px -47150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_archangelswrath {
+  background-position: -0px -47200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_archangelswrath_var1 {
+  background-position: -0px -47250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_eldruinsmight_a {
+  background-position: -0px -47300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_eldruinsmight_b {
+  background-position: -0px -47350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_judgement {
+  background-position: -0px -47400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_righteousness {
+  background-position: -0px -47450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_righteousness_var1 {
+  background-position: -0px -47500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_sanctification {
+  background-position: -0px -47550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrael_smite {
+  background-position: -0px -47600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrande_elunesgrace {
+  background-position: -0px -47650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrande_huntersmark {
+  background-position: -0px -47700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrande_lightofelune {
+  background-position: -0px -47750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrande_lunarflare {
+  background-position: -0px -47800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrande_sentinel {
+  background-position: -0px -47850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrande_shadowstalk {
+  background-position: -0px -47900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrande_starfall {
+  background-position: -0px -47950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_tyrande_trueshotaura {
+  background-position: -0px -48000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_benediction {
+  background-position: -0px -48050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_divineshield {
+  background-position: -0px -48100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_divinestorm {
+  background-position: -0px -48150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_eternaldevotion {
+  background-position: -0px -48200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_hammerofjustice {
+  background-position: -0px -48250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_holyfire {
+  background-position: -0px -48300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_holylight {
+  background-position: -0px -48350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_holylight_var1 {
+  background-position: -0px -48400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_uther_holyradiance {
+  background-position: -0px -48450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_hatred {
+  background-position: -0px -48500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_hatred_var1 {
+  background-position: -0px -48550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_hungeringarrow {
+  background-position: -0px -48600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_hungeringarrow_var1 {
+  background-position: -0px -48650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_multishot {
+  background-position: -0px -48700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_rainofvengeance {
+  background-position: -0px -48750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_strafe {
+  background-position: -0px -48800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_vault {
+  background-position: -0px -48850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_valla_vault_var1 {
+  background-position: -0px -48900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_vehicle_dragonknight {
+  background-position: -0px -48950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_vehicle_gardenterror {
+  background-position: -0px -49000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_vikings_selection_all {
+  background-position: -0px -49050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_vikings_selection_baleog {
+  background-position: -0px -49100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_vikings_selection_erik {
+  background-position: -0px -49150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_vikings_selection_olaf {
+  background-position: -0px -49200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_whirlwind {
+  background-position: -0px -49250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_windwalk {
+  background-position: -0px -49300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_arcaneorb {
+  background-position: -0px -49350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_arcaneorb_b {
+  background-position: -0px -49400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_archon {
+  background-position: -0px -49450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_criticalmass {
+  background-position: -0px -49500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_disintegrate {
+  background-position: -0px -49550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_disintegrate_b {
+  background-position: -0px -49600px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_magicmissiles {
+  background-position: -0px -49650px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_magicmissiles_b {
+  background-position: -0px -49700px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_teleport {
+  background-position: -0px -49750px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wizard_waveofforce {
+  background-position: -0px -49800px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_wrathofthelichking {
+  background-position: -0px -49850px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zagara_banelingbarrage {
+  background-position: -0px -49900px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zagara_creep {
+  background-position: -0px -49950px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zagara_devouringmaw {
+  background-position: -0px -50000px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zagara_exitnydusworm {
+  background-position: -0px -50050px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zagara_hunterkiller {
+  background-position: -0px -50100px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zagara_hunterkillermuta {
+  background-position: -0px -50150px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zagara_infesteddrop {
+  background-position: -0px -50200px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zagara_nydusworm {
+  background-position: -0px -50250px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zeratul_blink {
+  background-position: -0px -50300px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zeratul_cleave {
+  background-position: -0px -50350px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zeratul_cloak {
+  background-position: -0px -50400px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zeratul_shadowassault {
+  background-position: -0px -50450px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zeratul_singularityspike {
+  background-position: -0px -50500px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zeratul_voidprison {
+  background-position: -0px -50550px;
+  width: 50px;
+  height: 50px;
+}
+.hots_abilities-storm_ui_icon_zombiewall {
+  background-position: -0px -50600px;
+  width: 50px;
+  height: 50px;
+}

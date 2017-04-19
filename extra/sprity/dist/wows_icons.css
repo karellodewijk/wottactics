@@ -1,0 +1,40 @@
+
+.wows_icons {
+  background-image: url('wows_icons.png');
+}
+
+.wows_icons-bb {
+  background-position: -0px -0px;
+  width: 30px;
+  height: 30px;
+}
+.wows_icons-bomber {
+  background-position: -0px -30px;
+  width: 30px;
+  height: 30px;
+}
+.wows_icons-ca {
+  background-position: -0px -60px;
+  width: 30px;
+  height: 30px;
+}
+.wows_icons-cv {
+  background-position: -0px -90px;
+  width: 30px;
+  height: 30px;
+}
+.wows_icons-dd {
+  background-position: -0px -120px;
+  width: 30px;
+  height: 30px;
+}
+.wows_icons-fighter {
+  background-position: -0px -150px;
+  width: 30px;
+  height: 30px;
+}
+.wows_icons-torpedo_bomber {
+  background-position: -0px -180px;
+  width: 30px;
+  height: 30px;
+}
