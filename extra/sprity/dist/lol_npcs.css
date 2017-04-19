@@ -1,0 +1,75 @@
+
+.lol_npcs {
+  background-image: url('http://karellodewijk.github.io/lol_npcs.png');
+}
+
+.lol_npcs-razorback {
+  background-position: -0px -0px;
+  width: 64px;
+  height: 50px;
+}
+.lol_npcs-baron {
+  background-position: -0px -50px;
+  width: 31px;
+  height: 50px;
+}
+.lol_npcs-canon {
+  background-position: -0px -100px;
+  width: 49px;
+  height: 50px;
+}
+.lol_npcs-caster {
+  background-position: -0px -150px;
+  width: 55px;
+  height: 50px;
+}
+.lol_npcs-dragon {
+  background-position: -0px -200px;
+  width: 76px;
+  height: 50px;
+}
+.lol_npcs-gromp {
+  background-position: -0px -250px;
+  width: 71px;
+  height: 50px;
+}
+.lol_npcs-krug {
+  background-position: -0px -300px;
+  width: 52px;
+  height: 50px;
+}
+.lol_npcs-blue_sentinel {
+  background-position: -0px -350px;
+  width: 74px;
+  height: 50px;
+}
+.lol_npcs-red_brambleback {
+  background-position: -0px -400px;
+  width: 54px;
+  height: 50px;
+}
+.lol_npcs-sentry {
+  background-position: -0px -450px;
+  width: 24px;
+  height: 50px;
+}
+.lol_npcs-super1 {
+  background-position: -0px -500px;
+  width: 76px;
+  height: 50px;
+}
+.lol_npcs-super2 {
+  background-position: -0px -550px;
+  width: 70px;
+  height: 50px;
+}
+.lol_npcs-warrior {
+  background-position: -0px -600px;
+  width: 54px;
+  height: 50px;
+}
+.lol_npcs-wolve {
+  background-position: -0px -650px;
+  width: 71px;
+  height: 50px;
+}

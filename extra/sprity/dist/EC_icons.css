@@ -1,0 +1,115 @@
+
+.EC_icons {
+  background-image: url('EC_icons.png');
+}
+
+.EC_icons-ELD_trinket_darkreaper {
+  background-position: -0px -0px;
+  width: 30px;
+  height: 30px;
+}
+.EC_icons-ELD_trinket_firedragon {
+  background-position: -0px -30px;
+  width: 30px;
+  height: 30px;
+}
+.EC_icons-ELD_trinket_howlingbanshee {
+  background-position: -0px -60px;
+  width: 30px;
+  height: 30px;
+}
+.EC_icons-ELD_trinket_khaine {
+  background-position: -0px -90px;
+  width: 30px;
+  height: 30px;
+}
+.EC_icons-ELD_trinket_strikingscorpion {
+  background-position: -0px -120px;
+  width: 30px;
+  height: 30px;
+}
+.EC_icons-ELD_trinket_warlock {
+  background-position: -0px -150px;
+  width: 30px;
+  height: 30px;
+}
+.EC_icons-ELD_trinket_direavenger {
+  background-position: -0px -180px;
+  width: 30px;
+  height: 30px;
+}
+.EC_icons-cm_ordnance {
+  background-position: -0px -210px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-cm_tank {
+  background-position: -0px -260px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-cm_transport {
+  background-position: -0px -310px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-el_ordnance {
+  background-position: -0px -360px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-sm_transport {
+  background-position: -0px -410px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-el_transport {
+  background-position: -0px -460px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-ork_ordnance {
+  background-position: -0px -510px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-ork_tank {
+  background-position: -0px -560px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-ork_transport {
+  background-position: -0px -610px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-pve_hormagaunt {
+  background-position: -0px -660px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-pve_termagaunt {
+  background-position: -0px -710px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-pve_warrior {
+  background-position: -0px -760px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-sm_ordnance {
+  background-position: -0px -810px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-sm_tank {
+  background-position: -0px -860px;
+  width: 50px;
+  height: 50px;
+}
+.EC_icons-el_tank {
+  background-position: -0px -910px;
+  width: 50px;
+  height: 50px;
+}

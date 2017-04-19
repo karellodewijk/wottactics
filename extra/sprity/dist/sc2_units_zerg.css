@@ -1,0 +1,385 @@
+
+.sc2_units_zerg {
+  background-image: url('http://karellodewijk.github.io/sc2_units_zerg.png');
+}
+
+.sc2_units_zerg-btn-unit-zerg-omegalisk {
+  background-position: -0px -0px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-aberration {
+  background-position: -0px -50px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-baneling {
+  background-position: -0px -100px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-brakk {
+  background-position: -0px -150px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-broodlord {
+  background-position: -0px -200px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-broodqueen {
+  background-position: -0px -250px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-changeling {
+  background-position: -0px -300px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-corruptedmass {
+  background-position: -0px -350px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-corruptor {
+  background-position: -0px -400px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-dehaka {
+  background-position: -0px -450px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-dehakaspawn {
+  background-position: -0px -500px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-drone {
+  background-position: -0px -550px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-egg {
+  background-position: -0px -600px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-finalboss {
+  background-position: -0px -650px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-hydralisk-impaler {
+  background-position: -0px -700px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-hydralisk-lurker {
+  background-position: -0px -750px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-hydralisk {
+  background-position: -0px -800px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-impaler {
+  background-position: -0px -850px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-infestedmarine {
+  background-position: -0px -900px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-infestedmarineegg {
+  background-position: -0px -950px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-infestor {
+  background-position: -0px -1000px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-kerriganascended {
+  background-position: -0px -1050px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-kerriganghost {
+  background-position: -0px -1100px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-kerriganinfested {
+  background-position: -0px -1150px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-kraith {
+  background-position: -0px -1200px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-larva {
+  background-position: -0px -1250px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-larvalqueen {
+  background-position: -0px -1300px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-locust {
+  background-position: -0px -1350px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-locustflyer {
+  background-position: -0px -1400px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-lurker {
+  background-position: -0px -1450px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-mantalisk {
+  background-position: -0px -1500px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-mutalisk-broodlord {
+  background-position: -0px -1550px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-mutalisk-viper {
+  background-position: -0px -1600px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-mutalisk {
+  background-position: -0px -1650px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-narud {
+  background-position: -0px -1700px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-nyduscreeptower {
+  background-position: -0px -1750px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-nydusdestroyer {
+  background-position: -0px -1800px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-nydusdragon {
+  background-position: -0px -1850px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-baneling-hunter {
+  background-position: -0px -1900px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-overlord {
+  background-position: -0px -1950px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-overlordtransport {
+  background-position: -0px -2000px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-overseer {
+  background-position: -0px -2050px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-primalguardian {
+  background-position: -0px -2100px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-primalhydralisk {
+  background-position: -0px -2150px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-primalmutalisk {
+  background-position: -0px -2200px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-primalroach {
+  background-position: -0px -2250px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-primalultralisk {
+  background-position: -0px -2300px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-primalzergling {
+  background-position: -0px -2350px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-queen {
+  background-position: -0px -2400px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-queenclassic {
+  background-position: -0px -2450px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-quillgore {
+  background-position: -0px -2500px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-ravager {
+  background-position: -0px -2550px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-ravasaur {
+  background-position: -0px -2600px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-roach-corpser {
+  background-position: -0px -2650px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-roach-vile {
+  background-position: -0px -2700px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-roach {
+  background-position: -0px -2750px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-roachlings {
+  background-position: -0px -2800px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-scourge {
+  background-position: -0px -2850px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-slivan {
+  background-position: -0px -2900px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-slivanminion {
+  background-position: -0px -2950px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-splitterling {
+  background-position: -0px -3000px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-stukov {
+  background-position: -0px -3050px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-swarmhost-carrion {
+  background-position: -0px -3100px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-swarmhost-creeper {
+  background-position: -0px -3150px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-swarmhost {
+  background-position: -0px -3200px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-symbiote {
+  background-position: -0px -3250px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-tyrannozor {
+  background-position: -0px -3300px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-ultralisk-noxious {
+  background-position: -0px -3350px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-ultralisk-torrasque {
+  background-position: -0px -3400px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-ultralisk {
+  background-position: -0px -3450px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-viper {
+  background-position: -0px -3500px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-yagdra {
+  background-position: -0px -3550px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-zergling-raptor {
+  background-position: -0px -3600px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-zergling-swarmling {
+  background-position: -0px -3650px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-zergling {
+  background-position: -0px -3700px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_units_zerg-btn-unit-zerg-zurvan {
+  background-position: -0px -3750px;
+  width: 50px;
+  height: 50px;
+}

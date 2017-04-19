@@ -1,0 +1,305 @@
+
+.sc2_upgrades_terran {
+  background-image: url('http://karellodewijk.github.io/sc2_upgrades_terran.png');
+}
+
+.sc2_upgrades_terran-btn-upgrade-terran-mobiusreactor {
+  background-position: -0px -0px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-advanceballistics {
+  background-position: -0px -50px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-buildingarmor {
+  background-position: -0px -100px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-caduceusreactor {
+  background-position: -0px -150px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-corvidreactor {
+  background-position: -0px -200px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-dreadnoughtagmode {
+  background-position: -0px -250px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-durablematerials {
+  background-position: -0px -300px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-explosiveshrapnelshells {
+  background-position: -0px -350px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-garrisonbuildings {
+  background-position: -0px -400px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-highcapacityfueltanks {
+  background-position: -0px -450px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-highground {
+  background-position: -0px -500px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-hisecautotracking {
+  background-position: -0px -550px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-hyperflightrotors {
+  background-position: -0px -600px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infantryarmorlevel0 {
+  background-position: -0px -650px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infantryarmorlevel1 {
+  background-position: -0px -700px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infantryarmorlevel2 {
+  background-position: -0px -750px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infantryarmorlevel3 {
+  background-position: -0px -800px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infantryweaponslevel0 {
+  background-position: -0px -850px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infantryweaponslevel1 {
+  background-position: -0px -900px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infantryweaponslevel2 {
+  background-position: -0px -950px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infantryweaponslevel3 {
+  background-position: -0px -1000px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-infernalpreigniter {
+  background-position: -0px -1050px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-internalizedtechmodule {
+  background-position: -0px -1100px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-jotunboosters {
+  background-position: -0px -1150px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-jumpjets {
+  background-position: -0px -1200px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-kd8chargeex3 {
+  background-position: -0px -1250px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-lazertargetingsystem {
+  background-position: -0px -1300px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-liberator-agmode {
+  background-position: -0px -1350px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-magfieldaccelerator {
+  background-position: -0px -1400px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-medivacemergencythrusters {
+  background-position: -0px -1450px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-behemothreactor {
+  background-position: -0px -1500px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-moebiusreactor {
+  background-position: -0px -1550px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-neosteelframe {
+  background-position: -0px -1600px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-reapercombatdrugs {
+  background-position: -0px -1650px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-reapernitropacks {
+  background-position: -0px -1700px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-researchdrillingclaws {
+  background-position: -0px -1750px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-shipplatinglevel0 {
+  background-position: -0px -1800px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-shipplatinglevel1 {
+  background-position: -0px -1850px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-shipplatinglevel2 {
+  background-position: -0px -1900px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-shipplatinglevel3 {
+  background-position: -0px -1950px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-shipweaponslevel0 {
+  background-position: -0px -2000px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-shipweaponslevel1 {
+  background-position: -0px -2050px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-shipweaponslevel2 {
+  background-position: -0px -2100px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-shipweaponslevel3 {
+  background-position: -0px -2150px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-spidermineex3 {
+  background-position: -0px -2200px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-superstimppack {
+  background-position: -0px -2250px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-transformationservos {
+  background-position: -0px -2300px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-ui-internalizedtechmodule {
+  background-position: -0px -2350px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-ui-jumpjets {
+  background-position: -0px -2400px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-ui-lazertargetingsystem {
+  background-position: -0px -2450px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-ui-spidermineex3 {
+  background-position: -0px -2500px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-vehicleplatinglevel0 {
+  background-position: -0px -2550px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-vehicleplatinglevel1 {
+  background-position: -0px -2600px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-vehicleplatinglevel2 {
+  background-position: -0px -2650px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-vehicleplatinglevel3 {
+  background-position: -0px -2700px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-vehicleweaponslevel0 {
+  background-position: -0px -2750px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-vehicleweaponslevel1 {
+  background-position: -0px -2800px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-vehicleweaponslevel2 {
+  background-position: -0px -2850px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-vehicleweaponslevel3 {
+  background-position: -0px -2900px;
+  width: 50px;
+  height: 50px;
+}
+.sc2_upgrades_terran-btn-upgrade-terran-weaponrefit {
+  background-position: -0px -2950px;
+  width: 50px;
+  height: 50px;
+}
