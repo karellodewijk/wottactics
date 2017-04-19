@@ -336,6 +336,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		}
 		if (locales.indexOf(subDomain[0]) != -1) {
 			set_locale(req, res, subDomain[0]);
+			subDomain.slice(1);
 		} else {
 			if (req.query.lang) {
 				set_locale(req, res, req.query.lang);
@@ -347,13 +348,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 				}
 			}
 		}
-		if (subDomain.length > 2) {
-			subDomain = subDomain.slice(1);
-		}
 		if (req.query.game) {
 			set_game(req, res, req.query.game)
-		}
-		
+		}	
 		req.fullUrl = subDomain.join('.') + req.originalUrl;
 		next();
 	});
