@@ -302,7 +302,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 			var hostSession = mwCache[host];
 			if (!hostSession) {
 				var store = new RedisStore(secrets.redis_options);
-				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000), httpOnly:false}, rolling: true, store: store});
+				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:false}, rolling: true, store: store});
 				mwCache[host].store = store;
 			}
 			hostSession(req, res, next);

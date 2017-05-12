@@ -64,7 +64,7 @@
 
 		<%if (!user.no_ads) {%>
 			<div class="hidden-xs" style="background-color:white; width:728px; height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left">
-			<%if (game == 'wot' || game == 'wows' || game == 'blitz' || Math.random() <= 0.75) {%>
+			<%if (game == 'wot' || game == 'wows' || game == 'blitz' || Math.random() <= 1) {%>
 				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 				<!-- main navbar -->
 				<ins class="adsbygoogle hidden-xs"
@@ -77,7 +77,7 @@
 			<% } else { %>
 				<% var ads; %>
 				<% var path; %>
-				<% if (Math.random() <= 0.0) { %>
+				<% if (Math.random() <= 0.5) { %>
 					<% path = "/ads/wot/728x90/"; %>
 					<% if (locale == 'ru') { %>
 						<%ads = [{code: 3878, link:'WOT_Comics_728х90_RU.jpg'}, {code: 3724, link:'WoT_Sweden_TierX_728x90_RU.jpg'}, {code: 3298, link:'WOT_Adwords_728x90_2_RU.jpg'}];%>

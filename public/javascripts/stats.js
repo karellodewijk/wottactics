@@ -74,6 +74,7 @@ function reset_ui() {
 	for (var i in charts) {
 		charts[i].destroy();
 	}
+	charts = [];
 }
 
 function populate() {	
