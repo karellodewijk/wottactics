@@ -324,7 +324,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	app.use(passport.session());
 	
 	//create a default user + detect language
-	app.use(function(req, res, next) { 
+	app.use(function(req, res, next) {
 		var domain = req.headers.host;
 		var subDomain = domain.split('.');	
 		if (subDomain[0] == 'www') {
@@ -351,7 +351,9 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 		if (req.query.game) {
 			set_game(req, res, req.query.game)
 		}	
-		req.fullUrl = subDomain.join('.') + req.originalUrl;
+		req.fullUrl = subDomain.join('.') + req.originalUrl;		
+		req.session.last_login = Date();
+		req.session.touch();
 		next();
 	});
 	
