@@ -201,7 +201,8 @@
 			//wn8 expected values, src: http://www.wnefficiency.net/exp/expected_tank_values_29.json
 			$.Deferred(function() {
 				var self = this;
-				$.get("https://karellodewijk.github.io/other/expected_tank_values_29.json", {}, function(data) {
+				//$.get("https://karellodewijk.github.io/other/expected_tank_values_29.json", {}, function(data) {
+				$.get("expected_v32.json", {}, function(data) {
 					tank_expected_wn8 = {};
 					for (var i in data.data) {
 						tank_expected_wn8[data.data[i].IDNum] = data.data[i];
