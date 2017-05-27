@@ -329,7 +329,8 @@ function populate() {
 
 							var node = "<tr>";
 							node += "<td style='text-align:left; padding-left:5px'><a href='/player/" + member.account_id + "'>" + member.account_name + "</a></td>";
-							node += "<td><span hidden>" + role_rank + "</span>" + member.role_i18n + "</td>";
+							node += "<td><span hidden>" + role_rank + "</span>" + member.role + "</td>";
+							//node += "<td><span hidden>" + role_rank + "</span>" + member.role_i18n + "</td>";
 
 							if (member_stats && member_stats['recent']) {
 								var wr = member_stats['recent'].wins/member_stats['recent'].battles;
