@@ -1884,6 +1884,7 @@ function t2o(transparancy) {
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_point;
 function on_left_click(e) {
+
 	if (active_context == "drag_context") {
 		cancel_drag(true);
 	}
@@ -5746,6 +5747,7 @@ $(document).ready(function() {
 	objectContainer.addChild(background_sprite);
 	background_sprite.addChild(grid_layer);
 
+	objectContainer.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000);
 	objectContainer.interactive = true;
 	objectContainer.mousedown = on_left_click;
 	objectContainer.touchstart = on_left_click;
