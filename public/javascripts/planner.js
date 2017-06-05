@@ -3905,16 +3905,14 @@ function create_text_sprite(msg, color, font_size, font, background, label_shado
 	var y_margin = height * 0.1;
 	var x_margin = height * 0.2;
 	_canvas.height = height + 2 * y_margin;
-
+	_canvas.width = metrics.width + 2 * x_margin + 2 * linewidth;
+	
 	if (background) {
-		_canvas.width = metrics.width + 2 * x_margin + 2 * linewidth ;
 		_context.fillStyle = "#ffffff"
 		_context.lineWidth = linewidth;
 		_context.roundRect(linewidth/2, linewidth/2, metrics.width + 2 * x_margin, height, 4 * y_margin);
 		_context.fill();
 		_context.stroke();
-	} else {
-		_canvas.width = metrics.width;
 	}
 	
 	_context.fillStyle = color;
