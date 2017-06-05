@@ -166,7 +166,7 @@ function populate() {
 						stats_data = {};
 						deferreds2.push($.Deferred(function() {
 							var self = this;
-							$.get("http://karellodewijk.github.io/other/expected_wn8.json", {}, function(data) {
+							$.get("http://karellodewijk.github.io/other/expected_wn8_2.json", {}, function(data) {
 								tank_expected = data;
 								self.resolve();
 							});
@@ -445,7 +445,7 @@ function populate() {
 							$("#cap_col").append("<td data-toggle='tooltip' title='" + round(results.capture_points, 4) + "'>" + round(results.capture_points, 2) + " (<span style='color: " + sign_col(average_diff.capture_points) + "'>" + sign(average_diff.capture_points) + round(average_diff.capture_points,2) + "</span>)</td>");
 							$("#xp_col").append("<td data-toggle='tooltip' title='" + round(results.xp, 2) + "'>" + round(results.xp, 0) + " (<span style='color: " + sign_col(average_diff.xp) + "'>" + sign(average_diff.xp) + round(average_diff.xp,2) + "</span>)</td>");
 							$("#tier_col").append("<td data-toggle='tooltip' title='" + round(results.tier, 2) + "'>" + round(results.tier, 1) + " (<span style='color: " + sign_col(average_diff.tier) + "'>" + sign(average_diff.tier) + round(average_diff.tier,2) + "</span>)</td>");
-							$("#spotted_col").append("<td data-toggle='tooltip' title='" + round(results.spotted, 2) + "'>" + round(results.spotted, 1) + " (<span style='color: " + sign_col(average_diff.spotted) + "'>" + sign(average_diff.spotted) + round(average_diff.spotted,2) + "</span>)</td>");
+							$("#spotted_col").append("<td data-toggle='tooltip' title='" + round(results.spotted, 2) + "'>" + round(results.spotted, 2) + " (<span style='color: " + sign_col(average_diff.spotted) + "'>" + sign(average_diff.spotted) + round(average_diff.spotted,2) + "</span>)</td>");
 						}
 
 						for (var i in interesting_points) {

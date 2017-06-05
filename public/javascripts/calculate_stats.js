@@ -203,7 +203,6 @@ function calculate_stats(tank_expected_wn8, tank_expected_wn8_wn9, stats_data, s
 	var achieved_totals = {damage_dealt:0, spotted:0, frags:0, dropped_capture_points:0, wins:0, battles:0,
 						   xp:0, survived_battles: 0, capture_points:0, draws:0, shots:0, hits:0, pens:0, tier:0, tanks:{}}
 	var wn8_totals = {damage_dealt:0, spotted:0, frags:0, dropped_capture_points:0, wins:0, battles:0}
-	var wn8_exp_totals = {damage_dealt:0, spotted:0, frags:0, dropped_capture_points:0, wins:0, battles:0}
 	
 	for (var i in stats_data) {
 		var tank = stats_data[i];
