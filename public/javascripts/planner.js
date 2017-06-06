@@ -445,6 +445,7 @@ function paste() {
 		create_entity(entity);
 		snap_and_emit_entity(entity);
 		selected_entities.push(entity);
+		adjust_zoom(entity)
 		render_scene();
 	}
 	
