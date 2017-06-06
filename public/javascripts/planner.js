@@ -453,9 +453,11 @@ function paste() {
 }
 
 function adjust_zoom(entity) {
-	if (entity.draw_zoom_level) {
-		if (!adjust_all_zoom && entity.type != "icon" && entity.type != "text" && entity.type != "background_text") return;
-		var scale = zoom_level / entity.draw_zoom_level;
+	if (entity.container) {
+		var scale = 1;
+		if (entity.draw_zoom_level) {
+			var scale = zoom_level / entity.draw_zoom_level;
+		}
 		switch(entity.type) {
 			case 'icon': case 'note':
 				entity.container.scale.x = entity.container.orig_scale[0] * scale;
@@ -504,6 +506,12 @@ function adjust_zoom(entity) {
 			entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
 			entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
 		}
+		if (entity.container.anchor) {
+			set_anchor(entity.container, 0.5, 0.5);
+		}
+		if (entity.rotation) {
+			entity.container.rotation = -entity.rotation;
+		}
 		
 	}
 }
@@ -547,7 +555,7 @@ function zoom(amount, isZoomIn, center, e) {
 	if(room_data) {
 		for (var i in room_data.slides[active_slide].entities) {
 			var entity = room_data.slides[active_slide].entities[i];
-			if (entity.container && entity.draw_zoom_level) {
+			if (adjust_all_zoom || entity.type == "icon" || entity.type == "text" || entity.type == "background_text") {
 				adjust_zoom(entity)
 			}
 		}
@@ -4238,20 +4246,7 @@ function create_entity(entity) {
 	}
 
 	function done() {
-		if (entity.container) {
-			if (entity.scale) {
-				entity.container.scale.x = entity.container.orig_scale[0] * entity.scale[0];
-				entity.container.scale.y = entity.container.orig_scale[1] * entity.scale[1];
-			}
-				
-			if (entity.container.anchor) {
-				set_anchor(entity.container, 0.5, 0.5);
-			}
-			
-			if (entity.rotation) {
-				entity.container.rotation = -entity.rotation;
-			}
-			
+		if (entity.container) {			
 			adjust_zoom(entity)
 		
 			if (background.is_video) {
