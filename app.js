@@ -7,6 +7,15 @@ var escaper = require('mongo-key-escape');
 var sizeof = require('object-sizeof');
 var request = require('request');
 
+var redis = require('redis')
+var redis_client = redis.createClient(secrets.redis_options)
+
+redis_client.on("error", function (e) {
+    console.error("Error " + e);
+});
+
+redis_client.auth(secrets.redis_options.pass, () => {
+
 room_data = {} //room -> room_data map to be shared with clients
 
 //generate unique id
@@ -94,15 +103,12 @@ process.on('uncaughtException', function (err) {
 //load mongo
 connection_string =  secrets.mongodb_string;
 
-console.log("Connecting to: ", connection_string)
+console.log("Connecting to mongodb")
 
 MongoClient = require('mongodb').MongoClient;
-MongoClient.connect('mongodb://'+connection_string, function(err, db) {
+MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, db) {
 	if(err) throw err;	
-	
-	db.authenticate(secrets.mongodb_username, secrets.mongodb_password, function(err, result) {	
-	if(err) throw err;	
-	
+
 	db.createCollection('tactics');
 	db.createCollection('users');
 	db.createCollection('update_stats');
@@ -298,10 +304,11 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var mwCache = Object.create(null);
 	function virtualHostSession(req, res, next) {
 		if (req.hostname) {
-			var host = get_host(req);	
+			var host = get_host(req);
 			var hostSession = mwCache[host];
 			if (!hostSession) {
-				var store = new RedisStore(secrets.redis_options);
+				console.log("creating redis store for: " + host)
+				var store = new RedisStore({client:redis_client});
 				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:false}, rolling: true, store: store});
 				mwCache[host].store = store;
 			}
@@ -443,7 +450,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	
 	//reload the secrets file
 	router.get('/reload_secrets', function(req, res, next) {
-		if (req.query.pw == secrets.mongodb_password) {
+		if (req.query.pw == secrets.admin_password) {
 			secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
 			res.status(200).send("Secrets loaded")
 		} else {
@@ -488,7 +495,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	  }
 	}
 	
-	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr'];	
+	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr', 'clans'];	
 	games.forEach(function(game) {
 		router.get(['/' + game + '.html', '/' + game], function(req, res, next) {
 		  set_game(req, res, game);
@@ -513,7 +520,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	var count = 0;
 	//form {pw: pw, data: {field: field, users: [{_id:user, ...}]}}
 	router.post('/submit_summaries', function(req, res, next) {
-		if (req.query.pw == secrets.mongodb_password) {
+		if (req.query.pw == secrets.admin_password) {
 			var data = req.body;
 			for (var i in data) {
 				var field = i;
@@ -1040,7 +1047,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 
 	//force saves all rooms to DB, run before a restart/shutdown
 	router.get('/save', function(req, res, next) {
-		if (req.query.pw == secrets.mongodb_password) {
+		if (req.query.pw == secrets.admin_password) {
 			var unsaved_rooms = 0;
 			for (var room in room_data) {
 				unsaved_rooms++;
@@ -1060,7 +1067,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	});
 
 	app.get('/disconnect', function(req, res) {
-		if (req.query.pw == secrets.mongodb_password) {
+		if (req.query.pw == secrets.admin_password) {
 			for (var room in room_data) {
 				save_room(room, function(){
 					io.to(room).emit('force_reconnect');
@@ -1106,7 +1113,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	}
 	
 	router.get('/profile', function(req, res, next) {
-		if (req.query.pw == secrets.mongodb_password) {
+		if (req.query.pw == secrets.admin_password) {
 			var time;
 			if (req.query.time) {
 				var time = parseFloat(req.query.times);
@@ -1129,7 +1136,7 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	//reloads templates, so I don't have to restart the server to add basic content
 	var lastmod = (new Date()).toISOString().substr(0,10);
 	router.get('/refresh', function(req, res, next) {
-		if (req.query.pw == secrets.mongodb_password) {
+		if (req.query.pw == secrets.admin_password) {
 			var ejs = require('ejs')
 			ejs.clearCache();
 			lastmod = (new Date()).toISOString().substr(0,10);
@@ -1624,6 +1631,6 @@ MongoClient.connect('mongodb://'+connection_string, function(err, db) {
 	io.attach(server);
 	server.listen(secrets.port);	
 	
-	});
-	
 });
+
+}); //end redis AUTH
