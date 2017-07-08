@@ -1523,12 +1523,11 @@ function move_entity(entity, delta_x, delta_y) {
 
 //limits the amount of time f can be called to once every interval
 function once_per_frame(state, f) {
-	state.cb = f;
 	if (!state.in_progress) {
 		state.in_progress = true;
 		requestAnimationFrame(function() {
 			state.in_progress = false;
-			state.cb();
+			f();
 		})
 	}
 }
