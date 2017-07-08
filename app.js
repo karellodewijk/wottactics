@@ -8,13 +8,22 @@ var sizeof = require('object-sizeof');
 var request = require('request');
 
 var redis = require('redis')
-var redis_client = redis.createClient(secrets.redis_options)
+var redis_client = redis.createClient(secrets.redis_options);
 
 redis_client.on("error", function (e) {
     console.error("Error " + e);
 });
 
-redis_client.auth(secrets.redis_options.pass, () => {
+redis_client.auth(secrets.redis_options.pass, (e) => {
+	
+if (e) {
+	console.error(e);
+	return;
+}
+
+var Session = require('express-session');
+var RedisStore = require('connect-redis')(Session);
+var redis_store = new RedisStore({client:redis_client});
 
 room_data = {} //room -> room_data map to be shared with clients
 
@@ -299,8 +308,6 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	}
 	
 	// initializing session middleware
-	var Session = require('express-session');
-	var RedisStore = require('connect-redis')(Session);
 	var mwCache = Object.create(null);
 	function virtualHostSession(req, res, next) {
 		if (req.hostname) {
@@ -308,9 +315,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			var hostSession = mwCache[host];
 			if (!hostSession) {
 				console.log("creating redis store for: " + host)
-				var store = new RedisStore({client:redis_client});
-				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:false}, rolling: true, store: store});
-				mwCache[host].store = store;
+				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:false}, rolling: true, store: redis_store});
+				mwCache[host].store = redis_store;
 			}
 			hostSession(req, res, next);
 		}

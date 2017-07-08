@@ -3,138 +3,153 @@
   background-image: url('./clans_icons.png');
 }
 
-.clans_icons-spring_trap_editor {
+.clans_icons-grand_warden_20 {
   background-position: -0px -0px;
+  width: 40px;
+  height: 34px;
+}
+.clans_icons-spring_trap_editor {
+  background-position: -0px -34px;
   width: 40px;
   height: 37px;
 }
-.clans_icons-healer_4 {
-  background-position: -0px -37px;
-  width: 40px;
-  height: 40px;
-}
 .clans_icons-air_bomb_4 {
-  background-position: -0px -77px;
+  background-position: -0px -71px;
   width: 40px;
   height: 40px;
 }
 .clans_icons-archer_7 {
-  background-position: -0px -117px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-baby_dragon_1 {
-  background-position: -0px -157px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-balloon_6 {
-  background-position: -0px -197px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-barbarian_7 {
-  background-position: -0px -237px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-bowler_3 {
-  background-position: -0px -277px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-dragon_5 {
-  background-position: -0px -317px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-giant_7 {
-  background-position: -0px -357px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-giant_bomb_4 {
-  background-position: -0px -397px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-goblin_6 {
-  background-position: -0px -437px;
+  background-position: -0px -111px;
   width: 40px;
   height: 40px;
 }
 .clans_icons-witch_2 {
-  background-position: -0px -477px;
+  background-position: -0px -151px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-baby_dragon_1 {
+  background-position: -0px -191px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-balloon_6 {
+  background-position: -0px -231px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-barbarian_7 {
+  background-position: -0px -271px;
   width: 40px;
   height: 40px;
 }
 .clans_icons-wall_breaker_6 {
-  background-position: -0px -517px;
+  background-position: -0px -311px;
   width: 40px;
   height: 40px;
 }
-.clans_icons-hidden_tesla_8 {
-  background-position: -0px -557px;
+.clans_icons-bowler_3 {
+  background-position: -0px -351px;
   width: 40px;
   height: 40px;
 }
-.clans_icons-hog_rider_5 {
-  background-position: -0px -597px;
+.clans_icons-dragon_5 {
+  background-position: -0px -391px;
   width: 40px;
   height: 40px;
 }
-.clans_icons-lava_hound_3 {
-  background-position: -0px -637px;
+.clans_icons-giant_7 {
+  background-position: -0px -431px;
   width: 40px;
   height: 40px;
 }
-.clans_icons-miner_4 {
-  background-position: -0px -677px;
+.clans_icons-giant_bomb_4 {
+  background-position: -0px -471px;
   width: 40px;
   height: 40px;
 }
-.clans_icons-minion_6 {
-  background-position: -0px -717px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-pekka_5 {
-  background-position: -0px -757px;
-  width: 40px;
-  height: 40px;
-}
-.clans_icons-seeking_air_mine_4 {
-  background-position: -0px -797px;
+.clans_icons-goblin_6 {
+  background-position: -0px -511px;
   width: 40px;
   height: 40px;
 }
 .clans_icons-valkyrie_4 {
-  background-position: -0px -837px;
+  background-position: -0px -551px;
   width: 40px;
   height: 40px;
 }
 .clans_icons-Bomb5 {
-  background-position: -0px -877px;
+  background-position: -0px -591px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-healer_4 {
+  background-position: -0px -631px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-hidden_tesla_8 {
+  background-position: -0px -671px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-hog_rider_5 {
+  background-position: -0px -711px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-lava_hound_3 {
+  background-position: -0px -751px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-miner_4 {
+  background-position: -0px -791px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-minion_6 {
+  background-position: -0px -831px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-pekka_5 {
+  background-position: -0px -871px;
+  width: 40px;
+  height: 40px;
+}
+.clans_icons-seeking_air_mine_4 {
+  background-position: -0px -911px;
   width: 40px;
   height: 40px;
 }
 .clans_icons-wizard_6 {
-  background-position: -0px -917px;
+  background-position: -0px -951px;
   width: 40px;
   height: 40px;
 }
 .clans_icons-golem_5 {
-  background-position: -0px -957px;
+  background-position: -0px -991px;
   width: 40px;
   height: 43px;
 }
+.clans_icons-archer_queen_40 {
+  background-position: -0px -1034px;
+  width: 40px;
+  height: 46px;
+}
+.clans_icons-barbarian_king_40 {
+  background-position: -0px -1080px;
+  width: 40px;
+  height: 49px;
+}
 .clans_icons-skeleton_trap_4 {
-  background-position: -0px -1000px;
+  background-position: -0px -1129px;
   width: 40px;
   height: 50px;
 }
 .clans_icons-Skeleton_Trap_3-Air {
-  background-position: -0px -1050px;
+  background-position: -0px -1179px;
   width: 40px;
   height: 50px;
 }
