@@ -21,14 +21,14 @@ if (e) {
 	return;
 }
 
+var cookieParser = require('cookie-parser')
 var Session = require('express-session');
 var RedisStore = require('connect-redis')(Session);
-var redis_store = new RedisStore({client:redis_client});
 
 room_data = {} //room -> room_data map to be shared with clients
 
 //generate unique id
-var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; //needs to be 64 chars
+var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 function newUid() {
 	var text = "";
 	for(var i=0; i < 14; i++ ) {
@@ -51,6 +51,7 @@ app.use(compress());
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(cookieParser())
   
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -300,9 +301,9 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	function get_host(req) {
 		var host = req.hostname.split('.');
 		if (host.length >= 2) {
-			host = '.' + host[host.length-2] + '.' + host[host.length-1];
+			host = host[host.length-2] + '.' + host[host.length-1];
 		} else {
-			host = '.' + host[0];
+			host = host[0];
 		}
 		return host;		
 	}
@@ -315,7 +316,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			var hostSession = mwCache[host];
 			if (!hostSession) {
 				console.log("creating redis store for: " + host)
-				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:false}, rolling: true, store: redis_store});
+				var redis_store = new RedisStore({client:redis_client});
+				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:true}, rolling: true, store: redis_store});
 				mwCache[host].store = redis_store;
 			}
 			hostSession(req, res, next);
@@ -331,10 +333,27 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	});
 	
 	app.use(virtualHostSession);
-
+	
 	// Configuring Passport
 	app.use(passport.initialize());
 	app.use(passport.session());
+	
+	//fix cookie, can be removed in 2 months from (07/17)
+	app.use(function(req, res, next) {
+		if (req.cookies["connect.sid"]) {
+			res.cookie(
+				'connect.sid', 
+				req.cookies["connect.sid"], 
+				{
+					maxAge: req.session.cookie.maxAge,
+					domain: get_host(req),
+					path: '/', 
+					httpOnly: true
+				}
+			);
+		}
+		next();
+	})
 	
 	//create a default user + detect language
 	app.use(function(req, res, next) {
@@ -386,9 +405,9 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	// session support for socket.io	
 	function session_from_sessionid_host(sessionId, host, cb) {
 		if (!mwCache[host]) {
-			var store = new RedisStore(secrets.redis_options);
-			mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000), httpOnly: false}, rolling: true, store: store});
-			mwCache[host].store = store;
+			var redis_store = new RedisStore({client:redis_client});
+			mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, expires: new Date(Date.now() + 30 * 86400 * 1000), httpOnly: false}, rolling: true, store: redis_store});
+			mwCache[host].store = redis_store;
 		}
 		if (sessionId) {
 			mwCache[host].store.get(sessionId, function(err, data) {
@@ -1046,7 +1065,12 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		} else {
 			res.cookie('logged_in', "no", {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
 		}
-		res.redirect(req.session.return_to);
+		if (!req.session.return_to || req.session.return_to.match("^undefined")) {
+			console.error("Invalid return path:", req.session.return_to)
+			res.redirect("/");
+		} else {
+			res.redirect(req.session.return_to);
+		}
 		delete req.session.return_to;
 		return;
 	}
