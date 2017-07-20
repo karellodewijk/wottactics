@@ -670,10 +670,9 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	});
 
 	function get_server(id) {
-        if(id > 3000000000){return "kr";}
-        if(id > 2000000000){return "asia";}
-        if(id > 1000000000){return "com";}
-        if(id > 500000000){return "eu";}
+        if(id >= 2000000000){return "asia";}
+        if(id >= 1000000000){return "com";}
+        if(id >= 500000000){return "eu";}
         return "ru";
     }
 	
