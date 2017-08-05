@@ -128,58 +128,63 @@
   width: 30px;
   height: 30px;
 }
-.R6_attac_icons-Montagne {
+.R6_attac_icons-Jackal {
   background-position: -0px -750px;
   width: 30px;
   height: 30px;
 }
-.R6_attac_icons-Objective {
+.R6_attac_icons-Montagne {
   background-position: -0px -780px;
+  width: 30px;
+  height: 30px;
+}
+.R6_attac_icons-Objective {
+  background-position: -0px -810px;
   width: 22px;
   height: 30px;
 }
 .R6_attac_icons-Rappel-Device {
-  background-position: -0px -810px;
+  background-position: -0px -840px;
   width: 25px;
   height: 30px;
 }
 .R6_attac_icons-Recruit {
-  background-position: -0px -840px;
+  background-position: -0px -870px;
   width: 30px;
   height: 30px;
 }
 .R6_attac_icons-Shock-Drone {
-  background-position: -0px -870px;
+  background-position: -0px -900px;
   width: 40px;
   height: 30px;
 }
 .R6_attac_icons-Sledge {
-  background-position: -0px -900px;
+  background-position: -0px -930px;
   width: 30px;
   height: 30px;
 }
 .R6_attac_icons-Smoke-Grenade {
-  background-position: -0px -930px;
-  width: 31px;
-  height: 30px;
-}
-.R6_attac_icons-Stun-Grenade {
   background-position: -0px -960px;
   width: 31px;
   height: 30px;
 }
-.R6_attac_icons-Thatcher {
+.R6_attac_icons-Stun-Grenade {
   background-position: -0px -990px;
-  width: 30px;
+  width: 31px;
   height: 30px;
 }
-.R6_attac_icons-Thermite {
+.R6_attac_icons-Thatcher {
   background-position: -0px -1020px;
   width: 30px;
   height: 30px;
 }
-.R6_attac_icons-Twitch {
+.R6_attac_icons-Thermite {
   background-position: -0px -1050px;
+  width: 30px;
+  height: 30px;
+}
+.R6_attac_icons-Twitch {
+  background-position: -0px -1080px;
   width: 30px;
   height: 30px;
 }

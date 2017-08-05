@@ -3,3 +3,4 @@ npm-debug.log
 secrets.txt
 generate maps/compressed_jpeg/*
 generate maps/output/*
+**/Thumbs.db

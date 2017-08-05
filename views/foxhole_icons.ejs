@@ -1,0 +1,82 @@
+<button id="foxhole/MapIconArmory.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Armory')%>">
+	<div class="foxhole_icons foxhole_icons-MapIconArmory inline"></div><span>0</span>
+</button>
+<button id="foxhole/MapIconComponents.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Components')%>">
+	<div class="foxhole_icons foxhole_icons-MapIconComponents inline"></div><span>0</span>
+</button>
+<button id="foxhole/MapIconFuel.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Fuel')%>">
+	<div class="foxhole_icons foxhole_icons-MapIconFuel inline"></div><span>0</span>
+</button>
+<button id="foxhole/MapIconHospital.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Hospital')%>">
+	<div class="foxhole_icons foxhole_icons-MapIconHospital inline"></div><span>0</span>
+</button>
+<button id="foxhole/MapIconManufacturing.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Manufacturing')%>">
+	<div class="foxhole_icons foxhole_icons-MapIconManufacturing inline"></div><span>0</span>
+</button>
+
+<hr />
+
+<button id="foxhole/MapIconSupplies.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Suplies')%>">
+	<div class="foxhole_icons foxhole_icons-MapIconSupplies inline"></div><span>0</span>
+</button>
+<button id="foxhole/MapIconVehicle.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Vehicle')%>">
+	<div class="foxhole_icons foxhole_icons-MapIconVehicle inline"></div><span>0</span>
+</button>
+<button id="foxhole/MapIconWorkshop.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Workshop')%>">
+	<div class="foxhole_icons foxhole_icons-MapIconWorkshop inline"></div><span>0</span>
+</button>
+<button id="foxhole/SalvageMapIcon.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Salvage')%>">
+	<div class="foxhole_icons foxhole_icons-SalvageMapIcon inline"></div><span>0</span>
+</button>
+<button id="foxhole/TownHall.png" data-scale=1.8 class="tank_select" data-toggle="tooltip" title="<%=l('Town Hall')%>">
+	<div class="foxhole_icons foxhole_icons-TownHall inline"></div><span>0</span>
+</button>
+
+<hr />
+
+<button id="foxhole/TownHall_Colonials.png" data-scale=1.8 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Town Hall (Colonials)')%>">
+	<div class="foxhole_icons foxhole_icons-TownHall_Colonials inline"></div><span>0</span>
+</button>
+<button id="foxhole/TownHall_Warden.png" data-scale=1.8 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Town Hall (Warden)')%>">
+	<div class="foxhole_icons foxhole_icons-TownHall_Warden inline"></div><span>0</span>
+</button>
+
+<p>
+
+<div class='icon_tabs'>
+	<ul class="nav nav-tabs" id="bottom_tabs">
+	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	  <%if (user.identity) { %><li><a class="icon_group" id="custom_icons" data-toggle="tab" href="#custom_tab"><%=l('Custom')%></a></li><% } %>
+	</ul>
+	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<%if (user.identity) { %>
+		<div class="tab-pane" id="custom_tab">
+			<div class="row">
+				<div id="custom_icons_list"></div>
+				<button class="btn btn-default" aria-label="Left Align" id="upload_icon" data-toggle="tooltip" title="<%=l('Upload icon')%>">
+					<div class="icon icon-upload_sm"></div>
+				</button>	
+			</div>
+		</div>
+		<% } %>
+		<div class="tab-pane" id="extra_tab">
+			<div class="row">
+				<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" data-style="wot_icon_set4.css" hidden>
+					battle.png
+					danger.png
+					defend.png
+					explosion1.png
+					explosion2.png
+					focus.png
+					spot.png
+					warning.png
+					finish.png
+					map_marker.png
+				</div>
+				<div id="extra_icons_menu"></div>				
+			</div>
+		</div>		
+	</div>
+</div>
+
+<hr />
