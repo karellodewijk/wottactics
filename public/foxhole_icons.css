@@ -1,0 +1,65 @@
+
+.foxhole_icons {
+  background-image: url('foxhole_icons.png');
+}
+
+.foxhole_icons-MapIconVehicle {
+  background-position: -0px -0px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-MapIconArmory {
+  background-position: -0px -40px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-MapIconFuel {
+  background-position: -0px -80px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-MapIconHospital {
+  background-position: -0px -120px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-MapIconManufacturing {
+  background-position: -0px -160px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-MapIconSupplies {
+  background-position: -0px -200px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-MapIconComponents {
+  background-position: -0px -240px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-MapIconWorkshop {
+  background-position: -0px -280px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-SalvageMapIcon {
+  background-position: -0px -320px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-TownHall {
+  background-position: -0px -360px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-TownHall_Colonials {
+  background-position: -0px -400px;
+  width: 40px;
+  height: 40px;
+}
+.foxhole_icons-TownHall_Warden {
+  background-position: -0px -440px;
+  width: 40px;
+  height: 40px;
+}

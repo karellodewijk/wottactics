@@ -6357,14 +6357,20 @@ $(document).ready(function() {
 		});
 
 		$('#export').click(function () {
-			var new_renderer = new PIXI.CanvasRenderer(background_sprite.width, background_sprite.height, {backgroundColor : 0xBBBBBB});
+			var quality = 2;			
+			var new_renderer = new PIXI.CanvasRenderer(quality * background_sprite.width, quality * background_sprite.height, {backgroundColor : 0xBBBBBB});
 			
 			var temp_x = background_sprite.x, temp_y = background_sprite.y;
+			var temp_scale_x = background_sprite.scale.x, temp_scale_y = background_sprite.scale.y;
 			background_sprite.x = 0;
 			background_sprite.y = 0;
+			background_sprite.scale.x *= quality;
+			background_sprite.scale.y *= quality;
 			new_renderer.render(background_sprite);			
 			background_sprite.x = temp_x;
 			background_sprite.y = temp_y;
+			background_sprite.scale.x = temp_scale_x;
+			background_sprite.scale.y = temp_scale_y;
 
 			$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function() {
 				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.7.0/js/canvas-to-blob.min.js", function() {
@@ -6374,7 +6380,26 @@ $(document).ready(function() {
 						} else {
 							saveAs(blob, "map.jpg", 1);
 						}	
-					}, 'image/jpeg');
+					}, 'image/jpeg', 1);
+				});					
+			});
+		});
+		
+		$('#export_view').click(function () {
+			var quality = 2;			
+			var new_renderer = new PIXI.CanvasRenderer(renderer.width, renderer.height, {backgroundColor : 0xBBBBBB});
+
+			new_renderer.render(objectContainer);			
+
+			$.getScript("http://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js", function() {
+				$.getScript("http://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.7.0/js/canvas-to-blob.min.js", function() {
+					new_renderer.view.toBlob(function(blob){
+						if (tactic_name && tactic_name != "") {
+							saveAs(blob, tactic_name + ".jpg");
+						} else {
+							saveAs(blob, "map.jpg", 1);
+						}	
+					}, 'image/jpeg', 1);
 				});					
 			});
 		});

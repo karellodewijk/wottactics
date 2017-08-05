@@ -3,7 +3,7 @@
   background-image: url('R6_def_icons.png');
 }
 
-.R6_def_icons-Frost {
+.R6_def_icons-Jäger {
   background-position: -0px -0px;
   width: 30px;
   height: 30px;
@@ -93,12 +93,12 @@
   width: 30px;
   height: 30px;
 }
-.R6_def_icons-2 {
+.R6_def_icons-Frost {
   background-position: -0px -540px;
   width: 30px;
   height: 30px;
 }
-.R6_def_icons-Jäger {
+.R6_def_icons-2 {
   background-position: -0px -570px;
   width: 30px;
   height: 30px;
@@ -108,83 +108,88 @@
   width: 30px;
   height: 30px;
 }
-.R6_def_icons-Mounted-LMG {
+.R6_def_icons-Mira {
   background-position: -0px -630px;
   width: 30px;
   height: 30px;
 }
-.R6_def_icons-Mute {
+.R6_def_icons-Mounted-LMG {
   background-position: -0px -660px;
   width: 30px;
   height: 30px;
 }
-.R6_def_icons-Nitro-Cell {
+.R6_def_icons-Mute {
   background-position: -0px -690px;
+  width: 30px;
+  height: 30px;
+}
+.R6_def_icons-Nitro-Cell {
+  background-position: -0px -720px;
   width: 31px;
   height: 30px;
 }
 .R6_def_icons-Objective {
-  background-position: -0px -720px;
+  background-position: -0px -750px;
   width: 22px;
   height: 30px;
 }
 .R6_def_icons-Pulse {
-  background-position: -0px -750px;
+  background-position: -0px -780px;
   width: 30px;
   height: 30px;
 }
 .R6_def_icons-Rappel-Device {
-  background-position: -0px -780px;
+  background-position: -0px -810px;
   width: 25px;
   height: 30px;
 }
 .R6_def_icons-Recruit {
-  background-position: -0px -810px;
+  background-position: -0px -840px;
   width: 30px;
   height: 30px;
 }
 .R6_def_icons-Reinforcement {
-  background-position: -0px -840px;
+  background-position: -0px -870px;
   width: 31px;
   height: 30px;
 }
 .R6_def_icons-Remote-Gas-Grenade {
-  background-position: -0px -870px;
+  background-position: -0px -900px;
   width: 50px;
   height: 30px;
 }
 .R6_def_icons-Rook {
-  background-position: -0px -900px;
+  background-position: -0px -930px;
   width: 30px;
   height: 30px;
 }
 .R6_def_icons-Shock-Wire {
-  background-position: -0px -930px;
+  background-position: -0px -960px;
   width: 41px;
   height: 30px;
 }
 .R6_def_icons-Signal-Disruptor {
-  background-position: -0px -960px;
+  background-position: -0px -990px;
   width: 45px;
   height: 30px;
 }
 .R6_def_icons-Smoke {
-  background-position: -0px -990px;
+  background-position: -0px -1020px;
   width: 30px;
   height: 30px;
 }
 .R6_def_icons-Stim-Pistol {
-  background-position: -0px -1020px;
+  background-position: -0px -1050px;
   width: 38px;
   height: 30px;
 }
 .R6_def_icons-Tachanka {
-  background-position: -0px -1050px;
+  background-position: -0px -1080px;
   width: 30px;
   height: 30px;
 }
 .R6_def_icons-Valkyrie {
-  background-position: -0px -1080px;
+  background-position: -0px -1110px;
   width: 30px;
   height: 30px;
 }

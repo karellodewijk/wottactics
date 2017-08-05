@@ -1,0 +1,59 @@
+<button id="bb.png" class="tank_select" data-toggle="tooltip" title="<%=l('Battleship')%>">
+	<div class="wows_icons wows_icons-bb inline"></div><span>0</span>
+</button>
+<button id="ca.png" class="tank_select" data-toggle="tooltip" title="<%=l('Cruiser')%>">
+	<div class="wows_icons wows_icons-ca inline"></div><span>0</span>
+</button>
+<button id="cv.png" class="tank_select" data-toggle="tooltip" title="<%=l('Aircraft Carrier')%>">
+	<div class="wows_icons wows_icons-cv inline"></div><span>0</span>
+</button>
+<button id="dd.png" class="tank_select" data-toggle="tooltip" title="<%=l('Destroyer')%>">
+	<div class="wows_icons wows_icons-dd inline"></div><span>0</span>
+</button>
+<button id="fighter.png" data-scale="1" class="tank_select" data-toggle="tooltip" title="<%=l('Fighter')%>">
+	<div class="wows_icons wows_icons-fighter inline"></div><span>0</span>
+</button>
+<button id="bomber.png" data-scale="1.3" class="tank_select" data-toggle="tooltip" title="<%=l('Bombers')%>">
+	<div class="wows_icons wows_icons-bomber inline"></div><span>0</span>
+</button>
+<button id="torpedo_bomber.png" data-scale="1.3" class="tank_select" data-toggle="tooltip" title="<%=l('Torpedo bomber')%>">
+	<div class="wows_icons wows_icons-torpedo_bomber inline"></div><span>0</span>
+</button>
+
+<p>
+
+<div class='icon_tabs'>
+	<ul class="nav nav-tabs" id="bottom_tabs">
+	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+	  <%if (user.identity) { %><li><a class="icon_group" id="custom_icons" data-toggle="tab" href="#custom_tab"><%=l('Custom')%></a></li><% } %>
+	</ul>
+	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<%if (user.identity) { %>
+		<div class="tab-pane" id="custom_tab">
+			<div class="row">
+				<div id="custom_icons_list"></div>
+				<button class="btn btn-default" aria-label="Left Align" id="upload_icon" data-toggle="tooltip" title="<%=l('Upload icon')%>">
+					<div class="icon icon-upload_sm"></div>
+				</button>	
+			</div>
+		</div>
+		<% } %>
+		<div class="tab-pane" id="extra_tab">
+			<div class="row">
+				<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" data-style="wot_icon_set4.css" hidden>
+					battle.png
+					danger.png
+					defend.png
+					explosion1.png
+					explosion2.png
+					focus.png
+					spot.png
+					warning.png
+					finish.png
+					map_marker.png
+				</div>
+				<div id="extra_icons_menu"></div>				
+			</div>
+		</div>
+	</div>
+</div>
