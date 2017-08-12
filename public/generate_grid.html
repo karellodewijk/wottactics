@@ -145,7 +145,11 @@
 		<label><input id="text_shadow" type="checkbox">Text shadow</label>
 	  </div>
 	</div>
-      <label class="control-label col-sm-2" >Shadow thickness:</label>
+      <label class="control-label col-sm-2" >Shadow Color:</label>
+      <div class="col-sm-10">          
+        <input type="text"  id="shadow_color" class="form-control" value="rgba(0,0,0,1)">
+      </div>
+      <label class="control-label col-sm-2" >Shadow blur:</label>
       <div class="col-sm-10">          
         <input type="number"  id="shadow_thickness" class="form-control" value="1.0">
       </div>
@@ -191,8 +195,6 @@ $(document).ready(function() {
 		var line_width = parseFloat($("#line_width").val()) * quality;
 		var line_color = $("#line_color").val();
 
-		ctx.globalCompositeOperation = "destination-over";
-		
 		ctx.lineWidth = line_width;
 		
 		var hspace = (width-line_width)/hdiv;
@@ -287,14 +289,41 @@ $(document).ready(function() {
 
 		var text_shadow = $("#text_shadow").is(':checked');
 		var shadow_thickness = parseFloat($("#shadow_thickness").val());
+		var shadow_color = $("#shadow_color").val();
 		var x_offset = parseFloat($("#shadow_x").val());
 		var y_offset = parseFloat($("#shadow_y").val());
 		
-		if (text_shadow) {
-			ctx.shadowColor = "rgba(0,0,0,1)"
-			ctx.shadowBlur = shadow_thickness;
-			ctx.shadowOffsetX = x_offset;
-			ctx.shadowOffsetY = y_offset;
+		function fill_shadow(text, x, y) {
+			if (text_shadow) {
+				ctx.shadowColor = shadow_color;
+				ctx.shadowBlur = shadow_thickness;
+				ctx.shadowOffsetX = x_offset + 2 * width;
+				ctx.shadowOffsetY = y_offset;
+				ctx.fillText(text, x - 2 * width, y);	
+				ctx.shadowColor = "rgba(0,0,0,0)"
+			}	
+		}
+		
+		function stroke_shadow(text, x, y) {
+			if (text_shadow) {
+				ctx.shadowColor = shadow_color;
+				ctx.shadowBlur = shadow_thickness;
+				ctx.shadowOffsetX = x_offset + 2 * width;
+				ctx.shadowOffsetY = y_offset;
+				ctx.strokeText(text, x - 2 * width, y);	
+				ctx.shadowColor = "rgba(0,0,0,0)"
+			}	
+		}
+		
+		function draw_label(text, x, y) {
+			fill_shadow(text, x, y);	
+			if (outline_text) {
+				stroke_shadow(text, x, y);	
+			}
+			ctx.fillText(text, x, y);	
+			if (outline_text) {
+				ctx.strokeText(text, x, y);	
+			}
 		}
 		
 		if (gen_col_labels) {
@@ -335,12 +364,9 @@ $(document).ready(function() {
 			}
 			
 			var i = 0;
-			for (var chspace = line_width/2; chspace < width; chspace += hspace) {										
-				if (outline_text) {
-					ctx.strokeText(col_labels[i], chspace+move_h, move_v);
-				}	
-				ctx.fillText(col_labels[i], chspace+move_h, move_v);				
-
+			for (var chspace = line_width/2; chspace < width; chspace += hspace) {					
+				draw_label(col_labels[i], chspace+move_h, move_v);
+				
 				i++;
 				
 				if (!col_labels[i]) break;
@@ -387,11 +413,7 @@ $(document).ready(function() {
 				
 			var i = 0;
 			for (var cvspace = line_width/2; cvspace < height; cvspace += vspace) {						
-				
-				if (outline_text) {
-					ctx.strokeText(row_labels[i], move_h, cvspace + move_v);
-				}
-				ctx.fillText(row_labels[i], move_h, cvspace + move_v);	
+				draw_label(row_labels[i], move_h, cvspace + move_v);
 				
 				i++;
 				
@@ -455,12 +477,8 @@ $(document).ready(function() {
 						text = cell_labels[k];
 					}
 				
-					console.log(text)
-					if (outline_text) {
-						ctx.strokeText(text, chspace + move_h, cvspace + move_v);
-					}
-					ctx.fillText(text, chspace + move_h, cvspace + move_v);	
-					
+					draw_label(text, chspace + move_h, cvspace + move_v);	
+
 					j++; k++;
 					
 					if (!row_labels[j]) break;
