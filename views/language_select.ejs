@@ -1,6 +1,10 @@
 <li class="dropdown menu-item">  
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-		<div class="inline icon icon-<%=locale%>"></div>&nbsp; <%=locale%><span class="caret"></span>
+		<%if (locale == 'hu') { %>
+		<img src="/icons/flags/hu.png">
+		<% } else { %>
+		<div class="inline icon icon-<%=locale%>"></div>
+		<% } %>&nbsp; <%=locale%><span class="caret"></span>
 	</a>
 	<ul id="language_select" class="dropdown-menu">
 		<li><a href="http://cs.<%=url%>"><div class="inline icon icon-cs"></div>&nbsp; Čeština</a>
@@ -8,6 +12,7 @@
 		<li><a href="http://en.<%=url%>"><div class="inline icon icon-en"></div>&nbsp; English</a>
 		<li><a href="http://es.<%=url%>"><div class="inline icon icon-es"></div>&nbsp; Español</a>
 		<li><a href="http://fr.<%=url%>"><div class="inline icon icon-fr"></div>&nbsp; Français</a>
+		<li><a href="http://hu.<%=url%>"><img src="/icons/flags/hu.png">&nbsp; Magyar</a>		
 		<li><a href="http://nl.<%=url%>"><div class="inline icon icon-nl"></div>&nbsp; Nederlands</a>
 		<li><a href="http://ru.<%=url%>"><div class="inline icon icon-ru"></div>&nbsp; русский язык</a>
 		<li><a href="http://pl.<%=url%>"><div class="inline icon icon-pl"></div>&nbsp; Polski</a>
