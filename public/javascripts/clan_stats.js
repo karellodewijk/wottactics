@@ -165,7 +165,7 @@ function populate() {
 						stats_data = {};
 						deferreds2.push($.Deferred(function() {
 							var self = this;
-							$.get("http://karellodewijk.github.io/other/expected_wn8_2.json", {}, function(data) {
+							$.get("http://karellodewijk.github.io/other/expected_wn8.json", {}, function(data) {
 								tank_expected = data;
 								self.resolve();
 							});

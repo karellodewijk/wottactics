@@ -44,7 +44,7 @@ var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var passport = require('passport');
-var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru', 'nl', 'el', 'pt'];
+var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru', 'nl', 'el', 'pt', 'hu', 'it'];
 
 var app = express();
 app.use(compress());
@@ -323,7 +323,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			hostSession(req, res, next);
 		}
 	}
-	
+  
 	app.use(function(req, res, next) {
 		res.header('Access-Control-Allow-Credentials', true);
 		res.header('Access-Control-Allow-Origin', '*');
@@ -519,7 +519,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		  }					  
 	  }
 	}
-	
+  	
 	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr', 'clans', 'foxhole', 'steelocean'];	
 	games.forEach(function(game) {
 		router.get(['/' + game + '.html', '/' + game], function(req, res, next) {
@@ -1200,6 +1200,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	robots_base += "Disallow: /auth/steam\n";
 	robots_base += "Disallow: /auth/battlenet\n";
 	
+	
 	router.get('/robots.txt', function(req, res, next) {
 		res.header('Content-Type', 'text/plain');
 		res.send(robots_base);
@@ -1276,8 +1277,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	}
 
 	//socket.io callbacks
-	io.sockets.on('connection', function(socket) {	
-	
+	io.sockets.on('connection', function(socket) {		
 		socket.on('sync_clock', function() {
 			socket.emit('sync_clock', Date.now());
 		});
@@ -1657,7 +1657,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	
 	//create server
 	var server = http.createServer(app);	
-	io.attach(server);
+	io.attach(server)
 	server.listen(secrets.port);	
 	
 });
