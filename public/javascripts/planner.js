@@ -475,31 +475,31 @@ function adjust_zoom(entity) {
 				break;				
 			case 'drawing':
 				remove(entity.uid);
-				create_drawing2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_drawing2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'curve':
 				remove(entity.uid);
-				create_curve2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_curve2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'line':
 				remove(entity.uid);
-				create_line2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_line2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'rectangle':
 				remove(entity.uid);
-				create_rectangle2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_rectangle2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'circle':
 				remove(entity.uid);
-				create_circle2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_circle2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'polygon':
 				remove(entity.uid);
-				create_polygon2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_polygon2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'area':
 				remove(entity.uid);
-				create_area2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_area2(entity, DRAW_QUALITY, scale);
 				break;
 		}
 		
@@ -3392,91 +3392,14 @@ function canvas2container2(_context, _canvas, width, height, entity) {
 function draw_entity(drawing, quality_scale, thickness_scale, extra_margin, draw_function) {
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 
-	var zoom_diff = drawing.draw_zoom_level / zoom_level;
-	quality_scale /= zoom_diff;
-	thickness_scale *= zoom_diff;
-
-	var base_resolution = 1000 * (zoom_diff / background_sprite.scale.y);
-	
-	console.log(base_resolution)
-	var quality = quality_scale;
-	var base_thickness = 1;	
-	
-	var margin = 20 + extra_margin * base_thickness;
-
-	var points = [];
-	if (drawing.path.length > 0) {
-		var left = 9999, top = 9999, right = -9999, bottom = -9999;
-		for (var i = 0; i < drawing.path.length; i++) {
-			var x = drawing.path[i][0];
-			var y = drawing.path[i][1];
-			left = Math.min(left, x);
-			top = Math.min(top, y);
-			right = Math.max(right, x);
-			bottom = Math.max(bottom, y);
-			points.push(base_resolution * x * quality, base_resolution * y * quality);
-		}
-		
-		if (drawing.type == 'curve' || drawing.type == 'area') {
-			//curve and area need a bit more margin
-			margin += Math.max((right - left), (bottom - top)) * base_resolution * quality * 0.3;
-		}
-		
-		var width = Math.ceil(base_resolution * (right - left) * quality + margin);
-		var height = Math.ceil(base_resolution * (bottom - top) * quality + margin);
-
-		var _canvas = document.createElement("canvas");
-		_canvas.width = width;
-		_canvas.height = height;
-		var _context = _canvas.getContext("2d");
-		
-		//shift everything, this should make all coords > margin.
-		var x_diff = -left * base_resolution * quality + margin/2;
-		var y_diff = -top * base_resolution * quality + margin/2;
-		for (var i = 0; i < points.length; i+=2) {
-			points[i] += x_diff;
-			points[i+1] += y_diff;
-		}
-		
-		draw_function(_context, points, quality, base_thickness);
-		
-		canvas2container2(_context, _canvas, width, height, drawing);	
-		
-		drawing.container.height /= (quality) ;
-		drawing.container.width /= (quality) ;
-		drawing.container.x = x_abs(drawing.x + left) - (margin/2) / quality;
-		drawing.container.y = y_abs(drawing.y + top) - (margin/2) / quality;
-	
-		drawing.container.orig_scale = [drawing.container.scale.x, drawing.container.scale.y];
-		background_sprite.addChild(drawing.container);
-		
-		render_scene();
-	}
-}
-
-/*
-
-function draw_entity(drawing, quality_scale, thickness_scale, extra_margin, draw_function) {
-	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
-	
-	var zoom_diff = drawing.draw_zoom_level / zoom_level;
-	var height_factor = background_sprite.scale.y * zoom_diff;
-	
 	var base_resolution = background_sprite.height / background_sprite.scale.y;
-		
-	//var quality = quality_scale * height_factor;
-	
-	var quality = 15;
-
-	var base_thickness = thickness_scale;
-	
-	if (drawing.draw_zoom_level) {
-		//quality /= zoom_diff;	
-		//base_thickness *= zoom_diff;	
-	}
-	
-	console.log(quality, base_thickness)
-	
+	  
+  var zoom_ratio = drawing.draw_zoom_level / zoom_level
+	var quality = quality_scale / zoom_ratio;
+  
+	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height) / background_sprite.scale.y;	 
+  base_thickness *= zoom_ratio
+  
 	var margin = 20 + extra_margin * base_thickness;
 
 	var points = [];
@@ -3528,7 +3451,6 @@ function draw_entity(drawing, quality_scale, thickness_scale, extra_margin, draw
 		render_scene();
 	}
 }
-*/
 
 function create_drawing2(drawing, quality_scale, thickness_scale) {
 	if (!quality_scale) quality_scale = 1;
@@ -3907,22 +3829,24 @@ function on_line_move(e) {
 		
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var a;
-		if (new_drawing.path.length == 0) {
-			a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
-		} else {
-			a = [to_x_local(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
-				 to_y_local(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
-		}
-		var b = [to_x_local(mouse_x_rel(mouse_location.x)) , to_y_local(mouse_y_rel(mouse_location.y))];
-		
-		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);
+    if (new_drawing) {
+      if (new_drawing.path.length == 0) {
+        a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
+      } else {
+        a = [to_x_local(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
+           to_y_local(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
+      }
+      var b = [to_x_local(mouse_x_rel(mouse_location.x)) , to_y_local(mouse_y_rel(mouse_location.y))];
+      
+      temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);
 
-		temp_draw_context.beginPath();
-		temp_draw_context.moveTo(a[0] * DRAW_QUALITY, a[1] * DRAW_QUALITY);		
-		temp_draw_context.lineTo(b[0] * DRAW_QUALITY, b[1] * DRAW_QUALITY);
-		temp_draw_context.stroke();
-		
-		draw_end(temp_draw_context, new_drawing, a, b, 1/zoom_level, DRAW_QUALITY);	
+      temp_draw_context.beginPath();
+      temp_draw_context.moveTo(a[0] * DRAW_QUALITY, a[1] * DRAW_QUALITY);		
+      temp_draw_context.lineTo(b[0] * DRAW_QUALITY, b[1] * DRAW_QUALITY);
+      temp_draw_context.stroke();
+      
+      draw_end(temp_draw_context, new_drawing, a, b, 1/zoom_level, DRAW_QUALITY);	
+    }
 	});
 }
 
@@ -4959,19 +4883,23 @@ function transition(slide) {
 	var to_remove = [];
 	var to_add = [];
 	var to_transition = [];
-	 
-	for (var key in room_data.slides[active_slide].entities) { 
-		if (room_data.slides[slide].entities[key]) {
-			to_transition.push(key);
-		} else {
-			to_remove.push(key);
-		}
-	}	
-	for (var key in room_data.slides[slide].entities) {
-		if (!room_data.slides[active_slide].entities.hasOwnProperty(key)) {
-			to_add.push(key);
-		}
-	}
+
+  if (room_data.slides[active_slide].entities) {
+    for (var key in room_data.slides[active_slide].entities) { 
+      if (room_data.slides[slide].entities && room_data.slides[slide].entities[key]) {
+        to_transition.push(key);
+      } else {
+        to_remove.push(key);
+      }
+    }	
+  }
+  if (room_data.slides[slide].entities) {
+    for (var key in room_data.slides[slide].entities) {
+      if (room_data.slides[active_slide].entities && !room_data.slides[active_slide].entities.hasOwnProperty(key)) {
+        to_add.push(key);
+      }
+    }
+  }
 	for (var i in to_remove) {
 		var key = to_remove[i];
 		remove(key, true);
@@ -7169,7 +7097,7 @@ $(document).ready(function() {
 	
 	socket.on('pan_zoom', function(slide, new_zoom_level, x, y, user_id) {
 		activity_animation(user_id);
-		room_data.slides[slide] = [new_zoom_level, x, y];
+		room_data.slides[slide].pan_zoom = [new_zoom_level, x, y];
 		if (slide == active_slide) {
 			pan_zoom(new_zoom_level, x, y);
 		}

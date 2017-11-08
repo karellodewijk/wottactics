@@ -14,7 +14,7 @@ function generateRandomString($length = 10) {
 $image = new Bulletproof\Image($_FILES);
 $image->setLocation("files");
 $image->setSize(1, 10000000);
-$image->setDimension(4096, 4096); 
+$image->setDimension(8192, 8192); 
 
 if($image["pictures"]){
     $image->setName(generateRandomString());
