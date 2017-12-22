@@ -134,16 +134,16 @@
 						</ul>
 						<p>If you find anything else, however small, that is broken, pls let me know. 
 					</div>
-					<%if (game != 'wows') { %>
-					<div class="col-md-4">					
-						<h2>Updates</h2>
-						<p>Support for Steel ocean and Foxhole. You can also export the current view in addition to the whole tactic as an image.
-					</div>
-					<%} else { %>
+					<%if (game == 'wot') { %>
 						<div class="col-md-4">		
-							<h2>WG Login issues from wowstactic.tk</h2>
-							<p>There are some login issues whhen trying to login from wowstactic.tk. I'm looking into it, for now you can use <a href="http://wottactic.com/wows">http://wottactic.com/wows</a> to login and access you tactics.
-						</div>
+              <h2>CW Campaign</h2>
+              <p>With the clan war campaign starting on eu I've updated the sites capacity a bit. I'll keep a close eye on it to make sure wottactic is and stays available during the campaign. Good luck to all and see you on the battlefield. 
+            </div>
+					<%} else if (game == 'wows') { %>
+						<div class="col-md-4">		
+              <h2>Updates</h2>
+              <p>Support for Steel ocean and Foxhole. You can also export the current view in addition to the whole tactic as an image.
+            </div>
 					<% } %>		
 					<%if (game == 'warface') { %>
 						<div class="col-md-4">
