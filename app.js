@@ -1,5 +1,4 @@
 var fs = require('fs');
-var profiler = require('v8-profiler');
 var _datadir = null;
 var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
 var http = require('http');
@@ -520,7 +519,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	  }
 	}
   	
-	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr', 'clans', 'foxhole', 'steelocean'];	
+	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr', 'clans', 'foxhole', 'steelocean', 'pubg'];	
 	games.forEach(function(game) {
 		router.get(['/' + game + '.html', '/' + game], function(req, res, next) {
 		  set_game(req, res, game);
@@ -1107,39 +1106,39 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			res.send('Invalid password')
 		}
 	});
+ 
+	// /**
+	 // * Starts profiling and schedules its end
+	 // */
+	// function startProfiling(time, cb) {
+		// var stamp = Date.now();
+		// var id = 'profile-' + stamp;
 
-	/**
-	 * Starts profiling and schedules its end
-	 */
-	function startProfiling(time, cb) {
-		var stamp = Date.now();
-		var id = 'profile-' + stamp;
+		// // Use stdout directly to bypass eventloop
+		// fs.writeSync(1, 'Start profiler with Id [' + id + ']\n');
 
-		// Use stdout directly to bypass eventloop
-		fs.writeSync(1, 'Start profiler with Id [' + id + ']\n');
-
-		// Start profiling
-		profiler.startProfiling(id);
+		// // Start profiling
+		// profiler.startProfiling(id);
 
 
-		// Schedule stop of profiling in x seconds
-		setTimeout(function () {
-			stopProfiling(id, cb)
-		}, time);
-	}
+		// // Schedule stop of profiling in x seconds
+		// setTimeout(function () {
+			// stopProfiling(id, cb)
+		// }, time);
+	// }
 
-	/**
-	 * Stops the profiler and writes the data to a file
-	 * @param id the id of the profiler process to stop
-	 */
-	function stopProfiling(id, cb) {
-		var profile = profiler.stopProfiling(id);
-		var profile_data = JSON.stringify(profile);
-		fs.writeFile('./' + id + '.cpuprofile', JSON.stringify(profile), function () {
-			console.log('Profiler data written to:', id + '.cpuprofile');
-			cb(profile_data);
-		});
-	}
+	// /**
+	 // * Stops the profiler and writes the data to a file
+	 // * @param id the id of the profiler process to stop
+	 // */
+	// function stopProfiling(id, cb) {
+		// var profile = profiler.stopProfiling(id);
+		// var profile_data = JSON.stringify(profile);
+		// fs.writeFile('./' + id + '.cpuprofile', JSON.stringify(profile), function () {
+			// console.log('Profiler data written to:', id + '.cpuprofile');
+			// cb(profile_data);
+		// });
+	// }
 	
 	router.get('/profile', function(req, res, next) {
 		if (req.query.pw == secrets.admin_password) {
@@ -1256,12 +1255,18 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		room.slides = {};
 		room.slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid, z_top:0}
 		var background_uid = newUid();
-		if (game == 'lol') {
-			room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
-			room.locked = false;
-		} else {
-			room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"", z_index:0};
-			room.locked = true;
+    switch(game) {
+      case 'lol':
+        room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
+        room.locked = false;
+        break;
+      case 'pubg':
+        room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"/maps/pubg/realistic_overlay.jpg", z_index:0, size_x: 8000, size_y: 8000};
+        room.locked = true;
+        break;
+      default:
+        room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"", z_index:0};
+        room.locked = true;
 		}
 		room.active_slide = slide0_uid;
 		room.trackers = {};
