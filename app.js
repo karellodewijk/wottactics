@@ -1282,6 +1282,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	}
 
 	//socket.io callbacks
+  io.origins('*:*');
 	io.sockets.on('connection', function(socket) {		
 		socket.on('sync_clock', function() {
 			socket.emit('sync_clock', Date.now());
