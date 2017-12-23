@@ -58,7 +58,14 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
-var io = require('socket.io')({ extraHeaders: { 'Access-Control-Allow-Origin': '*' }});
+var io = require('socket.io')({
+  transportOptions: {
+    polling: {
+      { extraHeaders: { 'Access-Control-Allow-Origin': '*' }});
+    }
+  }
+}
+
 
 //configure localization support
 var i18n = require('i18n');
