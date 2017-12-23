@@ -120,6 +120,7 @@ var sid = $("#sid").attr("data-sid")
 var socket;
 try {
 	socket = io.connect(server, {
+    transports: ['websocket'],
 		reconnectionDelay: 100,
 		reconnectionDelayMax: 500,
 		'reconnection limit' : 1000,
@@ -127,7 +128,7 @@ try {
 		query: "connect_sid="+sid+"&host="+parse_domain(location.hostname)
 	});	
 } catch(e) {
-	console.log(e);
+	alert("Could not establish a websocket connection to: " + server + "Please contact support with this information\n<pre>" + e + "</pre>");
 }
 
 //generate unique id
