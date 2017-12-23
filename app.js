@@ -330,6 +330,10 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
 		next();
 	});
+  
+  io.use(function (socket, next) {
+    socket.request.header('Access-Control-Allow-Origin', '*');
+  });
 	
 	app.use(virtualHostSession);
 	
