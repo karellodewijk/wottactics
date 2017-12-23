@@ -59,7 +59,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
 var io = require('socket.io')({
-  transports: ['polling', 'websocket'],
+  transports: ['websocket'],
   transportOptions: {
     polling: { extraHeaders: { 'Access-Control-Allow-Origin': '*' }}
   }
