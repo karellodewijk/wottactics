@@ -1676,7 +1676,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
   }
   
   console.log("starting server on port:", port);
-	server.listen(secrets.port);	
+	server.listen(port);	
 	
 });
 
