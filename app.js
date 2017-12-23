@@ -58,7 +58,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
-var io = require('socket.io')();
+var io = require('socket.io')({origins: '*:*'});
 
 //configure localization support
 var i18n = require('i18n');
@@ -1282,7 +1282,6 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	}
 
 	//socket.io callbacks
-  io.origins('*:*');
 	io.sockets.on('connection', function(socket) {		
 		socket.on('sync_clock', function() {
 			socket.emit('sync_clock', Date.now());
