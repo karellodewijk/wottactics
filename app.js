@@ -60,11 +60,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // creating new socket.io app
 var io = require('socket.io')({
   transportOptions: {
-    polling: {
-      { extraHeaders: { 'Access-Control-Allow-Origin': '*' }});
-    }
+    polling: { extraHeaders: { 'Access-Control-Allow-Origin': '*' }}
   }
-}
+})
 
 
 //configure localization support
