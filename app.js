@@ -58,7 +58,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
-var io = require('socket.io')({origins: '*:*'});
+var io = require('socket.io')({ extraHeaders: { 'Access-Control-Allow-Origin': '*' }});
 
 //configure localization support
 var i18n = require('i18n');
@@ -330,10 +330,6 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
 		next();
 	});
-  
-  io.use(function (socket, next) {
-    socket.request.header('Access-Control-Allow-Origin', '*');
-  });
 	
 	app.use(virtualHostSession);
 	
