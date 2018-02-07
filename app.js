@@ -58,13 +58,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // creating new socket.io app
-var io = require('socket.io')({
-  transports: ['websocket'],
-  transportOptions: {
-    polling: { extraHeaders: { 'Access-Control-Allow-Origin': '*' }}
-  }
-})
-
+var io = require('socket.io')();
 
 //configure localization support
 var i18n = require('i18n');
@@ -325,7 +319,9 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:true}, rolling: true, store: redis_store});
 				mwCache[host].store = redis_store;
 			}
-			hostSession(req, res, next);
+      if (res) {
+        hostSession(req, res, next);
+      }
 		}
 	}
   
@@ -490,13 +486,13 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	
 	function planner_redirect(req, res, game, template) {
 	  if (req.query.restore) {
-		var uid = newUid();
-		restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
-			save_room(uid, function() {
-			  delete room_data[uid];
-			  res.redirect(game+'2?room='+uid);
-			});
-		});
+      var uid = newUid();
+      restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
+        save_room(uid, function() {
+          delete room_data[uid];
+          res.redirect(game+'2?room='+uid);
+        });
+      });
 	  } else if (!req.query.room) {
 		  res.redirect(game+'2?room='+newUid());
 	  }	else {

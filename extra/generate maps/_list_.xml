@@ -285,4 +285,16 @@
   <name>112_eiffel_tower_ctf</name>
   <ctf>paris.png</ctf>
  </map>
+ <map>
+  <id>81</id>
+  <en>Nebelburg</en>
+  <name>212_epic_random_valley</name>
+  <ctf30x30>nebelburg.png</ctf30x30>
+ </map>
+ <map>
+  <id>82</id>
+  <en>Alaska</en>
+  <name>217_er_alaska</name>
+  <ctf30x30>alaska.png</ctf30x30>
+ </map>
 </_list_.xml>
