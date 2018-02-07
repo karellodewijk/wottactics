@@ -120,7 +120,6 @@ var sid = $("#sid").attr("data-sid")
 var socket;
 try {
 	socket = io.connect(server, {
-    transports: ['websocket'],
 		reconnectionDelay: 100,
 		reconnectionDelayMax: 500,
 		'reconnection limit' : 1000,
