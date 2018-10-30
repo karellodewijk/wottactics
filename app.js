@@ -1,5 +1,4 @@
 var fs = require('fs');
-var profiler = require('v8-profiler');
 var _datadir = null;
 var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
 var http = require('http');
@@ -44,7 +43,7 @@ var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var passport = require('passport');
-var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru', 'nl', 'el', 'pt'];
+var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru', 'nl', 'el', 'pt', 'hu', 'it'];
 
 var app = express();
 app.use(compress());
@@ -320,10 +319,12 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:true}, rolling: true, store: redis_store});
 				mwCache[host].store = redis_store;
 			}
-			hostSession(req, res, next);
+      if (res) {
+        hostSession(req, res, next);
+      }
 		}
 	}
-	
+  
 	app.use(function(req, res, next) {
 		res.header('Access-Control-Allow-Credentials', true);
 		res.header('Access-Control-Allow-Origin', '*');
@@ -485,13 +486,13 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	
 	function planner_redirect(req, res, game, template) {
 	  if (req.query.restore) {
-		var uid = newUid();
-		restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
-			save_room(uid, function() {
-			  delete room_data[uid];
-			  res.redirect(game+'2?room='+uid);
-			});
-		});
+      var uid = newUid();
+      restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
+        save_room(uid, function() {
+          delete room_data[uid];
+          res.redirect(game+'2?room='+uid);
+        });
+      });
 	  } else if (!req.query.room) {
 		  res.redirect(game+'2?room='+newUid());
 	  }	else {
@@ -519,8 +520,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		  }					  
 	  }
 	}
-	
-	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr', 'clans', 'foxhole', 'steelocean'];	
+  	
+	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr', 'clans', 'foxhole', 'steelocean', 'pubg'];	
 	games.forEach(function(game) {
 		router.get(['/' + game + '.html', '/' + game], function(req, res, next) {
 		  set_game(req, res, game);
@@ -1107,39 +1108,39 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			res.send('Invalid password')
 		}
 	});
+ 
+	// /**
+	 // * Starts profiling and schedules its end
+	 // */
+	// function startProfiling(time, cb) {
+		// var stamp = Date.now();
+		// var id = 'profile-' + stamp;
 
-	/**
-	 * Starts profiling and schedules its end
-	 */
-	function startProfiling(time, cb) {
-		var stamp = Date.now();
-		var id = 'profile-' + stamp;
+		// // Use stdout directly to bypass eventloop
+		// fs.writeSync(1, 'Start profiler with Id [' + id + ']\n');
 
-		// Use stdout directly to bypass eventloop
-		fs.writeSync(1, 'Start profiler with Id [' + id + ']\n');
-
-		// Start profiling
-		profiler.startProfiling(id);
+		// // Start profiling
+		// profiler.startProfiling(id);
 
 
-		// Schedule stop of profiling in x seconds
-		setTimeout(function () {
-			stopProfiling(id, cb)
-		}, time);
-	}
+		// // Schedule stop of profiling in x seconds
+		// setTimeout(function () {
+			// stopProfiling(id, cb)
+		// }, time);
+	// }
 
-	/**
-	 * Stops the profiler and writes the data to a file
-	 * @param id the id of the profiler process to stop
-	 */
-	function stopProfiling(id, cb) {
-		var profile = profiler.stopProfiling(id);
-		var profile_data = JSON.stringify(profile);
-		fs.writeFile('./' + id + '.cpuprofile', JSON.stringify(profile), function () {
-			console.log('Profiler data written to:', id + '.cpuprofile');
-			cb(profile_data);
-		});
-	}
+	// /**
+	 // * Stops the profiler and writes the data to a file
+	 // * @param id the id of the profiler process to stop
+	 // */
+	// function stopProfiling(id, cb) {
+		// var profile = profiler.stopProfiling(id);
+		// var profile_data = JSON.stringify(profile);
+		// fs.writeFile('./' + id + '.cpuprofile', JSON.stringify(profile), function () {
+			// console.log('Profiler data written to:', id + '.cpuprofile');
+			// cb(profile_data);
+		// });
+	// }
 	
 	router.get('/profile', function(req, res, next) {
 		if (req.query.pw == secrets.admin_password) {
@@ -1200,6 +1201,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	robots_base += "Disallow: /auth/steam\n";
 	robots_base += "Disallow: /auth/battlenet\n";
 	
+	
 	router.get('/robots.txt', function(req, res, next) {
 		res.header('Content-Type', 'text/plain');
 		res.send(robots_base);
@@ -1255,12 +1257,18 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		room.slides = {};
 		room.slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid, z_top:0}
 		var background_uid = newUid();
-		if (game == 'lol') {
-			room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
-			room.locked = false;
-		} else {
-			room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"", z_index:0};
-			room.locked = true;
+    switch(game) {
+      case 'lol':
+        room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"/maps/lol/rift.jpg", z_index:0, size_x: 15000, size_y: 15000};
+        room.locked = false;
+        break;
+      case 'pubg':
+        room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"/maps/pubg/realistic_overlay.jpg", z_index:0, size_x: 8000, size_y: 8000};
+        room.locked = true;
+        break;
+      default:
+        room.slides[slide0_uid].entities[background_uid] = {uid:background_uid, type:'background', path:"", z_index:0};
+        room.locked = true;
 		}
 		room.active_slide = slide0_uid;
 		room.trackers = {};
@@ -1276,8 +1284,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	}
 
 	//socket.io callbacks
-	io.sockets.on('connection', function(socket) {	
-	
+	io.sockets.on('connection', function(socket) {		
 		socket.on('sync_clock', function() {
 			socket.emit('sync_clock', Date.now());
 		});
@@ -1657,8 +1664,15 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	
 	//create server
 	var server = http.createServer(app);	
-	io.attach(server);
-	server.listen(secrets.port);	
+	io.attach(server)
+  
+  var port = secrets.port;
+  if (process.env.PORT) {
+    port = process.env.PORT
+  }
+  
+  console.log("starting server on port:", port);
+	server.listen(port);	
 	
 });
 

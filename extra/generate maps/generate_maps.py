@@ -21,7 +21,7 @@ def parse_coords(node):
 def draw_spawn(node, output_file, img):
 	spawn1 = parse_coords(node.text);
 	spawn1 = to_rel(spawn1, bottom_left, top_right);
-	spawn_size = 80 * (dimensions[0]/1000);
+	spawn_size = (50 * dimensions[0]/1000);
 	spawn1_loc = [spawn1[0]*dimensions[0] - spawn_size/2, spawn1[1]*dimensions[1] - spawn_size/2];
 	#draw spawn1
 	os.popen("convert "+ img + " -resize " + str(spawn_size) + "x" + str(spawn_size) + " temp_spawn.png");
@@ -76,6 +76,42 @@ for map in maps:
 			
 		print "<option data-mapid='" + map.find('name').text +"_ctf' data-size='" + str(int(width)) + "x" + str(int(height)) + "' value='<%=static_host%>/maps/" + map.ctf.text + "'><%=l('" + map.en.text + "')%></option>"
 
+	if (doc.gameplaytypes.ctf30x30 and doc.gameplaytypes.ctf30x30.teambasepositions):
+		output_file = "output/"+map.ctf30x30.text;
+
+		#parse ctf
+		base1 = parse_coords(doc.gameplaytypes.ctf30x30.teambasepositions.team1.contents[1].text);
+		base2 = parse_coords(doc.gameplaytypes.ctf30x30.teambasepositions.team2.contents[1].text);
+		base1 = to_rel(base1, bottom_left, top_right);
+		base2 = to_rel(base2, bottom_left, top_right);
+
+		cap_size1 = cap_size;
+		if (doc.gameplaytypes.ctf30x30.teambasepositions.team1.radius1):
+			cap_size1 = 2 * float(doc.gameplaytypes.ctf30x30.teambasepositions.team1.radius1.text) * (dimensions[0]/height)
+		cap_size2 = cap_size;
+		if (doc.gameplaytypes.ctf30x30.teambasepositions.team2.radius1):
+			cap_size2 = 2 * float(doc.gameplaytypes.ctf30x30.teambasepositions.team2.radius1.text) * (dimensions[0]/height)
+
+		base1_loc = [base1[0]*dimensions[0] - cap_size1/2, base1[1]*dimensions[1] - cap_size1/2];
+		base2_loc = [base2[0]*dimensions[0] - cap_size2/2, base2[1]*dimensions[1] - cap_size2/2];		
+			
+		#draw cap1
+		os.popen("convert green_cap.png -resize " + str(cap_size1) + "x" + str(cap_size1) + " temp.png");
+		os.popen("composite -geometry +" + str(base1_loc[0]) + "+" + str(base1_loc[1]) + " temp.png " + input_file + " " + output_file);
+		#draw cap2
+		os.popen("convert red_cap.png -resize " + str(cap_size2) + "x" + str(cap_size2) + " temp.png");
+		os.popen("composite -geometry +" + str(base2_loc[0]) + "+" + str(base2_loc[1]) + " temp.png " + output_file + " " + output_file);
+		
+		if (doc.gameplaytypes.ctf30x30.teamspawnpoints):
+			for position in doc.gameplaytypes.ctf30x30.teamspawnpoints.team1.findAll('position'):
+				draw_spawn(position, output_file, "green_start.png")
+			for position in doc.gameplaytypes.ctf30x30.teamspawnpoints.team2.findAll('position'):
+				draw_spawn(position, output_file, "red_start.png")
+			
+			
+		print "<option data-mapid='" + map.find('name').text +"_ctf' data-size='" + str(int(width)) + "x" + str(int(height)) + "' value='<%=static_host%>/maps/" + map.ctf30x30.text + "'><%=l('" + map.en.text + "')%></option>"
+
+		
 	if (doc.gameplaytypes.domination):
 		output_file = "output/"+map.domination.text;
 		base = parse_coords(doc.gameplaytypes.domination.controlpoint.text);

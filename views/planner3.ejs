@@ -89,11 +89,14 @@
 	<% } else if (game == 'steelocean') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
 		<link rel="stylesheet" href="<%=static_host%>/wows_icons.css">
+	<% } else if (game == 'pubg') { %>
+		<link rel="stylesheet" href="<%=static_host%>/wot_icon_set4.css">
+		<link rel="stylesheet" href="<%=static_host%>/pubg_icons.css">
 	<% } %>
 	
-	<script defer src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-	<script defer src="http://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.22.0/mediaelement-and-player.min.js"></script>
-	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+	<script defer src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.22.0/mediaelement-and-player.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js" integrity="sha384-5LvpiQ35VQjn728am77sfHiA0MgkCEoviXiUf9Y+aUqnN0OP3UKEJX5AEeHCthIe" crossorigin="anonymous"></script>
 
 	<script defer src="<%=static_host%>/javascripts/FastPriorityQueue.js"></script>		
 	
@@ -105,14 +108,14 @@
 	<script defer src="<%=static_host%>/javascripts/lib/bootstrap-select.min.js"></script>
 	<%}%>
 	
-	<%if (false) {%>
+  <%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>		
 	<%}%>
-	
+
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
-	
-	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.22.0/mediaelementplayer.css" />
+		
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/2.22.0/mediaelementplayer.css" />
 
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
@@ -258,7 +261,7 @@
 					<button id="link" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 						<div class="icon icon-link"></div>
 					</button>
-					<% if (game == 'wot' || game == 'wows' || game == 'aw') { %>
+					<% if (game == 'wot' || game == 'wows' || game == 'aw' || game == 'squad' || game == 'MWO' || game == 'pr' || game == 'pubg') { %>
 						<button id="grid" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Show grid')%>">
 							<div class="icon icon-grid_icon"></div>
 						</button>
