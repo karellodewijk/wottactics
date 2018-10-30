@@ -1,0 +1,155 @@
+<button id="pubg/player.png" data-scale=1.5 class="tank_select" data-toggle="tooltip" title="<%=l('Player')%>">
+	<div class="pubg_icons pubg_icons-player inline"></div><span>0</span>
+</button>
+<button id="pubg/car.png" data-scale=1.5 class="tank_select" data-toggle="tooltip" title="<%=l('Vehicle')%>">
+	<div class="pubg_icons pubg_icons-car inline"></div><span>0</span>
+</button>
+<button id="pubg/boat.png" data-scale=1.5 class="tank_select" data-toggle="tooltip" title="<%=l('Boat')%>">
+	<div class="pubg_icons pubg_icons-boat inline"></div><span>0</span>
+</button>
+<button id="pubg/bandage.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Bandage')%>">
+	<div class="pubg_icons pubg_icons-bandage inline"></div><span>0</span>
+</button>
+<button id="pubg/energy_drink.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Energy drink')%>">
+	<div class="pubg_icons pubg_icons-energy_drink inline"></div><span>0</span>
+</button>
+
+<br />
+
+<button id="pubg/pain_killer.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Pain killer')%>">
+	<div class="pubg_icons pubg_icons-pain_killer inline"></div><span>0</span>
+</button>
+<button id="pubg/backpack.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Backpack')%>">
+	<div class="pubg_icons pubg_icons-backpack inline"></div><span>0</span>
+</button>
+<button id="pubg/police_vest.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Police vest')%>">
+  <div class="pubg_icons pubg_icons-police_vest inline"></div><span>0</span>
+</button>
+<button id="pubg/bycicle_helmet.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Cycicle helmet')%>">
+  <div class="pubg_icons pubg_icons-bycicle_helmet inline"></div><span>0</span>
+</button>
+        
+<p>
+
+<div class='icon_tabs'>
+	<ul class="nav nav-tabs" id="bottom_tabs">
+	  <li><a class="icon_group" id="extra_icons" data-toggle="tab" href="#extra_tab"><%=l('Extra')%></a></li>
+    <li><a class="icon_group" id="guns_icons" data-toggle="tab" href="#guns_tab"><%=l('Weapons')%></a></li>
+    <li><a class="icon_group" id="ammo_icons" data-toggle="tab" href="#ammo_tab"><%=l('Ammo')%></a></li>
+	  <%if (user.identity) { %><li><a class="icon_group" id="custom_icons" data-toggle="tab" href="#custom_tab"><%=l('Custom')%></a></li><% } %>
+	</ul>
+	<div class="tab-content" style="max-height:200px; overflow-y: auto; overflow-x: hidden;">
+		<%if (user.identity) { %>
+		<div class="tab-pane" id="custom_tab">
+			<div class="row">
+				<div id="custom_icons_list"></div>
+				<button class="btn btn-default" aria-label="Left Align" id="upload_icon" data-toggle="tooltip" title="<%=l('Upload icon')%>">
+					<div class="icon icon-upload_sm"></div>
+				</button>	
+			</div>
+		</div>
+		<% } %>
+		<div class="tab-pane" id="extra_tab">
+			<div class="row">
+				<div id="extra_icons_list" data-path="wot_icon_set4" data-scale="1.5" data-height="30" data-style="wot_icon_set4.css" hidden>
+					battle.png
+					danger.png
+					defend.png
+					explosion1.png
+					explosion2.png
+					focus.png
+					spot.png
+					warning.png
+					finish.png
+					map_marker.png
+				</div>
+				<div id="extra_icons_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="ammo_tab">
+			<div class="row">
+        <button id="pubg/ammo_9mm.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('9mm ammo')%>">
+          <div class="pubg_icons pubg_icons-ammo_9mm inline"></div><span>0</span>
+        </button>
+        <button id="pubg/ammo_12Guage.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('12-Gauge shotgun ammo')%>">
+          <div class="pubg_icons pubg_icons-ammo_12Guage inline"></div><span>0</span>
+        </button>
+        <button id="pubg/ammo_45ACP.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('.45 ACP ammo')%>">
+          <div class="pubg_icons pubg_icons-ammo_45ACP inline"></div><span>0</span>
+        </button>
+        <button id="pubg/ammo_556mm.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('5.56mm ammo')%>">
+          <div class="pubg_icons pubg_icons-ammo_556mm inline"></div><span>0</span>
+        </button>
+        <button id="pubg/ammo_762mm.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('7.62mm ammo')%>">
+          <div class="pubg_icons pubg_icons-ammo_762mm inline"></div><span>0</span>
+        </button>
+        <button id="pubg/ammo_300magnum.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('300 Magnum ammo')%>">
+          <div class="pubg_icons pubg_icons-ammo_300magnum inline"></div><span>0</span>
+        </button>
+         <button id="pubg/frag_grenade.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Frag grenade')%>">
+          <div class="pubg_icons pubg_icons-frag_grenade inline"></div><span>0</span>
+        </button>
+        <button id="pubg/smoke_grenade.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Smoke grenade')%>">
+          <div class="pubg_icons pubg_icons-smoke_grenade inline"></div><span>0</span>
+        </button>
+        <button id="pubg/flashbang.png" data-scale=1.5 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Flashbang')%>">
+          <div class="pubg_icons pubg_icons-flashbang inline"></div><span>0</span>
+        </button>
+				<div id="ammo_icons_menu"></div>				
+			</div>
+		</div> 
+		<div class="tab-pane" id="guns_tab">
+			<div class="row">
+        <button id="pubg/pistol.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Pistol')%>">
+          <div class="pubg_icons pubg_icons-pistol inline"></div><span>0</span>
+        </button>
+        <button id="pubg/shotgun.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Shotgun')%>">
+          <div class="pubg_icons pubg_icons-shotgun inline"></div><span>0</span>
+        </button>
+        <button id="pubg/carbine.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Carbine')%>">
+          <div class="pubg_icons pubg_icons-carbine inline"></div><span>0</span>
+        </button>
+        <button id="pubg/marksman_rifle.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Marksman rifle')%>">
+          <div class="pubg_icons pubg_icons-marksman_rifle inline"></div><span>0</span>
+        </button>
+        <button id="pubg/sniper.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Sniper rifle')%>">
+          <div class="pubg_icons pubg_icons-sniper inline"></div><span>0</span>
+        </button>
+        <button id="pubg/lmg.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Light machinegun')%>">
+          <div class="pubg_icons pubg_icons-lmg inline"></div><span>0</span>
+        </button>
+        <button id="pubg/smg.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Sub machinegun')%>">
+          <div class="pubg_icons pubg_icons-smg inline"></div><span>0</span>
+        </button>
+        <button id="pubg/assault_rifle.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Assault rifle')%>">
+          <div class="pubg_icons pubg_icons-assault_rifle inline"></div><span>0</span>
+        </button>
+        <button id="pubg/crowbar.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Crowbar')%>">
+          <div class="pubg_icons pubg_icons-crowbar inline"></div><span>0</span>
+        </button>
+        <button id="pubg/pan.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Pan')%>">
+          <div class="pubg_icons pubg_icons-pan inline"></div><span>0</span>
+        </button>
+        <button id="pubg/machete.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Machete')%>">
+          <div class="pubg_icons pubg_icons-machete inline"></div><span>0</span>
+        </button>
+        <button id="pubg/sickle.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Sickle')%>">
+          <div class="pubg_icons pubg_icons-sickle inline"></div><span>0</span>
+        </button>
+        <button id="pubg/crossbow.png" data-scale=2 class="tank_select" data-no_color="true" data-toggle="tooltip" title="<%=l('Crossbow')%>">
+          <div class="pubg_icons pubg_icons-crossbow inline"></div><span>0</span>
+        </button>
+				<div id=guns_icons_menu"></div>				
+			</div>
+		</div>
+		<div class="tab-pane" id="grenades_tab">
+			<div class="row">
+
+				<div id=grenades_icons_menu"></div>				
+			</div>
+		</div>
+	</div>
+  
+</div>
+
+<br/>

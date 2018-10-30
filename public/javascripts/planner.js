@@ -127,7 +127,7 @@ try {
 		query: "connect_sid="+sid+"&host="+parse_domain(location.hostname)
 	});	
 } catch(e) {
-	console.log(e);
+	alert("Could not establish a websocket connection to: " + server + "Please contact support with this information\n<pre>" + e + "</pre>");
 }
 
 //generate unique id
@@ -475,31 +475,31 @@ function adjust_zoom(entity) {
 				break;				
 			case 'drawing':
 				remove(entity.uid);
-				create_drawing2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_drawing2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'curve':
 				remove(entity.uid);
-				create_curve2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_curve2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'line':
 				remove(entity.uid);
-				create_line2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_line2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'rectangle':
 				remove(entity.uid);
-				create_rectangle2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_rectangle2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'circle':
 				remove(entity.uid);
-				create_circle2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_circle2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'polygon':
 				remove(entity.uid);
-				create_polygon2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_polygon2(entity, DRAW_QUALITY, scale);
 				break;
 			case 'area':
 				remove(entity.uid);
-				create_area2(entity, DRAW_QUALITY * 1/scale, scale);
+				create_area2(entity, DRAW_QUALITY, scale);
 				break;
 		}
 		
@@ -1892,7 +1892,6 @@ function t2o(transparancy) {
 //function fires when mouse is left clicked on the map and it isn't a drag
 var last_point;
 function on_left_click(e) {
-
 	if (active_context == "drag_context") {
 		cancel_drag(true);
 	}
@@ -2309,9 +2308,7 @@ function on_curve_end(e) {
 		create_curve2(new_drawing, DRAW_QUALITY);
 		emit_entity(new_drawing);
 		undo_list.push(clone_action(["add", [new_drawing]]));
-		
-		background_sprite.removeChild(graphics);
-		
+				
 		render_scene();	
 		stop_drawing();
 		setup_mouse_events(undefined, undefined);
@@ -3396,13 +3393,13 @@ function draw_entity(drawing, quality_scale, thickness_scale, extra_margin, draw
 	var color = '#' + ('00000' + (drawing.color | 0).toString(16)).substr(-6); 
 
 	var base_resolution = background_sprite.height / background_sprite.scale.y;
-	
-	var quality = quality_scale;
-	if (drawing.draw_zoom_level) {
-		quality /= drawing.draw_zoom_level;
-	}
-	
-	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height) / background_sprite.scale.y;	
+	  
+  var zoom_ratio = drawing.draw_zoom_level / zoom_level
+	var quality = quality_scale / zoom_ratio;
+  
+	var base_thickness = thickness_scale * quality * (background_sprite.height / renderer.view.height) / background_sprite.scale.y;	 
+  base_thickness *= zoom_ratio
+  
 	var margin = 20 + extra_margin * base_thickness;
 
 	var points = [];
@@ -3670,6 +3667,9 @@ function start_drawing() {
 }
 
 function stop_drawing() {
+	background_sprite.removeChild(graphics);
+	new_drawing = null;
+	render_scene();
 	$(temp_draw_canvas).hide();
 	$(draw_canvas).hide();	
 }
@@ -3829,22 +3829,24 @@ function on_line_move(e) {
 		
 		var mouse_location = e.data.getLocalPosition(background_sprite);
 		var a;
-		if (new_drawing.path.length == 0) {
-			a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
-		} else {
-			a = [to_x_local(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
-				 to_y_local(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
-		}
-		var b = [to_x_local(mouse_x_rel(mouse_location.x)) , to_y_local(mouse_y_rel(mouse_location.y))];
-		
-		temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);
+    if (new_drawing) {
+      if (new_drawing.path.length == 0) {
+        a = [to_x_local(new_drawing.x), to_y_local(new_drawing.y)];
+      } else {
+        a = [to_x_local(new_drawing.path[new_drawing.path.length - 1][0] + new_drawing.x),
+           to_y_local(new_drawing.path[new_drawing.path.length - 1][1] + new_drawing.y)];
+      }
+      var b = [to_x_local(mouse_x_rel(mouse_location.x)) , to_y_local(mouse_y_rel(mouse_location.y))];
+      
+      temp_draw_context.clearRect(0, 0, temp_draw_canvas.width * DRAW_QUALITY, temp_draw_canvas.height * DRAW_QUALITY);
 
-		temp_draw_context.beginPath();
-		temp_draw_context.moveTo(a[0] * DRAW_QUALITY, a[1] * DRAW_QUALITY);		
-		temp_draw_context.lineTo(b[0] * DRAW_QUALITY, b[1] * DRAW_QUALITY);
-		temp_draw_context.stroke();
-		
-		draw_end(temp_draw_context, new_drawing, a, b, 1/zoom_level, DRAW_QUALITY);	
+      temp_draw_context.beginPath();
+      temp_draw_context.moveTo(a[0] * DRAW_QUALITY, a[1] * DRAW_QUALITY);		
+      temp_draw_context.lineTo(b[0] * DRAW_QUALITY, b[1] * DRAW_QUALITY);
+      temp_draw_context.stroke();
+      
+      draw_end(temp_draw_context, new_drawing, a, b, 1/zoom_level, DRAW_QUALITY);	
+    }
 	});
 }
 
@@ -4881,19 +4883,23 @@ function transition(slide) {
 	var to_remove = [];
 	var to_add = [];
 	var to_transition = [];
-	 
-	for (var key in room_data.slides[active_slide].entities) { 
-		if (room_data.slides[slide].entities[key]) {
-			to_transition.push(key);
-		} else {
-			to_remove.push(key);
-		}
-	}	
-	for (var key in room_data.slides[slide].entities) {
-		if (!room_data.slides[active_slide].entities.hasOwnProperty(key)) {
-			to_add.push(key);
-		}
-	}
+
+  if (room_data.slides[active_slide].entities) {
+    for (var key in room_data.slides[active_slide].entities) { 
+      if (room_data.slides[slide].entities && room_data.slides[slide].entities[key]) {
+        to_transition.push(key);
+      } else {
+        to_remove.push(key);
+      }
+    }	
+  }
+  if (room_data.slides[slide].entities) {
+    for (var key in room_data.slides[slide].entities) {
+      if (room_data.slides[active_slide].entities && !room_data.slides[active_slide].entities.hasOwnProperty(key)) {
+        to_add.push(key);
+      }
+    }
+  }
 	for (var i in to_remove) {
 		var key = to_remove[i];
 		remove(key, true);
@@ -5693,7 +5699,12 @@ $(document).ready(function() {
 	size_x = window.innerWidth;
 	size_y = window.innerHeight;
 
-	renderer = PIXI.autoDetectRenderer(size_x, size_y, {transparent:true});
+  if (navigator.userAgent.indexOf("Overwolf") != -1) nowebgl = true;
+  if (nowebgl) {
+    renderer = new PIXI.CanvasRenderer(size_x, size_y, {transparent:true});
+  } else {
+    renderer = PIXI.autoDetectRenderer(size_x, size_y, {transparent:true});
+  }
 	renderer.autoResize = true;
 	useWebGL = renderer instanceof PIXI.WebGLRenderer;
 
@@ -5747,6 +5758,9 @@ $(document).ready(function() {
 	
 	$(renderer.view).mousedown(function(e) {
 		if (e.which === 3 || e.which === 2) {
+			if (objectContainer.mouseup) {
+				stop_drawing()
+			}
 			last_pan_loc = [mouse_loc().x, mouse_loc().y];
 			setup_mouse_events(on_pan);
 			e.preventDefault();
@@ -5754,7 +5768,7 @@ $(document).ready(function() {
 	});
 
 	renderer.view.addEventListener('contextmenu', function(e) {
-		setup_mouse_events(undefined);
+		//stop_drawing();
 		$('#zoom_level').text((1/zoom_level).toFixed(2));
 		handle_pan_zoom()
 		e.preventDefault();
@@ -6122,7 +6136,7 @@ $(document).ready(function() {
 			if (to_remove.length > 0) {
 				$.ajax({
 					url:upload_path + "/remove_icons.php?user_id="+my_user.identity,
-					data:{to_remove},
+					data:{to_remove: to_remove},
 					type:'POST',
 					success : function(response) {
 						try {
@@ -6853,6 +6867,7 @@ $(document).ready(function() {
 	}
 	
 	socket.on('room_data', function(new_room_data, my_id, new_tactic_name, locale) {
+    console.log("receiving room data")
 		cleanup();
 		room_data = new_room_data;
 		video_paused = new_room_data.video_paused;
@@ -7088,7 +7103,7 @@ $(document).ready(function() {
 	
 	socket.on('pan_zoom', function(slide, new_zoom_level, x, y, user_id) {
 		activity_animation(user_id);
-		room_data.slides[slide] = [new_zoom_level, x, y];
+		room_data.slides[slide].pan_zoom = [new_zoom_level, x, y];
 		if (slide == active_slide) {
 			pan_zoom(new_zoom_level, x, y);
 		}

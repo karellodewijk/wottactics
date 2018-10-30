@@ -168,7 +168,6 @@
 	}
 	
 	function get_server(id) {
-		if(id > 3000000000){return "kr";}
 		if(id > 2000000000){return "asia";}
 		if(id > 1000000000){return "com";}
 		if(id > 500000000){return "eu";}
@@ -201,8 +200,8 @@
 			//wn8 expected values, src: http://www.wnefficiency.net/exp/expected_tank_values_29.json
 			$.Deferred(function() {
 				var self = this;
-				//$.get("https://karellodewijk.github.io/other/expected_tank_values_29.json", {}, function(data) {
-				$.get("expected_v32.json", {}, function(data) {
+				//$.get("https://karellodewijk.github.io/other/wn8-expected-2017-10-23.json", {}, function(data) {
+				$.get("http://forum.wottactic.com/other/wn8-expected-2017-10-23.json", {}, function(data) {
 					tank_expected_wn8 = {};
 					for (var i in data.data) {
 						tank_expected_wn8[data.data[i].IDNum] = data.data[i];
@@ -243,9 +242,10 @@
 			var wn8 = calculate_account_wn8(tank_stats, tank_expected_wn8);
 			var wn9 = CalcWN9Account(tank_stats, tank_expected_wn9);
 			
-			$("#account_wn8").append(wn8);
-			$("#account_wn9").append(wn9);
+			$("#account_wn8").empty().append(wn8);
+			$("#account_wn9").empty().append(wn9);
 			
+      $('#tank_list').empty();
 			for (var i in tank_stats) {
 				var tank_id = tank_stats[i].tank_id;				
 				var tank = tank_stats[i];
