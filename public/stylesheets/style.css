@@ -1253,73 +1253,78 @@ div.inline { display: inline-block; vertical-align: middle; }
   width: 22px;
   height: 22px;
 }
-.icon-cs {
+.icon-cn {
   background-position: -0px -2704px;
   width: 22px;
   height: 22px;
 }
-.icon-de {
+.icon-cs {
   background-position: -0px -2726px;
   width: 22px;
   height: 22px;
 }
-.icon-el {
+.icon-de {
   background-position: -0px -2748px;
   width: 22px;
   height: 22px;
 }
-.icon-en {
+.icon-el {
   background-position: -0px -2770px;
   width: 22px;
   height: 22px;
 }
-.icon-es {
+.icon-en {
   background-position: -0px -2792px;
   width: 22px;
   height: 22px;
 }
-.icon-fi {
+.icon-es {
   background-position: -0px -2814px;
   width: 22px;
   height: 22px;
 }
-.icon-fr {
+.icon-fi {
   background-position: -0px -2836px;
   width: 22px;
   height: 22px;
 }
-.icon-hu {
+.icon-fr {
   background-position: -0px -2858px;
   width: 22px;
   height: 22px;
 }
-.icon-it {
+.icon-hu {
   background-position: -0px -2880px;
   width: 22px;
   height: 22px;
 }
-.icon-nl {
+.icon-it {
   background-position: -0px -2902px;
   width: 22px;
   height: 22px;
 }
-.icon-pl {
+.icon-nl {
   background-position: -0px -2924px;
   width: 22px;
   height: 22px;
 }
-.icon-pt {
+.icon-pl {
   background-position: -0px -2946px;
   width: 22px;
   height: 22px;
 }
-.icon-ru {
+.icon-pt {
   background-position: -0px -2968px;
   width: 22px;
   height: 22px;
 }
-.icon-sr {
+.icon-ru {
   background-position: -0px -2990px;
+  width: 22px;
+  height: 22px;
+}
+.icon-sr {
+  background-position: -0px -3012px;
   width: 22px;
   height: 22px;
 }

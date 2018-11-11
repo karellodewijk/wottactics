@@ -69,14 +69,18 @@ function img_texture(src) {
 
 var texture_atlas;
 function setup_assets() {
-	texture_atlas = {}
-	for (var key in loader.resources) {
-		if (key.slice(-4) == "json") {
-			for (var key2 in loader.resources[key].data.tiles) {
-				texture_atlas[key2] = loader.resources[key].data.tiles[key2]; 
-			}
-		}
-	}
+  try {
+    texture_atlas = {}
+    for (var key in loader.resources) {
+      if (key.slice(-4) == "json") {
+        for (var key2 in loader.resources[key].data.tiles) {
+          texture_atlas[key2] = loader.resources[key].data.tiles[key2]; 
+        }
+      }
+    }
+  } catch (e) {
+    alert("Something is interfering with loading assets, probably adblock.");
+  }
 }
 
 var room = location.search.split('room=')[1].split("&")[0];	
@@ -298,6 +302,7 @@ var select_center;
 var objectContainer;
 var fast_container;
 var background_sprite;
+var background;
 var renderer;
 var size
 var size_x;
@@ -5993,22 +5998,37 @@ $(document).ready(function() {
 		});
 		
 		$('input[name="map_type_select"]').on('change', function() {
-		    if (this.id == "select_hd") {
+      if (this.id == "select_hd") {
 				$('#map_select_container').show();
 				$('#wotbase_select_container').hide();
 				$('#new_minimap_select_container').hide();
-				$("#map_select").val("").selectpicker('render');
-		    } else if (this.id == "select_wotbase") {
+        try {
+          var new_path = $("#map_select").find("option[value$='" + last(background.path.split('/')) + "']").val()
+          try_select_map($("#map_select"), new_path, true);
+        } catch (e) {
+          $("#map_select").val("").selectpicker('render');
+        }
+      } else if (this.id == "select_wotbase") {
 				$('#map_select_container').hide();
 				$('#wotbase_select_container').show();
 				$('#new_minimap_select_container').hide();
-				$("#wotbase_select").val("").selectpicker('render');
+        try {
+          var new_path = $("#wotbase_select").find("option[value$='" + last(background.path.split('/')) + "']").val()
+          try_select_map($("#wotbase_select"), new_path, true);
+        } catch (e) {
+          $("#wotbase_select").val("").selectpicker('render');
+        }
 			} else if (this.id == "select_new_minimap") {
 				$('#map_select_container').hide();
 				$('#wotbase_select_container').hide();
 				$('#new_minimap_select_container').show();
-				$("#new_minimap_select").val("").selectpicker('render');				
-		    }
+        try {
+          var new_path = $("#new_minimap_select").find("option[value$='" + last(background.path.split('/')) + "']").val()
+          try_select_map($("#new_minimap_select"), new_path, true);
+        } catch (e) {
+          $("#new_minimap_select").val("").selectpicker('render');
+        }
+      }
 		});
 		
 		$('#send_to_link').click(function (e) {

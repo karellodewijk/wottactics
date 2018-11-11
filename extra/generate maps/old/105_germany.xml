@@ -1,0 +1,136 @@
+<105_germany.xml>
+ <name>#arenas:105_germany/name</name>
+ <description>#arenas:105_germany/description</description>
+ <geometry>spaces/105_germany</geometry>
+ <boundingBox>
+  <bottomLeft>-400.000000 -400.000000</bottomLeft>
+  <upperRight>400.000000 400.000000</upperRight>
+ </boundingBox>
+ <roundLength>900</roundLength>
+ <minimap>spaces/105_germany/mmap.dds</minimap>
+ <vehicleCamouflageKind>summer</vehicleCamouflageKind>
+ <maxPlayersInTeam>15</maxPlayersInTeam>
+ <loadingMusic>/music/intro/euro_city</loadingMusic>
+ <wwloadingMusic>music_euro_city</wwloadingMusic>
+ <ambientSound>/wind/wind/wind_autumn_01</ambientSound>
+ <wwambientSound>ambient_wind_autumn_01</wwambientSound>
+ <umbraEnabled>1</umbraEnabled>
+ <batchingEnabled>0</batchingEnabled>
+ <water>
+  <texScale>0</texScale>
+  <freqX>0</freqX>
+  <freqZ>0</freqZ>
+ </water>
+ <gameplayTypes>
+  <fallout5>
+   <winPoints>ONE_FLAG_15x15</winPoints>
+   <maxPlayersInTeam>15</maxPlayersInTeam>
+   <flagSpawnPoint>
+    <position>59.598950 -0.070627 -1.443298</position>
+    <team>0</team>
+    <flagType>0</flagType>
+   </flagSpawnPoint>
+   <flagAbsorptionPoint>
+    <team>1</team>
+    <position>325.184100 -0.070627 269.873200</position>
+    <radius>15.000000</radius>
+    <applyOverlay>false</applyOverlay>
+    <guid>92A86DE0.4589A97F.BD87C693.BAB600AF</guid>
+   </flagAbsorptionPoint>
+   <flagAbsorptionPoint>
+    <team>1</team>
+    <position>-368.494000 0.021517 175.627000</position>
+    <radius>15.000000</radius>
+    <applyOverlay>false</applyOverlay>
+    <guid>7CC68895.419B1CA2.9F1679B5.49E70426</guid>
+   </flagAbsorptionPoint>
+   <flagAbsorptionPoint>
+    <team>2</team>
+    <position>295.800400 -0.068765 -264.201500</position>
+    <radius>15.000000</radius>
+    <applyOverlay>false</applyOverlay>
+    <guid>D11B7824.400D393E.9F857BAC.31CC9832</guid>
+   </flagAbsorptionPoint>
+   <flagAbsorptionPoint>
+    <team>2</team>
+    <position>-364.410700 -0.614030 -179.739900</position>
+    <radius>15.000000</radius>
+    <applyOverlay>false</applyOverlay>
+    <guid>300C741F.40B8B962.E29DE1B6.A2613C86</guid>
+   </flagAbsorptionPoint>
+   <repairPoint>
+    <cooldown>180.000000</cooldown>
+    <repairTime>5.000000</repairTime>
+    <radius>15.000000</radius>
+    <repairFlags>127</repairFlags>
+    <position>-280.363900 -0.070619 -3.267601</position>
+    <guid>4E8A0757.4F03449D.D8AF748E.6CD76D97</guid>
+   </repairPoint>
+  </fallout5>
+  <fallout6>
+   <winPoints>MANY_FLAGS_15x15</winPoints>
+   <maxPlayersInTeam>15</maxPlayersInTeam>
+   <flagSpawnPoint>
+    <position>84.650810 -0.010579 276.043300</position>
+    <team>0</team>
+    <flagType>0</flagType>
+   </flagSpawnPoint>
+   <flagSpawnPoint>
+    <position>84.720700 0.010448 -272.068300</position>
+    <team>0</team>
+    <flagType>0</flagType>
+   </flagSpawnPoint>
+   <flagSpawnPoint>
+    <position>124.129400 -0.010511 276.180000</position>
+    <team>0</team>
+    <flagType>0</flagType>
+   </flagSpawnPoint>
+   <flagSpawnPoint>
+    <position>124.199200 0.010516 -271.931700</position>
+    <team>0</team>
+    <flagType>0</flagType>
+   </flagSpawnPoint>
+   <flagAbsorptionPoint>
+    <team>1</team>
+    <position>325.184100 -0.070627 269.873200</position>
+    <radius>15.000000</radius>
+    <applyOverlay>false</applyOverlay>
+    <guid>92A86DE0.4589A97F.BD87C693.BAB600AF</guid>
+   </flagAbsorptionPoint>
+   <flagAbsorptionPoint>
+    <team>1</team>
+    <position>-368.494000 0.021517 175.627000</position>
+    <radius>15.000000</radius>
+    <applyOverlay>false</applyOverlay>
+    <guid>7CC68895.419B1CA2.9F1679B5.49E70426</guid>
+   </flagAbsorptionPoint>
+   <flagAbsorptionPoint>
+    <team>2</team>
+    <position>295.800400 -0.068765 -264.201500</position>
+    <radius>15.000000</radius>
+    <applyOverlay>false</applyOverlay>
+    <guid>D11B7824.400D393E.9F857BAC.31CC9832</guid>
+   </flagAbsorptionPoint>
+   <flagAbsorptionPoint>
+    <team>2</team>
+    <position>-364.410700 -0.614030 -179.739900</position>
+    <radius>15.000000</radius>
+    <applyOverlay>false</applyOverlay>
+    <guid>300C741F.40B8B962.E29DE1B6.A2613C86</guid>
+   </flagAbsorptionPoint>
+   <repairPoint>
+    <cooldown>120.000000</cooldown>
+    <repairTime>5.000000</repairTime>
+    <radius>15.000000</radius>
+    <repairFlags>127</repairFlags>
+    <position>73.025760 -0.070625 -1.675941</position>
+    <guid>3CDDBAAD.482A166A.D5C8E2AA.CB2D6338</guid>
+   </repairPoint>
+  </fallout6>
+ </gameplayTypes>
+ <roadMap>
+ </roadMap>
+ <mapActivities>
+ </mapActivities>
+ <explicitRequestOnly>true</explicitRequestOnly>
+</105_germany.xml>
