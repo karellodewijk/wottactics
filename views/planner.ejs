@@ -185,7 +185,11 @@
 			</div>
 		
 			<div class="left_column" style="width:355px; padding-left:20px; padding-right:20px">	
-				<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
+				<h4><%=l('Map')%>&nbsp;<span id="map_size"></span>&nbsp;
+					<a id='change_map_size_popover' data-placement="bottom" data-toggle="popover" style="color:black" data-content="<div style='display:flex'><input style='width:100px' type='number' id='map_size_x'><div style='color:black; margin:auto'>X</div><input style='width:100px' type='number' id='map_size_y'><button id='save_map_size' class='btn btn-default'><%=l('Save')%></button></div>" title="<%=l('Change size')%>">
+						<i title="<%=l('Change map size')%>" style="color:white" class="fa fa-cog"></i>
+					</a>
+				</h4>
 				<p>
 					<div class="dropdown inline" id="map_select_container">
 						<select class="selectpicker" data-live-search="true" id="map_select">
