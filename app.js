@@ -43,7 +43,7 @@ var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var passport = require('passport');
-var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru', 'nl', 'el', 'pt', 'hu', 'it'];
+var locales = ['en', 'sr', 'de', 'es', 'fr', 'pl', 'cs', 'fi', 'ru', 'nl', 'el', 'pt', 'hu', 'it', 'cn'];
 
 var app = express();
 app.use(compress());

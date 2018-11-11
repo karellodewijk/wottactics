@@ -108,13 +108,13 @@
 	<script defer src="<%=static_host%>/javascripts/curve.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
-
+  
+  <%if (false) {%>  
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>			
-
-  <%if (false) {%>  
-	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
   <%}%>
+
+	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
 
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
@@ -180,8 +180,6 @@
 				<%-include(game + '_maps')%>
 				</select>
 			</div>
-			
-			
 			<%if (game == 'wot') { %>
 				<div class="dropdown inline" style="display:none" id="wotbase_select_container">
 					<select class="selectpicker" data-live-search="true" id="wotbase_select"><%include wotbase_wot_maps.ejs%></select>
@@ -214,9 +212,9 @@
 			</div>
 			<span id="zoom_level">1</span>x
 			<%if (game == 'wot') { %>
-				<br /><input id="select_hd" name="map_type_select" type="radio" style="vertical-align:-2px;" checked /> <span><%=l('Use HD minimaps')%></span>
-				<br /><input id="select_wotbase" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <span><%=l('Use Wotbase maps')%></span>
-				<br /><input id="select_new_minimap" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <span><%=l('Use New minimaps')%></span>
+				<br /><input id="select_hd" name="map_type_select" type="radio" style="vertical-align:-2px;" checked /> <label style="font-weight: normal; margin:0" for="select_hd"><%=l('Use HD minimaps')%></label>
+				<br /><input id="select_wotbase" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <label style="font-weight: normal; margin:0" for="select_wotbase"><%=l('Use Wotbase maps')%></label>
+				<br /><input id="select_new_minimap" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <label style="font-weight: normal; margin:0" for="select_new_minimap"><%=l('Use New minimaps')%></label>
 			<%} else if (game == 'R6') { %>
 				<br /><input id="select_hd" name="map_type_select" type="radio" style="vertical-align:-2px;" checked /> <span><%=l('Normal')%></span>
 				<br /><input id="select_wotbase" name="map_type_select" type="radio" style="vertical-align:-2px;" /> <span><%=l('Annotated')%></span>				

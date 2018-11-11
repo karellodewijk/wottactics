@@ -1,0 +1,38 @@
+<73_asia_korea.xml>
+ <name>#arenas:73_asia_korea/name</name>
+ <description>#arenas:73_asia_korea/description</description>
+ <geometry>spaces/73_asia_korea</geometry>
+ <roundLength>900</roundLength>
+ <boundingBox>
+  <bottomLeft>-500.000000 -500.000000</bottomLeft>
+  <upperRight>500.000000 500.000000</upperRight>
+ </boundingBox>
+ <minimap>spaces/73_asia_korea/mmap.dds</minimap>
+ <vehicleCamouflageKind>winter</vehicleCamouflageKind>
+ <umbraEnabled>1</umbraEnabled>
+ <loadingMusic>/music/intro/euro_village</loadingMusic>
+ <wwloadingMusic>music_euro_vilage</wwloadingMusic>
+ <ambientSound>/wind/wind/wind_winter_01</ambientSound>
+ <wwambientSound>ambient_wind_winter_01</wwambientSound>
+ <water>
+  <texScale>0</texScale>
+  <freqX>0</freqX>
+  <freqZ>0</freqZ>
+ </water>
+ <gameplayTypes>
+  <ctf>
+   <teamBasePositions>
+    <team1>
+     <position1>270.641600 264.472300</position1>
+    </team1>
+    <team2>
+     <position1>-279.217400 -299.489300</position1>
+    </team2>
+   </teamBasePositions>
+  </ctf>
+ </gameplayTypes>
+ <roadMap>
+ </roadMap>
+ <mapActivities>
+ </mapActivities>
+</73_asia_korea.xml>
