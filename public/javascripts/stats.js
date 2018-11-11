@@ -800,6 +800,7 @@ $(document).ready(function() {
 	function search() {
 		var link = 'https://api.worldoftanks.' + server + '/wot/account/list/?limit=20&application_id=0dbf88d72730ed7b843ab5934d8b3794&search=' + $('#srch-term').val();
 		$.get(link, {}, function(data) {
+      console.log(data)
 			if (data.data.length == 0) {
 				$('#no_results').show();
 				$('#no_battles').hide();
