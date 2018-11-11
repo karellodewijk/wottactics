@@ -1,0 +1,44 @@
+00_CO_ocean.jpg;;Ocean;;ocean.jpg;;36000x36000
+01_solomon_islands.jpg;;Solomon islands;;solomon.jpg;;30000x30000
+04_Archipelago.jpg;;Archipelago;;archipelago.jpg;;42000x42000
+05_Ring.jpg;;Ring;;ring.jpg;;36000x36000
+08_NE_passage.jpg;;Strait;;passage.jpg;;36000x36000
+10_NE_big_race.jpg;;Big Race;;big_race.jpg;;30000x30000
+13_OC_new_dawn.jpg;;New Dawn;;new_dawn.jpg;;36000x36000
+14_Atlantic.jpg;;The Atlantic;;atlantic.jpg;;42000x42000
+15_NE_north.jpg;;North;;north.jpg;;48000x48000
+16_OC_bees_to_honey.jpg;;Hotspot;;bees_to_honey.jpg;;48000x48000
+17_NA_fault_line.jpg;;Fault Line;;Fault_Line.jpg;;42000x42000
+18_NE_ice_islands.jpg;;Ice Islands;;Ice_Islands.jpg;;48000x48000
+19_OC_prey.jpg;;Trap;;trap.jpg;;42000x42000
+20_NE_two_brothers.jpg;;Two Brothers;;Two_Brothers.jpg;;42000x42000
+22_tierra_del_fuego.jpg;;Land of Fire;;terra_del_fuego.jpg;;48000x48000
+23_Shards.jpg;;Shards;;shards.jpg;;42000x42000
+25_sea_hope.jpg;;Sea of Fortune;;sea_of_fortune.jpg;;48000x48000
+28_naval_mission.jpg;;Tears of the Desert;;tears.jpg;;42000x42000
+33_new_tierra.jpg;;Polar;;newland.jpg;;24000x24000
+34_OC_islands.jpg;;Islands;;islands.jpg;;24000x24000
+35_NE_north_winter.jpg;;Northern Lights;;north_winter.jpg;;48000x48000
+37_Ridge.jpg;;Mountain Range;;ridge.jpg;;48000x48000
+38_Canada.jpg;;Shatter;;canada.jpg;;48000x48000
+40_Okinawa.jpg;;Okinawa;;okinawa.jpg;;42000x42000
+41_Conquest.jpg;;Trident;;trident.jpg;;42000x42000
+42_Neighbors.jpg;;Neighbors;;neighbours.jpg;;42000x42000
+44_Path_warrior.jpg;;Warrior's Path;;path_warrior.jpg;;48000x48000
+45_Zigzag.jpg;;Loop;;loop.jpg;;48000x48000
+46_Estuary.jpg;;Estuary;;estuary.jpg;;42000x42000
+47_Sleeping_Giant.jpg;;Sleeping Giant;;sleeping_giant.jpg;;48000x48000
+50_Gold_harbor.jpg;;Haven;;haven.jpg;;42000x42000
+50_VanHellsing.jpg;;Van Hellsing;;van_hellsing.jpg;;
+e02_Halloween_2017.jpg;;Halloween 2017;;halloween_2017.jpg;;
+e04_Halloween_2018.jpg;;Halloween 2018;;halloween_2018.jpg;;
+i01_tutorial.jpg;;Tutorial;;tutorial.jpg;;
+r01_military_navigation.jpg;;Riposte;;riposte.jpg;;42000x42000
+s01_NavalBase.jpg;;Naval Base;;navalbase.jpg;;
+s02_Naval_Defense.jpg;;Naval Station Newport;;naval_station.jpg;;
+s03_Labyrinth.jpg;;Labyrinth;;labyrinth.jpg;;
+s05_Dunkirk.jpg;;Dunkirk;;dunkirk.jpg;;
+s06_Atoll.jpg;;Atoll;;atoll.jpg;;
+s07_Advance.jpg;;Advance;;advance.jpg;;
+s09_LePVE.jpg;;LePVE;;lepve.jpg;;
+s10_USS_CL.jpg;;USS_CL;;uss_cl.jpg;;

@@ -64,7 +64,6 @@ function img_texture(src) {
 			return PIXI.Texture.fromImage(src);
 		}
 	}
-	
 }
 
 var texture_atlas;
@@ -3748,8 +3747,10 @@ function emit_entity(entity) {
 	socket.emit('create_entity', room, entity, active_slide);
 	room_data.slides[active_slide].z_top++;
 	entity.z_index = room_data.slides[active_slide].z_top;
-	entity.container = container;
-	set_anchor(entity.container, 0.5, 0.5);
+	if (container) {
+		entity.container = container;
+		set_anchor(entity.container, 0.5, 0.5);
+	}
 	render_scene();
 }
 
@@ -6291,7 +6292,7 @@ $(document).ready(function() {
 			initialize_slider("delay", "delay_text", "delay");
 		}
 		
-		$('[data-toggle="popover"]').popover({
+		$('#change_map_size_popover').popover({
 			container: 'body',
 			trigger: 'manual',
 			html: 'true',
@@ -6301,9 +6302,41 @@ $(document).ready(function() {
 			}
 		}).click(function(e) {
 			$(this).popover('toggle');
-			var _this = $(this);
+			let _this = $(this);
+			let popover = $(this);			
+			$(document).on('click', '#save_map_size', function(e) {
+				var x = $(document).find('#map_size_y')[0].value;
+				var y = $(document).find('#map_size_y')[0].value;
+				var background_entity;
+				for (var key in room_data.slides[active_slide].entities) {
+					if (room_data.slides[active_slide].entities[key].type == 'background') {
+						background_entity = room_data.slides[active_slide].entities[key];
+					}
+				}
+				background_entity.size_x = $(document).find('#map_size_y')[0].value;
+				background_entity.size_y = $(document).find('#map_size_y')[0].value;
+				console.log()
+				$("#map_size").text("("+background_entity.size_x+" x "+background_entity.size_y+")");
+				emit_entity(background_entity);
+				_this.popover('hide');
+				e.stopPropagation();
+			});
+			e.stopPropagation();
+		});
+		
+		$('#store_tactic_popover').popover({
+			container: 'body',
+			trigger: 'manual',
+			html: 'true',
+			template: '<div class="popover popover-medium" style="width: 300px;"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"></div></div></div>',
+			content: function() {
+				return $('#popover-content');
+			}
+		}).click(function(e) {
+			$(this).popover('toggle');
+			let _this = $(this);
 			document.getElementById("tactic_name").setAttribute("value", tactic_name);
-			var popover = $(this);
+			let popover = $(this);
 			$(document).on('click', '#store_tactic', function(e) {
 				var name = $(document).find('#tactic_name')[0].value;
 				name = escapeHtml(name);
@@ -6317,7 +6350,8 @@ $(document).ready(function() {
 					alert('Tactic stored as: "' + tactic_name + '"');
 					e.stopPropagation();
 				}
-				_this.popover('toggle');
+				_this.popover('hide');
+				e.stopPropagation();
 			});
 			e.stopPropagation();
 		});

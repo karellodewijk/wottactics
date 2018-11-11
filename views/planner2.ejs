@@ -2,7 +2,8 @@
 <html lang="<%=locale%>" style="width: 100%; height:100%">
 <head>
 	<% include common_headers.ejs %>
-	<link rel="stylesheet" href="<%=static_host%>/stylesheets/bootstrap-select.min.css">
+  <link rel="stylesheet" href="<%=static_host%>/stylesheets/bootstrap-select.min.css">
+	<link rel="stylesheet" href="<%=static_host%>/stylesheets/fontawesome-all.min.css">
 	<link rel="stylesheet" href="<%=static_host%>/stylesheets/jquery.simplecolorpicker.css">
 	<% if (game == 'wot') { %>
 		<link rel="stylesheet" href="<%=static_host%>/wot_assets.css">
@@ -109,10 +110,10 @@
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
   
-  <%if (false) {%>  
+	<%if (false) {%>  
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>			
-  <%}%>
+	<%}%>
 
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
 
@@ -174,7 +175,11 @@
 		</nav>	
 		<div id="map_select_section" style="padding:10px; padding-top:0px; flex: 0 1 auto; justify-content: flex-start;">
 			<div id="map_select_box">
-			<h4><%=l('Map')%>&nbsp;<span id="map_size"></span></h4>
+			<h4><%=l('Map')%>&nbsp;<span id="map_size"></span>&nbsp;
+				<a id='change_map_size_popover' data-placement="bottom" data-toggle="popover" style="color:black" data-content="<div style='display:flex'><input style='width:100px' type='number' id='map_size_x'><div style='color:black; margin:auto'>X</div><input style='width:100px' type='number' id='map_size_y'><button id='save_map_size' class='btn btn-default'><%=l('Save')%></button></div>" title="<%=l('Change size')%>">
+					<i title="<%=l('Change map size')%>" style="color:white" class="fa fa-cog"></i>
+				</a>
+			</h4>
 			<div class="dropdown inline" id="map_select_container">
 				<select class="selectpicker" data-live-search="true" id="map_select">
 				<%-include(game + '_maps')%>
@@ -1269,4 +1274,3 @@
 	
 	<div id='dpitest' style='height: 1in; left: -100%; position: absolute; top: -100%; width: 1in;'></div>
 </body>
-

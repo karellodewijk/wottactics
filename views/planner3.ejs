@@ -171,7 +171,11 @@
 		</div>
 		<div id="map_select_section" style="padding:10px; padding-top:0px; flex: 0 1 auto;">
 			<div id="map_select_box">
-			<h4><%=l('Load video')%>&nbsp;<span id="map_size"></span></h4>
+			<h4><%=l('Map')%>&nbsp;<span id="map_size"></span>&nbsp;
+				<a id='change_map_size_popover' data-placement="bottom" data-toggle="popover" style="color:black" data-content="<div style='display:flex'><input style='width:100px' type='number' id='map_size_x'><div style='color:black; margin:auto'>X</div><input style='width:100px' type='number' id='map_size_y'><button id='save_map_size' class='btn btn-default'><%=l('Save')%></button></div>" title="<%=l('Change size')%>">
+					<i title="<%=l('Change map size')%>" style="color:white" class="fa fa-cog"></i>
+				</a>
+			</h4>
 			<button class="btn btn-default menu_btn" aria-label="Left Align" id="custom_map" data-toggle="tooltip" title="<%=l('Custom map')%>">
 				Load video
 			</button>
