@@ -110,13 +110,13 @@
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>	
 	<%}%>
   
-	<%if (false) {%>  
+	<%if (false) {%>
 	<script defer src="<%=static_host%>/javascripts/combined_mini.js"></script>
 	<script defer src="<%=static_host%>/javascripts/planner.js"></script>			
-	<%}%>
-
+  <%}%>
+    
 	<script defer src="<%=static_host%>/javascripts/combined.js"></script>
-
+  
 	<title><%=game.toUpperCase()%> <%=l('Tactics')%> - <%=l('Planner')%></title>
 	<meta name="description" content="<%=game.toUpperCase()%> <%=l('strategy')%>">
 	<script id="sid" data-sid="<%=sid%>"></script>
@@ -163,7 +163,7 @@
 					<button id="lock" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Locks/unlocks edit mode for users without additional permissions')%>">
 						<div class="icon icon-lock"></div>
 					</button>
-					<button id="link" style="border-radius: 0px;" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
+					<button id="link" style="border-radius: 0px;" data-success="<%=l('Copied')%>" class="btn btn-default navbar-btn" data-toggle="tooltip" title="<%=l('Copy link to clipboard, send it to friends or clan mates to invite them to this tactic')%>">
 						<div class="icon icon-link"></div>
 					</button>
 				</li>
@@ -293,7 +293,7 @@
 			</div>
 		</div>
 	</div>	
-	
+
 	<div id="edit_window" class="edit_window" style="height:100%; width:100%; position:absolute; z-index:0; padding:0px; margin:0px; border:0; top:0px; left:0px"></div>
 
 	<div id="right_side_bar" style="height:100%; max-width:340px; position:relative; vertical-align:top; float:right; background-color:rgba(53, 72, 127, 0.75); z-index:10; right:0px">

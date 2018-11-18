@@ -165,14 +165,14 @@ function populate() {
 						stats_data = {};
 						deferreds2.push($.Deferred(function() {
 							var self = this;
-							$.get("http://karellodewijk.github.io/other/expected_wn8.json", {}, function(data) {
+							$.get("https://karellodewijk.github.io/other/expected_wn8.json", {}, function(data) {
 								tank_expected = data;
 								self.resolve();
 							});
 						}))
 						deferreds2.push($.Deferred(function() {
 							var self = this;
-							$.get("http://karellodewijk.github.io/other/expected_wn9.json", {}, function(data) {
+							$.get("https://karellodewijk.github.io/other/expected_wn9.json", {}, function(data) {
 								tank_expected_wn9 = data;
 								self.resolve();
 							});

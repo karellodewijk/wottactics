@@ -98,7 +98,7 @@ app.use(function (req, res, next) {
 	var host = req.hostname;
 	if (host && host.endsWith('wottactic.tk')) {
 		var subdomain = host.substr(0, host.indexOf('wottactic.tk'));
-		return res.redirect(301, 'http://' + subdomain + 'wottactic.com' + req.originalUrl);
+		return res.redirect(301, 'https://' + subdomain + 'wottactic.com' + req.originalUrl);
 	}
 	return next();
 });
@@ -361,7 +361,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		var domain = req.headers.host;
 		var subDomain = domain.split('.');	
 		if (subDomain[0] == 'www') {
-			res.redirect(301, 'http://' + subDomain.slice(1).join('.') + req.originalUrl);
+			res.redirect(301, 'https://' + subDomain.slice(1).join('.') + req.originalUrl);
 			return;
 		}
 		if (!req.session.passport || !req.session.passport.user) {
@@ -507,7 +507,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 								  
 		  if (req.session.passport.user.identity) {
 			  setImmediate(function() {
-				  var link = "http://" + req.fullUrl;
+				  var link = "https://" + req.fullUrl;
 				  db.collection('users').updateOne(
 				  	  { _id:req.session.passport.user.identity },
 					  { "$pull": { "rooms": link } }
@@ -756,8 +756,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	));
 	
 	//openid
-	router.post('/auth/openid', save_return, function(req,res,next) { passport.authenticate('openid', { returnURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/openid/callback' })(req, res, next); } );
-	router.get('/auth/openid/callback', passport.authenticate('openid'), redirect_return);
+	router.post('/auth/openid', save_return, function(req,res,next) { passport.authenticate('openid', { returnURL: 'https://'+req.fullUrl.split("/")[0]+'/auth/openid/callback' })(req, res, next); } );
+	router.get('/auth/openid/callback', function(req,res,next) { passport.authenticate('openid', { returnURL: 'https://'+req.fullUrl.split("/")[0]+'/auth/openid/callback' })(req, res, next); }, redirect_return);
 	
 	if (secrets.google.client_id != "") {
 		StrategyGoogle = require('passport-google-oauth2').Strategy;
@@ -788,8 +788,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		));
 		
 		//google
-		router.post('/auth/google', save_return, function(req,res,next) { passport.authenticate('google', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/google/callback' })(req, res, next); } );
-		router.get('/auth/google/callback', passport.authenticate('google'), redirect_return);
+		router.post('/auth/google', save_return, function(req,res,next) { passport.authenticate('google', { callbackURL: 'https://'+req.fullUrl.split("/")[0]+'/auth/google/callback' })(req, res, next); } );
+		router.get('/auth/google/callback', function(req,res,next) { passport.authenticate('google', { callbackURL: 'https://'+req.fullUrl.split("/")[0]+'/auth/google/callback' })(req, res, next); }, redirect_return);
 	}
 	
 	if (secrets.vk.client_id != "") {
@@ -820,8 +820,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		));
 		
 		//vk
-		router.post('/auth/vk', save_return, function(req,res,next) { passport.authenticate('vk', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/vk/callback' })(req, res, next); } );
-		router.get('/auth/vk/callback', passport.authenticate('vk'), redirect_return);
+		router.post('/auth/vk', save_return, function(req,res,next) { passport.authenticate('vk', { callbackURL: 'https://'+req.fullUrl.split("/")[0]+'/auth/vk/callback' })(req, res, next); } );
+		router.get('/auth/vk/callback', function(req,res,next) { passport.authenticate('vk', { callbackURL: 'https://'+req.fullUrl.split("/")[0]+'/auth/vk/callback' })(req, res, next); }, redirect_return);
 	}
 	
 	if (secrets.battlenet.client_id != "") {
@@ -856,8 +856,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		};
 		
 		//battle.net
-		router.post('/auth/battlenet', save_return, function(req,res,next) { passport.authenticate('battlenet', { callbackURL: 'https://karellodewijk.github.io/battlenet_redirect.html', redirectUrl:'http://' + req.fullUrl.split("/")[0] + '/auth/battlenet/callback' })(req, res, next); } );
-		router.get('/auth/battlenet/callback', passport.authenticate('battlenet'), redirect_return);
+		router.post('/auth/battlenet', save_return, function(req,res,next) { passport.authenticate('battlenet', { callbackURL: 'https://karellodewijk.github.io/battlenet_redirect.html', redirectUrl:'https://' + req.fullUrl.split("/")[0] + '/auth/battlenet/callback' })(req, res, next); } );
+		router.get('/auth/battlenet/callback', function(req,res,next) { passport.authenticate('battlenet', { callbackURL: 'https://karellodewijk.github.io/battlenet_redirect.html', redirectUrl:'https://' + req.fullUrl.split("/")[0] + '/auth/battlenet/callback' })(req, res, next); }, redirect_return);
 	}
 
 	if (secrets.facebook.client_id != "") {
@@ -888,8 +888,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		));
 		
 		//facebook
-		router.post('/auth/facebook', save_return, function(req,res,next) { passport.authenticate('facebook', { callbackURL: 'http://'+req.fullUrl.split("/")[0]+'/auth/facebook/callback' })(req, res, next); } );
-		router.get('/auth/facebook/callback', passport.authenticate('facebook'), redirect_return);
+		router.post('/auth/facebook', save_return, function(req,res,next) { passport.authenticate('facebook', { callbackURL: 'https://'+req.fullUrl.split("/")[0]+'/auth/facebook/callback' })(req, res, next); } );
+		router.get('/auth/facebook/callback', function(req,res,next) { passport.authenticate('facebook', { callbackURL: 'https://'+req.fullUrl.split("/")[0]+'/auth/facebook/callback' })(req, res, next); }, redirect_return);
 	}
 
 	if (secrets.twitter.client_id != "") {
@@ -920,20 +920,20 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		));	
 		
 		//twitter
-		router.post('/auth/twitter', save_return, function(req,res,next) { passport.authenticate('twitter', { callbackURL: 'http://wottactic.tk/twitter_redirect.html?dest=' + 'http://' + req.fullUrl.split("/")[0] + '/auth/twitter/callback' })(req, res, next); } );
-		router.get('/auth/twitter/callback', passport.authenticate('twitter'), redirect_return);
+		router.post('/auth/twitter', save_return, function(req,res,next) { passport.authenticate('twitter', { callbackURL: 'https://wottactic.com/twitter_redirect.html?dest=' + 'https://' + req.fullUrl.split("/")[0] + '/auth/twitter/callback' })(req, res, next); } );
+		router.get('/auth/twitter/callback', function(req,res,next) { passport.authenticate('twitter', { callbackURL: 'https://wottactic.com/twitter_redirect.html?dest=' + 'https://' + req.fullUrl.split("/")[0] + '/auth/twitter/callback' })(req, res, next); }, redirect_return);
 	}
 
 	if (secrets.steam.api_key != "") {		
 		var SteamWebAPI = require('steam-web');
 		var steam = new SteamWebAPI({ apiKey: secrets.steam.api_key, format: 'json' });
 		passport.use('steam', new OpenIDStrategy({
-				returnURL: "http://wottactic.com/steam_redirect.html",
-				realm: "http://wottactic.com",
+				returnURL: "https://wottactic.com/steam_redirect.html",
+				realm: "https://wottactic.com",
 				provider: 'steam',
 				name:'steam',
 				profile:false,
-				providerURL: 'http://steamcommunity.com/openid/id/',
+				providerURL: 'https://steamcommunity.com/openid/id/',
 				passReqToCallback: true,
 				stateless: true
 			},
@@ -964,8 +964,8 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		));
 
 		//steam
-		router.post('/auth/steam', save_return, function(req,res,next) { passport.authenticate('steam', { returnURL: "http://wottactic.com/steam_redirect.html?dest=" + "http://" + req.hostname + "/auth/steam/callback/" })(req, res, next); } );
-		router.get('/auth/steam/callback', passport.authenticate('steam'), redirect_return);
+		router.post('/auth/steam', save_return, function(req,res,next) { passport.authenticate('steam', { returnURL: "https://wottactic.com/steam_redirect.html?dest=" + "https://" + req.hostname + "/auth/steam/callback/" })(req, res, next); } );
+		router.get('/auth/steam/callback', function(req,res,next) { passport.authenticate('steam', { returnURL: "https://wottactic.com/steam_redirect.html?dest=" + "https://" + req.hostname + "/auth/steam/callback/" })(req, res, next); }, redirect_return);
 	}
 	
 	

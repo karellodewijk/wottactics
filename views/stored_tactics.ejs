@@ -2,7 +2,7 @@
 <html lang="<%=locale%>">
 <head>
 	<% include common_headers.ejs %>
-	<script defer type="text/javascript" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	<script defer type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 	<script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-treetable/3.2.0/jquery.treetable.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-treetable/3.2.0/css/jquery.treetable.min.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-treetable/3.2.0/css/jquery.treetable.theme.default.min.css" />
@@ -49,7 +49,7 @@
 							<td class='date'><%=tactics[i].date;%></td>
 							
 							<td><button class="btn btn-default btn-sm share_tactic" data-toggle="tooltip" title="<%=l('Share this tactic')%>"
-										data-link="http://<%=url.split('/')[0]%>/share_tactic.html?name=<%=encodeURIComponent(tactics[i].name)%>&game=<%=encodeURIComponent(tactics[i].game)%>&uid=<%=encodeURIComponent(tactics[i].uid)%>">
+										data-link="https://<%=url.split('/')[0]%>/share_tactic.html?name=<%=encodeURIComponent(tactics[i].name)%>&game=<%=encodeURIComponent(tactics[i].game)%>&uid=<%=encodeURIComponent(tactics[i].uid)%>">
 								<div class="icon icon-share"></div>
 							</button></td>
 

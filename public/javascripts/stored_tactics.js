@@ -56,7 +56,7 @@ $(document).ready(function() {
 				return '.' + subDomain.join('.')
 			}
 
-			$.post('http://'+target+'/add_to_room', {target: tactic_uid, source:link_uid, session_id:$("#sid").attr("data-sid"), host:parse_domain(location.hostname), stored:"true"}).done(function( data ) {
+			$.post('https://'+target+'/add_to_room', {target: tactic_uid, source:link_uid, session_id:$("#sid").attr("data-sid"), host:parse_domain(location.hostname), stored:"true"}).done(function( data ) {
 				if (data != "Success") {
 					alert(data);
 				}
