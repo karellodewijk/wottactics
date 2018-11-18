@@ -95,7 +95,7 @@ function populate() {
 				var refresh = getQueryString("refresh");
 								
 				if (!refresh && missing_members.length > 0) {
-					window.location = 'http://' + window.location.hostname + window.location.pathname + "?refresh=true";
+					window.location = 'https://' + window.location.hostname + window.location.pathname + "?refresh=true";
 					return;
 				}
 				

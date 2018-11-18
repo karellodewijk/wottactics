@@ -94,7 +94,8 @@ function populate() {
 	$.when(
 		$.Deferred(function() {
 			var self = this;
-			var link = "https://api.worldoftanks." + server + "/wot/encyclopedia/tanks/?application_id=0dbf88d72730ed7b843ab5934d8b3794&fields=tank_id,image_small,name_i18n,level,nation,type"
+			//var link = "https://api.worldoftanks." + server + "/wot/encyclopedia/tanks/?application_id=0dbf88d72730ed7b843ab5934d8b3794&fields=tank_id,image_small,name_i18n,level,nation,type"
+      var link = "https://api.worldoftanks." + server + "/wot/encyclopedia/vehicles/?application_id=0dbf88d72730ed7b843ab5934d8b3794&fields=tank_id,images.contour_icon,name,tier,nation,type"
 			$.get(link, {}, function(data) {
 				tank_data = data.data;
 				self.resolve();
@@ -161,14 +162,14 @@ function populate() {
 		}),
 		$.Deferred(function() {
 			var self = this;
-			$.get("http://karellodewijk.github.io/other/expected_wn8.json", {}, function(data) {
+			$.get("https://karellodewijk.github.io/other/expected_wn8.json", {}, function(data) {
 				tank_expected = data;
 				self.resolve();
 			});
 		}),
 		$.Deferred(function() {
 			var self = this;
-			$.get("http://karellodewijk.github.io/other/expected_wn9.json", {}, function(data) {
+			$.get("https://karellodewijk.github.io/other/expected_wn9.json", {}, function(data) {
 				tank_expected_wn9 = data;
 				self.resolve();
 			});
@@ -190,7 +191,7 @@ function populate() {
 			$('#no_battles').hide();
 		}
 
-		//borrowed from http://stackoverflow.com/questions/22697936/binary-search-in-javascript
+		//borrowed from https://stackoverflow.com/questions/22697936/binary-search-in-javascript
 		function binarySearch(ar, el, compare_fn) {
 			var m = 0;
 			var n = ar.length - 1;
@@ -250,7 +251,7 @@ function populate() {
 					var average_xp = totals.xp / totals.battles;
 					var average_spotted = totals.spotted / totals.battles;
 					
-					node += "<td><img src='" + totals.icon + "'></td>";
+					node += "<td><img src='" + totals.icon + "'></td>"; //<img src='" + totals.icon + "'>
 					node += "<td>"+totals.name+"</td>";
 					node += "<td>"+totals.nation+"</td>";
 					node += "<td>"+totals.tier+"</td>";
