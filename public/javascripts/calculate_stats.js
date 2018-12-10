@@ -269,7 +269,9 @@ function calculate_stats(tank_expected_wn8, tank_expected_wn8_wn9, stats_data, s
 				achieved_totals.tanks[tank.id].tier = tank_data[tank.id].tier;
 				achieved_totals.tanks[tank.id].nation = tank_data[tank.id].nation;
 				achieved_totals.tanks[tank.id].type = tank_data[tank.id].type;
-				achieved_totals.tanks[tank.id].icon = tank_data[tank.id].images.contour_icon.replace('http://', 'https://');
+        if (achieved_totals.tanks[tank.id].icon = tank_data[tank.id].images) {
+          achieved_totals.tanks[tank.id].icon = tank_data[tank.id].images.contour_icon.replace('http://', 'https://');
+        }
 				achieved_totals.tier += tank.battles * tank_data[tank.id].tier;
 			}				
 		}
