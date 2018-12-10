@@ -144,6 +144,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	function save_room(room, cb) {
 		if (room_data[room]) {
 			room_data[room]._id = room;
+			room_data[room].lastAccessed = Date.now();
 			db.collection('tactics').replaceOne({_id:room}, room_data[room], {upsert: true}, function (err, result) {
 			  cb();
 			});
