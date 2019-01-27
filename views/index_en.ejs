@@ -8,8 +8,8 @@
 <body style="overflow:scroll;">
 	<% include navbar.ejs %>
 	<script>
-		document.getElementById('home').className += " active";
-	</script>
+			document.getElementById('home').className += " active";
+		</script>
 	<style>
 		#banner {
 			background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<%=static_host%>/banners/banner_<%=game%>.jpg'); 
@@ -17,7 +17,7 @@
 		}
 	</style>
 
-	<div class="container" style='width:100%; position:relative;'>
+<div class="container" style='width:100%; position:relative;'>
 		<div class="jumbotron content" style="padding-left:0px; padding-right:0px;">
 			<div id="banner" class="call_to_action" style='width:100%; background-color:#888ecb'>
 				<div class="container" id="big_button_frame" style="text-align:center;">
@@ -169,5 +169,5 @@
 	
 	<% include footer.ejs %>
 	<% include index_js.ejs %>
-
+	
 </body>

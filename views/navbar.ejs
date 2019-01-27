@@ -75,7 +75,7 @@
 		<%if (!user.no_ads) {%>
 			<div class="hidden-xs" style="background-color:white; width:728px; height:90px; margin-left:50px; margin-right:50px; margin-top:10px; margin-bottom:10px; float:left">
 			<%if (game == 'wot' || game == 'wows' || game == 'blitz' || Math.random() <= 1) {%>
-				<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+				<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
 				<!-- main navbar -->
 				<ins class="adsbygoogle hidden-xs"
 					 style="display:inline-block;width:728px;height:90px"
@@ -126,6 +126,9 @@
 				  <%=l('Other Games')%><span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu" style="z-index:10">
+					<% for(var i = 0; i < gamesList.length; i++) { %>
+						<li><a href="http://localhost/<%= gamesList[i].abbreviation %>"><div class="inline icon icon-<%= gamesList[i].abbreviation %>_sm"></div>&nbsp; <%= gamesList[i].name %></a></li>
+					<% } %> 
 					<li><a href="https://wottactic.com"><div class="inline icon icon-wot_sm"></div>&nbsp; World of Tanks</a></li>
 					<li><a href="https://wowstactic.tk"><div class="inline icon icon-wows_sm"></div>&nbsp; World of Warships</a></li>
 					<li><a href="https://wottactic.com/blitz"><div class="inline icon icon-blitz_sm"></div>&nbsp; World of Tanks Blitz</a></li>
@@ -144,7 +147,7 @@
 					<li><a href="https://gametactic.org/EC"><div class="inline icon icon-EC_sm"></div>&nbsp; Eternal Crusade</a></li>
 					<li><a href="https://gametactic.org/propilkki2"><div class="inline icon icon-propilkki2_sm"></div>&nbsp; Propilkki2</a></li>
 					<li><a href="https://gametactic.org/pr"><div class="inline icon icon-pr_sm"></div>&nbsp; Project Reality</a></li>
-          <li><a href="https://gametactic.org/pubg"><div class="inline icon icon-pubg_sm"></div>&nbsp; Playersunknown's Battlegrounds</a></li>
+          			<li><a href="https://gametactic.org/pubg"><div class="inline icon icon-pubg_sm"></div>&nbsp; Playersunknown's Battlegrounds</a></li>
 					<li><a href="https://forum.<%=url.split('/')[0]%>/forums/topic/can-you-support-my-game/"><%=l('Support another game')%></a>					
 				</ul>
 			</li>
