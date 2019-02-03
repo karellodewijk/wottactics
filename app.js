@@ -449,21 +449,6 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	
 	// setup routes
 	var router = express.Router();
-	router.get('/game/:gamename', function(req, res, next){
-		var game = req.params.gamename;
-		set_game(req, res, game);
-		res.render('index', { game: req.session.game, 
-			user: req.session.passport.user,
-			locale: req.session.locale,
-			url: req.fullUrl,
-			static_host: secrets.static_host,
-			secrets:secrets});
-	});
-	
-	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 
-		'R6', 'MWO', 'EC', 'propilkki2', 'pr', 'clans', 'foxhole', 'steelocean', 'pubg'];
-
-
 	router.get('/', function(req, res, next) {
 		var game;
 		if (req.hostname) {
@@ -478,8 +463,6 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			game = "wot";
 		}
 		set_game(req, res, game);
-		var x = constants.listOfGames;
-		console.log(x);
 		res.render('index', { game: req.session.game, 
 							user: req.session.passport.user,
 							locale: req.session.locale,
@@ -540,10 +523,10 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	  }
 	}
   	
-		
-	games.forEach(function(game) {
-		router.get('/' + game, function(req, res, next) {
-		  set_game(req, res, game);
+
+	constants.listOfGames.forEach(function(game) {
+		router.get('/' + game.abbreviation, function(req, res, next) {
+		  set_game(req, res, game.abbreviation);
 		  res.render('index', { game: req.session.game, 
 								user: req.session.passport.user,
 								locale: req.session.locale,
@@ -552,14 +535,14 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 								secrets:secrets,
 								gamesList: constants.listOfGames});
 		});
-		router.get(['/'+game+'1', '/'+game+'planner.html'], function(req, res, next) {
-		  planner_redirect(req, res, game, 'planner');
+		router.get(['/'+game.abbreviation+'1', '/'+game.abbreviation+'planner.html'], function(req, res, next) {
+		  planner_redirect(req, res, game.abbreviation, 'planner');
 		});	
-		router.get(['/'+game+'2', '/'+game+'planner2.html'], function(req, res, next) {
-		  planner_redirect(req, res, game, 'planner2');
+		router.get(['/'+game.abbreviation+'2', '/'+game.abbreviation+'planner2.html'], function(req, res, next) {
+		  planner_redirect(req, res, game.abbreviation, 'planner2');
 		});
-		router.get(['/'+game+'3', '/'+game+'planner3.html'], function(req, res, next) {
-		  planner_redirect(req, res, game, 'planner3');
+		router.get(['/'+game.abbreviation+'3', '/'+game.abbreviation+'planner3.html'], function(req, res, next) {
+		  planner_redirect(req, res, game.abbreviation, 'planner3');
 		});			
 	});
 		
