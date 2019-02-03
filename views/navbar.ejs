@@ -127,28 +127,11 @@
 				</a>
 				<ul class="dropdown-menu" style="z-index:10">
 					<% for(var i = 0; i < gamesList.length; i++) { %>
-						<li><a href="http://localhost/<%= gamesList[i].abbreviation %>"><div class="inline icon icon-<%= gamesList[i].abbreviation %>_sm"></div>&nbsp; <%= gamesList[i].name %></a></li>
+						<script>
+							var url = window.location.href;
+						</script>
+						<li><a href="<%= gamesList[i].abbreviation %>"><div class="inline icon icon-<%= gamesList[i].abbreviation %>_sm"></div>&nbsp; <%= gamesList[i].name %></a></li>
 					<% } %> 
-					<li><a href="https://wottactic.com"><div class="inline icon icon-wot_sm"></div>&nbsp; World of Tanks</a></li>
-					<li><a href="https://wowstactic.tk"><div class="inline icon icon-wows_sm"></div>&nbsp; World of Warships</a></li>
-					<li><a href="https://wottactic.com/blitz"><div class="inline icon icon-blitz_sm"></div>&nbsp; World of Tanks Blitz</a></li>
-					<li><a href="https://gametactic.org/aw"><div class="inline icon icon-aw_sm"></div>&nbsp; Armored Warfare</a></li>
-					<li><a href="https://gametactic.org/clans"><div class="inline icon icon-clans_sm"></div>&nbsp; Clash of clans</a></li>
-					<li><a href="https://gametactic.org/foxhole"><div class="inline icon icon-foxhole_sm"></div>&nbsp; Foxhole</a></li>
-					<li><a href="https://gametactic.org/lol"><div class="inline icon icon-lol_sm"></div>&nbsp; League of Legends</a></li>
-					<li><a href="https://gametactic.org/hots"><div class="inline icon icon-hots_sm"></div>&nbsp; Heroes of the Storm</a></li>
-					<li><a href="https://gametactic.org/sc2"><div class="inline icon icon-sc2_sm"></div>&nbsp; Starcraft II</a></li>
-					<li><a href="https://gametactic.org/csgo"><div class="inline icon icon-csgo_sm"></div>&nbsp; CS:GO</a></li>
-					<li><a href="https://gametactic.org/warface"><div class="inline icon icon-warface_sm"></div>&nbsp; Warface</a></li>
-					<li><a href="https://gametactic.org/squad"><div class="inline icon icon-squad_sm"></div>&nbsp; Squad</a></li>
-					<li><a href="https://gametactic.org/R6"><div class="inline icon icon-R6_sm"></div>&nbsp; Rainbox Six - Siege</a></li>
-					<li><a href="https://gametactic.org/steelocean"><div class="inline icon icon-steelocean_sm"></div>&nbsp; Steel ocean</a></li>
-					<li><a href="https://gametactic.org/MWO"><div class="inline icon icon-MWO_sm"></div>&nbsp; Mech Warrior Online</a></li>
-					<li><a href="https://gametactic.org/EC"><div class="inline icon icon-EC_sm"></div>&nbsp; Eternal Crusade</a></li>
-					<li><a href="https://gametactic.org/propilkki2"><div class="inline icon icon-propilkki2_sm"></div>&nbsp; Propilkki2</a></li>
-					<li><a href="https://gametactic.org/pr"><div class="inline icon icon-pr_sm"></div>&nbsp; Project Reality</a></li>
-          			<li><a href="https://gametactic.org/pubg"><div class="inline icon icon-pubg_sm"></div>&nbsp; Playersunknown's Battlegrounds</a></li>
-					<li><a href="https://forum.<%=url.split('/')[0]%>/forums/topic/can-you-support-my-game/"><%=l('Support another game')%></a>					
 				</ul>
 			</li>
 			<li><% include language_select.ejs %>
@@ -158,4 +141,7 @@
 	</div>
 </nav>
 
+<script>
+	var url = window.location.href;
 
+</script>

@@ -543,7 +543,6 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		
 	games.forEach(function(game) {
 		router.get('/' + game, function(req, res, next) {
-		  console.log(game);	
 		  set_game(req, res, game);
 		  res.render('index', { game: req.session.game, 
 								user: req.session.passport.user,

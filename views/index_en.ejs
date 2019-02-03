@@ -22,6 +22,12 @@
 			<div id="banner" class="call_to_action" style='width:100%; background-color:#888ecb'>
 				<div class="container" id="big_button_frame" style="text-align:center;">
 					<h1>
+						<% for(var i = 0; i < gamesList.length; i++) { %>
+							<script>
+								var url = window.location.href;
+							</script>
+							<li><a href="<%= gamesList[i].abbreviation %>"><div class="inline icon icon-<%= gamesList[i].abbreviation %>_sm"></div>&nbsp; <%= gamesList[i].name %></a></li>
+						<% } %>
 						<% if (game == 'wot') { %>
 							World of Tanks Tactics
 						<% } else if (game == 'wows') { %>
