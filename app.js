@@ -5,7 +5,7 @@ var http = require('http');
 var escaper = require('mongo-key-escape');
 var sizeof = require('object-sizeof');
 var request = require('request');
-
+var constants = require('./constants');
 var redis = require('redis')
 var redis_client = redis.createClient(secrets.redis_options);
 
@@ -449,7 +449,6 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	
 	// setup routes
 	var router = express.Router();
-
 	router.get('/', function(req, res, next) {
 		var game;
 		if (req.hostname) {
@@ -468,9 +467,11 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 							user: req.session.passport.user,
 							locale: req.session.locale,
 							url: req.fullUrl,
-                            static_host: secrets.static_host,
-							secrets:secrets});
+              static_host: secrets.static_host,
+							secrets:secrets,
+							gamesList: constants.listOfGames});
 	});
+
 	router.get(['/health_check', '/health_check.html'], function(req, res, next) {
 	  res.sendStatus(200);
 	});	
@@ -487,13 +488,13 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	
 	function planner_redirect(req, res, game, template) {
 	  if (req.query.restore) {
-      var uid = newUid();
-      restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
-        save_room(uid, function() {
-          delete room_data[uid];
-          res.redirect(game+'2?room='+uid);
-        });
-      });
+		var uid = newUid();
+		restore_tactic(req.session.passport.user, req.query.restore, function (uid) {           
+			save_room(uid, function() {
+				delete room_data[uid];
+				res.redirect(game+'2?room='+uid);
+			});
+      	});
 	  } else if (!req.query.room) {
 		  res.redirect(game+'2?room='+newUid());
 	  }	else {
@@ -522,25 +523,26 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	  }
 	}
   	
-	var games = ['wot', 'aw', 'wows', 'blitz', 'lol', 'hots', 'sc2', 'csgo', 'warface', 'squad', 'R6', 'MWO', 'EC', 'propilkki2', 'pr', 'clans', 'foxhole', 'steelocean', 'pubg'];	
-	games.forEach(function(game) {
-		router.get(['/' + game + '.html', '/' + game], function(req, res, next) {
-		  set_game(req, res, game);
+
+	constants.listOfGames.forEach(function(game) {
+		router.get('/' + game.abbreviation, function(req, res, next) {
+		  set_game(req, res, game.abbreviation);
 		  res.render('index', { game: req.session.game, 
 								user: req.session.passport.user,
 								locale: req.session.locale,
 								url: req.fullUrl,
 								static_host: secrets.static_host,
-								secrets:secrets});
+								secrets:secrets,
+								gamesList: constants.listOfGames});
 		});
-		router.get(['/'+game+'1', '/'+game+'planner.html'], function(req, res, next) {
-		  planner_redirect(req, res, game, 'planner');
+		router.get(['/'+game.abbreviation+'1', '/'+game.abbreviation+'planner.html'], function(req, res, next) {
+		  planner_redirect(req, res, game.abbreviation, 'planner');
 		});	
-		router.get(['/'+game+'2', '/'+game+'planner2.html'], function(req, res, next) {
-		  planner_redirect(req, res, game, 'planner2');
+		router.get(['/'+game.abbreviation+'2', '/'+game.abbreviation+'planner2.html'], function(req, res, next) {
+		  planner_redirect(req, res, game.abbreviation, 'planner2');
 		});
-		router.get(['/'+game+'3', '/'+game+'planner3.html'], function(req, res, next) {
-		  planner_redirect(req, res, game, 'planner3');
+		router.get(['/'+game.abbreviation+'3', '/'+game.abbreviation+'planner3.html'], function(req, res, next) {
+		  planner_redirect(req, res, game.abbreviation, 'planner3');
 		});			
 	});
 		
