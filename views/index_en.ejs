@@ -23,48 +23,10 @@
 				<div class="container" id="big_button_frame" style="text-align:center;">
 					<h1>
 						<% for(var i = 0; i < gamesList.length; i++) { %>
-							<script>
-								var url = window.location.href;
-							</script>
-							<li><a href="<%= gamesList[i].abbreviation %>"><div class="inline icon icon-<%= gamesList[i].abbreviation %>_sm"></div>&nbsp; <%= gamesList[i].name %></a></li>
-						<% } %>
-						<% if (game == 'wot') { %>
-							World of Tanks Tactics
-						<% } else if (game == 'wows') { %>
-							World of Warships Tactics
-						<% } else if (game == 'blitz') { %>
-							World of Tanks Blitz Tactics
-						<% } else if (game == 'aw') { %>
-							Armored Warfare Tactics
-						<% } else if (game == 'lol') { %>
-							League of legends Tactics
-						<% } else if (game == 'hots') { %>
-							Heroes of the Storm Tactics
-						<% } else if (game == 'sc2') { %>
-							Starcraft II Tactics
-						<% } else if (game == 'csgo') { %>
-							CS:GO Tactics
-						<% } else if (game == 'warface') { %>
-							Warface Tactics
-						<% } else if (game == 'squad') { %>
-							Squad Tactics
-						<% } else if (game == 'R6') { %>
-							Rainbox Six | Siege Tactics
-						<% } else if (game == 'MWO') { %>
-							Mech Warrior Online Tactics
-						<% } else if (game == 'EC') { %>
-							Eternal Crusade Tactics
-						<% } else if (game == 'propilkki2') { %>
-							Propilkki 2 Tactics
-						<% } else if (game == 'pr') { %>
-							Project Reality Tactics
-						<% } else if (game == 'clans') { %>
-							Clash of Clans Tactics
-						<% } else if (game == 'steelocean') { %>
-							Steel Ocean Tactics
-						<% } else if (game == 'foxhole') { %>
-							Foxhole Tactics
-						<% } %>	
+							<% if (gamesList[i].abbreviation == game) { %>
+								<%= gamesList[i].name %>
+							<% } %>
+						<% } %> 
 					</h1>
 					<div id="quote"></div><br />
 					<p><a class="btn btn-primary btn-lg new_room" href="<%=game%>2" role="button"><%= l('Create new room') %> &raquo;</a>
