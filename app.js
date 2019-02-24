@@ -86,48 +86,17 @@ console.log("Connecting to mongodb")
 
 MongoClient = require('mongodb').MongoClient;
 var mongo = require('./domain/mongo');
+const requisition = require("./utils/requisition");
 
 MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (err, db) {
 	if (err) throw err;
 	mongo.createCollections(db);
 
-	function set_game(req, res, game) {
-		req.session.game = game;
-		res.cookie('game', game, { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
-	}
-
-	function set_locale(req, res, locale) {
-		req.session.locale = locale;
-		res.cookie('locale', locale, { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
-	}
-
-	const tactics = require("./domain/tactics");
-
-	function create_anonymous_user(req) {
-		if (!req.session.passport) {
-			req.session.passport = {};
-		}
-		req.session.passport.user = {};
-		req.session.passport.user.id = newUid();
-		req.session.passport.user.name = "Anonymous";
-	}
-
-	//returns host without subdomain
-	function get_host(req) {
-		var host = req.hostname.split('.');
-		if (host.length >= 2) {
-			host = host[host.length - 2] + '.' + host[host.length - 1];
-		} else {
-			host = host[0];
-		}
-		return host;
-	}
-
 	// initializing session middleware
 	var mwCache = Object.create(null);
 	function virtualHostSession(req, res, next) {
 		if (req.hostname) {
-			var host = get_host(req);
+			var host = requisition.getHost(req);
 			var hostSession = mwCache[host];
 			if (!hostSession) {
 				console.log("creating redis store for: " + host);
@@ -163,7 +132,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				req.cookies["connect.sid"],
 				{
 					maxAge: req.session.cookie.maxAge,
-					domain: get_host(req),
+					domain: requisition.getHost(req),
 					path: '/',
 					httpOnly: true
 				}
@@ -181,24 +150,24 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 			return;
 		}
 		if (!req.session.passport || !req.session.passport.user) {
-			create_anonymous_user(req);
+			requisition.createAnonymousUser(req);
 		}
 		if (constants.Locales.indexOf(subDomain[0]) != -1) {
-			set_locale(req, res, subDomain[0]);
+			requisition.setLocale(req, res, subDomain[0]);
 			subDomain = subDomain.slice(1);
 		} else {
 			if (req.query.lang) {
-				set_locale(req, res, req.query.lang);
+				requisition.setLocale(req, res, req.query.lang);
 			} else {
 				if (req.session.locale) {
-					set_locale(req, res, req.session.locale);
+					requisition.setLocale(req, res, req.session.locale);
 				} else {
-					set_locale(req, res, "en");
+					requisition.setLocale(req, res, "en");
 				}
 			}
 		}
 		if (req.query.game) {
-			set_game(req, res, req.query.game)
+			requisition.setGame(req, res, req.query.game)
 		}
 		req.fullUrl = subDomain.join('.') + req.originalUrl;
 		req.session.last_login = Date();
@@ -247,7 +216,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 		function done() {
 			if (!socket.request.session.passport || !socket.request.session.passport.user) {
-				create_anonymous_user(socket.request);
+				requisition.createAnonymousUser(socket.request);
 			}
 			next();
 		}
@@ -277,7 +246,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 		} else {
 			game = "wot";
 		}
-		set_game(req, res, game);
+		requisition.setGame(req, res, game);
 		res.render('index', {
 			game: req.session.game,
 			user: req.session.passport.user,
@@ -315,7 +284,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 		} else if (!req.query.room) {
 			res.redirect(game + '2?room=' + newUid());
 		} else {
-			set_game(req, res, game);
+			requisition.setGame(req, res, game);
 			res.render(template, {
 				game: req.session.game,
 				user: req.session.passport.user,
@@ -345,7 +314,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	constants.ListOfGames.forEach(function (game) {
 		router.get('/' + game.abbreviation, function (req, res, next) {
-			set_game(req, res, game.abbreviation);
+			requisition.setGame(req, res, game.abbreviation);
 			res.render('index', {
 				game: req.session.game,
 				user: req.session.passport.user,
@@ -388,7 +357,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	router.get(['/about.html', '/about'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		res.render('about', {
 			game: req.session.game,
@@ -401,7 +370,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	});
 	router.get(['/getting_started.html', '/getting_started'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		res.render('getting_started', {
 			game: req.session.game,
@@ -414,7 +383,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	});
 	router.get(['/privacypolicy.html', '/privacypolicy'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		res.render('privacypolicy', {
 			game: req.session.game,
@@ -428,7 +397,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	router.get(['/older_news.html', '/older_news'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		res.render('older_news', {
 			game: req.session.game,
@@ -442,7 +411,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	router.get(['/stored_tactics.html', '/stored_tactics'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		if (req.session.passport.user.identity) {
 			tacitcs.getTactics(db, req.session.passport.user.identity,
@@ -502,7 +471,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	app.get('/logout', function (req, res) {
 		var return_to = req.headers.referer;
 		req.logout();
-		res.cookie('logged_in', 'no', { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
+		res.cookie('logged_in', 'no', { maxAge: 30 * 3600 * 1000, domain: requisition.getHost(req) });
 		res.redirect(return_to);
 	});
 
@@ -897,9 +866,9 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	}
 	function redirect_return(req, res, next) {
 		if (req.session.passport.user.identity) {
-			res.cookie('logged_in', req.session.passport.user.identity, { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
+			res.cookie('logged_in', req.session.passport.user.identity, { maxAge: 30 * 3600 * 1000, domain: requisition.getHost(req) });
 		} else {
-			res.cookie('logged_in', "no", { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
+			res.cookie('logged_in', "no", { maxAge: 30 * 3600 * 1000, domain: requisition.getHost(req) });
 		}
 		if (!req.session.return_to || req.session.return_to.match("^undefined")) {
 			console.error("Invalid return path:", req.session.return_to)
