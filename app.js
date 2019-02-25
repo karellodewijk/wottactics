@@ -8,24 +8,14 @@ var request = require('request');
 var constants = require('./utils/constants');
 var redis = require("./redis");
 
-var redisClient = redis.buildClient((e) => {throw e;});
-redis.authenticateRedis(redisClient, (e) => {throw e;});
+var redisClient = redis.buildClient((e) => { throw e; });
+redis.authenticateRedis(redisClient, (e) => { throw e; });
 
 var cookieParser = require('cookie-parser')
 var Session = require('express-session');
 var RedisStore = require('connect-redis')(Session);
 
 room_data = {} //room -> room_data map to be shared with clients
-
-//generate unique id
-var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-function newUid() {
-	var text = "";
-	for (var i = 0; i < 14; i++) {
-		text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
-	}
-	return text;
-}
 
 var compress = require('compression');
 var express = require('express');
@@ -78,212 +68,28 @@ process.on('uncaughtException', function (err) {
 	console.log(err.stack);
 });
 
+
 //load mongo
 connection_string = secrets.mongodb_string;
 
 console.log("Connecting to mongodb")
 
 MongoClient = require('mongodb').MongoClient;
+var mongo = require('./domain/mongo');
+const requisition = require("./utils/requisition");
+
 MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (err, db) {
 	if (err) throw err;
-	db.createCollection('tactics');
-	db.createCollection('users');
-	db.createCollection('update_stats');
-	db.collection('tactics').createIndex({ "createdAt": 1 }, { expireAfterSeconds: 31622400 });
-
-	db.createCollection('clans');
-
-	function clean_up_room(room) {
-		setTimeout(function () {
-			if (room_data[room]) {
-				if (!io.sockets.adapter.rooms[room]) {
-					if (Date.now() - room_data[room].last_join > 50000) {
-						save_room(room, function () {
-							delete room_data[room];
-						});
-					} else {
-						clean_up_room(room); //try again
-					}
-				}
-			}
-		}, 60000);
-	}
-
-	function save_room(room, cb) {
-		if (room_data[room]) {
-			room_data[room]._id = room;
-			room_data[room].lastAccessed = Date.now();
-			db.collection('tactics').replaceOne({ _id: room }, room_data[room], { upsert: true }, function (err, result) {
-				cb();
-			});
-		}
-	}
-
-	function get_tactics(identity, game, cb) {
-		if (identity) {
-			db.collection('users').findOne({ _id: identity }, { 'tactics': 1, 'rooms': 1 }, function (err, data) {
-				if (!err) {
-					if (data) {
-						var tactics = [], rooms = [];
-						if (data.tactics) {
-							tactics = data.tactics;
-						}
-						if (data.rooms) {
-							rooms = data.rooms;
-						}
-						cb(tactics, rooms);
-					} else {
-						cb([], []);
-					}
-				} else {
-					cb([], []);
-				}
-			});
-		} else {
-			cb([], []);
-		}
-	}
-
-	function set_game(req, res, game) {
-		req.session.game = game;
-		res.cookie('game', game, { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
-	}
-
-	function set_locale(req, res, locale) {
-		req.session.locale = locale;
-		res.cookie('locale', locale, { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
-	}
-
-	function push_tactic_to_db(user, room, name, uid, remove_old) {
-		//store a link to the tacticn in user data
-		var date = Date.now();
-		db.collection('users').updateOne({ _id: user.identity }, { $push: { tactics: { name: name, date: date, game: room_data[room].game, uid: uid, is_video: (typeof room_data[room].playing != 'undefined') } } }, { upsert: true }, function (err) {
-			if (!err && remove_old) {
-				try {
-					db.collection('users').updateOne({ _id: user.identity }, { $pull: { tactics: { uid: uid, date: { $ne: date } } } }, { upsert: true });
-				} catch (e) { } //probably doesn't exist
-			}
-		});
-		//store the tactic in the stored_tactics list
-		var data = JSON.parse(JSON.stringify(room_data[room]));
-		data.name = name;
-		delete data.userlist;
-		delete data.lost_users;
-		delete data.lost_identities;
-
-		if (!data.creator) {
-			data.creator = user.identity;
-		}
-		if (!data.users) data.users = {}
-		data.users[user.identity] = "owner";
-
-		data._id = uid;
-		db.collection('stored_tactics').replaceOne({ _id: uid }, data, { upsert: true });
-
-		if (!room_data[room].lost_identities[user.identity]) {
-			room_data[room].lost_identities[user.identity] = { role: "owner" };
-		}
-		room_data[room].lost_identities[user.identity].tactic_name = name;
-		room_data[room].lost_identities[user.identity].tactic_uid = uid;
-	}
-
-	function store_tactic(user, room, name) {
-		if (room_data[room] && user.identity) { //room exists, user is logged in
-			if (room_data[room].lost_identities[user.identity]
-				&& room_data[room].lost_identities[user.identity].tactic_uid
-				&& room_data[room].lost_identities[user.identity].tactic_name
-				&& room_data[room].lost_identities[user.identity].tactic_name == name) {
-				var uid = room_data[room].lost_identities[user.identity].tactic_uid;
-				push_tactic_to_db(user, room, name, uid, true);
-			} else {
-				var uid = newUid();
-				push_tactic_to_db(user, room, name, uid, false);
-			}
-		}
-	}
-
-	function restore_tactic(user, uid, cb) {
-		if (user.identity) {
-			var query = { _id: user.identity };
-			query['tactics.uid'] = uid;
-			db.collection('users').findOne(query, { 'tactics.$': 1, _id: 0 }, function (err, header) {
-				if (!err && header) {
-					var id = header.tactics[0].uid;
-					db.collection('stored_tactics').findOne({ _id: id }, function (err2, result) {
-						if (!err2 && result) {
-							var uid = newUid();
-							room_data[uid] = result;
-							room_data[uid].last_join = Date.now();
-							room_data[uid].userlist = {};
-							room_data[uid].lost_users = {};
-							room_data[uid].lost_identities = {};
-							room_data[uid].trackers = {};
-							room_data[uid].lost_users[user.id] = "owner";
-							if (user.identity) {
-								room_data[uid].lost_identities[user.identity] = { role: "owner", tactic_name: header.tactics[0].name, tactic_uid: id };
-							}
-							room_data[uid].locked = true;
-							cb(uid);
-						} else {
-							cb(newUid());
-						}
-					});
-				} else {
-					cb(newUid());
-				}
-			});
-		} else {
-			cb(newUid());
-		}
-	}
-
-	function remove_tactic(identity, id) {
-		db.collection('users').updateOne({ _id: identity }, { $pull: { tactics: { uid: id } } });
-	}
-
-	function rename_tactic(user, uid, new_name) {
-		db.collection('users').findOne({ _id: user.identity, tactics: { $elemMatch: { uid: uid } } }, { 'tactics.$': 1 }, function (err, result) {
-			if (!err && result && result.tactics) {
-				var tactic = result.tactics[0];
-				var old_name = tactic.name;
-				tactic.name = new_name;
-				db.collection('users').updateOne({ _id: user.identity }, { $push: { tactics: tactic } }, function (err) {
-					if (!err) {
-						db.collection('users').updateOne({ _id: user.identity }, { $pull: { tactics: { uid: uid, name: old_name } } });
-					}
-				});
-			}
-		});
-	}
-
-	function create_anonymous_user(req) {
-		if (!req.session.passport) {
-			req.session.passport = {};
-		}
-		req.session.passport.user = {};
-		req.session.passport.user.id = newUid();
-		req.session.passport.user.name = "Anonymous";
-	}
-
-	//returns host without subdomain
-	function get_host(req) {
-		var host = req.hostname.split('.');
-		if (host.length >= 2) {
-			host = host[host.length - 2] + '.' + host[host.length - 1];
-		} else {
-			host = host[0];
-		}
-		return host;
-	}
+	mongo.createCollections(db);
 
 	// initializing session middleware
 	var mwCache = Object.create(null);
 	function virtualHostSession(req, res, next) {
 		if (req.hostname) {
-			var host = get_host(req);
+			var host = requisition.getHost(req);
 			var hostSession = mwCache[host];
 			if (!hostSession) {
-				console.log("creating redis store for: " + host);	
+				console.log("creating redis store for: " + host);
 				var redis_store = new RedisStore({ client: redisClient });
 				hostSession = mwCache[host] = Session({ secret: secrets.cookie, resave: true, saveUninitialized: false, cookie: { domain: host, maxAge: 30 * 86400 * 1000, httpOnly: true }, rolling: true, store: redis_store });
 				mwCache[host].store = redis_store;
@@ -316,7 +122,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				req.cookies["connect.sid"],
 				{
 					maxAge: req.session.cookie.maxAge,
-					domain: get_host(req),
+					domain: requisition.getHost(req),
 					path: '/',
 					httpOnly: true
 				}
@@ -334,24 +140,24 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 			return;
 		}
 		if (!req.session.passport || !req.session.passport.user) {
-			create_anonymous_user(req);
+			requisition.createAnonymousUser(req);
 		}
 		if (constants.Locales.indexOf(subDomain[0]) != -1) {
-			set_locale(req, res, subDomain[0]);
+			requisition.setLocale(req, res, subDomain[0]);
 			subDomain = subDomain.slice(1);
 		} else {
 			if (req.query.lang) {
-				set_locale(req, res, req.query.lang);
+				requisition.setLocale(req, res, req.query.lang);
 			} else {
 				if (req.session.locale) {
-					set_locale(req, res, req.session.locale);
+					requisition.setLocale(req, res, req.session.locale);
 				} else {
-					set_locale(req, res, "en");
+					requisition.setLocale(req, res, "en");
 				}
 			}
 		}
 		if (req.query.game) {
-			set_game(req, res, req.query.game)
+			requisition.setGame(req, res, req.query.game)
 		}
 		req.fullUrl = subDomain.join('.') + req.originalUrl;
 		req.session.last_login = Date();
@@ -375,7 +181,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	// session support for socket.io	
 	function session_from_sessionid_host(sessionId, host, cb) {
 		if (!mwCache[host]) {
-			var redis_store = new RedisStore({ client: redis_client });
+			var redis_store = new RedisStore({ client: redisClient });
 			mwCache[host] = Session({ secret: secrets.cookie, resave: true, saveUninitialized: false, cookie: { domain: host, expires: new Date(Date.now() + 30 * 86400 * 1000), httpOnly: false }, rolling: true, store: redis_store });
 			mwCache[host].store = redis_store;
 		}
@@ -400,7 +206,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 		function done() {
 			if (!socket.request.session.passport || !socket.request.session.passport.user) {
-				create_anonymous_user(socket.request);
+				requisition.createAnonymousUser(socket.request);
 			}
 			next();
 		}
@@ -419,7 +225,6 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	var router = express.Router();
 	router.get('/', function (req, res, next) {
 		var game;
-		console.log("lol");
 		if (req.hostname) {
 			if (req.hostname.indexOf('awtactic') != -1) {
 				game = "aw";
@@ -431,7 +236,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 		} else {
 			game = "wot";
 		}
-		set_game(req, res, game);
+		requisition.setGame(req, res, game);
 		res.render('index', {
 			game: req.session.game,
 			user: req.session.passport.user,
@@ -459,17 +264,17 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	function planner_redirect(req, res, game, template) {
 		if (req.query.restore) {
-			var uid = newUid();
-			restore_tactic(req.session.passport.user, req.query.restore, function (uid) {
+			var uid = requisition.newUid();
+			tactics.restoreTactic(db, req.session.passport.user, req.query.restore, function (uid) {
 				save_room(uid, function () {
 					delete room_data[uid];
 					res.redirect(game + '2?room=' + uid);
 				});
 			});
 		} else if (!req.query.room) {
-			res.redirect(game + '2?room=' + newUid());
+			res.redirect(game + '2?room=' + requisition.newUid());
 		} else {
-			set_game(req, res, game);
+			requisition.setGame(req, res, game);
 			res.render(template, {
 				game: req.session.game,
 				user: req.session.passport.user,
@@ -499,7 +304,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	constants.ListOfGames.forEach(function (game) {
 		router.get('/' + game.abbreviation, function (req, res, next) {
-			set_game(req, res, game.abbreviation);
+			requisition.setGame(req, res, game.abbreviation);
 			res.render('index', {
 				game: req.session.game,
 				user: req.session.passport.user,
@@ -542,7 +347,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	router.get(['/about.html', '/about'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		res.render('about', {
 			game: req.session.game,
@@ -555,7 +360,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	});
 	router.get(['/getting_started.html', '/getting_started'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		res.render('getting_started', {
 			game: req.session.game,
@@ -568,7 +373,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	});
 	router.get(['/privacypolicy.html', '/privacypolicy'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		res.render('privacypolicy', {
 			game: req.session.game,
@@ -582,7 +387,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	router.get(['/older_news.html', '/older_news'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		res.render('older_news', {
 			game: req.session.game,
@@ -596,36 +401,38 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	router.get(['/stored_tactics.html', '/stored_tactics'], function (req, res, next) {
 		if (!req.session.game) {
-			set_game(req, res, 'wot');
+			requisition.setGame(req, res, 'wot');
 		}
 		if (req.session.passport.user.identity) {
-			get_tactics(req.session.passport.user.identity, req.session.game, function (tactics, last_rooms) {
-				res.render('stored_tactics', {
-					game: req.session.game,
-					user: req.session.passport.user,
-					locale: req.session.locale,
-					tactics: tactics,
-					rooms: last_rooms,
-					url: req.fullUrl,
-					sid: req.sessionID,
-					static_host: secrets.static_host,
-					socket_io_servers: secrets.socket_io_servers,
-					secrets: secrets
+			tacitcs.getTactics(db, req.session.passport.user.identity,
+				req.session.game,
+				function (tactics, last_rooms) {
+					res.render('stored_tactics', {
+						game: req.session.game,
+						user: req.session.passport.user,
+						locale: req.session.locale,
+						tactics: tactics,
+						rooms: last_rooms,
+						url: req.fullUrl,
+						sid: req.sessionID,
+						static_host: secrets.static_host,
+						socket_io_servers: secrets.socket_io_servers,
+						secrets: secrets
+					});
 				});
-			});
 		} else {
 			res.redirect('/');
 		}
 	});
 	router.post('/remove_tactic', function (req, res, next) {
 		if (req.session.passport.user.identity) {
-			remove_tactic(req.session.passport.user.identity, req.body.id);
+			tactics.removeTactic(db, req.session.passport.user.identity, req.body.id);
 		}
 		return;
 	});
 	router.post('/rename_tactic', function (req, res, next) {
 		if (req.session.passport.user.identity) {
-			rename_tactic(req.session.passport.user, req.body.uid, req.body.new_name);
+			tactics.renameTactic(req.session.passport.user, req.body.uid, req.body.new_name);
 		}
 		return;
 	});
@@ -654,7 +461,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	app.get('/logout', function (req, res) {
 		var return_to = req.headers.referer;
 		req.logout();
-		res.cookie('logged_in', 'no', { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
+		res.cookie('logged_in', 'no', { maxAge: 30 * 3600 * 1000, domain: requisition.getHost(req) });
 		res.redirect(return_to);
 	});
 
@@ -715,7 +522,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 				user.id = req.session.passport.user.id;
 			} else {
-				user.id = newUid();
+				user.id = requisition.newUid();
 			}
 			user.server = identifier.split('://')[1].split(".wargaming")[0];
 			user.identity_provider = "wargaming";
@@ -762,7 +569,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = profile.id;
 				user.identity_provider = "google";
@@ -794,7 +601,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = "vk-" + profile.id;
 				user.identity_provider = "vk";
@@ -826,7 +633,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = 'bnet-' + profile.id;
 				user.identity_provider = "bnet";
@@ -862,7 +669,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = profile.id;
 				user.identity_provider = "facebook";
@@ -894,7 +701,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = profile.id;
 				user.identity_provider = "twitter";
@@ -930,7 +737,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				steam.getPlayerSummaries({
 					steamids: [identifier],
@@ -983,7 +790,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 			}
 			for (var key in slide_list) {
 				if (source.slides.hasOwnProperty(key)) {
-					var uid = newUid();
+					var uid = requisition.newUid();
 					var new_slide = JSON.parse(JSON.stringify(source.slides[key]));
 					new_slide.order += largest_slide_order;
 					new_slide.uid = uid;
@@ -1049,9 +856,9 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	}
 	function redirect_return(req, res, next) {
 		if (req.session.passport.user.identity) {
-			res.cookie('logged_in', req.session.passport.user.identity, { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
+			res.cookie('logged_in', req.session.passport.user.identity, { maxAge: 30 * 3600 * 1000, domain: requisition.getHost(req) });
 		} else {
-			res.cookie('logged_in', "no", { maxAge: 30 * 3600 * 1000, domain: get_host(req) });
+			res.cookie('logged_in', "no", { maxAge: 30 * 3600 * 1000, domain: requisition.getHost(req) });
 		}
 		if (!req.session.return_to || req.session.return_to.match("^undefined")) {
 			console.error("Invalid return path:", req.session.return_to)
@@ -1194,7 +1001,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 		res.header('Content-Type', 'text/plain');
 		res.send(robots_base);
 	});
-
+	
 	//add router to app
 	app.use('/', router);
 
@@ -1241,10 +1048,10 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	function create_empty_room(user, game) {
 		var room = {};
-		var slide0_uid = newUid();
+		var slide0_uid = requisition.newUid();
 		room.slides = {};
 		room.slides[slide0_uid] = { name: '1', order: 0, entities: {}, uid: slide0_uid, z_top: 0 }
-		var background_uid = newUid();
+		var background_uid = requisition.newUid();
 		switch (game) {
 			case 'lol':
 				room.slides[slide0_uid].entities[background_uid] = { uid: background_uid, type: 'background', path: "/maps/lol/rift.jpg", z_index: 0, size_x: 15000, size_y: 15000 };
@@ -1326,7 +1133,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 			}
 			for (var room in socket.rooms) {
 				if (io.sockets.adapter.rooms[room].length <= 1) {	//we're the last one in the room and we're leaving
-					clean_up_room(room);
+					mongo.cleanUpRoom(db, room, io);
 				}
 			}
 			Object.getPrototypeOf(this).onclose.call(this, reason); //call original onclose
@@ -1581,7 +1388,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 		socket.on('store', function (room, name) {
 			var user = socket.request.session.passport.user;
 			if (!room_data[room].locked || room_data[room].userlist[user.id].role == "owner") {
-				store_tactic(user, room, name);
+				tactics.storeTactic(db, user, room, name);
 			}
 		});
 

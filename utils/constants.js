@@ -1,5 +1,6 @@
 
 module.exports = {
+  ValidChars:  "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
   ListOfGames: [
     {abbreviation: 'wot', 						name: "World Of Tanks" }, 
     {abbreviation: 'aw', 							name: "Armored Warfare"}, 
