@@ -8,7 +8,7 @@ mongo.createCollections = (db) => {
 	db.createCollection('clans');
 }
 
-mongo.cleanUpRoom = (db, room) => {
+mongo.cleanUpRoom = (db, room, io) => {
   setTimeout(function () {
     if (room_data[room]) {
       if (!io.sockets.adapter.rooms[room]) {

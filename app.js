@@ -17,16 +17,6 @@ var RedisStore = require('connect-redis')(Session);
 
 room_data = {} //room -> room_data map to be shared with clients
 
-//generate unique id
-var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-function newUid() {
-	var text = "";
-	for (var i = 0; i < 14; i++) {
-		text += valid_chars.charAt(Math.floor(Math.random() * valid_chars.length));
-	}
-	return text;
-}
-
 var compress = require('compression');
 var express = require('express');
 var path = require('path');
@@ -274,7 +264,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	function planner_redirect(req, res, game, template) {
 		if (req.query.restore) {
-			var uid = newUid();
+			var uid = requisition.newUid();
 			tactics.restoreTactic(db, req.session.passport.user, req.query.restore, function (uid) {
 				save_room(uid, function () {
 					delete room_data[uid];
@@ -282,7 +272,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				});
 			});
 		} else if (!req.query.room) {
-			res.redirect(game + '2?room=' + newUid());
+			res.redirect(game + '2?room=' + requisition.newUid());
 		} else {
 			requisition.setGame(req, res, game);
 			res.render(template, {
@@ -532,7 +522,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 			if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 				user.id = req.session.passport.user.id;
 			} else {
-				user.id = newUid();
+				user.id = requisition.newUid();
 			}
 			user.server = identifier.split('://')[1].split(".wargaming")[0];
 			user.identity_provider = "wargaming";
@@ -579,7 +569,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = profile.id;
 				user.identity_provider = "google";
@@ -611,7 +601,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = "vk-" + profile.id;
 				user.identity_provider = "vk";
@@ -643,7 +633,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = 'bnet-' + profile.id;
 				user.identity_provider = "bnet";
@@ -679,7 +669,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = profile.id;
 				user.identity_provider = "facebook";
@@ -711,7 +701,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				user.identity = profile.id;
 				user.identity_provider = "twitter";
@@ -747,7 +737,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 				if (req.session.passport && req.session.passport.user && req.session.passport.user.id) {
 					user.id = req.session.passport.user.id;
 				} else {
-					user.id = newUid();
+					user.id = requisition.newUid();
 				}
 				steam.getPlayerSummaries({
 					steamids: [identifier],
@@ -800,7 +790,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 			}
 			for (var key in slide_list) {
 				if (source.slides.hasOwnProperty(key)) {
-					var uid = newUid();
+					var uid = requisition.newUid();
 					var new_slide = JSON.parse(JSON.stringify(source.slides[key]));
 					new_slide.order += largest_slide_order;
 					new_slide.uid = uid;
@@ -1011,7 +1001,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 		res.header('Content-Type', 'text/plain');
 		res.send(robots_base);
 	});
-
+	
 	//add router to app
 	app.use('/', router);
 
@@ -1058,10 +1048,10 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 
 	function create_empty_room(user, game) {
 		var room = {};
-		var slide0_uid = newUid();
+		var slide0_uid = requisition.newUid();
 		room.slides = {};
 		room.slides[slide0_uid] = { name: '1', order: 0, entities: {}, uid: slide0_uid, z_top: 0 }
-		var background_uid = newUid();
+		var background_uid = requisition.newUid();
 		switch (game) {
 			case 'lol':
 				room.slides[slide0_uid].entities[background_uid] = { uid: background_uid, type: 'background', path: "/maps/lol/rift.jpg", z_index: 0, size_x: 15000, size_y: 15000 };
@@ -1143,7 +1133,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 			}
 			for (var room in socket.rooms) {
 				if (io.sockets.adapter.rooms[room].length <= 1) {	//we're the last one in the room and we're leaving
-					mongo.cleanUpRoom(db, room);
+					mongo.cleanUpRoom(db, room, io);
 				}
 			}
 			Object.getPrototypeOf(this).onclose.call(this, reason); //call original onclose

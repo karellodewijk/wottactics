@@ -1,25 +1,35 @@
-var requisitions = {};
-requisitions.setGame = (req, res, game) => {
+var requisition = {};
+requisition.setGame = (req, res, game) => {
   req.session.game = game;
-  res.cookie('game', game, { maxAge: 30 * 3600 * 1000, domain: requisitions.getHost(req) });
+  res.cookie('game', game, { maxAge: 30 * 3600 * 1000, domain: requisition.getHost(req) });
 };
 
-requisitions.setLocale = (req, res, locale) => {
+requisition.setLocale = (req, res, locale) => {
   req.session.locale = locale;
-  res.cookie('locale', locale, { maxAge: 30 * 3600 * 1000, domain: requisitions.getHost(req) });
+  res.cookie('locale', locale, { maxAge: 30 * 3600 * 1000, domain: requisition.getHost(req) });
 };
 
-requisitions.createAnonymousUser = (req) => {
+requisition.createAnonymousUser = (req) => {
   if (!req.session.passport) {
     req.session.passport = {};
   }
   req.session.passport.user = {};
-  req.session.passport.user.id = newUid();
+  req.session.passport.user.id = requisition.newUid();
   req.session.passport.user.name = "Anonymous";
 };
 
+requisition.newUid = () => {
+  const constants = require("./constants");
+  const validChars = constants.ValidChars;
+	var text = "";
+	for (var i = 0; i < 14; i++) {
+		text += validChars.charAt(Math.floor(Math.random() * validChars.length));
+	}
+	return text;
+}
+
 //returns host without subdomain
-requisitions.getHost = (req) => {
+requisition.getHost = (req) => {
   var host = req.hostname.split('.');
   if (host.length >= 2) {
     host = host[host.length - 2] + '.' + host[host.length - 1];
@@ -29,4 +39,4 @@ requisitions.getHost = (req) => {
   return host;
 };
 
-module.exports = requisitions;
+module.exports = requisition;
