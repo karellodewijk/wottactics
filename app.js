@@ -1,12 +1,12 @@
 var fs = require('fs');
 var _datadir = null;
-var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
+var secrets = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 var http = require('http');
 var escaper = require('mongo-key-escape');
 var sizeof = require('object-sizeof');
 var request = require('request');
 
-var redis = require('redis')
+var redis = require('redis');
 var redis_client = redis.createClient(secrets.redis_options);
 
 redis_client.on("error", function (e) {
@@ -20,11 +20,11 @@ if (e) {
 	return;
 }
 
-var cookieParser = require('cookie-parser')
+var cookieParser = require('cookie-parser');
 var Session = require('express-session');
 var RedisStore = require('connect-redis')(Session);
 
-room_data = {} //room -> room_data map to be shared with clients
+room_data = {}; //room -> room_data map to be shared with clients
 
 //generate unique id
 var valid_chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -50,7 +50,7 @@ app.use(compress());
 
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-app.use(cookieParser())
+app.use(cookieParser());
   
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -112,7 +112,7 @@ process.on('uncaughtException', function (err) {
 //load mongo
 connection_string =  secrets.mongodb_string;
 
-console.log("Connecting to mongodb")
+console.log("Connecting to mongodb");
 
 MongoClient = require('mongodb').MongoClient;
 MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, db) {
@@ -206,7 +206,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		if (!data.creator) {
 			data.creator = user.identity;
 		}
-		if (!data.users) data.users = {}
+		if (!data.users) data.users = {};
 		data.users[user.identity] = "owner";
 		
 		data._id = uid;
@@ -315,7 +315,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			var host = get_host(req);
 			var hostSession = mwCache[host];
 			if (!hostSession) {
-				console.log("creating redis store for: " + host)
+				console.log("creating redis store for: " + host);
 				var redis_store = new RedisStore({client:redis_client});
 				hostSession = mwCache[host] = Session({secret: secrets.cookie, resave:true, saveUninitialized:false, cookie: {domain:host, maxAge: 30 * 86400 * 1000, httpOnly:true}, rolling: true, store: redis_store});
 				mwCache[host].store = redis_store;
@@ -355,7 +355,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			);
 		}
 		next();
-	})
+	});
 	
 	//create a default user + detect language
 	app.use(function(req, res, next) {
@@ -478,7 +478,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	//reload the secrets file
 	router.get('/reload_secrets', function(req, res, next) {
 		if (req.query.pw == secrets.admin_password) {
-			secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
+			secrets = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 			res.status(200).send("Secrets loaded")
 		} else {
 			res.status(500).send("Wrong password")
@@ -512,7 +512,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 				  db.collection('users').updateOne(
 				  	  { _id:req.session.passport.user.identity },
 					  { "$pull": { "rooms": link } }
-				  )
+				  );
 				  db.collection('users').updateOne(
 				  	  { _id:req.session.passport.user.identity },
 					  { "$push": { "rooms": { "$each": [link], "$slice": -10 } } }
@@ -551,7 +551,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			var data = req.body;
 			for (var i in data) {
 				var field = i;
-				var users = data[i]				
+				var users = data[i];
 				for (var j in users) {
 					var user = users[j];
 					db.collection('ws_' + field + '_summary').replaceOne({_id:user._id}, user, {upsert:true});
@@ -739,7 +739,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			var promises = [];
 			promises.push(new Promise(function(resolve){ 
 				decorate_session(user, function() { resolve(); });
-			}))
+			}));
 			promises.push(new Promise(function(resolve){ 
 				get_wg_data("/account/info/?", ["clan_id"], user.wg_account_id, function(data) {				
 					if (data) {
@@ -748,7 +748,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 					}
 					resolve();
 				});
-			}))		
+			}));
 			Promise.all(promises).then(function() {
 				db.collection('users').updateOne({_id:user.identity}, {$set: {name:user.name, identity_provider:user.identity_provider, server:user.server, wg_id:user.wg_account_id, clan_id:user.clan_id}}, {upsert:true});
 				done(null, user);
@@ -991,7 +991,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			largest_slide_order += 4294967296;
 			var slide_list = source.slides;
 			if (slide) {
-				slide_list = {}
+				slide_list = {};
 				slide_list[slide] = source.slides[slide];
 			}
 			for (var key in slide_list) {
@@ -1067,7 +1067,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			res.cookie('logged_in', "no", {maxAge: 30 * 3600 * 1000, domain: get_host(req)}); 
 		}
 		if (!req.session.return_to || req.session.return_to.match("^undefined")) {
-			console.error("Invalid return path:", req.session.return_to)
+			console.error("Invalid return path:", req.session.return_to);
 			res.redirect("/");
 		} else {
 			res.redirect(req.session.return_to);
@@ -1168,7 +1168,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	var lastmod = (new Date()).toISOString().substr(0,10);
 	router.get('/refresh', function(req, res, next) {
 		if (req.query.pw == secrets.admin_password) {
-			var ejs = require('ejs')
+			var ejs = require('ejs');
 			ejs.clearCache();
 			lastmod = (new Date()).toISOString().substr(0,10);
 			i18n.configure({
@@ -1256,7 +1256,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 		var room = {};
 		var slide0_uid = newUid();
 		room.slides = {};
-		room.slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid, z_top:0}
+		room.slides[slide0_uid] = {name:'1', order:0, entities:{}, uid:slide0_uid, z_top:0};
 		var background_uid = newUid();
     switch(game) {
       case 'lol':
@@ -1343,7 +1343,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 				}
 			}
 			Object.getPrototypeOf(this).onclose.call(this,reason); //call original onclose
-		}
+		};
 		
 		//socket.on('error', function(e){
 		//	console.log("error: ", e);
@@ -1470,7 +1470,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			var largest = -9007199254740990;
 			var uid = 0;
 			for (var key in room_data[room].slides) {
-				var order = room_data[room].slides[key].order
+				var order = room_data[room].slides[key].order;
 				if ( order < upper_bound && order > largest) {
 					largest = order;
 					uid = key;
@@ -1483,7 +1483,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 			var smallest = 9007199254740991;
 			var uid = 0;
 			for (var key in room_data[room].slides) {
-				var order = room_data[room].slides[key].order
+				var order = room_data[room].slides[key].order;
 				if ( order > lower_bound && order < smallest) {
 					smallest = order;
 					uid = key;
@@ -1665,7 +1665,7 @@ MongoClient.connect(connection_string, {reconnectTries:99999999}, function(err, 
 	
 	//create server
 	var server = http.createServer(app);	
-	io.attach(server)
+	io.attach(server);
   
   var port = secrets.port;
   if (process.env.PORT) {
