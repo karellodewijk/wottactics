@@ -1,6 +1,5 @@
 var fs = require('fs');
-var _datadir = null;
-var secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
+var secrets = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 var http = require('http');
 var escaper = require('mongo-key-escape');
 var sizeof = require('object-sizeof');
@@ -255,7 +254,7 @@ MongoClient.connect(connection_string, { reconnectTries: 99999999 }, function (e
 	//reload the secrets file
 	router.get('/reload_secrets', function (req, res, next) {
 		if (req.query.pw == secrets.admin_password) {
-			secrets = JSON.parse(fs.readFileSync('secrets.txt', 'utf8'));
+			secrets = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 			res.status(200).send("Secrets loaded")
 		} else {
 			res.status(500).send("Wrong password")
