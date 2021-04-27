@@ -29,7 +29,7 @@
     "passport-strategy": "^1.0.0",
     "passport-twitter": "^1.0.4",
     "passport-vkontakte": "^0.4.0",
-    "redis": "^2.7.1",
+    "redis": "^3.1.1",
     "request": "^2.79.0",
     "serve-favicon": "^2.3.0",
     "socket.io": "^2.0.3",
